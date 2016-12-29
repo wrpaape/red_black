@@ -1,16 +1,52 @@
-#include "red_black_print.h"
+#include "red_black_print.h"  /* stddef included -> NULL */
+#include "red_black_malloc.h" /* RED_BLACK_MALLOC|FREE */
+#include <unistd.h>	      /* write, STDOUT_FILENO */
+
+
+#define SIZE_RED_BLACK_NULL(INDENT) (INDENT + sizeof("(BLACK) NULL"))
+
+static inline size_t
+size_red_black_node(const struct RedBlackNode *const restrict node,
+		    const RedBlackKeySizer key_sizer,
+		    const unsigned int indent)
+{
+	return indent
+	     + (node->is_red ? sizeof("(RED) ") : sizeof("(BLACK) "))
+	     + key_sizer(node->key);
+}
+
+
+static size_t
+size_red_black_tree(const struct RedBlackNode *const restrict node,
+		    const RedBlackKeySizer key_sizer,
+		    const unsigned int indent)
+{
+	if (node == NULL)
+		return SIZE_RED_BLACK_NULL(indent);
+
+	const unsigned int next_indent = indent + 2;
+
+	return size_red_black_tree(node->left,
+				   key_sizer,
+				   next_indent)
+	     + size_red_black_node(node,
+				   key_sizer,
+				   indent)
+	     + size_red_black_tree(node->right,
+				   key_sizer,
+				   indent);
+}
+
 
 static inline char *
 put_indent(char *restrict buffer,
-	   const unsigned int level)
+	   const unsigned int indent)
 {
-	char *const restrict indent_until = buffer + (2 * level);
+	char *const restrict indent_until = buffer + indent;
 
 	while (buffer < indent_until) {
-		*buffer = '\t';
-		++buffer;
-		*buffer = '\t';
-		++buffer;
+		*buffer++ = '\t';
+		*buffer++ = '\t';
 	}
 
 	return buffer;
@@ -18,96 +54,128 @@ put_indent(char *restrict buffer,
 
 static inline char *
 put_red_black_null(char *restrict buffer,
-		   const unsigned int level)
+		   const unsigned int indent)
 {
 	buffer = put_indent(buffer,
-			    level);
+			    indent);
 
-	*buffer = '('; ++buffer;
-	*buffer = 'B'; ++buffer;
-	*buffer = 'L'; ++buffer;
-	*buffer = 'A'; ++buffer;
-	*buffer = 'C'; ++buffer;
-	*buffer = 'K'; ++buffer;
-	*buffer = ')'; ++buffer;
-	*buffer = ' '; ++buffer;
-	*buffer = 'N'; ++buffer;
-	*buffer = 'U'; ++buffer;
-	*buffer = 'L'; ++buffer;
-	*buffer = 'L'; ++buffer;
-	*buffer = '\n';
+	*buffer++ = '(';
+	*buffer++ = 'B';
+	*buffer++ = 'L';
+	*buffer++ = 'A';
+	*buffer++ = 'C';
+	*buffer++ = 'K';
+	*buffer++ = ')';
+	*buffer++ = ' ';
+	*buffer++ = 'N';
+	*buffer++ = 'U';
+	*buffer++ = 'L';
+	*buffer++ = 'L';
+	*buffer++ = '\n';
 
-	return buffer + 1;
+	return buffer;
 }
+
+
 
 static inline char *
 put_red_black_node(char *restrict buffer,
-		   const unsigned int level,
-		   const struct RedBlackNode *const restrict node)
+		   const struct RedBlackNode *const restrict node,
+		   const RedBlackKeyPutter key_putter,
+		   const unsigned int indent)
 {
 	buffer = put_indent(buffer,
-			    level);
+			    indent);
 
-	*buffer = '('; ++buffer;
+	*buffer++ = '(';
 
 	if (node->is_red) {
-		*buffer = 'R'; ++buffer;
-		*buffer = 'E'; ++buffer;
-		*buffer = 'D'; ++buffer;
+		*buffer++ = 'R';
+		*buffer++ = 'E';
+		*buffer++ = 'D';
 
 	} else {
-		*buffer = 'B'; ++buffer;
-		*buffer = 'L'; ++buffer;
-		*buffer = 'A'; ++buffer;
-		*buffer = 'C'; ++buffer;
-		*buffer = 'K'; ++buffer;
+		*buffer++ = 'B';
+		*buffer++ = 'L';
+		*buffer++ = 'A';
+		*buffer++ = 'C';
+		*buffer++ = 'K';
 	}
 
-	*buffer = ')'; ++buffer;
-	*buffer = ' '; ++buffer;
+	*buffer++ = ')';
+	*buffer++ = ' ';
 
-	buffer = put_key(buffer,
-			 node->key);
+	buffer = key_putter(buffer,
+			    node->key);
 
-	*buffer = '\n';
+	*buffer++ = '\n';
 
-	return buffer + 1;
+	return buffer;
 }
 
+
 char *
-do_red_black_print(char *restrict buffer,
-		   const unsigned int level,
-		   const struct RedBlackNode *const restrict node)
+put_red_black_tree(char *restrict buffer,
+		   const struct RedBlackNode *const restrict node,
+		   const RedBlackKeyPutter key_putter,
+		   const unsigned int indent)
 {
 	if (node == NULL)
 		return put_red_black_null(buffer,
-					  level);
+					  indent);
 
-	const unsigned int next_level = level + 1;
+	const unsigned int next_indent = indent + 2;
 
-	buffer = do_red_black_print(buffer,
-				    next_level,
-				    node->left);
+	buffer = put_red_black_tree(buffer,
+				    node->left,
+				    key_putter,
+				    next_indent);
 
 	buffer = put_red_black_node(buffer,
-				    level,
-				    node);
+				    node,
+				    key_putter,
+				    indent);
 
-	return do_red_black_print(buffer,
-				  next_level,
-				  node->right);
+	return put_red_black_tree(buffer,
+				  node->right,
+				  key_putter,
+				  next_indent);
 }
 
 
-void
-red_black_print(const struct RedBlackNode *const restrict tree)
+bool
+red_black_print(const struct RedBlackNode *const restrict root,
+		const RedBlackKeySizer key_sizer,
+		const RedBlackKeyPutter key_putter);
 {
-	char buffer[4096];
+	bool success;
+	size_t size;
 
-	char *const restrict ptr = do_red_black_print(&buffer[0],
-						      0,
-						      tree);
+	/* traverse tree to size the required buffer */
+	size = size_red_black_tree(root,
+				   key_sizer,
+				   0);
 
-	WRITE_STDOUT(&buffer[0],
-		     ptr - &buffer[0]);
+	char *const restrict buffer = RED_BLACK_MALLOC(total);
+
+	success = (buffer != NULL);
+
+
+	if (success) {
+		/* put nodes in order */
+		char *const restrict ptr = put_red_black_tree(buffer,
+							      root,
+							      key_putter,
+							      0);
+
+		size = ptr - buffer;
+
+		success = (write(STDOUT_FILENO,
+				 buffer,
+				 size) == size);
+
+		RED_BLACK_FREE(buffer);
+	}
+
+	return success;
 }

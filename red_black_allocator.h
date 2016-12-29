@@ -5,7 +5,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node.h"	/* struct RedBlackNode */
 #include "red_black_jump.h"	/* RedBlackJumpBuffer, RED_BLACK_JUMP_ERROR */
-#include <stdlib.h>		/* size_t, NULL */
+#include <stddef.h>		/* size_t */
 
 
 /* typedefs, struct declarations

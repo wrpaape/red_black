@@ -6,6 +6,9 @@
 #include "red_black_comparator.h" /* Comparator */
 #include "red_black_allocator.h"  /* Node, Allocator, and JumpBuffer */
 
+
+/* external API
+ * ────────────────────────────────────────────────────────────────────────── */
 int
 red_black_insert(struct RedBlackNode *restrict *const restrict root,
 		 const RedBlackComparator comparator,

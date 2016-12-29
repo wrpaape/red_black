@@ -1,12 +1,9 @@
-/* external dependencies
- * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_allocator.h" /* stdlib included -> malloc, free */
+#include "red_black_allocator.h" /* stddef included -> NULL */
+#include "red_black_malloc.h"	 /* RED_BLACK_MALLOC|FREE */
+
 
 /* allocator macros
  * ────────────────────────────────────────────────────────────────────────── */
-#define RED_BLACK_MALLOC(SIZE)		malloc(SIZE)
-#define RED_BLACK_FREE(ALLOCATION)	free(ALLOCATION)
-
 #define RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_COUNT	10
 #define RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_SIZE			\
 (  sizeof(struct RedBlackAllocatorNode)					\
