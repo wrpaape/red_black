@@ -54,7 +54,7 @@ rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 		block = RED_BLACK_MALLOC(allocate_size);
 
 		if (block == NULL)
-			RED_BLACK_JUMP_ERROR(jump_buffer);
+			RED_BLACK_JUMP_3_ERROR(jump_buffer);
 
 		block->next    = buffer->blocks;
 		buffer->blocks = block;

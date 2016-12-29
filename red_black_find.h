@@ -3,9 +3,15 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_utils.h" /* Key, RedBlackNode, exit_on_* */
+#include "red_black_node.h"		/* Node, bool */
+#include "red_black_comparator.h"	/* Comparator */
 
+
+/* external API
+ * ────────────────────────────────────────────────────────────────────────── */
 bool
 red_black_find(const struct RedBlackNode *restrict node,
-	       const struct Key *const restrict key);
+	       const RedBlackComparator comparator,
+	       const void *const key);
+
 #endif /* ifndef RED_BLACK_FIND_H_ */

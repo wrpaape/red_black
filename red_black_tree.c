@@ -29,10 +29,10 @@ red_black_tree_insert(struct RedBlackTree *const restrict tree,
 				&tree->allocator,
 				&jump_buffer,
 				key)
-	     : RED_BLACK_JUMP_STATUS(status);
+	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
 
-int
+bool
 red_black_tree_delete(struct RedBlackTree *const restrict tree,
 		      const void *const key)
 {
@@ -47,10 +47,10 @@ red_black_tree_delete(struct RedBlackTree *const restrict tree,
 				&tree->allocator,
 				&jump_buffer,
 				key)
-	     : RED_BLACK_JUMP_STATUS(status);
+	     : (bool) RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 }
 
-int
+bool
 red_black_tree_find(struct RedBlackTree *const restrict tree,
 		    const void *const key)
 {

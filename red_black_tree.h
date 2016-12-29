@@ -25,6 +25,13 @@ int
 red_black_tree_insert(struct RedBlackTree *const restrict tree,
 		      const void *const key);
 
+/* RETURNS
+ *
+ *  1	'key' was NOT found in 'tree',	'tree' has been updated
+ *  0	'key' was found in tree,	'tree' was NOT updated
+ * -1	OUT OF MEMORY,			'tree' was NOT updated
+ * ────────────────────────────────────────────────────────────────────────── */
+
 void
 red_black_tree_destroy(struct RedBlackTree *const restrict tree);
 

@@ -2,13 +2,14 @@
 
 bool
 red_black_find(const struct RedBlackNode *restrict node,
-	       const struct Key *const restrict key)
+	       const RedBlackComparator comparator,
+	       const void *const key)
 {
-	int64_t compare;
+	int compare;
 
 	while (node != NULL) {
-		compare = key_compare(key,
-				      node->key);
+		compare = comparator(key,
+				     node->key);
 
 		if (compare < 0)
 			node = node->left;

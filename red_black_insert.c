@@ -1,132 +1,155 @@
 #include "red_black_insert.h"
 
 static inline struct RedBlackNode *
-rb_new_node(const struct Key *const restrict key,
+rb_new_node(struct RedBlackAllocator *const restrict allocator,
+	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    const void *const key,
 	    const bool is_red)
 {
-	/* static alloc, all pointers == NULL, is_red == false */
-	static struct RedBlackNode buffer[128];
-	static struct RedBlackNode *restrict alloc	       = &buffer[0];
-	static struct RedBlackNode *const restrict alloc_until = &buffer[128];
+	struct RedBlackNode *const restrict node
+	= red_black_allocatore_allocate(allocator,
+					jump_buffer);
 
-	if (alloc < alloc_until) {
-		struct RedBlackNode *const restrict node = alloc;
-		++alloc;
+	node->key    = key;
+	node->is_red = is_red;
+	node->left   = NULL;
+	node->right  = NULL;
 
-		node->key    = key;
-		node->is_red = is_red;
-		return node;
-	}
-
-	EXIT_ON_FAILURE("node_alloc_pop failure: out of space");
-	__builtin_unreachable();
+	return node;
 }
 
-static inline struct RedBlackNode *
-rb_new_red_node(const struct Key *const restrict key)
-{
-	return rb_new_node(key,
-			   true);
-}
 
-static inline struct RedBlackNode *
-rb_new_black_node(const struct Key *const restrict key)
-{
-	return rb_new_node(key,
-			   false);
-}
 
-static inline void
-rb_insert_root(struct RedBlackNode *restrict *const restrict tree,
-	       const struct Key *const restrict key)
-{
-	*tree = rb_new_black_node(key);
-}
-
-/* insert state-machine functions */
-static enum RedBlackCorrectState
+/* insert state machine functions
+ *
+ * RETURNS
+ *
+ * ────────────────────────────────────────────────────────────────────────── */
+static bool
 rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key);
-static enum RedBlackCorrectState
+	     const RedBlackComparator comparator,
+	     struct RedBlackAllocator *const restrict allocator,
+	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     const void *const key);
+static bool
 rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key);
-static enum RedBlackCorrectState
+	     const RedBlackComparator comparator,
+	     struct RedBlackAllocator *const restrict allocator,
+	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     const void *const key);
+static bool
 rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key);
-static enum RedBlackCorrectState
+	     const RedBlackComparator comparator,
+	     struct RedBlackAllocator *const restrict allocator,
+	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     const void *const key);
+static bool
 rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key);
+	     const RedBlackComparator comparator,
+	     struct RedBlackAllocator *const restrict allocator,
+	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     const void *const key);
 
-void
+int
 red_black_insert(struct RedBlackNode *restrict *const restrict tree,
-		 const struct Key *const restrict key)
+		 const RedBlackComparator comparator,
+		 struct RedBlackAllocator *const restrict allocator,
+		 RedBlackJumpBuffer *const restrict jump_buffer,
+		 const void *const key)
 {
-	int64_t compare;
+	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackNode *restrict parent;
+	int compare;
+	int status;
 
 	struct RedBlackNode *const restrict grandparent = *tree;
 
 	if (grandparent == NULL) {
-		rb_insert_root(tree,
-			       key);
+		*tree = rb_new_node(allocator,
+				    jump_buffer,
+				    key,
+				    false); /* BLACK */
+		return 1; /* tree updated */
+	}
 
-	} else {
-		compare = key_compare(key,
-				      grandparent->key);
+	compare = comparator(key,
+			     grandparent->key);
 
+	status = (compare != 0); /* 1, 0 */
+
+	if (status) {
 		if (compare < 0) {
 			parent = grandparent->left;
 
 			if (parent == NULL) {
-				grandparent->left = rb_new_red_node(key);
+				grandparent->left = rb_new_node(allocator,
+								jump_buffer,
+								key,
+								true); /* RED */
 
 			} else {
-				compare = key_compare(key,
-						      parent->key);
+				compare = comparator(key,
+						     parent->key);
 
-				if (compare < 0)
-					(void) rb_insert_ll(tree,
-							    grandparent,
-							    parent,
-							    key);
-				else if (compare > 0)
-					(void) rb_insert_lr(tree,
-							    grandparent,
-							    parent,
-							    key);
+				status = (compare != 0); /* 1, 0 */
+
+				if (status) {
+					if (compare < 0)
+						(void) rb_insert_ll(tree,
+								    grandparent,
+								    parent,
+								    key);
+					else
+						(void) rb_insert_lr(tree,
+								    grandparent,
+								    parent,
+								    key);
+					/* if return, tree must have updated */
+				}
 			}
 
-		} else if (compare > 0) {
+
+		} else {
 			parent = grandparent->right;
 
 			if (parent == NULL) {
-				grandparent->right = rb_new_red_node(key);
+				grandparent->right = rb_new_node(allocator,
+								 jump_buffer,
+								 key,
+								 true);
 
 			} else {
-				compare = key_compare(key,
-						      parent->key);
+				compare = comparator(key,
+						     parent->key);
 
-				if (compare < 0)
-					(void) rb_insert_rl(tree,
-							    grandparent,
-							    parent,
-							    key);
-				else if (compare > 0)
-					(void) rb_insert_rr(tree,
-							    grandparent,
-							    parent,
-							    key);
+				status = (compare != 0); /* 1, 0 */
+
+				if (status) {
+					if (compare < 0)
+						(void) rb_insert_rl(tree,
+								    grandparent,
+								    parent,
+								    key);
+					else
+						(void) rb_insert_rr(tree,
+								    grandparent,
+								    parent,
+								    key);
+					/* if return, tree must have updated */
+				}
 			}
 		}
 	}
+
+	return status;
 }
 
 static inline void
@@ -155,73 +178,85 @@ static inline void
 rb_rotate_left_right(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNode *const restrict grandparent,
 		     struct RedBlackNode *const restrict lparent,
-		     struct RedBlackNode *const restrict rchild)
+		     struct RedBlackNode *const restrict lrchild)
 {
-	*tree = rchild;
+	*tree = lrchild;
 
-	lparent->right = rchild->left;
-	rchild->left   = lparent;
+	lparent->right = lrchild->left;
+	lrchild->left  = lparent;
 
-	grandparent->left = rchild->right;
-	rchild->right     = grandparent;
+	grandparent->left = lrchild->right;
+	lrchild->right    = grandparent;
 }
 
 static inline void
 rb_rotate_right_left(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNode *const restrict grandparent,
 		     struct RedBlackNode *const restrict rparent,
-		     struct RedBlackNode *const restrict lchild)
+		     struct RedBlackNode *const restrict rlchild)
 {
-	*tree = lchild;
+	*tree = rlchild;
 
-	grandparent->right = lchild->left;
-	lchild->left       = grandparent;
+	grandparent->right = rlchild->left;
+	rlchild->left      = grandparent;
 
-	rparent->left = lchild->right;
-	lchild->right = rparent;
+	rparent->left  = rlchild->right;
+	rlchild->right = rparent;
 }
 
-static inline enum RedBlackCorrectState
+
+
+/* insert correction functions
+ *
+ *	jump RED_BLACK_JUMP_VALUE_3_TRUE	OK, tree updated
+ * or
+ *	return					correct previous state frame
+ * ────────────────────────────────────────────────────────────────────────── */
+static inline void
 rb_insert_correct_ll(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNode *const restrict grandparent,
-		     struct RedBlackNode *const restrict parent)
+		     struct RedBlackNode *const restrict parent,
+		     RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		parent->is_red = false;
 
+		/* needs to be red for bubble up or rotation -> jump */
+		grandparent->is_red = true;
+
 		struct RedBlackNode *const restrict uncle = grandparent->right;
 
-		if ((uncle != NULL) && (uncle->is_red)) {
+		if (uncle != NULL) { /* uncle must be RED, recolor */
 			uncle->is_red = false;
-			return CORRECT_PREV; /* need to propogate recolor */
+			return; /* need to correct 2 frames previous */
 		}
-
-		grandparent->is_red = true;
 
 		rb_rotate_right(tree,
 				grandparent,
 				parent);
 	}
 
-	return CORRECT_DONE;
+	RED_BLACK_JUMP_3_TRUE(jump_buffer); /* all done, node was inserted */
 }
 
-static inline enum RedBlackCorrectState
+static inline void
 rb_insert_correct_lr(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNode *const restrict grandparent,
 		     struct RedBlackNode *const restrict parent,
-		     struct RedBlackNode *const restrict child)
+		     struct RedBlackNode *const restrict child,
+		     RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
+		/* needs to be red for bubble up or rotation -> jump */
+		grandparent->is_red = true;
+
 		struct RedBlackNode *const restrict uncle = grandparent->right;
 
-		if ((uncle != NULL) && (uncle->is_red)) {
+		if (uncle != NULL) { /* uncle must be RED, recolor */
 			uncle->is_red  = false;
 			parent->is_red = false;
-			return CORRECT_PREV; /* need to propogate recolor */
+			return; /* need to correct 2 frames previous */
 		}
-
-		grandparent->is_red = true;
 
 		child->is_red = false;
 
@@ -231,51 +266,55 @@ rb_insert_correct_lr(struct RedBlackNode *restrict *const restrict tree,
 				     child);
 	}
 
-	return CORRECT_DONE;
+	RED_BLACK_JUMP_3_TRUE(jump_buffer); /* all done, node was inserted */
 }
 
-static inline enum RedBlackCorrectState
+static inline void
 rb_insert_correct_rr(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNode *const restrict grandparent,
-		     struct RedBlackNode *const restrict parent)
+		     struct RedBlackNode *const restrict parent,
+		     RedBlackJumpBuffer *const restrict jump_buffer)
 {
 
 	if (parent->is_red) {
 		parent->is_red = false;
 
+		/* needs to be red for bubble up or rotation -> jump */
+		grandparent->is_red = true;
+
 		struct RedBlackNode *const restrict uncle = grandparent->left;
 
-		if ((uncle != NULL) && (uncle->is_red)) {
+		if (uncle != NULL) { /* uncle must be RED, recolor */
 			uncle->is_red = false;
-			return CORRECT_PREV; /* need to propogate recolor */
+			return; /* need to correct 2 frames previous */
 		}
-
-		grandparent->is_red = true;
 
 		rb_rotate_left(tree,
 			       grandparent,
 			       parent);
 	}
 
-	return CORRECT_DONE;
+	RED_BLACK_JUMP_3_TRUE(jump_buffer); /* all done, node was inserted */
 }
 
-static inline enum RedBlackCorrectState
+static inline void
 rb_insert_correct_rl(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNode *const restrict grandparent,
 		     struct RedBlackNode *const restrict parent,
-		     struct RedBlackNode *const restrict child)
+		     struct RedBlackNode *const restrict child,
+		     RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
+		/* needs to be red for bubble up or rotation -> jump */
+		grandparent->is_red = true;
+
 		struct RedBlackNode *const restrict uncle = grandparent->left;
 
-		if ((uncle != NULL) && (uncle->is_red)) {
+		if (uncle != NULL) { /* uncle must be RED, recolor */
 			uncle->is_red  = false;
 			parent->is_red = false;
-			return CORRECT_PREV; /* need to propogate recolor */
+			return; /* need to correct 2 frames previous */
 		}
-
-		grandparent->is_red = true;
 
 		child->is_red = false;
 
@@ -285,113 +324,154 @@ rb_insert_correct_rl(struct RedBlackNode *restrict *const restrict tree,
 				     child);
 	}
 
-	return CORRECT_DONE;
+	RED_BLACK_JUMP_3_TRUE(jump_buffer); /* all done, node was inserted */
 }
 
 
 
-static enum RedBlackCorrectState
+static bool
 rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key)
+	     const RedBlackComparator comparator,
+	     struct RedBlackAllocator *const restrict allocator,
+	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     const void *const key)
 {
-	struct RedBlackNode *const restrict next = parent->left;
+	bool status;
+	int compare;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict *restrict next_tree;
 
-	if (next == NULL) {
-		parent->left = rb_new_red_node(key);
-		return rb_insert_correct_ll(tree,
-					    grandparent,
-					    parent);
+	node = parent->left;
+
+	status = (node == NULL);
+
+	if (status) {
+		parent->left = rb_new_node(allocator,
+					   jump_buffer,
+					   key,
+					   true); /* RED */
+
+		/* need to correct */
+		rb_insert_correct_ll(tree,
+				     grandparent,
+				     parent,
+				     jump_buffer);
+
+	} else {
+		compare = comparator(key,
+				     node->key);
+
+		if (compare == 0)
+			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
+
+		next_tree = &grandparent->left;
+
+		status = (compare < 0)
+		       ? rb_insert_ll(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      allocator,
+				      jump_buffer,
+				      key)
+		       : rb_insert_lr(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      allocator,
+				      jump_buffer,
+				      key);
+
+		if (status) /* need to correct */
+			rb_insert_correct_ll(tree,
+					     grandparent,
+					     parent,
+					     jump_buffer);
 	}
 
-	const int64_t compare = key_compare(key,
-					    next->key);
-
-	if (compare != 0) {
-		struct RedBlackNode *restrict *const restrict next_tree
-		= &grandparent->left;
-
-		const enum RedBlackCorrectState state
-		= (compare < 0)
-		? rb_insert_ll(next_tree,
-			       parent,
-			       next,
-			       key)
-		: rb_insert_lr(next_tree,
-			       parent,
-			       next,
-			       key);
-
-		if (state == CORRECT_PREV) {
-			parent->is_red = true;
-			return CORRECT_THIS;
-
-		} else if (state == CORRECT_THIS) {
-			return rb_insert_correct_ll(tree,
-						    grandparent,
-						    parent);
-		}
-	}
-
-	return CORRECT_DONE;
+	/* if had to correct in this frame and didn't jump, need to correct in
+	 * the previous-previous frame, otherwise need to correct in previous frame */
+	return !status;
 }
 
-static enum RedBlackCorrectState
+static bool
 rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key)
+	     const RedBlackComparator comparator,
+	     struct RedBlackAllocator *const restrict allocator,
+	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     const void *const key)
 {
-	struct RedBlackNode *const restrict next = parent->right;
+	bool status;
+	int compare;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict *restrict next_tree;
 
-	if (next == NULL) {
-		struct RedBlackNode *const restrict node = rb_new_red_node(key);
+	node = parent->right;
+
+	status = (node == NULL);
+
+	if (status) {
+		node = rb_new_node(allocator,
+				   jump_buffer,
+				   key,
+				   true); /* RED */
+
 		parent->right = node;
-		return rb_insert_correct_lr(tree,
-					    grandparent,
-					    parent,
-					    node);
+
+		/* need to correct */
+		rb_insert_correct_lr(tree,
+				     grandparent,
+				     parent,
+				     node,
+				     jump_buffer);
+	} else {
+		compare = comparator(key,
+				     node->key);
+
+		if (compare == 0)
+			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
+
+		next_tree = &grandparent->left;
+
+		status = (compare < 0)
+		       ? rb_insert_rl(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      allocator,
+				      jump_buffer,
+				      key)
+		       : rb_insert_rr(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      allocator,
+				      jump_buffer,
+				      key);
+
+		if (status) /* need to correct */
+			rb_insert_correct_lr(tree,
+					     grandparent,
+					     parent,
+					     parent->right,
+					     jump_buffer);
 	}
 
-	const int64_t compare = key_compare(key,
-					    next->key);
-
-	if (compare != 0) {
-		struct RedBlackNode *restrict *const restrict next_tree
-		= &grandparent->left;
-
-		const enum RedBlackCorrectState state
-		= (compare < 0)
-		? rb_insert_rl(next_tree,
-			       parent,
-			       next,
-			       key)
-		: rb_insert_rr(next_tree,
-			       parent,
-			       next,
-			       key);
-
-		if (state == CORRECT_PREV) {
-			parent->is_red = true;
-			return CORRECT_THIS;
-
-		} else if (state == CORRECT_THIS) {
-			return rb_insert_correct_lr(tree,
-						    grandparent,
-						    parent,
-						    parent->right);
-		}
-	}
-
-	return CORRECT_DONE;
+	/* if had to correct in this frame and didn't jump, need to recolor in
+	 * previous frame
+	 * if recolored in this frame, need to correct in previous frame */
+	return !status;
 }
 
-static enum RedBlackCorrectState
+static bool
 rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key)
+	     const void *const key)
 {
 	struct RedBlackNode *const restrict next = parent->right;
 
@@ -402,14 +482,14 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 					    parent);
 	}
 
-	const int64_t compare = key_compare(key,
-					    next->key);
+	const int compare = comparator(key,
+				       next->key);
 
 	if (compare != 0) {
 		struct RedBlackNode *restrict *const restrict next_tree
 		= &grandparent->right;
 
-		const enum RedBlackCorrectState state
+		const int state
 		= (compare < 0)
 		? rb_insert_rl(next_tree,
 			       parent,
@@ -434,11 +514,11 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	return CORRECT_DONE;
 }
 
-static enum RedBlackCorrectState
+static bool
 rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
-	     const struct Key *const restrict key)
+	     const void *const key)
 {
 	struct RedBlackNode *const restrict next = parent->left;
 
@@ -451,14 +531,14 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 					    node);
 	}
 
-	const int64_t compare = key_compare(key,
-					    next->key);
+	const int compare = comparator(key,
+				       next->key);
 
 	if (compare != 0) {
 		struct RedBlackNode *restrict *const restrict next_tree
 		= &grandparent->right;
 
-		const enum RedBlackCorrectState state
+		const int state
 		= (compare < 0)
 		? rb_insert_ll(next_tree,
 			       parent,
