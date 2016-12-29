@@ -2,20 +2,21 @@
 
 int
 do_red_black_verify(const struct RedBlackNode *const restrict node,
-		    const struct Key *const restrict min_key,
-		    const struct Key *const restrict max_key,
+		    const RedBlackComparator comparator,
+		    const void *const min_key,
+		    const void *const max_key,
 		    const bool parent_is_red,
 		    int black_height)
 {
 	if (node == NULL)
 		return black_height + 1;
 
-	const struct Key *const restrict node_key = node->key;
+	const void *const node_key = node->key;
 
-	if (   (key_compare(node_key,
-			    min_key) < 0)
-	    || (key_compare(node_key,
-			    max_key) > 0))
+	if (   (comparator(node_key,
+			   min_key) < 0)
+	    || (comparator(node_key,
+			   max_key) > 0))
 		return -1;
 
 	const bool node_is_red = node->is_red;
@@ -48,12 +49,59 @@ do_red_black_verify(const struct RedBlackNode *const restrict node,
 	     : -1;
 }
 
+
 bool
-red_black_verify(const struct RedBlackNode *const restrict tree)
+red_black_verify(const struct RedBlackNode *const restrict root,
+		 const RedBlackComparator comparator);
 {
-	return (do_red_black_verify(tree,
-				    &KEY_MIN,
-				    &KEY_MAX,
-				    true,
-				    0) >= 0);
+	const struct RedBlackNode *restrict node;
+	const struct RedBlackNode *restrict next;
+
+	if (root == NULL)
+		return true; /* valid tree */
+
+	/* fetch min_key */
+	node = root;
+
+	while (1) {
+		next = node->left;
+		if (next == NULL)
+			break; /* node is min leaf, node->key is min key */
+
+		node = next;
+	}
+
+	const void *const root_key = root->key;
+
+	/* check left black height */
+	const int left_black_height = do_red_black_verify(root->left,
+							  comparator,
+							  node->key,
+							  root_key,
+							  false,
+							  0);
+
+	if (left_black_height < 0)
+		return false; /* invalid subtree */
+
+	/* fetch max_key */
+	node = root;
+
+	while (1) {
+		next = node->right;
+		if (next == NULL)
+			break; /* node is max leaf, node->key is max key */
+
+		node = next;
+	}
+
+	/* check right black height */
+	const int right_black_height = do_red_black_verify(root->right,
+							   comparator,
+							   root_key,
+							   node->key,
+							   false,
+							   0);
+
+	return (right_black_height == left_black_height);
 }

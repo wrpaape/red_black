@@ -22,8 +22,14 @@ rb_new_node(struct RedBlackAllocator *const restrict allocator,
 
 /* insert state machine functions
  *
- * RETURNS
+ * JUMPS
+ *	RED_BLACK_JUMP_VALUE_3_TRUE	OK, tree updated
+ *	RED_BLACK_JUMP_VALUE_3_FALSE	OK, tree did NOT update
+ *	RED_BLACK_JUMP_VALUE_3_ERROR	OUT OF MEMORY
  *
+ * RETURNS
+ *	true	need to correct (check if can rotate, recolor) in THIS frame
+ *	false	need to recolor parent in THIS frame, correct in PREV frame
  * ────────────────────────────────────────────────────────────────────────── */
 static bool
 rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
@@ -166,9 +172,11 @@ red_black_insert(struct RedBlackNode *restrict *const restrict root,
 
 /* insert correction functions
  *
- *	jump RED_BLACK_JUMP_VALUE_3_TRUE	OK, tree updated
- * or
- *	return					recolor in THIS stack frame
+ * JUMPS
+ *	RED_BLACK_JUMP_VALUE_3_TRUE	OK, tree updated
+ *
+ * RETURNS
+ *	recolor in PREV stack frame, correct in PREV-PREV frame
  * ────────────────────────────────────────────────────────────────────────── */
 static inline void
 rb_insert_correct_ll_bot(struct RedBlackNode *restrict *const restrict tree,
