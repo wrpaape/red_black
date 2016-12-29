@@ -7,7 +7,7 @@
 #include "red_black_allocator.h"  /* Node, Allocator, and JumpBuffer */
 
 int
-red_black_insert(struct RedBlackNode *restrict *const restrict tree,
+red_black_insert(struct RedBlackNode *restrict *const restrict root,
 		 const RedBlackComparator comparator,
 		 struct RedBlackAllocator *const restrict allocator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
