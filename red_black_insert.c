@@ -65,7 +65,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	     const void *const key);
 
 int
-red_black_insert(struct RedBlackNode *restrict *const restrict root,
+red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackAllocator *const restrict allocator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
@@ -75,10 +75,10 @@ red_black_insert(struct RedBlackNode *restrict *const restrict root,
 	int compare;
 	int status;
 
-	struct RedBlackNode *const restrict grandparent = *root;
+	struct RedBlackNode *const restrict grandparent = *tree;
 
 	if (grandparent == NULL) {
-		*root = rb_new_node(allocator,
+		*tree = rb_new_node(allocator,
 				    jump_buffer,
 				    key,
 				    false); /* BLACK */
@@ -108,7 +108,7 @@ red_black_insert(struct RedBlackNode *restrict *const restrict root,
 
 				if (status) {
 					if (compare < 0)
-						(void) rb_insert_ll(root,
+						(void) rb_insert_ll(tree,
 								    grandparent,
 								    parent,
 								    comparator,
@@ -116,7 +116,7 @@ red_black_insert(struct RedBlackNode *restrict *const restrict root,
 								    jump_buffer,
 								    key);
 					else
-						(void) rb_insert_lr(root,
+						(void) rb_insert_lr(tree,
 								    grandparent,
 								    parent,
 								    comparator,
@@ -145,7 +145,7 @@ red_black_insert(struct RedBlackNode *restrict *const restrict root,
 
 				if (status) {
 					if (compare < 0)
-						(void) rb_insert_rl(root,
+						(void) rb_insert_rl(tree,
 								    grandparent,
 								    parent,
 								    comparator,
@@ -153,7 +153,7 @@ red_black_insert(struct RedBlackNode *restrict *const restrict root,
 								    jump_buffer,
 								    key);
 					else
-						(void) rb_insert_rr(root,
+						(void) rb_insert_rr(tree,
 								    grandparent,
 								    parent,
 								    comparator,
