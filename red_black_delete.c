@@ -787,9 +787,9 @@ rb_delete_node(struct RedBlackNode *restrict *const restrict tree,
 }
 
 static inline void
-rb_restore_root(struct RedBlackNode *restrict *const restrict tree,
-		struct RedBlackNode *const restrict root,
-		struct RedBlackAllocator *const restrict allocator)
+rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
+	       struct RedBlackNode *const restrict root,
+	       struct RedBlackAllocator *const restrict allocator)
 {
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
@@ -805,6 +805,206 @@ rb_restore_root(struct RedBlackNode *restrict *const restrict tree,
 				lchild,
 				rchild);
 }
+
+/* corrections made while unwinding the call stack
+ *
+ * will only be called if a black node was deleted in a subtree and could not be
+ * restored properly
+ *
+ * root of deletion subtree will always be black
+ *
+ * red parent cases can always be restored (hence void)
+ * ────────────────────────────────────────────────────────────────────────── */
+/* r   - parent is red,
+ * r   - deletion in right subtree,
+ * bot - nodes at deletion subtree black height may be NULL */
+static inline void
+rb_delete_correct_r_r_bot(struct RedBlackNode *restrict *const restrict tree,
+			  struct RedBlackNode *const restrict parent)
+{
+	struct RedBlackNode *restrict lnode;
+	struct RedBlackNode *restrict llchild;
+	struct RedBlackNode *restrict lrchild;
+
+	lnode   = parent->left;
+	lrchild = lnode->right;
+
+	if ((lrchild == NULL) || (!lrchild->is_red)) {
+		*tree = lnode;
+
+		lnode->right = parent;
+		parent->left = lrchild;
+
+	} else {
+		llchild = lnode->left;
+
+		if ((llchild == NULL) || (!llchild->is_red)) {
+			*tree = lrchild;
+
+			lnode->right  = lrchild->left;
+			lrchild->left = lnode;
+
+			parent->is_red = false;
+			parent->left   = lrchild->right;
+			lrchild->right = parent;
+
+		} else {
+			llchild->is_red = false;
+
+			*tree = lnode;
+
+			lnode->is_red = true;
+			lnode->right  = parent;
+
+			parent->is_red = false;
+			parent->left   = lrchild;
+		}
+	}
+}
+
+/* r   - parent is red,
+ * l   - deletion in left subtree,
+ * bot - nodes at deletion subtree black height may be NULL */
+static inline void
+rb_delete_correct_r_l_bot(struct RedBlackNode *restrict *const restrict tree,
+			  struct RedBlackNode *const restrict parent)
+{
+	struct RedBlackNode *restrict rnode;
+	struct RedBlackNode *restrict rrchild;
+	struct RedBlackNode *restrict rlchild;
+
+	rnode   = parent->right;
+	rlchild = rnode->left;
+
+	if ((rlchild == NULL) || (!rlchild->is_red)) {
+		*tree = rnode;
+
+		rnode->left   = parent;
+		parent->right = rlchild;
+
+	} else {
+		rrchild = rnode->right;
+
+		if ((rrchild == NULL) || (!rrchild->is_red)) {
+			*tree = rlchild;
+
+			parent->is_red = false;
+			parent->right  = rlchild->left;
+			rlchild->left  = parent;
+
+			rnode->left    = rlchild->right;
+			rlchild->right = rnode;
+
+		} else {
+			rrchild->is_rec = false;
+
+			*tree = rnode;
+
+			rnode->is_red = true;
+			rnode->left   = parent;
+
+			parent->is_red = false;
+			parent->right  = rlchild;
+		}
+	}
+}
+
+/* r   - parent is red,
+ * r   - deletion in right subtree,
+ * mid - nodes at deletion subtree black height are not NULL */
+static inline void
+rb_delete_correct_r_r_mid(struct RedBlackNode *restrict *const restrict tree,
+			  struct RedBlackNode *const restrict parent)
+{
+	struct RedBlackNode *restrict lnode;
+	struct RedBlackNode *restrict llchild;
+	struct RedBlackNode *restrict lrchild;
+
+	lnode   = parent->left;
+	lrchild = lnode->right;
+
+	if (lrchild->is_red) {
+		llchild = lnode->left;
+
+		if (llchild->is_red) {
+			llchild->is_red = false;
+
+			*tree = lnode;
+
+			lnode->is_red = true;
+			lnode->right  = parent;
+
+			parent->is_red = false;
+			parent->left   = lrchild;
+
+		} else {
+			*tree = lrchild;
+
+			lnode->right  = lrchild->left;
+			lrchild->left = lnode;
+
+			parent->is_red = false;
+			parent->left   = lrchild->right;
+			lrchild->right = parent;
+		}
+
+	} else {
+		*tree = lnode;
+
+		lnode->right = parent;
+		parent->left = lrchild;
+	}
+}
+
+/* r   - parent is red,
+ * l   - deletion in right subtree,
+ * mid - nodes at deletion subtree black height are not NULL */
+static inline void
+rb_delete_correct_r_l_mid(struct RedBlackNode *restrict *const restrict tree,
+			  struct RedBlackNode *const restrict parent)
+{
+	struct RedBlackNode *restrict rnode;
+	struct RedBlackNode *restrict rrchild;
+	struct RedBlackNode *restrict rlchild;
+
+	rnode   = parent->right;
+	rlchild = rnode->left;
+
+	if (rlchild->is_red) {
+		rrchild = rnode->right;
+
+		if (rrchild->is_red) {
+			rrchild->is_red = false;
+
+			*tree = rnode;
+
+			rnode->is_red = true;
+			rnode->left   = parent;
+
+			parent->is_red = false;
+			parent->right  = rlchild;
+
+		} else {
+			*tree = rlchild;
+
+			parent->is_red = false;
+			parent->right  = rlchild->left;
+			rlchild->left  = parent;
+
+			rnode->left    = rlchild->right;
+			rlchild->right = rnode;
+		}
+
+	} else {
+		*tree = rnode;
+
+		rnode->left   = parent;
+		parent->right = rlchild;
+	}
+}
+
+
+
 
 bool
 red_black_delete(struct RedBlackNode *restrict *const restrict tree,
@@ -828,9 +1028,9 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 	status = (compare == 0);
 
 	if (status) {
-		rb_restore_root(tree,
-				grandparent,
-				allocator);
+		rb_delete_root(tree,
+			       grandparent,
+			       allocator);
 
 	} else if (compare < 0) {
 		parent = grandparent->left;
