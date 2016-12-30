@@ -10,31 +10,31 @@ do_red_black_verify(void)
 
 	ptr = &buffer[0];
 
-	*ptr = '\n'; ++ptr;
-	*ptr = 't'; ++ptr;
-	*ptr = 'r'; ++ptr;
-	*ptr = 'e'; ++ptr;
-	*ptr = 'e'; ++ptr;
-	*ptr = ' '; ++ptr;
-	*ptr = 'i'; ++ptr;
-	*ptr = 's'; ++ptr;
-	*ptr = ' '; ++ptr;
+	*ptr++ = '\n';
+	*ptr++ = 't';
+	*ptr++ = 'r';
+	*ptr++ = 'e';
+	*ptr++ = 'e';
+	*ptr++ = ' ';
+	*ptr++ = 'i';
+	*ptr++ = 's';
+	*ptr++ = ' ';
 
-	if (!red_black_verify(tree)) {
-		*ptr = 'N'; ++ptr;
-		*ptr = 'O'; ++ptr;
-		*ptr = 'T'; ++ptr;
-		*ptr = ' '; ++ptr;
+	if (!red_black_verify(&tree)) {
+		*ptr+ = 'N';
+		*ptr+ = 'O';
+		*ptr+ = 'T';
+		*ptr+ = ' ';
 	}
 
-	*ptr = 'p'; ++ptr;
-	*ptr = 'r'; ++ptr;
-	*ptr = 'o'; ++ptr;
-	*ptr = 'p'; ++ptr;
-	*ptr = 'e'; ++ptr;
-	*ptr = 'r'; ++ptr;
-	*ptr = '\n'; ++ptr;
-	*ptr = '\n'; ++ptr;
+	*ptr++ = 'p';
+	*ptr++ = 'r';
+	*ptr++ = 'o';
+	*ptr++ = 'p';
+	*ptr++ = 'e';
+	*ptr++ = 'r';
+	*ptr++ = '\n';
+	*ptr++ = '\n';
 
 	WRITE_STDOUT(&buffer[0],
 		     ptr - &buffer[0]);
@@ -52,33 +52,33 @@ do_find_mode(const struct Key *const restrict key)
 
 	if (red_black_find(tree,
 			   key)) {
-		*ptr = 'f'; ++ptr;
-		*ptr = 'o'; ++ptr;
-		*ptr = 'u'; ++ptr;
-		*ptr = 'n'; ++ptr;
-		*ptr = 'd'; ++ptr;
+		*ptr++ = 'f';
+		*ptr++ = 'o';
+		*ptr++ = 'u';
+		*ptr++ = 'n';
+		*ptr++ = 'd';
 
 	} else {
-		*ptr = 'd'; ++ptr;
-		*ptr = 'i'; ++ptr;
-		*ptr = 'd'; ++ptr;
-		*ptr = ' '; ++ptr;
-		*ptr = 'n'; ++ptr;
-		*ptr = 'o'; ++ptr;
-		*ptr = 't'; ++ptr;
-		*ptr = ' '; ++ptr;
-		*ptr = 'f'; ++ptr;
-		*ptr = 'i'; ++ptr;
-		*ptr = 'n'; ++ptr;
-		*ptr = 'd'; ++ptr;
+		*ptr++ = 'd';
+		*ptr++ = 'i';
+		*ptr++ = 'd';
+		*ptr++ = ' ';
+		*ptr++ = 'n';
+		*ptr++ = 'o';
+		*ptr++ = 't';
+		*ptr++ = ' ';
+		*ptr++ = 'f';
+		*ptr++ = 'i';
+		*ptr++ = 'n';
+		*ptr++ = 'd';
 	}
 
-	*ptr = ' '; ++ptr;
-	*ptr = 'k'; ++ptr;
-	*ptr = 'e'; ++ptr;
-	*ptr = 'y'; ++ptr;
-	*ptr = ':'; ++ptr;
-	*ptr = ' '; ++ptr;
+	*ptr++ = ' ';
+	*ptr++ = 'k';
+	*ptr++ = 'e';
+	*ptr++ = 'y';
+	*ptr++ = ':';
+	*ptr++ = ' ';
 
 	ptr = put_key(ptr,
 		      key);
@@ -146,6 +146,9 @@ main(void)
 {
 	unsigned char input[128];
 
+	red_black_tree_init(&tree,
+			    &red_black_int_key_comparator);
+
 	while (1) {
 		GET_CHAR(MAIN_PROMPT,
 			 input);
@@ -163,23 +166,27 @@ main(void)
 			if (delete_mode())
 				break;
 
-			return 0;
+			goto DONE;
 
 		case 'f':
 			if (find_mode())
 				break;
 
-			return 0;
+			goto DONE;
 
 		case 'i':
 			if (insert_mode())
 				break;
 
 		case 'q':
-			return 0;
+			goto DONE;
 
 		default:
 			WRITE_LITERAL(INVALID_INPUT);
 		}
 	}
+
+DONE:
+	red_black_tree_destroy(&tree);
+	return 0;
 }

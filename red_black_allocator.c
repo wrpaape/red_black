@@ -4,7 +4,7 @@
 
 /* allocator macros
  * ────────────────────────────────────────────────────────────────────────── */
-#define RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_COUNT	10
+#define RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_COUNT	8
 #define RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_SIZE			\
 (  sizeof(struct RedBlackAllocatorNode)					\
  * RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_COUNT)

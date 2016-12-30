@@ -1,21 +1,18 @@
-#ifndef RED_BLACK_PRINT_H_
-#define RED_BLACK_PRINT_H_
+#ifndef RED_BLACK_PRINT_TYPES_H_
+#define RED_BLACK_PRINT_TYPES_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node.h"	   /* RedBlackNode, bool */
-#include "red_black_print_types.h" /* RedBlackKeySizer|Putter, size_t */
+#include <stddef.h> /* size_t */
 
-/* external API
+
+/* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-bool
-red_black_print(const struct RedBlackNode *const restrict root,
-		const RedBlackKeySizer key_sizer,
-		const RedBlackKeyPutter key_putter);
+typedef size_t
+(*RedBlackKeySizer)(const void *key);
 
-/* RETURNS
- *	true	OK
- *	false	OUT OF MEMORY or write failure
- */
+typedef char *
+(*RedBlackKeyPutter)(char *buffer,
+		     const void *key);
 
-#endif /* ifndef RED_BLACK_PRINT_H_ */
+#endif /* ifndef RED_BLACK_PRINT_TYPES_H_ */

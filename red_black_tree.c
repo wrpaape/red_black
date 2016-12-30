@@ -2,6 +2,8 @@
 #include "red_black_insert.h"
 #include "red_black_delete.h"
 #include "red_black_find.h"
+#include "red_black_verify.h"
+#include "red_black_print.h"
 
 
 void
@@ -57,6 +59,23 @@ red_black_tree_find(struct RedBlackTree *const restrict tree,
 	return red_black_find(tree->root,
 			      tree->comparator,
 			      key);
+}
+
+bool
+red_black_tree_verify(struct RedBlackTree *const restrict tree)
+{
+	return red_black_verify(tree->root,
+				tree->comparator);
+}
+
+bool
+red_black_tree_print(struct RedBlackTree *const restrict tree,
+		     const RedBlackKeySizer key_sizer,
+		     const RedBlackKeyPutter key_putter)
+{
+	return red_black_print(tree->root,
+			       key_sizer,
+			       key_putter);
 }
 
 void

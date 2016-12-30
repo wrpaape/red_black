@@ -3,11 +3,11 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_insert.h"
-#include "red_black_delete.h"
-#include "red_black_find.h"
-#include "red_black_verify.h"
-#include "red_black_print.h"
+#include "red_black_tree.h"    /* RedBlackTree */
+#include "red_black_int_key.h" /* RedBlackIntKey */
+#include <unistd.h>	       /* read, write, STDOUT|ERR_FILENO */
+#include <stdlib.h>	       /* exit, EXIT_FAILURE */
+
 
 /* prompts
  * ────────────────────────────────────────────────────────────────────────── */
@@ -17,8 +17,18 @@
 #define FIND_PROMPT	"input find string, back (b), verify (v), print (p), or quit (q)\n> "
 #define DELETE_PROMPT	"input delete string, back (b), verify (v), print (p), or quit (q)\n> "
 
+
 /* helpful macros
  * ────────────────────────────────────────────────────────────────────────── */
+#define EXIT_ON_FAILURE(LITERAL)					\
+do {									\
+	(void) write(STDERR_FILENO,					\
+		     LITERAL,						\
+		     sizeof(LITERAL) - 1);				\
+	exit(EXIT_FAILURE);						\
+} while (0)
+
+
 #define WRITE_LITERAL(LITERAL)						\
 if (write(STDOUT_FILENO,						\
 	  LITERAL,							\

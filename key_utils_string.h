@@ -1,5 +1,5 @@
-#ifndef KEY_UTILS_H_
-#define KEY_UTILS_H_
+#ifndef KEY_UTILS_STRING_H_
+#define KEY_UTILS_STRING_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -85,4 +85,4 @@ char *
 put_key(char *restrict buffer,
 	const struct Key *const restrict key);
 
-#endif /* ifndef KEY_UTILS_H_ */
+#endif /* ifndef KEY_UTILS_STRING_H_ */
