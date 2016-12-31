@@ -759,10 +759,10 @@ rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
 }
 
 static inline void
-rb_replace_node(struct RedBlackNode *restrict *const restrict tree,
-		struct RedBlackNode *const restrict node,
-		struct RedBlackAllocator *const restrict allocator,
-		RedBlackJumpBuffer *const restrict jump_buffer)
+rb_delete_node(struct RedBlackNode *restrict *const restrict tree,
+	       struct RedBlackNode *const restrict node,
+	       struct RedBlackAllocator *const restrict allocator,
+	       RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	bool is_red;
 	struct RedBlackNode *restrict lchild;
@@ -789,9 +789,9 @@ rb_replace_node(struct RedBlackNode *restrict *const restrict tree,
 }
 
 static inline void
-rb_replace_root(struct RedBlackNode *restrict *const restrict tree,
-		struct RedBlackNode *const restrict root,
-		struct RedBlackAllocator *const restrict allocator)
+rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
+	       struct RedBlackNode *const restrict root,
+	       struct RedBlackAllocator *const restrict allocator)
 {
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
@@ -1370,25 +1370,24 @@ rb_delete_correct_r_mid(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
-	    struct RedBlackNode *const restrict node,
+	    struct RedBlackNode *const restrict lnode,
 	    struct RedBlackAllocator *const restrict allocator,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key)
 {
-	if (node == NULL)
+	if (lnode == NULL)
 		RED_BLACK_JUMP_2_FALSE(jump_buffer); /* done, no update */
 
 	struct RedBlackNode *restrict *const restrict subtree = &parent->left;
 
 	const int compare = comparator(key,
-				       node->key);
-
+				       lnode->key);
 
 	if (compare == 0) {
-		rb_replace_node(subtree,
-				node,
-				allocator,
-				jump_buffer);
+		rb_delete_node(subtree,
+			       lnode,
+			       allocator,
+			       jump_buffer);
 
 		/* if returned, need to correct */
 		rb_delete_correct_l_bot(tree,
@@ -1398,21 +1397,72 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	} else {
 		if (compare < 0)
 			rb_delete_l(subtree,
-				    node,
-				    node->left,
+				    lnode,
+				    lnode->left,
 				    allocator,
 				    jump_buffer,
 				    key);
 		else
 			rb_delete_r(subtree,
-				    node,
-				    node->right,
+				    lnode,
+				    lnode->right,
 				    allocator,
 				    jump_buffer,
 				    key);
 
 		/* if returned, need to correct */
 		rb_delete_correct_l_mid(tree,
+					parent,
+					jump_buffer);
+	}
+	/* if returned, previous frame needs to correct */
+}
+
+static void
+rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
+	    struct RedBlackNode *const restrict parent,
+	    struct RedBlackNode *const restrict rnode,
+	    struct RedBlackAllocator *const restrict allocator,
+	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    const void *const key)
+{
+	if (rnode == NULL)
+		RED_BLACK_JUMP_2_FALSE(jump_buffer); /* done, no update */
+
+	struct RedBlackNode *restrict *const restrict subtree = &parent->right;
+
+	const int compare = comparator(key,
+				       rnode->key);
+
+	if (compare == 0) {
+		rb_delete_node(subtree,
+			       rnode,
+			       allocator,
+			       jump_buffer);
+
+		/* if returned, need to correct */
+		rb_delete_correct_r_bot(tree,
+					parent,
+					jump_buffer);
+
+	} else {
+		if (compare < 0)
+			rb_delete_l(subtree,
+				    rnode,
+				    rnode->right,
+				    allocator,
+				    jump_buffer,
+				    key);
+		else
+			rb_delete_r(subtree,
+				    rnode,
+				    rnode->left,
+				    allocator,
+				    jump_buffer,
+				    key);
+
+		/* if returned, need to correct */
+		rb_delete_correct_r_mid(tree,
 					parent,
 					jump_buffer);
 	}
@@ -1442,9 +1492,9 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		status = (compare == 0);
 
 		if (status) {
-			rb_replace_root(tree,
-					node,
-					allocator);
+			rb_delete_root(tree,
+				       node,
+				       allocator);
 
 		} else {
 			if (compare < 0) {
