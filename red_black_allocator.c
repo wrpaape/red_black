@@ -29,7 +29,7 @@ red_black_allocator_init(struct RedBlackAllocator *const restrict allocator)
 
 
 
-static inline struct RedBlackNode *
+static inline struct RedBlackAllocatorNode *
 rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 		    RedBlackJumpBuffer *const restrict jump_buffer)
 {
@@ -63,7 +63,7 @@ rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 				  (((char *) block) + allocate_size);
 	}
 
-	return (struct RedBlackNode *) allocator_node;
+	return allocator_node;
 }
 
 struct RedBlackNode *
@@ -71,20 +71,14 @@ red_black_allocator_allocate(struct RedBlackAllocator *const restrict allocator,
 			     RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	struct RedBlackAllocatorNode *restrict allocator_node;
-	struct RedBlackAllocatorNode *restrict next;
 
 	allocator_node = allocator->free;
 
 	if (allocator_node == NULL)
-		return rba_buffer_allocate(&allocator->buffer,
-					   jump_buffer);
-
-	next = allocator_node->next;
-
-	allocator->free = next;
-
-	if (next != NULL)
-		next->prev_ptr = &allocator->free;
+		allocator_node = rba_buffer_allocate(&allocator->buffer,
+						     jump_buffer);
+	else
+		allocator->free = allocator_node->next;
 
 	return (struct RedBlackNode *) allocator_node;
 }
@@ -96,19 +90,11 @@ red_black_allocator_free(struct RedBlackAllocator *const restrict allocator,
 			 struct RedBlackNode *const restrict node)
 {
 	struct RedBlackAllocatorNode *restrict allocator_node;
-	struct RedBlackAllocatorNode *restrict next;
 
 	allocator_node = (struct RedBlackAllocatorNode *restrict) node;
 
-	next = allocator->free;
-
-	allocator->free = allocator_node;
-
-	allocator_node->prev_ptr = &allocator->free;
-	allocator_node->next     = next;
-
-	if (next != NULL)
-		next->prev_ptr = &allocator_node->next;
+	allocator_node->next = allocator->free;
+	allocator->free	     = allocator_node;
 }
 
 

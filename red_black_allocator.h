@@ -12,7 +12,6 @@
  * ────────────────────────────────────────────────────────────────────────── */
 struct RedBlackAllocatorNode {
 	struct RedBlackNode node;
-	struct RedBlackAllocatorNode *restrict *restrict prev_ptr;
 	struct RedBlackAllocatorNode *restrict next;
 };
 

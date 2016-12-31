@@ -1193,8 +1193,8 @@ rb_delete_correct_r_mid_b(struct RedBlackNode *restrict *const restrict tree,
 			lrchild->right	      = lrrgrandchild->left;
 			lrrgrandchild->left   = lnode;
 
-			parent->left          = lrrgrandchild->right;
-			lrrgrandchild->right  = parent;
+			parent->left         = lrrgrandchild->right;
+			lrrgrandchild->right = parent;
 
 			*tree = lrrgrandchild;
 
