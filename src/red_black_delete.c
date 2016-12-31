@@ -7,7 +7,6 @@ rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 			 struct RedBlackNode *const restrict lnode,
 			 struct RedBlackNode *const restrict rnode)
 {
-
 	struct RedBlackNode *restrict llchild;
 	struct RedBlackNode *restrict lrchild;
 	struct RedBlackNode *restrict lrrgrandchild;
@@ -1371,6 +1370,7 @@ static void
 rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    struct RedBlackNode *const restrict lnode,
+	    const RedBlackComparator comparator,
 	    struct RedBlackAllocator *const restrict allocator,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key)
@@ -1422,6 +1422,7 @@ static void
 rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    struct RedBlackNode *const restrict rnode,
+	    const RedBlackComparator comparator,
 	    struct RedBlackAllocator *const restrict allocator,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key)
@@ -1471,8 +1472,6 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 
 
 
-
-
 bool
 red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
@@ -1501,6 +1500,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 				rb_delete_l(tree,
 					    node,
 					    node->left,
+					    comparator,
 					    allocator,
 					    jump_buffer,
 					    key);
@@ -1512,6 +1512,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 				rb_delete_r(tree,
 					    node,
 					    node->right,
+					    comparator,
 					    allocator,
 					    jump_buffer,
 					    key);

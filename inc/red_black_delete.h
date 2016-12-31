@@ -23,7 +23,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict root,
  *
  * or return
  *
- *	1				OK, tree updated
- *	0				OK, tree NOT updated
+ *	true				OK, tree updated
+ *	false				OK, tree NOT updated
  * ────────────────────────────────────────────────────────────────────────── */
 #endif /* ifndef RED_BLACK_DELETE_H_ */
