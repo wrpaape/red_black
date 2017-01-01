@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_H_
-#define RED_BLACK_H_
+#ifndef RED_BLACK_DEMO_H_
+#define RED_BLACK_DEMO_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -98,4 +98,4 @@ default:								\
 }									\
 BUFFER[SIZE_READ] = '\0'
 
-#endif /* ifndef RED_BLACK_H_ */
+#endif /* ifndef RED_BLACK_DEMO_H_ */

@@ -18,7 +18,7 @@ RM_FLAGS := -rf
 
 # HEADER FILES
 # ──────────────────────────────────────────────────────────────────────────────
-MAIN_H        := $(INC_DIR)/red_black.h
+DEMO_H        := $(INC_DIR)/red_black_demo.h
 ALLOCATOR_H   := $(INC_DIR)/red_black_allocator.h
 COMPARATOR_H  := $(INC_DIR)/red_black_comparator.h
 DELETE_H      := $(INC_DIR)/red_black_delete.h
@@ -37,7 +37,7 @@ VERIFY_H      := $(INC_DIR)/red_black_verify.h
 
 # SOURCE FILES
 # ──────────────────────────────────────────────────────────────────────────────
-MAIN_C      := $(SRC_DIR)/red_black.c
+DEMO_C      := $(SRC_DIR)/red_black_demo.c
 ALLOCATOR_C := $(SRC_DIR)/red_black_allocator.c
 DELETE_C    := $(SRC_DIR)/red_black_delete.c
 FIND_C      := $(SRC_DIR)/red_black_find.c
@@ -50,7 +50,7 @@ VERIFY_C    := $(SRC_DIR)/red_black_verify.c
 
 # OBJECT FILES
 # ──────────────────────────────────────────────────────────────────────────────
-MAIN_O      := $(OBJ_DIR)/red_black.o
+DEMO_O      := $(OBJ_DIR)/red_black_demo.o
 ALLOCATOR_O := $(OBJ_DIR)/red_black_allocator.o
 DELETE_O    := $(OBJ_DIR)/red_black_delete.o
 FIND_O      := $(OBJ_DIR)/red_black_find.o
@@ -63,12 +63,12 @@ VERIFY_O    := $(OBJ_DIR)/red_black_verify.o
 
 # BINARY FILES
 # ──────────────────────────────────────────────────────────────────────────────
-MAIN := $(BIN_DIR)/red_black
+DEMO := $(BIN_DIR)/red_black_demo
 
 
 # ALL TARGETS
 # ──────────────────────────────────────────────────────────────────────────────
-TARGETS := $(MAIN) $(MAIN_O) $(ALLOCATOR_O) $(DELETE_O) $(FIND_O) $(INSERT_O) \
+TARGETS := $(DEMO) $(DEMO_O) $(ALLOCATOR_O) $(DELETE_O) $(FIND_O) $(INSERT_O) \
 	   $(INT_KEY_O) $(PRINT_O) $(TREE_O) $(VERIFY_O)
 
 
@@ -101,20 +101,20 @@ TREE_O_DEP      := $(TREE_C) $(TREE_H) $(COMPARATOR_H) $(ALLOCATOR_H) \
 TREE_O_GRP      := $(TREE_O) $(INSERT_O_GRP) $(DELETE_O_GRP) $(FIND_O_GRP) \
 	           $(VERIFY_O_GRP) $(PRINT_O_GRP)
 
-MAIN_O_DEP      := $(MAIN_C) $(MAIN_H) $(TREE_H) $(INT_KEY_H)
-MAIN_O_GRP      := $(MAIN_O) $(TREE_O_GRP) $(INT_KEY_O_GRP)
+DEMO_O_DEP      := $(DEMO_C) $(DEMO_H) $(TREE_H) $(INT_KEY_H)
+DEMO_O_GRP      := $(DEMO_O) $(TREE_O_GRP) $(INT_KEY_O_GRP)
 
-MAIN_DEP        := $(MAIN_O) $(MAIN_O_GRP)
+DEMO_DEP        := $(DEMO_O) $(DEMO_O_GRP)
 
 
 # MAKE RULES
 # ──────────────────────────────────────────────────────────────────────────────
 all: $(TARGETS)
 
-$(MAIN): $(MAIN_DEP)
+$(DEMO): $(DEMO_DEP)
 	$(LD) $(LD_FLAGS) $^ -o $@
 
-$(MAIN_O): $(MAIN_O_DEP)
+$(DEMO_O): $(DEMO_O_DEP)
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 $(TREE_O): $(TREE_O_DEP)
