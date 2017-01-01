@@ -133,7 +133,27 @@ insert_mode(void)
 static inline bool
 delete_mode(void)
 {
-	return true;
+	char input[128];
+	void *key;
+	ssize_t size_read;
+
+	while (1) {
+		GET_INPUT(DELETE,
+			  input,
+			  size_read);
+
+		if (red_black_int_key_init(&key,
+					   &input[0])) {
+			if (red_black_tree_delete(&tree,
+						  key))
+				WRITE_LITERAL("tree updated\n");
+			else
+				WRITE_LITERAL("tree NOT updated\n");
+
+		} else {
+			WRITE_LITERAL(INVALID_INPUT);
+		}
+	}
 }
 
 static inline bool
