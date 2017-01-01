@@ -132,6 +132,6 @@ red_black_int_key_putter(char *buffer,
 			 const void *key)
 {
 	return buffer + sprintf(buffer,
-				"%zu",
-				(size_t) (intptr_t) key);
+				"%ld",
+				(long) (intptr_t) key);
 }

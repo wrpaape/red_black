@@ -1,7 +1,6 @@
 #include "red_black_allocator.h" /* stddef included -> NULL */
 #include "red_black_malloc.h"	 /* RED_BLACK_MALLOC|FREE */
 
-
 /* allocator macros
  * ────────────────────────────────────────────────────────────────────────── */
 #define RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_COUNT	8
@@ -96,7 +95,6 @@ red_black_allocator_free(struct RedBlackAllocator *const restrict allocator,
 	allocator_node->next = allocator->free;
 	allocator->free	     = allocator_node;
 }
-
 
 
 void
