@@ -1,9 +1,9 @@
 #include "red_black.h"
 
-static struct RedBlackNode *restrict tree;
+static struct RedBlackTree tree;
 
 static inline void
-do_red_black_verify(void)
+do_verify(void)
 {
 	char buffer[64];
 	char *restrict ptr;
@@ -20,11 +20,11 @@ do_red_black_verify(void)
 	*ptr++ = 's';
 	*ptr++ = ' ';
 
-	if (!red_black_verify(&tree)) {
-		*ptr+ = 'N';
-		*ptr+ = 'O';
-		*ptr+ = 'T';
-		*ptr+ = ' ';
+	if (!red_black_tree_verify(&tree)) {
+		*ptr++ = 'N';
+		*ptr++ = 'O';
+		*ptr++ = 'T';
+		*ptr++ = ' ';
 	}
 
 	*ptr++ = 'p';
@@ -41,7 +41,16 @@ do_red_black_verify(void)
 }
 
 static inline void
-do_find_mode(const struct Key *const restrict key)
+do_print(void)
+{
+	if (!red_black_tree_print(&tree,
+				  &red_black_int_key_sizer,
+				  &red_black_int_key_putter))
+		EXIT_ON_FAILURE("write error or OUT OF MEMORY");
+}
+
+static inline void
+do_find(const void *key)
 {
 	char buffer[256];
 	char *restrict ptr;
@@ -50,8 +59,8 @@ do_find_mode(const struct Key *const restrict key)
 
 	*ptr = '\n'; ++ptr;
 
-	if (red_black_find(tree,
-			   key)) {
+	if (red_black_tree_find(&tree,
+				key)) {
 		*ptr++ = 'f';
 		*ptr++ = 'o';
 		*ptr++ = 'u';
@@ -80,8 +89,8 @@ do_find_mode(const struct Key *const restrict key)
 	*ptr++ = ':';
 	*ptr++ = ' ';
 
-	ptr = put_key(ptr,
-		      key);
+	ptr = red_black_int_key_putter(ptr,
+				       key);
 
 	*ptr = '\n'; ++ptr;
 	*ptr = '\n'; ++ptr;
@@ -93,23 +102,31 @@ do_find_mode(const struct Key *const restrict key)
 static inline bool
 insert_mode(void)
 {
-	unsigned char input[128];
-	struct Key *restrict key;
+	char input[128];
+	void *key;
 	ssize_t size_read;
+	int status;
 
 	while (1) {
 		GET_INPUT(INSERT,
 			  input,
 			  size_read);
 
-		key = pop_key();
+		if (red_black_int_key_init(&key,
+					   &input[0])) {
+			status = red_black_tree_insert(&tree,
+						       key);
 
-		make_key(key,
-			 &input[0],
-			 (size_t) size_read);
+			if (status == 0)
+				WRITE_LITERAL("tree NOT updated\n");
+			else if (status == 1)
+				WRITE_LITERAL("tree updated\n");
+			else
+				EXIT_ON_FAILURE("OUT OF MEMORY");
 
-		red_black_insert(&tree,
-				 key);
+		} else {
+			WRITE_LITERAL(INVALID_INPUT);
+		}
 	}
 }
 
@@ -122,8 +139,8 @@ delete_mode(void)
 static inline bool
 find_mode(void)
 {
-	unsigned char input[128];
-	struct Key key;
+	char input[128];
+	void *key;
 	ssize_t size_read;
 
 	while (1) {
@@ -131,20 +148,18 @@ find_mode(void)
 			  input,
 			  size_read);
 
-		input[size_read] = '\0';
-
-		key_init(&key,
-			 &input[0],
-			 (size_t) size_read);
-
-		do_find_mode(&key);
+		if (red_black_int_key_init(&key,
+					   &input[0]))
+			do_find(key);
+		else
+			WRITE_LITERAL(INVALID_INPUT);
 	}
 }
 
 int
 main(void)
 {
-	unsigned char input[128];
+	char input[128];
 
 	red_black_tree_init(&tree,
 			    &red_black_int_key_comparator);
@@ -155,11 +170,11 @@ main(void)
 
 		switch (input[0]) {
 		case 'v':
-			do_red_black_verify();
+			do_verify();
 			break;
 
 		case 'p':
-			red_black_print(tree);
+			do_print();
 			break;
 
 		case 'd':

@@ -1,4 +1,5 @@
 #include "red_black_find.h"
+#include <stddef.h>	/* NULL */
 
 bool
 red_black_find(const struct RedBlackNode *restrict node,

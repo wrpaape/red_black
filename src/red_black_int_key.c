@@ -1,16 +1,17 @@
-#include "red_black_int_key.h"	/* RedBlackIntKey, uintmax_t */
+#include "red_black_int_key.h"	/* uintmax_t */
+#include <stdint.h>		/* intptr_t, uintmax_t */
 #include <stdlib.h>		/* strtol, NULL */
 #include <stdio.h>		/* sprintf */
 #include <errno.h>		/* errno */
 
 
 bool
-red_black_int_key_init(RedBlackIntKey *const restrict key,
+red_black_int_key_init(void *restrict *const restrict key,
 		       const char *const restrict string)
 {
-	*key = (RedBlackIntKey) strtol(string,
-				       NULL,
-				       10);
+	*key = (void *) (intptr_t) strtol(string,
+					  NULL,
+					  10);
 
 	return (*key != 0) || (errno == 0);
 }
@@ -20,8 +21,8 @@ int
 red_black_int_key_comparator(const void *key1,
 			     const void *key2)
 {
-	const RedBlackIntKey int_key1 = (RedBlackNode) key1;
-	const RedBlackIntKey int_key2 = (RedBlackNode) key2;
+	const intptr_t int_key1 = (intptr_t) key1;
+	const intptr_t int_key2 = (intptr_t) key2;
 
 	/* to prevent overflow */
 	if (int_key1 < int_key2)
@@ -119,7 +120,7 @@ uint_digit_count(const uintmax_t n)
 size_t
 red_black_int_key_sizer(const void *key)
 {
-	const RedBlackIntKey int_key = (RedBlackIntKey) key;
+	const intptr_t int_key = (intptr_t) key;
 
 	return (int_key < 0)
 	     ? (uint_digit_count(-int_key) + 1)
@@ -132,5 +133,5 @@ red_black_int_key_putter(char *buffer,
 {
 	return buffer + sprintf(buffer,
 				"%zu",
-				(size_t) (RedBlackIntKey) key);
+				(size_t) (intptr_t) key);
 }

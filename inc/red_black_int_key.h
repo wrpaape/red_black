@@ -3,20 +3,14 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include <stdint.h>	/* intptr_t */
 #include <stddef.h>	/* size_t */
-#include <bool.h>	/* bool */
-
-
-/* typedefs, struct declarations
- * ────────────────────────────────────────────────────────────────────────── */
-typedef intptr_t RedBlackIntKey;
+#include <stdbool.h>	/* bool */
 
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 bool
-red_black_int_key_make(RedBlackIntKey *const restrict key,
+red_black_int_key_init(void *restrict *const restrict key,
 		       const char *const restrict string);
 
 

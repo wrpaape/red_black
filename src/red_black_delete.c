@@ -16,10 +16,10 @@ rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 	if (rnode->is_red) {
 		/* rnode RED, lnode RED -> black height of 1
 		 * ────────────────────────────────────────────────────────── */
+		*tree = rnode;
+
 		rnode->is_red = false;
 		rnode->left   = lnode;
-
-		*tree = rnode;
 		return true;
 	}
 
@@ -30,9 +30,9 @@ rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 	if (rrchild != NULL) {
 		rrchild->is_red = false; /* must be RED */
 
-		rnode->left = lnode;
-
 		*tree = rnode;
+
+		rnode->left = lnode;
 		return true;
 	}
 
@@ -41,6 +41,8 @@ rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 	lrchild = lnode->right;
 
 	if (lrchild == NULL) {
+		*tree = lnode;
+
 		lnode->right = rnode; /* lnode is BLACK */
 
 		llchild = lnode->left;
@@ -48,12 +50,12 @@ rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 		/* only non-restorable case: lnode and rnode are BLACK leaves
 		 * ────────────────────────────────────────────────────────── */
 		restored = (llchild != NULL);
+
 		if (restored)
 			llchild->is_red = false;
 		else
 			rnode->is_red = true; /* restore balance */
 
-		*tree = lnode;
 		return restored;
 
 	/* RED node exists somewhere to be recolored, always restorable
@@ -61,17 +63,19 @@ rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 	} else if (lrchild->is_red) {
 		/* lnode is BLACK, lrchild is RED leaf
 		 * ────────────────────────────────────────────────────────── */
+		*tree = lrchild;
+
 		lrchild->is_red = false;
 		lrchild->left   = lnode;
 		lrchild->right  = rnode;
 
 		lnode->right = NULL;
 
-		*tree = lrchild;
-
 	} else {
-		/* lnode is RED w/ 2 BLACK children, set BLACK
+		/* lnode is RED w/ 2 BLACK children, set BLACK, new tree
 		 * ────────────────────────────────────────────────────────── */
+		*tree = lnode;
+
 		lnode->is_red = false;
 
 		lrrgrandchild = lrchild->right;
@@ -82,15 +86,13 @@ rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 			rnode->is_red = true; /* make node new RED max leaf */
 
 		} else {
-			lrchild->right = NULL;
+			lnode->right = lrrgrandchild;
 
 			lrrgrandchild->left  = lrchild;
-			lrrgrandchild->right = rchild;
+			lrrgrandchild->right = rnode;
 
-			lchild->right = lrrgrandchild;
+			lrchild->right = NULL;
 		}
-
-		*tree = lnode;
 	}
 
 	return true;
@@ -145,7 +147,7 @@ rb_restore_rtree_unwind(struct RedBlackNode *restrict *restrict root,
 	struct RedBlackNode *restrict grandparent;
 	struct RedBlackNode *restrict rnode;
 	struct RedBlackNode *restrict rlchild;
-	struct RedBlackNode *restrict rchild;
+	struct RedBlackNode *restrict rrchild;
 	struct RedBlackNode *restrict rllgrandchild;
 	struct RedBlackNode *restrict rlrgrandchild;
 
@@ -248,10 +250,10 @@ rb_restore_rtree_unwind(struct RedBlackNode *restrict *restrict root,
 			return true; /* always completely restorable */
 
 		} else {
-			rchild = rnode->right;
+			rrchild = rnode->right;
 
-			if (rchild->is_red) {
-				rchild->is_red = false;
+			if (rrchild->is_red) {
+				rrchild->is_red = false;
 
 				if (grandparent != NULL) /* parent != root */
 					root = &grandparent->left;
@@ -266,7 +268,7 @@ rb_restore_rtree_unwind(struct RedBlackNode *restrict *restrict root,
 			}
 		}
 		/* parent, lnode (parent->left), rnode (parent->right),
-		 * rlchild (rnode->left), and rchild (rnode->right) are ALL
+		 * rlchild (rnode->left), and rrchild (rnode->right) are ALL
 		 * BLACK
 		 *
 		 * recolor rnode to restore balance in parent tree, but still
@@ -595,16 +597,16 @@ rb_restore_red_ltree(struct RedBlackNode *restrict *const restrict tree,
 
 static inline bool
 rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
-		 const struct RedBlackNode *const restrict lchild,
-		 const struct RedBlackNode *restrict rchild)
+		 struct RedBlackNode *const restrict lchild,
+		 struct RedBlackNode *restrict rchild)
 {
 	struct RedBlackNode *restrict replacement_parent;
 	struct RedBlackNode *restrict replacement_child;
 	struct RedBlackNode *restrict replacement;
 	bool restored;
 
-	struct RedBlackNode *const restrict replacement_stack[RSTACK_COUNT];
-	struct RedBlackNode *const restrict *restrict replacement_stack_ptr;
+	struct RedBlackNode *restrict replacement_stack[RSTACK_COUNT];
+	struct RedBlackNode *restrict *restrict replacement_stack_ptr;
 
 	if (lchild == NULL) {
 		*tree = rchild;
@@ -686,16 +688,16 @@ rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
 
 static inline void
 rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
-	       const struct RedBlackNode *const restrict lchild,
-	       const struct RedBlackNode *restrict rchild)
+	       struct RedBlackNode *const restrict lchild,
+	       struct RedBlackNode *restrict rchild)
 {
 	struct RedBlackNode *restrict replacement_parent;
 	struct RedBlackNode *restrict replacement_child;
 	struct RedBlackNode *restrict replacement;
 	bool restored;
 
-	struct RedBlackNode *const restrict replacement_stack[RSTACK_COUNT];
-	struct RedBlackNode *const restrict *restrict replacement_stack_ptr;
+	struct RedBlackNode *restrict replacement_stack[RSTACK_COUNT];
+	struct RedBlackNode *restrict *restrict replacement_stack_ptr;
 
 	if (lchild == NULL) {
 		*tree = NULL; /* rchild must be NULL */
@@ -834,7 +836,7 @@ rb_delete_correct_l_bot_r(struct RedBlackNode *restrict *const restrict tree,
 		rrchild = rnode->right;
 
 		if ((rrchild != NULL) && rrchild->is_red) {
-			rrchild->is_rec = false;
+			rrchild->is_red = false;
 
 			*tree = rnode;
 
@@ -1366,6 +1368,25 @@ rb_delete_correct_r_mid(struct RedBlackNode *restrict *const restrict tree,
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
 
+
+/* delete state machine functions */
+static void
+rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
+	    struct RedBlackNode *const restrict parent,
+	    struct RedBlackNode *const restrict lnode,
+	    const RedBlackComparator comparator,
+	    struct RedBlackAllocator *const restrict allocator,
+	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    const void *const key);
+static void
+rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
+	    struct RedBlackNode *const restrict parent,
+	    struct RedBlackNode *const restrict rnode,
+	    const RedBlackComparator comparator,
+	    struct RedBlackAllocator *const restrict allocator,
+	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    const void *const key);
+
 static void
 rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
@@ -1399,6 +1420,7 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 			rb_delete_l(subtree,
 				    lnode,
 				    lnode->left,
+				    comparator,
 				    allocator,
 				    jump_buffer,
 				    key);
@@ -1406,6 +1428,7 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 			rb_delete_r(subtree,
 				    lnode,
 				    lnode->right,
+				    comparator,
 				    allocator,
 				    jump_buffer,
 				    key);
@@ -1451,6 +1474,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 			rb_delete_l(subtree,
 				    rnode,
 				    rnode->right,
+				    comparator,
 				    allocator,
 				    jump_buffer,
 				    key);
@@ -1458,6 +1482,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 			rb_delete_r(subtree,
 				    rnode,
 				    rnode->left,
+				    comparator,
 				    allocator,
 				    jump_buffer,
 				    key);
@@ -1480,7 +1505,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 const void *const key)
 {
 	bool status;
-	struct RedBlackNode *const restrict node = *root;
+	struct RedBlackNode *const restrict node = *tree;
 
 	status = (node != NULL);
 

@@ -11,7 +11,7 @@ BIN_DIR := bin
 CC	 := gcc
 CC_FLAGS := -std=gnu99 -I$(INC_DIR) -Wall -O2 -c
 LD	 := ld
-LD_FLAGS := -arch x86_64 -macosx_version_min 10.11 -no_pie
+LD_FLAGS := -arch x86_64 -macosx_version_min 10.11 -no_pie -lc
 RM	 := rm
 RM_FLAGS := -rf
 
@@ -113,6 +113,9 @@ all: $(TARGETS)
 
 $(MAIN): $(MAIN_DEP)
 	$(LD) $(LD_FLAGS) $^ -o $@
+
+$(MAIN_O): $(MAIN_O_DEP)
+	$(CC) $(CC_FLAGS) -c $< -o $@
 
 $(TREE_O): $(TREE_O_DEP)
 	$(CC) $(CC_FLAGS) -c $< -o $@

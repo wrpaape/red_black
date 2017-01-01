@@ -28,4 +28,4 @@ red_black_insert(struct RedBlackNode *restrict *const restrict root,
  *	0				OK, tree NOT updated
  * ────────────────────────────────────────────────────────────────────────── */
 
-#endif /* ifndef RED_BLACK_INSERT_H_ */k
+#endif /* ifndef RED_BLACK_INSERT_H_ */

@@ -146,7 +146,7 @@ put_red_black_tree(char *restrict buffer,
 bool
 red_black_print(const struct RedBlackNode *const restrict root,
 		const RedBlackKeySizer key_sizer,
-		const RedBlackKeyPutter key_putter);
+		const RedBlackKeyPutter key_putter)
 {
 	bool success;
 	size_t size;
@@ -156,10 +156,9 @@ red_black_print(const struct RedBlackNode *const restrict root,
 				   key_sizer,
 				   0);
 
-	char *const restrict buffer = RED_BLACK_MALLOC(total);
+	char *const restrict buffer = RED_BLACK_MALLOC(size);
 
 	success = (buffer != NULL);
-
 
 	if (success) {
 		/* put nodes in order */

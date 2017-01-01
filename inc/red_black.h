@@ -23,17 +23,23 @@
 #define EXIT_ON_FAILURE(LITERAL)					\
 do {									\
 	(void) write(STDERR_FILENO,					\
-		     LITERAL,						\
-		     sizeof(LITERAL) - 1);				\
+		     LITERAL "\n",					\
+		     sizeof(LITERAL));					\
 	exit(EXIT_FAILURE);						\
 } while (0)
 
+#define WRITE_STDOUT(BUFFER,						\
+		     SIZE)						\
+do {									\
+	if (write(STDOUT_FILENO,					\
+		  BUFFER,						\
+		  SIZE) != (SIZE))					\
+		EXIT_ON_FAILURE("write failure");			\
+} while (0)
 
 #define WRITE_LITERAL(LITERAL)						\
-if (write(STDOUT_FILENO,						\
-	  LITERAL,							\
-	  sizeof(LITERAL) - 1) < 0)					\
-	EXIT_ON_FAILURE("write failure")
+WRITE_STDOUT(LITERAL,							\
+	     sizeof(LITERAL) - 1)
 
 #define READ_INPUT(BUFFER)						\
 read(STDIN_FILENO,							\
@@ -60,7 +66,7 @@ do {									\
 		  BUFFER,						\
 		  SIZE_READ)						\
 WRITE_LITERAL(MODE ## _PROMPT);						\
-SIZE_READ = READ_INPUT(input);						\
+SIZE_READ = READ_INPUT(BUFFER);						\
 switch (SIZE_READ) {							\
 case -1:								\
 	EXIT_ON_FAILURE("read failure");				\
@@ -78,10 +84,10 @@ case 1:									\
 	case 'q':							\
 		return false;						\
 	case 'v':							\
-		do_red_black_verify();					\
+		do_verify();						\
 		continue;						\
 	case 'p':							\
-		red_black_print(tree);					\
+		do_print();						\
 		continue;						\
 	default:							\
 		SIZE_READ = 1;						\
@@ -89,6 +95,7 @@ case 1:									\
 	break;								\
 default:								\
 	--SIZE_READ; /* trim '\n' */					\
-}
+}									\
+BUFFER[SIZE_READ] = '\0'
 
 #endif /* ifndef RED_BLACK_H_ */

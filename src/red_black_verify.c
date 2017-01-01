@@ -1,4 +1,5 @@
 #include "red_black_verify.h"
+#include <stddef.h> /* NULL */
 
 int
 do_red_black_verify(const struct RedBlackNode *const restrict node,
@@ -30,6 +31,7 @@ do_red_black_verify(const struct RedBlackNode *const restrict node,
 	}
 
 	const int left_black_height = do_red_black_verify(node->left,
+							  comparator,
 							  min_key,
 							  node_key,
 							  node_is_red,
@@ -39,6 +41,7 @@ do_red_black_verify(const struct RedBlackNode *const restrict node,
 		return -1;
 
 	const int right_black_height = do_red_black_verify(node->right,
+							   comparator,
 							   node_key,
 							   max_key,
 							   node_is_red,
@@ -52,7 +55,7 @@ do_red_black_verify(const struct RedBlackNode *const restrict node,
 
 bool
 red_black_verify(const struct RedBlackNode *const restrict root,
-		 const RedBlackComparator comparator);
+		 const RedBlackComparator comparator)
 {
 	const struct RedBlackNode *restrict node;
 	const struct RedBlackNode *restrict next;

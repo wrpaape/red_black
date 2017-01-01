@@ -10,11 +10,11 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 bool
-red_black_delete(struct RedBlackNode *restrict *const restrict root,
+red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackAllocator *const restrict allocator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
-		 const struct Key *const restrict key);
+		 const void *const key);
 
 /* may jump w/ a RED_BLACK_JUMP_VALUE_2 value of
  *

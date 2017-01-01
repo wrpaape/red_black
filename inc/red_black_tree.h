@@ -38,7 +38,7 @@ red_black_tree_delete(struct RedBlackTree *const restrict tree,
 
 bool
 red_black_tree_find(struct RedBlackTree *const restrict tree,
-		    const void *const key)
+		    const void *const key);
 bool
 red_black_tree_verify(struct RedBlackTree *const restrict tree);
 
@@ -49,8 +49,7 @@ red_black_tree_print(struct RedBlackTree *const restrict tree,
 
 bool
 red_black_tree_find(struct RedBlackTree *const restrict tree,
-		    const void *const key)
-
+		    const void *const key);
 
 void
 red_black_tree_destroy(struct RedBlackTree *const restrict tree);

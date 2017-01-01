@@ -7,8 +7,8 @@ rb_new_node(struct RedBlackAllocator *const restrict allocator,
 	    const bool is_red)
 {
 	struct RedBlackNode *const restrict node
-	= red_black_allocatore_allocate(allocator,
-					jump_buffer);
+	= red_black_allocator_allocate(allocator,
+				       jump_buffer);
 
 	node->key    = key;
 	node->is_red = is_red;

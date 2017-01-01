@@ -20,8 +20,8 @@ typedef jmp_buf RedBlackJumpBuffer;
 #define RED_BLACK_JUMP_3_STATUS(VALUE) (((VALUE) / 2) - 1)
 
 
-#define RED_BLACK_JUMP_2_VALUE_TRUE	2	/* ->  1  */
-#define RED_BLACK_JUMP_2_VALUE_FALSE	1	/* ->  0 */
+#define RED_BLACK_JUMP_VALUE_2_TRUE	2	/* ->  1  */
+#define RED_BLACK_JUMP_VALUE_2_FALSE	1	/* ->  0 */
 
 #define RED_BLACK_JUMP_2_STATUS(VALUE) (VALUE - 1)
 
