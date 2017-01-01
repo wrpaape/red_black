@@ -35,7 +35,7 @@ red_black_int_key_comparator(const void *key1,
 }
 
 inline unsigned int
-uint_digit_count(const uintmax_t n)
+uint_digit_count(const unsigned long n)
 {
 	if (n < 10000000000llu) {
 		if (n < 100000llu) {
@@ -123,8 +123,8 @@ red_black_int_key_sizer(const void *key)
 	const intptr_t int_key = (intptr_t) key;
 
 	return (int_key < 0)
-	     ? (uint_digit_count(-int_key) + 1)
-	     : uint_digit_count(int_key);
+	     ? (uint_digit_count((unsigned long) -int_key) + 1)
+	     : uint_digit_count((unsigned long) int_key);
 }
 
 char *

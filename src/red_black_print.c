@@ -34,7 +34,7 @@ size_red_black_tree(const struct RedBlackNode *const restrict node,
 				   indent)
 	     + size_red_black_tree(node->right,
 				   key_sizer,
-				   indent);
+				   next_indent);
 }
 
 
@@ -141,7 +141,6 @@ put_red_black_tree(char *restrict buffer,
 				  key_putter,
 				  next_indent);
 }
-
 
 bool
 red_black_print(const struct RedBlackNode *const restrict root,
