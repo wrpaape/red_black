@@ -134,6 +134,8 @@ rb_restore_red_shallow(struct RedBlackNode *restrict *const restrict tree,
 
 		lrchild->left  = lnode;
 		lrchild->right = rnode;
+
+		lnode->right = NULL;
 	}
 }
 
@@ -1050,7 +1052,6 @@ rb_delete_correct_l_bot_b(struct RedBlackNode *restrict *const restrict tree,
 
 		if (rrchild == NULL) {
 			rnode->is_red = true;
-			DEBUG("RETURNING\n");
 			return false; /* balanced, deficient 1 black height */
 		}
 		/* rrchild must be a RED leaf */
@@ -1322,8 +1323,6 @@ rb_delete_correct_l_bot(struct RedBlackNode *restrict *const restrict tree,
 					    parent))
 		return; /* still need to correct */
 
-	DEBUG("AWOOGA SHOULDN'T BE HERE\n");
-
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
 
@@ -1418,8 +1417,6 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 		rb_delete_correct_l_bot(tree,
 					parent,
 					jump_buffer);
-
-		DEBUG("I HAVE RETURNED\n");
 
 	} else {
 		if (compare < 0)
@@ -1527,7 +1524,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 				       allocator);
 
 		} else {
-			if (compare < 0) {
+			if (compare < 0)
 				rb_delete_l(tree,
 					    node,
 					    node->left,
@@ -1535,13 +1532,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 					    allocator,
 					    jump_buffer,
 					    key);
-
-				DEBUG("CORRECTING\n");
-
-				/* if returned need to correct */
-				(void) rb_delete_correct_l_mid_b(tree,
-								 node);
-			} else {
+			else
 				rb_delete_r(tree,
 					    node,
 					    node->right,
@@ -1550,16 +1541,9 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 					    jump_buffer,
 					    key);
 
-				/* if returned need to correct */
-				(void) rb_delete_correct_r_mid_b(tree,
-								 node);
-			}
-
 			return true; /* updated */
 		}
 	}
-
-	DEBUG("RETURNING FROM red_black_delete\n");
 
 	return status;
 }

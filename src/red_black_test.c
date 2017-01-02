@@ -1,6 +1,6 @@
 #include "red_black_test.h"	/* deps, print macros */
 
-#define KEYS_COUNT 5
+#define KEYS_COUNT 100
 #define I_LAST     (KEYS_COUNT - 1)
 
 static struct RedBlackTree tree;
@@ -168,23 +168,33 @@ test_delete(void)
 	key = &keys[0];
 
 	do {
-		printf("deleting key: %d\n", *key);
-		fflush(stdout);
+		DEBUG("deleting key: %d\n", *key);
 
-		PRINT_TREE();
+		if (!PRINT_TREE())
+			EXIT_ON_SYS_FAILURE("write failure or OOM");
 
 		if (!red_black_tree_delete(&tree,
-					   (void *) (intptr_t) *key))
+					   (void *) (intptr_t) *key)) {
 			TEST_FAILURE("delete",
 				     "KEY NOT FOUND: %d",
 				     *key);
-		else if (!red_black_tree_verify(&tree))
-			TEST_FAILURE("insert",
-				     "NOT VALID TREE (deleted %d)",
-				     *key);
 
-		printf("deleted key: %d\n", *key);
-		fflush(stdout);
+		} else {
+			DEBUG("deleted key: %d\n", *key);
+
+			DEBUG("PRINTING TREE\n\n");
+
+			if (!PRINT_TREE())
+				EXIT_ON_SYS_FAILURE("write failure or OOM");
+
+			DEBUG("PRINTED TREE\n\n");
+
+			if (!red_black_tree_verify(&tree))
+				TEST_FAILURE("insert",
+					     "NOT VALID TREE (deleted %d)",
+					     *key);
+		}
+
 		++key;
 	} while (key < keys_until);
 

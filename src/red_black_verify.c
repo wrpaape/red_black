@@ -74,7 +74,10 @@ red_black_verify(const struct RedBlackNode *const restrict root,
 		node = next;
 	}
 
+
 	const void *const root_key = root->key;
+
+	DEBUG("GOT min_key: %d, root_key: %d\n", (int) node->key, (int) root_key);
 
 	/* check left black height */
 	const int left_black_height = do_red_black_verify(root->left,
@@ -83,6 +86,8 @@ red_black_verify(const struct RedBlackNode *const restrict root,
 							  root_key,
 							  false,
 							  0);
+
+	DEBUG("GOT left_black_height: %d\n", left_black_height);
 
 	if (left_black_height < 0)
 		return false; /* invalid subtree */
@@ -98,6 +103,8 @@ red_black_verify(const struct RedBlackNode *const restrict root,
 		node = next;
 	}
 
+	DEBUG("GOT max_key: %d\n", (int) node->key);
+
 	/* check right black height */
 	const int right_black_height = do_red_black_verify(root->right,
 							   comparator,
@@ -105,6 +112,8 @@ red_black_verify(const struct RedBlackNode *const restrict root,
 							   node->key,
 							   false,
 							   0);
+
+	DEBUG("GOT right_black_height: %d\n", left_black_height);
 
 	return (right_black_height == left_black_height);
 }

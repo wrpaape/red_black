@@ -59,11 +59,11 @@ red_black_tree_delete(struct RedBlackTree *const restrict tree,
 					  &tree->allocator,
 					  &jump_buffer,
 					  key);
-		DEBUG("RETURNING FROM red_black_tree_delete\n");
+		DEBUG("RETURNING FROM red_black_tree_delete: %d\n", retval);
 
 	} else {
 		retval = (bool) RED_BLACK_JUMP_2_STATUS(status);
-		DEBUG("JUMPING FROM red_black_tree_delete\n");
+		DEBUG("JUMPING FROM red_black_tree_delete: %d\n", retval);
 	}
 
 	return retval;
@@ -81,8 +81,16 @@ red_black_tree_find(struct RedBlackTree *const restrict tree,
 bool
 red_black_tree_verify(struct RedBlackTree *const restrict tree)
 {
-	return red_black_verify(tree->root,
-				tree->comparator);
+	DEBUG("VERIFYING TREE\n");
+	/* return red_black_verify(tree->root, */
+	/* 			tree->comparator); */
+
+	const bool status = red_black_verify(tree->root,
+					     tree->comparator);
+
+	DEBUG("DONE VERIFYING: %d\n", (int) status);
+
+	return status;
 }
 
 bool
