@@ -149,22 +149,28 @@ red_black_print(const struct RedBlackNode *const restrict root,
 {
 	bool success;
 	size_t size;
+	char *restrict ptr;
 
-	/* traverse tree to size the required buffer */
-	size = size_red_black_tree(root,
-				   key_sizer,
-				   0);
+	/* traverse tree to size the required buffer (2 for newlines) */
+	size = 2 + size_red_black_tree(root,
+				       key_sizer,
+				       0);
 
 	char *const restrict buffer = RED_BLACK_MALLOC(size);
 
 	success = (buffer != NULL);
 
 	if (success) {
+		ptr = buffer;
+
+		*ptr++ = '\n';
+
 		/* put nodes in order */
-		char *const restrict ptr = put_red_black_tree(buffer,
-							      root,
-							      key_putter,
-							      0);
+		ptr = put_red_black_tree(ptr,
+					 root,
+					 key_putter,
+					 0);
+		*ptr++ = '\n';
 
 		size = ptr - buffer;
 

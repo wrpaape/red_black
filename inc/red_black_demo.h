@@ -4,7 +4,7 @@
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_tree.h"    /* RedBlackTree */
-#include "red_black_int_key.h" /* RedBlackIntKey */
+#include "red_black_int_key.h" /* red_black_int_key_* key interface */
 #include <unistd.h>	       /* read, write, STDOUT|ERR_FILENO */
 #include <stdlib.h>	       /* exit, EXIT_FAILURE */
 
@@ -13,9 +13,9 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #define INVALID_INPUT	"invalid input\n"
 #define MAIN_PROMPT	"insert (i), find (f), delete (d), verify (v), print (p), or  quit (q)\n> "
-#define INSERT_PROMPT	"input insert string, back (b), verify (v), print (p), or quit (q)\n> "
-#define FIND_PROMPT	"input find string, back (b), verify (v), print (p), or quit (q)\n> "
-#define DELETE_PROMPT	"input delete string, back (b), verify (v), print (p), or quit (q)\n> "
+#define INSERT_PROMPT	"input insert integer, back (b), verify (v), print (p), or quit (q)\n> "
+#define FIND_PROMPT	"input find integer, back (b), verify (v), print (p), or quit (q)\n> "
+#define DELETE_PROMPT	"input delete integer, back (b), verify (v), print (p), or quit (q)\n> "
 
 
 /* helpful macros
@@ -23,8 +23,8 @@
 #define EXIT_ON_FAILURE(LITERAL)					\
 do {									\
 	(void) write(STDERR_FILENO,					\
-		     LITERAL "\n",					\
-		     sizeof(LITERAL));					\
+		     "\n" LITERAL "\n",					\
+		     sizeof(LITERAL) + 1);				\
 	exit(EXIT_FAILURE);						\
 } while (0)
 

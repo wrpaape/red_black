@@ -118,9 +118,9 @@ insert_mode(void)
 						       key);
 
 			if (status == 0)
-				WRITE_LITERAL("tree NOT updated\n");
+				WRITE_LITERAL("\ntree NOT updated\n\n");
 			else if (status == 1)
-				WRITE_LITERAL("tree updated\n");
+				WRITE_LITERAL("\ntree updated\n\n");
 			else
 				EXIT_ON_FAILURE("OUT OF MEMORY");
 
@@ -146,9 +146,9 @@ delete_mode(void)
 					   &input[0])) {
 			if (red_black_tree_delete(&tree,
 						  key))
-				WRITE_LITERAL("tree updated\n");
+				WRITE_LITERAL("\ntree updated\n\n");
 			else
-				WRITE_LITERAL("tree NOT updated\n");
+				WRITE_LITERAL("\ntree NOT updated\n\n");
 
 		} else {
 			WRITE_LITERAL(INVALID_INPUT);
