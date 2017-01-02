@@ -20,7 +20,7 @@ struct RedBlackAllocatorBufferBlock {
 };
 
 struct RedBlackAllocatorBuffer {
-	struct RedBlackAllocatorNode *restrict current;
+	struct RedBlackAllocatorNode *restrict cursor;
 	const struct RedBlackAllocatorNode *restrict until;
 	size_t expand;
 	struct RedBlackAllocatorBufferBlock *restrict blocks;

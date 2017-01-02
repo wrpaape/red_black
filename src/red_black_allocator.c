@@ -12,10 +12,10 @@
 static inline void
 rba_buffer_init(struct RedBlackAllocatorBuffer *const restrict buffer)
 {
-	buffer->current = NULL;
-	buffer->until   = NULL;
-	buffer->expand  = RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_SIZE;
-	buffer->blocks  = NULL;
+	buffer->cursor = NULL;
+	buffer->until  = NULL;
+	buffer->expand = RED_BLACK_ALLOCATOR_BUFFER_INIT_EXPAND_SIZE;
+	buffer->blocks = NULL;
 }
 
 void
@@ -36,10 +36,10 @@ rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 	struct RedBlackAllocatorBufferBlock *restrict block;
 	size_t allocate_size;
 
-	allocator_node = buffer->current;
+	allocator_node = buffer->cursor;
 
 	if (allocator_node < buffer->until) {
-		++(buffer->current);
+		++(buffer->cursor);
 
 	} else {
 		allocate_size = sizeof(struct RedBlackAllocatorBufferBlock)
@@ -57,8 +57,8 @@ rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 
 		allocator_node = (struct RedBlackAllocatorNode *) (block + 1);
 
-		buffer->current = allocator_node + 1;
-		buffer->until   = (struct RedBlackAllocatorNode *)
+		buffer->cursor = allocator_node + 1;
+		buffer->until  = (struct RedBlackAllocatorNode *)
 				  (((char *) block) + allocate_size);
 	}
 

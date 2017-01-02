@@ -9,20 +9,31 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-typedef bool
-RedBlackIteratorFetcher(struct RedBlackNode *restrict *const restrict current);
+typedef const struct RedBlackNode *restrict *restrict
+(*RedBlackIteratorUpdater)(const struct RedBlackNode *restrict *restrict cursor,
+			   const struct RedBlackNode *restrict node);
 
-
-struct RedBlackIterator {
-	const struct RedBlackNode *restrict *current;
+struct _RedBlackIterator {
+	const struct RedBlackNode *restrict *restrict cursor;
+	RedBlackIteratorUpdater update;
 	const struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
 };
+
+typedef struct _RedBlackIterator RedBlackIterator;
 
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_iterator_init_pre(struct RedBlackIterator *const restrict iterator,
-			    const struct RedBlackNode *const restrict);
+red_black_iterator_init_asc(RedBlackIterator *const restrict iterator,
+			    const struct RedBlackNode *restrict node);
+
+void
+red_black_iterator_init_desc(RedBlackIterator *const restrict iterator,
+			     const struct RedBlackNode *restrict node);
+
+bool
+red_black_iterator_next(RedBlackIterator *const restrict iterator,
+			const void **const restrict key_ptr);
 
 #endif /* ifndef RED_BLACK_ITERATOR_H_ */

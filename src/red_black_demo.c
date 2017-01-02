@@ -1,6 +1,6 @@
 #include "red_black_demo.h"
 
-static struct RedBlackTree tree;
+static RedBlackTree tree;
 
 static inline void
 do_verify(void)

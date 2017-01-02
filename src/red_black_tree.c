@@ -7,7 +7,7 @@
 
 
 void
-red_black_tree_init(struct RedBlackTree *const restrict tree,
+red_black_tree_init(RedBlackTree *const restrict tree,
 		    const RedBlackComparator comparator)
 {
 	tree->root	 = NULL;
@@ -16,8 +16,14 @@ red_black_tree_init(struct RedBlackTree *const restrict tree,
 	red_black_allocator_init(&tree->allocator);
 }
 
+void
+red_black_tree_destroy(RedBlackTree *const restrict tree)
+{
+	red_black_allocator_destroy(&tree->allocator);
+}
+
 int
-red_black_tree_insert(struct RedBlackTree *const restrict tree,
+red_black_tree_insert(RedBlackTree *const restrict tree,
 		      const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
@@ -35,7 +41,7 @@ red_black_tree_insert(struct RedBlackTree *const restrict tree,
 }
 
 bool
-red_black_tree_delete(struct RedBlackTree *const restrict tree,
+red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
@@ -53,7 +59,7 @@ red_black_tree_delete(struct RedBlackTree *const restrict tree,
 }
 
 bool
-red_black_tree_find(struct RedBlackTree *const restrict tree,
+red_black_tree_find(RedBlackTree *const restrict tree,
 		    const void *const key)
 {
 	return red_black_find(tree->root,
@@ -62,14 +68,14 @@ red_black_tree_find(struct RedBlackTree *const restrict tree,
 }
 
 bool
-red_black_tree_verify(struct RedBlackTree *const restrict tree)
+red_black_tree_verify(RedBlackTree *const restrict tree)
 {
 	return red_black_verify(tree->root,
 				tree->comparator);
 }
 
 bool
-red_black_tree_print(struct RedBlackTree *const restrict tree,
+red_black_tree_print(RedBlackTree *const restrict tree,
 		     const RedBlackKeySizer key_sizer,
 		     const RedBlackKeyPutter key_putter)
 {
@@ -79,7 +85,27 @@ red_black_tree_print(struct RedBlackTree *const restrict tree,
 }
 
 void
-red_black_tree_destroy(struct RedBlackTree *const restrict tree)
+red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
+				 RedBlackTree *const restrict tree)
 {
-	red_black_allocator_destroy(&tree->allocator);
+	red_black_iterator_init_asc(iterator,
+				    tree->root);
 }
+
+void
+red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
+				 RedBlackTree *const restrict tree)
+{
+	red_black_iterator_init_desc(iterator,
+				     tree->root);
+}
+
+bool
+red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
+			     const void **const restrict key_ptr)
+{
+	return red_black_iterator_next(iterator,
+				       key_ptr);
+}
+
+

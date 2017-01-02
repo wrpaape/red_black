@@ -21,8 +21,10 @@ AR_FLAGS := rcs
 
 # HEADER FILES
 # ──────────────────────────────────────────────────────────────────────────────
+STACK_COUNT_H := $(INC_DIR)/red_black_stack_count.h
 ALLOCATOR_H   := $(INC_DIR)/red_black_allocator.h
 COMPARATOR_H  := $(INC_DIR)/red_black_comparator.h
+ITERATOR_H    := $(INC_DIR)/red_black_iterator.h
 DELETE_H      := $(INC_DIR)/red_black_delete.h
 FIND_H        := $(INC_DIR)/red_black_find.h
 INSERT_H      := $(INC_DIR)/red_black_insert.h
@@ -30,7 +32,6 @@ INT_KEY_H     := $(INC_DIR)/red_black_int_key.h
 JUMP_H        := $(INC_DIR)/red_black_jump.h
 LOCK_H        := $(INC_DIR)/red_black_lock.h
 MALLOC_H      := $(INC_DIR)/red_black_malloc.h
-STACK_COUNT_H := $(INC_DIR)/red_black_stack_count.h
 NODE_H        := $(INC_DIR)/red_black_node.h
 PRINT_H       := $(INC_DIR)/red_black_print.h
 PRINT_TYPES_H := $(INC_DIR)/red_black_print_types.h
@@ -43,6 +44,7 @@ TEST_H        := $(INC_DIR)/red_black_test.h
 # SOURCE FILES
 # ──────────────────────────────────────────────────────────────────────────────
 ALLOCATOR_C := $(SRC_DIR)/red_black_allocator.c
+ITERATOR_C  := $(SRC_DIR)/red_black_iterator.c
 DELETE_C    := $(SRC_DIR)/red_black_delete.c
 FIND_C      := $(SRC_DIR)/red_black_find.c
 INSERT_C    := $(SRC_DIR)/red_black_insert.c
@@ -57,6 +59,7 @@ TEST_C      := $(SRC_DIR)/red_black_test.c
 # OBJECT FILES
 # ──────────────────────────────────────────────────────────────────────────────
 ALLOCATOR_O := $(OBJ_DIR)/red_black_allocator.o
+ITERATOR_O  := $(OBJ_DIR)/red_black_iterator.o
 DELETE_O    := $(OBJ_DIR)/red_black_delete.o
 FIND_O      := $(OBJ_DIR)/red_black_find.o
 INSERT_O    := $(OBJ_DIR)/red_black_insert.o
@@ -71,6 +74,7 @@ TEST_O      := $(OBJ_DIR)/red_black_test.o
 # PIC OBJECT FILES
 # ──────────────────────────────────────────────────────────────────────────────
 ALLOCATOR_PO := $(OBJ_DIR)/red_black_allocator_pic.o
+ITERATOR_PO  := $(OBJ_DIR)/red_black_iterator_pic.o
 DELETE_PO    := $(OBJ_DIR)/red_black_delete_pic.o
 FIND_PO      := $(OBJ_DIR)/red_black_find_pic.o
 INSERT_PO    := $(OBJ_DIR)/red_black_insert_pic.o
@@ -128,6 +132,11 @@ ALLOCATOR_O_GRP  := $(ALLOCATOR_O)
 ALLOCATOR_PO_DEP := $(ALLOCATOR_O_DEP)
 ALLOCATOR_PO_GRP := $(ALLOCATOR_PO)
 
+ITERATOR_O_DEP   := $(ITERATOR_C) $(ITERATOR_H) $(NODE_H) $(STACK_COUNT_H)
+ITERATOR_O_GRP   := $(ITERATOR_O)
+ITERATOR_PO_DEP  := $(ITERATOR_O_DEP)
+ITERATOR_PO_GRP  := $(ITERATOR_PO)
+
 INSERT_O_DEP     := $(INSERT_C) $(INSERT_H) $(COMPARATOR_H) $(ALLOCATOR_H)
 INSERT_O_GRP     := $(INSERT_O) $(ALLOCATOR_O_GRP)
 INSERT_PO_DEP    := $(INSERT_O_DEP)
@@ -139,13 +148,13 @@ DELETE_PO_DEP    := $(DELETE_O_DEP)
 DELETE_PO_GRP    := $(DELETE_PO) $(ALLOCATOR_PO_GRP)
 
 TREE_O_DEP       := $(TREE_C) $(TREE_H) $(COMPARATOR_H) $(ALLOCATOR_H) \
-	            $(PRINT_TYPES_H) $(INSERT_H) $(DELETE_H) $(FIND_H) \
-		    $(VERIFY_H) $(PRINT_H)
-TREE_O_GRP       := $(TREE_O) $(INSERT_O_GRP) $(DELETE_O_GRP) $(FIND_O_GRP) \
-	            $(VERIFY_O_GRP) $(PRINT_O_GRP)
+	            $(ITERATOR_H) $(PRINT_TYPES_H) $(INSERT_H) $(DELETE_H) \
+	            $(FIND_H) $(VERIFY_H) $(PRINT_H)
+TREE_O_GRP       := $(TREE_O) $(ALLOCATOR_O_GRP) $(INSERT_O_GRP) $(DELETE_O_GRP) \
+	            $(FIND_O_GRP) $(VERIFY_O_GRP) $(PRINT_O_GRP) $(ITERATOR_O_GRP)
 TREE_PO_DEP      := $(TREE_O_DEP)
-TREE_PO_GRP      := $(TREE_PO) $(INSERT_PO_GRP) $(DELETE_PO_GRP) $(FIND_PO_GRP) \
-	            $(VERIFY_PO_GRP) $(PRINT_PO_GRP)
+TREE_PO_GRP      := $(TREE_PO) $(ALLOCATOR_PO_GRP) $(INSERT_PO_GRP) $(DELETE_PO_GRP) \
+	            $(FIND_PO_GRP) $(VERIFY_PO_GRP) $(PRINT_PO_GRP) $(ITERATOR_PO_GRP)
 TREE_ST_DEP      := $(TREE_O_GRP)
 TREE_SH_DEP      := $(TREE_PO_GRP)
 
@@ -204,6 +213,12 @@ $(ALLOCATOR_O): $(ALLOCATOR_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(ALLOCATOR_PO): $(ALLOCATOR_PO_DEP)
+	$(CC) $(CC_FLAGS) -fpic $< -o $@
+
+$(ITERATOR_O): $(ITERATOR_O_DEP)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+$(ITERATOR_PO): $(ITERATOR_PO_DEP)
 	$(CC) $(CC_FLAGS) -fpic $< -o $@
 
 $(FIND_O): $(FIND_O_DEP)

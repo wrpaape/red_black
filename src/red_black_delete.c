@@ -1,4 +1,5 @@
 #include "red_black_delete.h"
+#include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 
 static inline bool
 rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,

@@ -3,7 +3,7 @@
 #define KEYS_COUNT 10000
 #define I_LAST     (KEYS_COUNT - 1)
 
-static struct RedBlackTree tree;
+static RedBlackTree tree;
 static int keys[KEYS_COUNT];
 static const int *const restrict keys_until = &keys[KEYS_COUNT];
 
@@ -90,8 +90,6 @@ setup(void)
 
 	srandom((unsigned) time(NULL));
 
-	shuffle();
-
 	red_black_tree_init(&tree,
 			    &red_black_int_key_comparator);
 
@@ -105,6 +103,8 @@ test_insert(void)
 	int status;
 
 	ENTER("test_insert");
+
+	shuffle();
 
 	key = &keys[0];
 
@@ -152,6 +152,8 @@ test_find(void)
 
 	ENTER("test_find");
 
+	shuffle();
+
 	key = &keys[0];
 
 	do {
@@ -175,11 +177,81 @@ test_find(void)
 }
 
 static inline void
+test_iterator(void)
+{
+	int last_key;
+	int next_key;
+	unsigned int count;
+
+	RedBlackTreeIterator iterator;
+
+	ENTER("test_iterator");
+
+	/* test ascending iterator */
+
+	red_black_tree_iterator_init_asc(&iterator,
+					 &tree);
+
+	last_key = -1;
+	count    = 0;
+
+	while (red_black_tree_iterator_next(&iterator,
+					    (const void **) &next_key)) {
+		if (last_key > next_key)
+			TEST_FAILURE("iterator",
+				     "ASCENDING ITERATOR OUT OF ORDER");
+
+		last_key = next_key;
+
+		++count;
+	}
+
+	if (count < KEYS_COUNT)
+		TEST_FAILURE("iterator",
+			     "ASCENDING ITERATOR SKIPPED ENTRIES");
+	else if (count > KEYS_COUNT)
+		TEST_FAILURE("iterator",
+			     "ASCENDING ITERATOR REPEATED ENTRIES");
+
+	/* test descending iterator */
+
+	red_black_tree_iterator_init_desc(&iterator,
+					  &tree);
+
+	last_key = KEYS_COUNT + 1;
+	count    = 0;
+
+	while (red_black_tree_iterator_next(&iterator,
+					    (const void **) &next_key)) {
+		if (last_key < next_key)
+			TEST_FAILURE("iterator",
+				     "DESCENDING ITERATOR OUT OF ORDER");
+
+		last_key = next_key;
+
+		++count;
+	}
+
+	if (count < KEYS_COUNT)
+		TEST_FAILURE("iterator",
+			     "DESCENDING ITERATOR SKIPPED ENTRIES");
+	else if (count > KEYS_COUNT)
+		TEST_FAILURE("iterator",
+			     "DESCENDING ITERATOR REPEATED ENTRIES");
+
+	TEST_PASS("iterator");
+
+	RETURN("test_iterator");
+}
+
+static inline void
 test_delete(void)
 {
 	int *restrict key;
 
 	ENTER("test_delete");
+
+	shuffle();
 
 	if (red_black_tree_delete(&tree,
 				  (void *) (intptr_t) -1))
@@ -237,11 +309,9 @@ main(void)
 
 	test_insert();
 
-	shuffle();
-
 	test_find();
 
-	shuffle();
+	test_iterator();
 
 	test_delete();
 
