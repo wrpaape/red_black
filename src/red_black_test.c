@@ -19,16 +19,16 @@ handle_segfault(int signo)
 static inline unsigned int
 random_upto(const unsigned int upto)
 {
-	unsigned int rand;
+	unsigned long rand;
 
-	const unsigned int span      = upto + 1;
-	const unsigned int threshold = -span % span;
+	const unsigned long span      = (unsigned long) (upto + 1);
+	const unsigned long threshold = -span % span;
 
 	do {
-		rand = (unsigned int) random();
+		rand = (unsigned long) random();
 	} while (rand < threshold);
 
-	return rand % span;
+	return (unsigned int) (rand % span);
 }
 
 static inline void
@@ -94,8 +94,6 @@ setup(void)
 
 	red_black_tree_init(&tree,
 			    &red_black_int_key_comparator);
-
-
 
 	RETURN("setup");
 }

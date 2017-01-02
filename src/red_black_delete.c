@@ -1,8 +1,5 @@
 #include "red_black_delete.h"
 
-
-#define RSTACK_COUNT 81 /* can handle trees of upto at least 1,000,000,000 nodes */
-
 static inline bool
 rb_restore_black_shallow(struct RedBlackNode *restrict *const restrict tree,
 			 struct RedBlackNode *const restrict lnode,
@@ -608,7 +605,7 @@ rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
 	struct RedBlackNode *restrict replacement;
 	bool restored;
 
-	struct RedBlackNode *restrict replacement_stack[RSTACK_COUNT];
+	struct RedBlackNode *restrict replacement_stack[RED_BLACK_STACK_COUNT];
 	struct RedBlackNode *restrict *restrict replacement_stack_ptr;
 
 	if (lchild == NULL) {
@@ -699,7 +696,7 @@ rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
 	struct RedBlackNode *restrict replacement;
 	bool restored;
 
-	struct RedBlackNode *restrict replacement_stack[RSTACK_COUNT];
+	struct RedBlackNode *restrict replacement_stack[RED_BLACK_STACK_COUNT];
 	struct RedBlackNode *restrict *restrict replacement_stack_ptr;
 
 	if (lchild == NULL) {
