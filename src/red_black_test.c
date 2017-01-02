@@ -1,6 +1,6 @@
 #include "red_black_test.h"	/* deps, print macros */
 
-#define KEYS_COUNT 10
+#define KEYS_COUNT 5
 #define I_LAST     (KEYS_COUNT - 1)
 
 static struct RedBlackTree tree;
@@ -46,7 +46,7 @@ shuffle(void)
 	unsigned int i_old;
 	unsigned int i_new;
 
-	FN_ENTER("shuffle");
+	ENTER("shuffle");
 
 	i_old = 0;
 
@@ -59,7 +59,7 @@ shuffle(void)
 		++i_old;
 	} while (i_old < I_LAST);
 
-	FN_EXIT("shuffle");
+	RETURN("shuffle");
 }
 
 static inline void
@@ -68,7 +68,7 @@ setup(void)
 	int i;
 	struct sigaction action;
 
-	FN_ENTER("setup");
+	ENTER("setup");
 
 	action.sa_handler = &handle_segfault;
 
@@ -97,7 +97,7 @@ setup(void)
 
 
 
-	FN_EXIT("setup");
+	RETURN("setup");
 }
 
 static inline void
@@ -106,7 +106,7 @@ test_insert(void)
 	int *restrict key;
 	int status;
 
-	FN_ENTER("test_insert");
+	ENTER("test_insert");
 
 	key = &keys[0];
 
@@ -131,7 +131,7 @@ test_insert(void)
 
 	TEST_PASS("insert");
 
-	FN_EXIT("test_insert");
+	RETURN("test_insert");
 }
 
 static inline void
@@ -139,7 +139,7 @@ test_find(void)
 {
 	int *restrict key;
 
-	FN_ENTER("test_find");
+	ENTER("test_find");
 
 	key = &keys[0];
 
@@ -155,7 +155,7 @@ test_find(void)
 
 	TEST_PASS("find");
 
-	FN_EXIT("test_find");
+	RETURN("test_find");
 }
 
 static inline void
@@ -163,7 +163,7 @@ test_delete(void)
 {
 	int *restrict key;
 
-	FN_ENTER("test_delete");
+	ENTER("test_delete");
 
 	key = &keys[0];
 
@@ -190,17 +190,17 @@ test_delete(void)
 
 	TEST_PASS("delete");
 
-	FN_EXIT("test_delete");
+	RETURN("test_delete");
 }
 
 static inline void
 teardown(void)
 {
-	FN_ENTER("teardown");
+	ENTER("teardown");
 
 	red_black_tree_destroy(&tree);
 
-	FN_EXIT("teardown");
+	RETURN("teardown");
 }
 
 

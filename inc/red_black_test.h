@@ -4,9 +4,8 @@
 #include "red_black_tree.h"    /* red_black_insert|find|verify|delete */
 #include "red_black_int_key.h" /* red_black_int_key_comparator */
 #include <stdlib.h>            /* (s)random, exit */
-#include <stdlib.h>            /* (s)random, exit */
 #include <time.h>	       /* time */
-#include <stdio.h>	       /* printf, fputs */
+#include <stdio.h>	       /* fprintf */
 #include <unistd.h>	       /* write */
 #include <signal.h>            /* sigaction */
 
@@ -57,8 +56,8 @@ EXIT_ON_TEST_FAILURE("\nred_black_" MODE " test failure -- "		\
 EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 		    FORMAT "\n", ##__VA_ARGS__)
 
-#define FN_ENTER(NAME)	WRITE_LITERAL("entering " NAME "\n")
-#define FN_EXIT(NAME)	WRITE_LITERAL("exiting " NAME "\n")
+#define ENTER(NAME)	WRITE_LITERAL("entering " NAME "\n")
+#define RETURN(NAME)	WRITE_LITERAL("returning from " NAME "\n")
 
 #define TEST_PASS(TEST) WRITE_LITERAL("---\ntest_" TEST " passed!\n---\n")
 

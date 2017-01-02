@@ -5,6 +5,8 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include <stdbool.h>   /* bool */
 
+#include <stdio.h>
+#define DEBUG(...) do { printf(__VA_ARGS__); fflush(stdout); } while (0)
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */

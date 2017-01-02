@@ -1,5 +1,6 @@
 #include "red_black_delete.h"
 
+
 #define RSTACK_COUNT 81 /* can handle trees of upto at least 1,000,000,000 nodes */
 
 static inline bool
@@ -1049,6 +1050,7 @@ rb_delete_correct_l_bot_b(struct RedBlackNode *restrict *const restrict tree,
 
 		if (rrchild == NULL) {
 			rnode->is_red = true;
+			DEBUG("RETURNING\n");
 			return false; /* balanced, deficient 1 black height */
 		}
 		/* rrchild must be a RED leaf */
@@ -1320,6 +1322,8 @@ rb_delete_correct_l_bot(struct RedBlackNode *restrict *const restrict tree,
 					    parent))
 		return; /* still need to correct */
 
+	DEBUG("AWOOGA SHOULDN'T BE HERE\n");
+
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
 
@@ -1414,6 +1418,8 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 		rb_delete_correct_l_bot(tree,
 					parent,
 					jump_buffer);
+
+		DEBUG("I HAVE RETURNED\n");
 
 	} else {
 		if (compare < 0)
@@ -1530,6 +1536,8 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 					    jump_buffer,
 					    key);
 
+				DEBUG("CORRECTING\n");
+
 				/* if returned need to correct */
 				(void) rb_delete_correct_l_mid_b(tree,
 								 node);
@@ -1550,6 +1558,8 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 			return true; /* updated */
 		}
 	}
+
+	DEBUG("RETURNING FROM red_black_delete\n");
 
 	return status;
 }

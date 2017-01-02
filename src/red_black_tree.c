@@ -43,13 +43,30 @@ red_black_tree_delete(struct RedBlackTree *const restrict tree,
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
-	return (status == 0)
-	     ? red_black_delete(&tree->root,
-				tree->comparator,
-				&tree->allocator,
-				&jump_buffer,
-				key)
-	     : (bool) RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+	/* return (status == 0) */
+	/*      ? red_black_delete(&tree->root, */
+	/* 			tree->comparator, */
+	/* 			&tree->allocator, */
+	/* 			&jump_buffer, */
+	/* 			key) */
+	/*      : ((bool) RED_BLACK_JUMP_2_STATUS(status)); /1* 1, 0 *1/ */
+
+	bool retval;
+
+	if (status == 0) {
+		retval = red_black_delete(&tree->root,
+					  tree->comparator,
+					  &tree->allocator,
+					  &jump_buffer,
+					  key);
+		DEBUG("RETURNING FROM red_black_tree_delete\n");
+
+	} else {
+		retval = (bool) RED_BLACK_JUMP_2_STATUS(status);
+		DEBUG("JUMPING FROM red_black_tree_delete\n");
+	}
+
+	return retval;
 }
 
 bool
