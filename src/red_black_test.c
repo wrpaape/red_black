@@ -1,6 +1,9 @@
 #include "red_black_test.h"	/* deps, print macros */
 
-#define KEYS_COUNT 1000
+#define DO_VERIFY 0
+
+#define KEYS_COUNT 1000000
+
 #define I_LAST     (KEYS_COUNT - 1)
 #define STR(X)  #X
 #define XSTR(X) STR(X)
@@ -46,21 +49,19 @@ swap(int *const restrict x,
 static inline void
 shuffle(void)
 {
-	unsigned int i_old;
-	unsigned int i_new;
+	int i_old;
+	int i_new;
 
 	ENTER("shuffle");
 
 	i_old = 0;
 
-	do {
+	for (i_old = 0; i_old < I_LAST; ++i_old) {
 		i_new = i_old + random_upto(I_LAST - i_old);
 
 		swap(&keys[i_old],
 		     &keys[i_new]);
-
-		++i_old;
-	} while (i_old < I_LAST);
+	}
 
 	RETURN("shuffle");
 }
@@ -122,10 +123,12 @@ test_insert(void)
 			TEST_FAILURE("insert",
 				     "KEY NOT UNIQUE: %d",
 				     *key);
+#if DO_VERIFY
 		else if (!red_black_tree_verify(&tree))
 			TEST_FAILURE("insert",
 				     "NOT VALID TREE (inserted %d)",
 				     *key);
+#endif /* if DO_VERIFY */
 
 		++key;
 	} while (key < keys_until);
@@ -139,9 +142,11 @@ test_insert(void)
 	else if (status == 1)
 		TEST_FAILURE("insert",
 			     "'0' INSERTED TWICE");
+#if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
 		TEST_FAILURE("insert",
 			     "NOT VALID TREE (no insertion)");
+#endif /* if DO_VERIFY */
 
 	TEST_PASS("insert");
 
@@ -282,9 +287,11 @@ test_delete(void)
 				  (void *) (intptr_t) -1))
 		TEST_FAILURE("delete",
 			     "DELETED NEGATIVE KEY");
+#if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
 		TEST_FAILURE("delete",
 			     "NOT VALID TREE (no deletion)");
+#endif /* if DO_VERIFY */
 
 	key = &keys[0];
 
@@ -294,10 +301,12 @@ test_delete(void)
 			TEST_FAILURE("delete",
 				     "KEY NOT FOUND: %d",
 				     *key);
+#if DO_VERIFY
 		else if (!red_black_tree_verify(&tree))
 			TEST_FAILURE("delete",
 				     "NOT VALID TREE (deleted %d)",
 				     *key);
+#endif /* if DO_VERIFY */
 
 		++key;
 	} while (key < keys_until);
@@ -306,9 +315,11 @@ test_delete(void)
 				  (void *) (intptr_t) 0))
 		TEST_FAILURE("delete",
 			     "DELETED 0 TWICE");
+#if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
 		TEST_FAILURE("delete",
 			     "NOT VALID TREE (no deletion)");
+#endif /* if DO_VERIFY */
 
 	TEST_PASS("delete");
 

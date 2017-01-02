@@ -33,7 +33,7 @@ red_black_count(const struct RedBlackNode *restrict node)
 			node = next;
 		}
 
-		while (1) {
+		while (1) { /* find next root */
 			++count; /* count root */
 
 			node = node->right; /* set next root */
