@@ -3,9 +3,6 @@
 #include <stddef.h>                /* NULL */
 
 
-#include <stdio.h>
-#include <signal.h>
-
 unsigned int
 red_black_count(const struct RedBlackNode *restrict node)
 {
@@ -14,7 +11,10 @@ red_black_count(const struct RedBlackNode *restrict node)
 	const struct RedBlackNode *restrict next;
 	unsigned int count;
 
-	count = 0;
+	if (node == NULL)
+		return 0;
+
+	count = 1;
 
 	cursor  = &stack[0];
 	*cursor = NULL;
@@ -33,7 +33,6 @@ red_black_count(const struct RedBlackNode *restrict node)
 		}
 
 		while (1) {
-			++count;
 			node = node->right;
 
 			if (node != NULL)
@@ -41,12 +40,12 @@ red_black_count(const struct RedBlackNode *restrict node)
 
 			node = *cursor;
 
-			if (node == NULL) {
-				printf("\n\nCOUNT: %u\n", count); fflush(stdout);
+			if (node == NULL)
 				return count;
-			}
 
 			--cursor;
+
+			++count;
 		}
 	}
 }
