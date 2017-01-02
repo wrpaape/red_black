@@ -1,6 +1,6 @@
 #include "red_black_test.h"	/* deps, print macros */
 
-#define KEYS_COUNT 100
+#define KEYS_COUNT 10000
 #define I_LAST     (KEYS_COUNT - 1)
 
 static struct RedBlackTree tree;
@@ -129,6 +129,19 @@ test_insert(void)
 		++key;
 	} while (key < keys_until);
 
+	status = red_black_tree_insert(&tree,
+				       (void *) (intptr_t) 0);
+
+	if (status < 0)
+		SYS_FAILURE("insert",
+			    "OUT OF MEMORY");
+	else if (status == 1)
+		TEST_FAILURE("insert",
+			     "'0' INSERTED TWICE");
+	else if (!red_black_tree_verify(&tree))
+		TEST_FAILURE("insert",
+			     "NOT VALID TREE (no insertion)");
+
 	TEST_PASS("insert");
 
 	RETURN("test_insert");
@@ -153,6 +166,11 @@ test_find(void)
 		++key;
 	} while (key < keys_until);
 
+	if (red_black_tree_find(&tree,
+				(void *) (intptr_t) -1))
+		TEST_FAILURE("find",
+			     "FOUND NEGATIVE KEY");
+
 	TEST_PASS("find");
 
 	RETURN("test_find");
@@ -165,38 +183,37 @@ test_delete(void)
 
 	ENTER("test_delete");
 
+	if (red_black_tree_delete(&tree,
+				  (void *) (intptr_t) -1))
+		TEST_FAILURE("delete",
+			     "DELETED NEGATIVE KEY");
+	else if (!red_black_tree_verify(&tree))
+		TEST_FAILURE("delete",
+			     "NOT VALID TREE (no deletion)");
+
 	key = &keys[0];
 
 	do {
-		DEBUG("deleting key: %d\n", *key);
-
-		if (!PRINT_TREE())
-			EXIT_ON_SYS_FAILURE("write failure or OOM");
-
 		if (!red_black_tree_delete(&tree,
-					   (void *) (intptr_t) *key)) {
+					   (void *) (intptr_t) *key))
 			TEST_FAILURE("delete",
 				     "KEY NOT FOUND: %d",
 				     *key);
-
-		} else {
-			DEBUG("deleted key: %d\n", *key);
-
-			DEBUG("PRINTING TREE\n\n");
-
-			if (!PRINT_TREE())
-				EXIT_ON_SYS_FAILURE("write failure or OOM");
-
-			DEBUG("PRINTED TREE\n\n");
-
-			if (!red_black_tree_verify(&tree))
-				TEST_FAILURE("insert",
-					     "NOT VALID TREE (deleted %d)",
-					     *key);
-		}
+		else if (!red_black_tree_verify(&tree))
+			TEST_FAILURE("delete",
+				     "NOT VALID TREE (deleted %d)",
+				     *key);
 
 		++key;
 	} while (key < keys_until);
+
+	if (red_black_tree_delete(&tree,
+				  (void *) (intptr_t) 0))
+		TEST_FAILURE("delete",
+			     "DELETED 0 TWICE");
+	else if (!red_black_tree_verify(&tree))
+		TEST_FAILURE("delete",
+			     "NOT VALID TREE (no deletion)");
 
 	TEST_PASS("delete");
 

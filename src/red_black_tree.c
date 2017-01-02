@@ -43,30 +43,13 @@ red_black_tree_delete(struct RedBlackTree *const restrict tree,
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
-	/* return (status == 0) */
-	/*      ? red_black_delete(&tree->root, */
-	/* 			tree->comparator, */
-	/* 			&tree->allocator, */
-	/* 			&jump_buffer, */
-	/* 			key) */
-	/*      : ((bool) RED_BLACK_JUMP_2_STATUS(status)); /1* 1, 0 *1/ */
-
-	bool retval;
-
-	if (status == 0) {
-		retval = red_black_delete(&tree->root,
-					  tree->comparator,
-					  &tree->allocator,
-					  &jump_buffer,
-					  key);
-		DEBUG("RETURNING FROM red_black_tree_delete: %d\n", retval);
-
-	} else {
-		retval = (bool) RED_BLACK_JUMP_2_STATUS(status);
-		DEBUG("JUMPING FROM red_black_tree_delete: %d\n", retval);
-	}
-
-	return retval;
+	return (status == 0)
+	     ? red_black_delete(&tree->root,
+				tree->comparator,
+				&tree->allocator,
+				&jump_buffer,
+				key)
+	     : ((bool) RED_BLACK_JUMP_2_STATUS(status)); /* 1, 0 */
 }
 
 bool
@@ -81,16 +64,8 @@ red_black_tree_find(struct RedBlackTree *const restrict tree,
 bool
 red_black_tree_verify(struct RedBlackTree *const restrict tree)
 {
-	DEBUG("VERIFYING TREE\n");
-	/* return red_black_verify(tree->root, */
-	/* 			tree->comparator); */
-
-	const bool status = red_black_verify(tree->root,
-					     tree->comparator);
-
-	DEBUG("DONE VERIFYING: %d\n", (int) status);
-
-	return status;
+	return red_black_verify(tree->root,
+				tree->comparator);
 }
 
 bool
