@@ -1,7 +1,10 @@
 #include "red_black_test.h"	/* deps, print macros */
 
-#define KEYS_COUNT 10
+#define KEYS_COUNT 1000
 #define I_LAST     (KEYS_COUNT - 1)
+#define STR(X)  #X
+#define XSTR(X) STR(X)
+#define KC_STR  XSTR(KEYS_COUNT)
 
 static RedBlackTree tree;
 static int keys[KEYS_COUNT];
@@ -244,6 +247,7 @@ test_iterator(void)
 	RETURN("test_iterator");
 }
 
+
 static inline void
 test_count(void)
 {
@@ -253,10 +257,12 @@ test_count(void)
 
 	if (count < KEYS_COUNT)
 		TEST_FAILURE("count",
-			     "COUNT LESS THAN EXPECTED");
+			     "COUNT LESS THAN EXPECTED: %d < " KC_STR,
+			     count);
 	else if (count > KEYS_COUNT)
 		TEST_FAILURE("count",
-			     "COUNT GREATER THAN EXPECTED");
+			     "COUNT GREATER THAN EXPECTED: %d > " KC_STR,
+			     count);
 
 	TEST_PASS("count");
 

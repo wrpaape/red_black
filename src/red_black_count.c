@@ -2,6 +2,7 @@
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 #include <stddef.h>                /* NULL */
 
+#include <stdio.h>
 
 unsigned int
 red_black_count(const struct RedBlackNode *restrict node)
@@ -14,13 +15,13 @@ red_black_count(const struct RedBlackNode *restrict node)
 	if (node == NULL)
 		return 0;
 
-	count = 1;
+	count = 0;
 
 	cursor  = &stack[0];
 	*cursor = NULL;
 
 	while (1) {
-		while (1) {
+		while (1) { /* fetch minimum */
 			next = node->left;
 
 			if (next == NULL)
@@ -33,19 +34,19 @@ red_black_count(const struct RedBlackNode *restrict node)
 		}
 
 		while (1) {
-			node = node->right;
+			++count; /* count root */
+
+			node = node->right; /* set next root */
 
 			if (node != NULL)
 				break;
 
-			node = *cursor;
+			node = *cursor; /* unwind stack */
 
 			if (node == NULL)
 				return count;
 
 			--cursor;
-
-			++count;
 		}
 	}
 }
