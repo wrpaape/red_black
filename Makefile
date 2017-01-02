@@ -37,6 +37,7 @@ PRINT_H       := $(INC_DIR)/red_black_print.h
 PRINT_TYPES_H := $(INC_DIR)/red_black_print_types.h
 TREE_H        := $(INC_DIR)/red_black_tree.h
 VERIFY_H      := $(INC_DIR)/red_black_verify.h
+COUNT_H       := $(INC_DIR)/red_black_count.h
 DEMO_H        := $(INC_DIR)/red_black_demo.h
 TEST_H        := $(INC_DIR)/red_black_test.h
 
@@ -52,6 +53,7 @@ INT_KEY_C   := $(SRC_DIR)/red_black_int_key.c
 PRINT_C     := $(SRC_DIR)/red_black_print.c
 TREE_C      := $(SRC_DIR)/red_black_tree.c
 VERIFY_C    := $(SRC_DIR)/red_black_verify.c
+COUNT_C     := $(SRC_DIR)/red_black_count.c
 DEMO_C      := $(SRC_DIR)/red_black_demo.c
 TEST_C      := $(SRC_DIR)/red_black_test.c
 
@@ -65,6 +67,7 @@ FIND_O      := $(OBJ_DIR)/red_black_find.o
 INSERT_O    := $(OBJ_DIR)/red_black_insert.o
 INT_KEY_O   := $(OBJ_DIR)/red_black_int_key.o
 PRINT_O     := $(OBJ_DIR)/red_black_print.o
+COUNT_O     := $(OBJ_DIR)/red_black_count.o
 TREE_O      := $(OBJ_DIR)/red_black_tree.o
 VERIFY_O    := $(OBJ_DIR)/red_black_verify.o
 DEMO_O      := $(OBJ_DIR)/red_black_demo.o
@@ -79,6 +82,7 @@ DELETE_PO    := $(OBJ_DIR)/red_black_delete_pic.o
 FIND_PO      := $(OBJ_DIR)/red_black_find_pic.o
 INSERT_PO    := $(OBJ_DIR)/red_black_insert_pic.o
 PRINT_PO     := $(OBJ_DIR)/red_black_print_pic.o
+COUNT_PO     := $(OBJ_DIR)/red_black_count_pic.o
 VERIFY_PO    := $(OBJ_DIR)/red_black_verify_pic.o
 
 
@@ -102,15 +106,20 @@ TREE_SH := $(LIB_DIR)/red_black_tree.dylib
 # ──────────────────────────────────────────────────────────────────────────────
 TARGETS := $(TREE_ST) $(TREE_SH) $(TREE_O) $(TEST) $(TEST_O) $(DEMO) $(DEMO_O) \
 	   $(ALLOCATOR_O) $(DELETE_O) $(FIND_O) $(INSERT_O) \
-	   $(INT_KEY_O) $(PRINT_O) $(VERIFY_O) \
+	   $(INT_KEY_O) $(PRINT_O) $(VERIFY_O) $(COUNT_O) \
            $(ALLOCATOR_PO) $(DELETE_PO) $(FIND_PO) $(INSERT_PO) \
-	   $(PRINT_PO) $(VERIFY_PO)
+	   $(PRINT_PO) $(VERIFY_PO) $(COUNT_PO)
 
 
 # DEPENDENCIES
 # ──────────────────────────────────────────────────────────────────────────────
 INT_KEY_O_DEP    := $(INT_KEY_C) $(INT_KEY_H)
 INT_KEY_O_GRP    := $(INT_KEY_O)
+
+COUNT_O_DEP      := $(COUNT_C) $(COUNT_H) $(NODE_H) $(STACK_COUNT_H)
+COUNT_O_GRP      := $(COUNT_O)
+COUNT_PO_DEP     := $(COUNT_O_DEP)
+COUNT_PO_GRP     := $(COUNT_PO)
 
 VERIFY_O_DEP     := $(VERIFY_C) $(VERIFY_H) $(NODE_H) $(COMPARATOR_H)
 VERIFY_O_GRP     := $(VERIFY_O)
@@ -149,12 +158,12 @@ DELETE_PO_GRP    := $(DELETE_PO) $(ALLOCATOR_PO_GRP)
 
 TREE_O_DEP       := $(TREE_C) $(TREE_H) $(COMPARATOR_H) $(ALLOCATOR_H) \
 	            $(ITERATOR_H) $(PRINT_TYPES_H) $(INSERT_H) $(DELETE_H) \
-	            $(FIND_H) $(VERIFY_H) $(PRINT_H)
+	            $(FIND_H) $(VERIFY_H) $(PRINT_H) $(COUNT_H)
 TREE_O_GRP       := $(TREE_O) $(ALLOCATOR_O_GRP) $(INSERT_O_GRP) $(DELETE_O_GRP) \
-	            $(FIND_O_GRP) $(VERIFY_O_GRP) $(PRINT_O_GRP) $(ITERATOR_O_GRP)
+	            $(FIND_O_GRP) $(VERIFY_O_GRP) $(PRINT_O_GRP) $(COUNT_O_GRP) $(ITERATOR_O_GRP)
 TREE_PO_DEP      := $(TREE_O_DEP)
 TREE_PO_GRP      := $(TREE_PO) $(ALLOCATOR_PO_GRP) $(INSERT_PO_GRP) $(DELETE_PO_GRP) \
-	            $(FIND_PO_GRP) $(VERIFY_PO_GRP) $(PRINT_PO_GRP) $(ITERATOR_PO_GRP)
+	            $(FIND_PO_GRP) $(VERIFY_PO_GRP) $(PRINT_PO_GRP) $(COUNT_PO_GRP) $(ITERATOR_PO_GRP)
 TREE_ST_DEP      := $(TREE_O_GRP)
 TREE_SH_DEP      := $(TREE_PO_GRP)
 
@@ -237,6 +246,12 @@ $(VERIFY_O): $(VERIFY_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(VERIFY_PO): $(VERIFY_PO_DEP)
+	$(CC) $(CC_FLAGS) -fpic $< -o $@
+
+$(COUNT_O): $(COUNT_O_DEP)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+$(COUNT_PO): $(COUNT_PO_DEP)
 	$(CC) $(CC_FLAGS) -fpic $< -o $@
 
 $(INT_KEY_O): $(INT_KEY_O_DEP)

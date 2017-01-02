@@ -4,6 +4,7 @@
 #include "red_black_find.h"
 #include "red_black_verify.h"
 #include "red_black_print.h"
+#include "red_black_count.h"
 
 
 void
@@ -82,6 +83,12 @@ red_black_tree_print(RedBlackTree *const restrict tree,
 	return red_black_print(tree->root,
 			       key_sizer,
 			       key_putter);
+}
+
+unsigned int
+red_black_tree_count(RedBlackTree *const restrict tree)
+{
+	return red_black_count(tree->root);
 }
 
 void

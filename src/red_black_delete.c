@@ -142,7 +142,7 @@ rb_restore_red_shallow(struct RedBlackNode *restrict *const restrict tree,
  * if black height cannot be restored, retore balance and return false */
 static inline bool
 rb_restore_rtree_unwind(struct RedBlackNode *restrict *restrict root,
-			struct RedBlackNode *const restrict *restrict stack_ptr,
+			struct RedBlackNode *const restrict *restrict cursor,
 			struct RedBlackNode *restrict parent)
 {
 	struct RedBlackNode *restrict grandparent;
@@ -153,8 +153,8 @@ rb_restore_rtree_unwind(struct RedBlackNode *restrict *restrict root,
 	struct RedBlackNode *restrict rlrgrandchild;
 
 	while (parent != NULL) {
-		--stack_ptr;
-		grandparent = *stack_ptr;
+		--cursor;
+		grandparent = *cursor;
 
 		rnode   = parent->right;
 		rlchild = rnode->left;
@@ -286,7 +286,7 @@ rb_restore_rtree_unwind(struct RedBlackNode *restrict *restrict root,
 
 static inline bool
 rb_restore_rtree(struct RedBlackNode *restrict *restrict root,
-		 struct RedBlackNode *const restrict *restrict stack_ptr,
+		 struct RedBlackNode *const restrict *restrict cursor,
 		 struct RedBlackNode *restrict parent)
 {
 	struct RedBlackNode *restrict grandparent;
@@ -295,7 +295,7 @@ rb_restore_rtree(struct RedBlackNode *restrict *restrict root,
 	struct RedBlackNode *restrict rrchild;
 	struct RedBlackNode *restrict rllgrandchild;
 
-	grandparent = *stack_ptr;
+	grandparent = *cursor;
 	rnode       = parent->right;
 	rlchild     = rnode->left;
 
@@ -374,7 +374,7 @@ rb_restore_rtree(struct RedBlackNode *restrict *restrict root,
 			 * look for opportunity to correct
 			 * ────────────────────────────────────────── */
 			return rb_restore_rtree_unwind(root,
-						       stack_ptr,
+						       cursor,
 						       grandparent);
 		}
 
@@ -416,7 +416,7 @@ rb_restore_rtree(struct RedBlackNode *restrict *restrict root,
  * if can't, restore balance and return false */
 static inline bool
 rb_restore_black_rtree(struct RedBlackNode *restrict *restrict root,
-		       struct RedBlackNode *const restrict *restrict stack_ptr,
+		       struct RedBlackNode *const restrict *restrict cursor,
 		       struct RedBlackNode *restrict parent,
 		       struct RedBlackNode *const restrict lnode,
 		       struct RedBlackNode *const restrict lrchild)
@@ -427,7 +427,7 @@ rb_restore_black_rtree(struct RedBlackNode *restrict *restrict root,
 		lnode->is_red   = false;
 	else
 		return rb_restore_rtree(root,
-					stack_ptr,
+					cursor,
 					parent);
 
 	return true; /* completely restored */
@@ -435,7 +435,7 @@ rb_restore_black_rtree(struct RedBlackNode *restrict *restrict root,
 
 static inline bool
 rb_restore_red_rtree(struct RedBlackNode *restrict *restrict root,
-		     struct RedBlackNode *const restrict *restrict stack_ptr,
+		     struct RedBlackNode *const restrict *restrict cursor,
 		     struct RedBlackNode *restrict parent,
 		     struct RedBlackNode *const restrict lnode,
 		     struct RedBlackNode *const restrict lrchild)
@@ -446,7 +446,7 @@ rb_restore_red_rtree(struct RedBlackNode *restrict *restrict root,
 
 		if (lrchild == NULL)
 			return rb_restore_rtree(root,
-						stack_ptr,
+						cursor,
 						parent);
 
 		lrchild->is_red = false;
@@ -607,7 +607,7 @@ rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
 	bool restored;
 
 	struct RedBlackNode *restrict replacement_stack[RED_BLACK_STACK_COUNT];
-	struct RedBlackNode *restrict *restrict replacement_stack_ptr;
+	struct RedBlackNode *restrict *restrict replacement_cursor;
 
 	if (lchild == NULL) {
 		*tree = rchild;
@@ -634,8 +634,8 @@ rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
 						lchild,
 						rchild);
 
-	replacement_stack_ptr  = &replacement_stack[0];
-	*replacement_stack_ptr = NULL;
+	replacement_cursor  = &replacement_stack[0];
+	*replacement_cursor = NULL;
 
 	replacement_parent = rchild;
 
@@ -644,8 +644,8 @@ rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
 		if (replacement_child == NULL)
 			break;
 
-		++replacement_stack_ptr;
-		*replacement_stack_ptr = replacement_parent;
+		++replacement_cursor;
+		*replacement_cursor = replacement_parent;
 
 		replacement_parent = replacement;
 		replacement        = replacement_child;
@@ -655,7 +655,7 @@ rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
 	replacement_parent->left = replacement_child; /* pop replacement */
 
 	restored = rb_restore_black_rtree(&rchild,
-					  replacement_stack_ptr,
+					  replacement_cursor,
 					  replacement_parent,
 					  replacement,
 					  replacement_child);
@@ -698,7 +698,7 @@ rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
 	bool restored;
 
 	struct RedBlackNode *restrict replacement_stack[RED_BLACK_STACK_COUNT];
-	struct RedBlackNode *restrict *restrict replacement_stack_ptr;
+	struct RedBlackNode *restrict *restrict replacement_cursor;
 
 	if (lchild == NULL) {
 		*tree = NULL; /* rchild must be NULL */
@@ -717,8 +717,8 @@ rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
 		return;
 	}
 
-	replacement_stack_ptr  = &replacement_stack[0];
-	*replacement_stack_ptr = NULL;
+	replacement_cursor  = &replacement_stack[0];
+	*replacement_cursor = NULL;
 
 	replacement_parent = rchild;
 
@@ -727,8 +727,8 @@ rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
 		if (replacement_child == NULL)
 			break;
 
-		++replacement_stack_ptr;
-		*replacement_stack_ptr = replacement_parent;
+		++replacement_cursor;
+		*replacement_cursor = replacement_parent;
 
 		replacement_parent = replacement;
 		replacement        = replacement_child;
@@ -738,7 +738,7 @@ rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
 	replacement_parent->left = replacement_child; /* pop replacement */
 
 	restored = rb_restore_red_rtree(&rchild,
-					replacement_stack_ptr,
+					replacement_cursor,
 					replacement_parent,
 					replacement,
 					replacement_child);

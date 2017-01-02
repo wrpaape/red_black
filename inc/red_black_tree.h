@@ -56,6 +56,9 @@ red_black_tree_print(RedBlackTree *const restrict tree,
 		     const RedBlackKeySizer key_sizer,
 		     const RedBlackKeyPutter key_putter);
 
+unsigned int
+red_black_tree_count(RedBlackTree *const restrict tree);
+
 void
 red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
 				 RedBlackTree *const restrict tree);
