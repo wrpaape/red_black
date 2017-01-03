@@ -10,24 +10,19 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-struct RedBlackAllocatorNode {
-	struct RedBlackNode node;
-	struct RedBlackAllocatorNode *restrict next;
-};
-
 struct RedBlackAllocatorBufferBlock {
 	struct RedBlackAllocatorBufferBlock *next;
 };
 
 struct RedBlackAllocatorBuffer {
-	struct RedBlackAllocatorNode *restrict cursor;
-	const struct RedBlackAllocatorNode *restrict until;
+	struct RedBlackNode *restrict cursor;
+	const struct RedBlackNode *restrict until;
 	size_t expand;
 	struct RedBlackAllocatorBufferBlock *restrict blocks;
 };
 
 struct RedBlackAllocator {
-	struct RedBlackAllocatorNode *restrict free;
+	struct RedBlackNode *restrict free;
 	struct RedBlackAllocatorBuffer buffer;
 };
 

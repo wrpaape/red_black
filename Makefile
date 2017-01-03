@@ -1,10 +1,10 @@
 # DIRECTORY CONFIGURATION
 # ──────────────────────────────────────────────────────────────────────────────
-SRC_DIR := src
-INC_DIR := inc
-OBJ_DIR := obj
-BIN_DIR := bin
-LIB_DIR := lib
+SRC_DIR := src# .c source files
+INC_DIR := inc# .h header files
+OBJ_DIR := obj# .o object files
+BIN_DIR := bin# binary executable files
+LIB_DIR := lib# static and shared library files
 
 
 # UTILITY CONFIGURATION
