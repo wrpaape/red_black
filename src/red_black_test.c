@@ -1,10 +1,12 @@
 #include "red_black_test.h"	/* deps, print macros */
 
+/* check validity of RedBlackTree after every potential modification */
 #define DO_VERIFY 0
 
 #define KEYS_COUNT 1000000
 
 #define I_LAST     (KEYS_COUNT - 1)
+
 #define STR(X)  #X
 #define XSTR(X) STR(X)
 #define KC_STR  XSTR(KEYS_COUNT)
@@ -16,6 +18,8 @@ static const int *const restrict keys_until = &keys[KEYS_COUNT];
 void
 handle_segfault(int signo)
 {
+	WRITE_LITERAL("\ncaught SIGSEGV\n");
+
 	if (PRINT_TREE())
 		EXIT_ON_SYS_FAILURE("segfault");
 	else
@@ -54,8 +58,6 @@ shuffle(void)
 
 	ENTER("shuffle");
 
-	i_old = 0;
-
 	for (i_old = 0; i_old < I_LAST; ++i_old) {
 		i_new = i_old + random_upto(I_LAST - i_old);
 
@@ -80,6 +82,7 @@ setup(void)
 
 	action.sa_flags = 0;
 
+	/* attempt to print tree on segfault */
 	if (sigaction(SIGSEGV,
 		      &action,
 		      NULL) < 0)
@@ -254,20 +257,22 @@ test_iterator(void)
 
 
 static inline void
-test_count(void)
+test_count(const unsigned int expected)
 {
 	ENTER("test_count");
 
 	const unsigned int count = red_black_tree_count(&tree);
 
-	if (count < KEYS_COUNT)
+	if (count < expected)
 		TEST_FAILURE("count",
-			     "COUNT LESS THAN EXPECTED: %d < " KC_STR,
-			     count);
-	else if (count > KEYS_COUNT)
+			     "COUNT LESS THAN EXPECTED: %u < %u",
+			     count,
+			     expected);
+	else if (count > expected)
 		TEST_FAILURE("count",
-			     "COUNT GREATER THAN EXPECTED: %d > " KC_STR,
-			     count);
+			     "COUNT GREATER THAN EXPECTED: %u > %u",
+			     count,
+			     expected);
 
 	TEST_PASS("count");
 
@@ -343,15 +348,19 @@ main(void)
 {
 	setup();
 
+	test_count(0);
+
 	test_insert();
 
 	test_find();
 
 	test_iterator();
 
-	test_count();
+	test_count(KEYS_COUNT);
 
 	test_delete();
+
+	test_count(0);
 
 	teardown();
 

@@ -56,6 +56,7 @@ VERIFY_C    := $(SRC_DIR)/red_black_verify.c
 COUNT_C     := $(SRC_DIR)/red_black_count.c
 DEMO_C      := $(SRC_DIR)/red_black_demo.c
 TEST_C      := $(SRC_DIR)/red_black_test.c
+USORT_C     := $(SRC_DIR)/red_black_usort.c
 
 
 # OBJECT FILES
@@ -72,6 +73,7 @@ TREE_O      := $(OBJ_DIR)/red_black_tree.o
 VERIFY_O    := $(OBJ_DIR)/red_black_verify.o
 DEMO_O      := $(OBJ_DIR)/red_black_demo.o
 TEST_O      := $(OBJ_DIR)/red_black_test.o
+USORT_O     := $(OBJ_DIR)/red_black_usort.o
 
 
 # PIC OBJECT FILES
@@ -88,8 +90,9 @@ VERIFY_PO    := $(OBJ_DIR)/red_black_verify_pic.o
 
 # BINARY FILES
 # ──────────────────────────────────────────────────────────────────────────────
-DEMO := $(BIN_DIR)/red_black_demo
-TEST := $(BIN_DIR)/red_black_test
+DEMO  := $(BIN_DIR)/red_black_demo
+TEST  := $(BIN_DIR)/red_black_test
+USORT := $(BIN_DIR)/red_black_usort
 
 
 # STATIC LIBRARY FILES
@@ -104,7 +107,8 @@ TREE_SH := $(LIB_DIR)/red_black_tree.dylib
 
 # ALL TARGETS
 # ──────────────────────────────────────────────────────────────────────────────
-TARGETS := $(TREE_ST) $(TREE_SH) $(TREE_O) $(TEST) $(TEST_O) $(DEMO) $(DEMO_O) \
+TARGETS := $(USORT) $(USORT_O) $(TREE_ST) $(TREE_SH) $(TREE_O) \
+	   $(TEST) $(TEST_O) $(DEMO) $(DEMO_O) \
 	   $(ALLOCATOR_O) $(DELETE_O) $(FIND_O) $(INSERT_O) \
 	   $(INT_KEY_O) $(PRINT_O) $(VERIFY_O) $(COUNT_O) \
            $(ALLOCATOR_PO) $(DELETE_PO) $(FIND_PO) $(INSERT_PO) \
@@ -177,10 +181,16 @@ TEST_O_GRP       := $(TEST_O) $(TREE_O_GRP) $(INT_KEY_O_GRP)
 
 TEST_DEP         := $(TEST_O) $(TEST_O_GRP)
 
+USORT_O_DEP      := $(USORT_C) $(TREE_H)
+USORT_DEP        := $(USORT_O) $(TREE_ST)
+
 
 # MAKE RULES
 # ──────────────────────────────────────────────────────────────────────────────
 all: $(TARGETS)
+
+$(USORT): $(USORT_DEP)
+	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
 
 $(TREE_ST): $(TREE_ST_DEP)
 	$(AR) $(AR_FLAGS) $@ $^
@@ -193,6 +203,9 @@ $(TEST): $(TEST_DEP)
 
 $(DEMO): $(DEMO_DEP)
 	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
+
+$(USORT_O): $(USORT_O_DEP)
+	$(CC) $(CC_FLAGS) $< -o $@
 
 $(TEST_O): $(TEST_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
