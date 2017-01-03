@@ -1,9 +1,13 @@
 #include "red_black_test.h"	/* deps, print macros */
 
-/* check validity of RedBlackTree after every potential modification */
+
+/* defines length of array of unique integer keys to be inserted/deleted */
+#define KEYS_COUNT 1000000
+
+/* check validity of RedBlackTree after every potential modification
+ * O(KEYS_COUNT²), set nonzero for small (upto ~10k) KEYS_COUNT */
 #define DO_VERIFY 0
 
-#define KEYS_COUNT 1000000
 
 #define I_LAST     (KEYS_COUNT - 1)
 
@@ -346,6 +350,8 @@ teardown(void)
 int
 main(void)
 {
+	WRITE_LITERAL("---\nstarting tests for KEYS_COUNT = " KC_STR "\n---\n");
+
 	setup();
 
 	test_count(0);
@@ -363,6 +369,8 @@ main(void)
 	test_count(0);
 
 	teardown();
+
+	WRITE_LITERAL("---\nall tests passed!\n---\n");
 
 	return 0;
 }

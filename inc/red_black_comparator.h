@@ -3,6 +3,10 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
+/* returns
+ *	< 0	key1 <  key2
+ *	  0	key1 == key2
+ *	> 0	key1 >  key2 */
 typedef int
 (*RedBlackComparator)(const void *key1,
 		      const void *key2);
