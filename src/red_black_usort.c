@@ -6,13 +6,13 @@ int
 compare_strings(const void *key1,
 		const void *key2)
 {
-	const char *string1;
-	const char *string2;
+	const unsigned char *string1;
+	const unsigned char *string2;
 	int token1;
 	int token2;
 
-	string1 = (const char *) key1;
-	string2 = (const char *) key2;
+	string1 = (const unsigned char *) key1;
+	string2 = (const unsigned char *) key2;
 
 	while (1) {
 		token1 = (int) *string1;
@@ -49,7 +49,6 @@ main(int argc,
 			exit(1);
 		}
 
-
 	/* initialize ascending iterator */
 	red_black_tree_iterator_init_asc(&iterator,
 					 &tree);
@@ -58,7 +57,6 @@ main(int argc,
 	while (red_black_tree_iterator_next(&iterator,
 					    &key))
 		puts((const char *) key);
-
 
 	/* free tree allocations */
 	red_black_tree_destroy(&tree);
