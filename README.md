@@ -12,16 +12,17 @@ TODO
 
 ###Interface
 
-####red_black_tree_init()
-**(definition)[#inc/red_black_tree]**
+**include [red_black_tree.h](inc/red_black_tree.h#L27)**
+
+####red_black_tree_init
+**[declaration](inc/red_black_tree.h#L27)**
+
 ```
 void
 red_black_tree_init(RedBlackTree *const restrict tree,
                     const RedBlackComparator comparator);
 ```
-
-**source**
-
+**[source](src/red_black_tree.c#10)**
 
 **responsibilities**
 - store an empty tree structure
@@ -29,10 +30,10 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 - initialize node allocator
 
 **notes**
-- allocates no memory on the heap until first call to [red_black_tree_insert()](#red_black_tree_insert()), after which [red_black_tree_destroy()](#red_black_tree_destroy()) must be called when done with `tree` to prevent a memory leak
+- allocates no memory on the heap until first call to [red_black_tree_insert](#red_black_tree_insert), after which [red_black_tree_destroy](#red_black_tree_destroy) must be called when done with `tree` to prevent a memory leak
 
 
-####red_black_tree_destroy()
+####red_black_tree_destroy
 **(definition)[#inc/red_black_tree]**
 ```
 void
@@ -43,15 +44,15 @@ red_black_tree_destroy(RedBlackTree *const restrict tree);
 - frees all memory allocated for `tree`
 
 **notes**
-- may only be called after [red_black_tree_init()](#red_black_tree_init())
+- may only be called after [red_black_tree_init](#red_black_tree_init)
 - safe to call before first insertion
-- memory is deallocated via [RED_BLACK_FREE()](#red_black_malloc/red_black_free)
+- memory is deallocated via [RED_BLACK_FREE](#red_black_malloc/red_black_free)
 
 
 ###Types
 
 ####RedBlackTree
-**(definition)[#inc/red_black_tree]**
+**[definition](inc/red_black_tree)**
 ```
 /* inc/red_black_tree.h */
 
@@ -81,8 +82,10 @@ typedef int
                       const void *key2);
 ```
 **responsibilities**
-- maintain sorted order of tree nodes
+maintain sorted order of tree nodes
 
+
+**behaviour**
 should compare two typeless keys according to the table:
 | returns | `key1` __ `key2` |
 | ------- | ---------------- |
