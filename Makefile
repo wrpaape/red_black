@@ -1,16 +1,19 @@
 # DIRECTORY CONFIGURATION
 # ──────────────────────────────────────────────────────────────────────────────
-SRC_DIR := src# .c source files
-INC_DIR := inc# .h header files
-OBJ_DIR := obj# .o object files
-BIN_DIR := bin# binary executable files
-LIB_DIR := lib# static and shared library files
+SRC_DIR      := src# .c source files
+INCLUDE_DIR  := include# .h header files
+OBJ_DIR      := obj# .o object files
+BIN_DIR      := bin# binary executable files
+LIB_DIR      := lib# static and shared library files
+TEST_DIR     := test# test source and header files
+EXAMPLES_DIR := examples# example code
+DEMO_DIR     := demo# demo source and header files
 
 
 # UTILITY CONFIGURATION
 # ──────────────────────────────────────────────────────────────────────────────
 CC	 := gcc
-CC_FLAGS := -std=gnu99 -I$(INC_DIR) -Wall -O2 -funroll-loops -c
+CC_FLAGS := -std=gnu99 -I$(INCLUDE_DIR) -Wall -O2 -funroll-loops -c
 LD	 := ld
 LD_FLAGS := -arch x86_64 -macosx_version_min 10.11.0 -lc
 RM	 := rm
@@ -21,25 +24,23 @@ AR_FLAGS := rcs
 
 # HEADER FILES
 # ──────────────────────────────────────────────────────────────────────────────
-STACK_COUNT_H := $(INC_DIR)/red_black_stack_count.h
-ALLOCATOR_H   := $(INC_DIR)/red_black_allocator.h
-COMPARATOR_H  := $(INC_DIR)/red_black_comparator.h
-ITERATOR_H    := $(INC_DIR)/red_black_iterator.h
-DELETE_H      := $(INC_DIR)/red_black_delete.h
-FIND_H        := $(INC_DIR)/red_black_find.h
-INSERT_H      := $(INC_DIR)/red_black_insert.h
-INT_KEY_H     := $(INC_DIR)/red_black_int_key.h
-JUMP_H        := $(INC_DIR)/red_black_jump.h
-LOCK_H        := $(INC_DIR)/red_black_lock.h
-MALLOC_H      := $(INC_DIR)/red_black_malloc.h
-NODE_H        := $(INC_DIR)/red_black_node.h
-PRINT_H       := $(INC_DIR)/red_black_print.h
-PRINT_TYPES_H := $(INC_DIR)/red_black_print_types.h
-TREE_H        := $(INC_DIR)/red_black_tree.h
-VERIFY_H      := $(INC_DIR)/red_black_verify.h
-COUNT_H       := $(INC_DIR)/red_black_count.h
-DEMO_H        := $(INC_DIR)/red_black_demo.h
-TEST_H        := $(INC_DIR)/red_black_test.h
+STACK_COUNT_H := $(INCLUDE_DIR)/red_black_stack_count.h
+ALLOCATOR_H   := $(INCLUDE_DIR)/red_black_allocator.h
+COMPARATOR_H  := $(INCLUDE_DIR)/red_black_comparator.h
+ITERATOR_H    := $(INCLUDE_DIR)/red_black_iterator.h
+DELETE_H      := $(INCLUDE_DIR)/red_black_delete.h
+FIND_H        := $(INCLUDE_DIR)/red_black_find.h
+INSERT_H      := $(INCLUDE_DIR)/red_black_insert.h
+INT_KEY_H     := $(INCLUDE_DIR)/red_black_int_key.h
+JUMP_H        := $(INCLUDE_DIR)/red_black_jump.h
+LOCK_H        := $(INCLUDE_DIR)/red_black_lock.h
+MALLOC_H      := $(INCLUDE_DIR)/red_black_malloc.h
+NODE_H        := $(INCLUDE_DIR)/red_black_node.h
+PRINT_H       := $(INCLUDE_DIR)/red_black_print.h
+PRINT_TYPES_H := $(INCLUDE_DIR)/red_black_print_types.h
+TREE_H        := $(INCLUDE_DIR)/red_black_tree.h
+VERIFY_H      := $(INCLUDE_DIR)/red_black_verify.h
+COUNT_H       := $(INCLUDE_DIR)/red_black_count.h
 
 
 # SOURCE FILES
@@ -55,9 +56,23 @@ TREE_C      := $(SRC_DIR)/red_black_tree.c
 VERIFY_C    := $(SRC_DIR)/red_black_verify.c
 COUNT_C     := $(SRC_DIR)/red_black_count.c
 DEMO_C      := $(SRC_DIR)/red_black_demo.c
-TEST_C      := $(SRC_DIR)/red_black_test.c
-USORT_C     := $(SRC_DIR)/red_black_usort.c
 
+
+# TEST FILES
+# ──────────────────────────────────────────────────────────────────────────────
+TEST_H := $(TEST_DIR)/red_black_test.h
+TEST_C := $(TEST_DIR)/red_black_test.c
+
+
+# EXAMPLE FILES
+# ──────────────────────────────────────────────────────────────────────────────
+USORT_C := $(EXAMPLES_DIR)/red_black_usort.c
+
+
+# DEMO FILES
+# ──────────────────────────────────────────────────────────────────────────────
+DEMO_C        := $(DEMO_DIR)/red_black_demo.c
+DEMO_H        := $(DEMO_DIR)/red_black_demo.h
 
 # OBJECT FILES
 # ──────────────────────────────────────────────────────────────────────────────

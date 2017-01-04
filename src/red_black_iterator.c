@@ -1,4 +1,4 @@
-#include "red_black_iterator.h" /* RedBlackIterator, RedBlackFetcher */
+#include "red_black_iterator.h" /* RedBlackIterator, RedBlackIteratorUpdater */
 #include <stddef.h>             /* NULL */
 
 
@@ -49,7 +49,7 @@ rbi_update_desc(const struct RedBlackNode *restrict *restrict cursor,
 }
 
 void
-red_black_iterator_init_asc(RedBlackIterator *const restrict iterator,
+red_black_iterator_init_asc(struct RedBlackIterator *const restrict iterator,
 			    const struct RedBlackNode *restrict node)
 {
 	const struct RedBlackNode *restrict *restrict cursor;
@@ -72,7 +72,7 @@ red_black_iterator_init_asc(RedBlackIterator *const restrict iterator,
 }
 
 void
-red_black_iterator_init_desc(RedBlackIterator *const restrict iterator,
+red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
 			     const struct RedBlackNode *restrict node)
 {
 	const struct RedBlackNode *restrict *restrict cursor;
@@ -96,7 +96,7 @@ red_black_iterator_init_desc(RedBlackIterator *const restrict iterator,
 
 
 bool
-red_black_iterator_next(RedBlackIterator *const restrict iterator,
+red_black_iterator_next(struct RedBlackIterator *const restrict iterator,
 			const void **const restrict key_ptr)
 {
 	const struct RedBlackNode *const restrict node = *(iterator->cursor);

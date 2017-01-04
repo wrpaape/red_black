@@ -19,7 +19,7 @@ struct _RedBlackTree {
 
 typedef struct _RedBlackTree RedBlackTree;
 
-typedef RedBlackIterator RedBlackTreeIterator;
+typedef struct RedBlackIterator RedBlackTreeIterator;
 
 
 /* external API

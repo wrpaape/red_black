@@ -10,7 +10,6 @@
 
 
 #define I_LAST     (KEYS_COUNT - 1)
-
 #define STR(X)  #X
 #define XSTR(X) STR(X)
 #define KC_STR  XSTR(KEYS_COUNT)
