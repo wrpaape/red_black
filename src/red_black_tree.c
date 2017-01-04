@@ -37,7 +37,7 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 				tree->comparator,
 				&tree->allocator,
 				&jump_buffer,
-				key)
+				key) /* 1, 0 */
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
 
@@ -55,12 +55,12 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 				tree->comparator,
 				&tree->allocator,
 				&jump_buffer,
-				key)
+				key) /* 1, 0 */
 	     : ((bool) RED_BLACK_JUMP_2_STATUS(status)); /* 1, 0 */
 }
 
 bool
-red_black_tree_find(RedBlackTree *const restrict tree,
+red_black_tree_find(const RedBlackTree *const restrict tree,
 		    const void *const key)
 {
 	return red_black_find(tree->root,
@@ -68,32 +68,15 @@ red_black_tree_find(RedBlackTree *const restrict tree,
 			      key);
 }
 
-bool
-red_black_tree_verify(RedBlackTree *const restrict tree)
-{
-	return red_black_verify(tree->root,
-				tree->comparator);
-}
-
-bool
-red_black_tree_print(RedBlackTree *const restrict tree,
-		     const RedBlackKeySizer key_sizer,
-		     const RedBlackKeyPutter key_putter)
-{
-	return red_black_print(tree->root,
-			       key_sizer,
-			       key_putter);
-}
-
 unsigned int
-red_black_tree_count(RedBlackTree *const restrict tree)
+red_black_tree_count(const RedBlackTree *const restrict tree)
 {
 	return red_black_count(tree->root);
 }
 
 void
 red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
-				 RedBlackTree *const restrict tree)
+				 const RedBlackTree *const restrict tree)
 {
 	red_black_iterator_init_asc(iterator,
 				    tree->root);
@@ -101,7 +84,7 @@ red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
 
 void
 red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
-				 RedBlackTree *const restrict tree)
+				  const RedBlackTree *const restrict tree)
 {
 	red_black_iterator_init_desc(iterator,
 				     tree->root);
@@ -115,4 +98,19 @@ red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
 				       key_ptr);
 }
 
+bool
+red_black_tree_verify(const RedBlackTree *const restrict tree)
+{
+	return red_black_verify(tree->root,
+				tree->comparator);
+}
 
+bool
+red_black_tree_print(const RedBlackTree *const restrict tree,
+		     const RedBlackKeySizer key_sizer,
+		     const RedBlackKeyPutter key_putter)
+{
+	return red_black_print(tree->root,
+			       key_sizer,
+			       key_putter);
+}
