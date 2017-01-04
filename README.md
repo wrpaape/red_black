@@ -33,7 +33,7 @@ TODO
 
 
 ##Interface
-**[Functions](#functions)**
+**Functions**
 - [red_black_tree_init](#red_black_tree_init)
 - [red_black_tree_destroy](#red_black_tree_destroy)
 - [red_black_tree_insert](#red_black_tree_insert)
@@ -46,7 +46,7 @@ TODO
 - [red_black_tree_verify](#red_black_tree_verify)
 - [red_black_tree_print](#red_black_tree_print)
 
-**[Types](#types)**
+**Types**
 - [RedBlackTree](#redblacktree)
 - [RedBlackComparator](#redblackcomparator)
 - [RedBlackIterator](#redblackiterator)
@@ -55,8 +55,7 @@ TODO
 
 
 
-###Functions
-####red_black_tree_init
+###red_black_tree_init
 **[declaration](inc/red_black_tree.h#L27-L29)|[source](src/red_black_tree.c#L10-L18)**
 ```
 void
@@ -72,7 +71,7 @@ On return `tree` models a valid, empty red-black tree and can safely be operated
 - allocates no memory on the heap until first call to [red_black_tree_insert](#red_black_tree_insert), after which a call to [red_black_tree_destroy](#red_black_tree_destroy) must be made when done with `tree` to prevent a memory leak
 
 
-####red_black_tree_destroy
+###red_black_tree_destroy
 **[declaration](#inc/red_black_tree.h#L31-L32)|[source](#src/red_black_tree.c#L20-L24)**
 ```
 void
@@ -87,7 +86,7 @@ frees all memory allocated by `tree`
 - memory is deallocated via [RED_BLACK_FREE](#red_black_malloc/red_black_free)
 
 
-####red_black_tree_insert
+###red_black_tree_insert
 **[declaration](#inc/red_black_tree.h#L34-L36)|[source](#src/red_black_tree.c#L26-L42)**
 ```
 int
@@ -105,10 +104,10 @@ attempts to insert `key` into `tree`
 |   `-1`   | [RED_BLACK_MALLOC](#red_black_malloc/red_black_free) failure - out of memory | unchanged  |
 
 **notes**
-TODO
+- additional memory is allocated occassionally via [RED_BLACK_MALLOC](#red_black_malloc/red_black_free)
 
 
-####red_black_tree_delete
+###red_black_tree_delete
 **[declaration](#inc/red_black_tree.h#L38-L40)|[source](#src/red_black_tree.c#L44-L60)**
 ```
 bool
@@ -128,7 +127,7 @@ attempts to delete `key` from `tree`
 TODO
 
 
-####red_black_tree_find
+###red_black_tree_find
 **[declaration](#inc/red_black_tree.h#L42-L44)|[source](#src/red_black_tree.c#L62-L69)**
 ```
 bool
@@ -148,8 +147,8 @@ attempts to find `key` in `tree`
 TODO
 
 
-####red_black_tree_count
-[declaration](#inc/red_black_tree.h#L46-L47)|[source](#src/red_black_tree.c#L71-L75)**
+###red_black_tree_count
+**[declaration](#inc/red_black_tree.h#L46-L47)|[source](#src/red_black_tree.c#L71-L75)**
 ```
 unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);
@@ -157,9 +156,8 @@ red_black_tree_count(const RedBlackTree *const restrict tree);
 
 **description**  
 
-###Types
 
-####RedBlackTree
+###RedBlackTree
 **[declaration](#inc/red_black_tree.h#L14-L20)**
 ```
 struct _RedBlackTree {
@@ -178,7 +176,7 @@ stores
 - node allocator ([struct RedBlackAllocator](#struct-redblackallocator))
 
 
-####RedBlackComparator
+###RedBlackComparator
 ```
 typedef int
 (*RedBlackComparator)(const void *key1,
@@ -200,7 +198,7 @@ should compare two typeless keys according to the table:
 without altering their values
 
 
-####RedBlackTreeIterator
+###RedBlackTreeIterator
 ```
 struct _RedBlackIterator {
         const struct RedBlackNode *restrict *restrict cursor;
@@ -215,7 +213,7 @@ typedef struct _RedBlackIterator RedBlackIterator;
 - maintain state of iteration across calls to [`red_black_iterator_next`](#red_black_iterator_next)
 
 
-####RedBlackKeySizer
+###RedBlackKeySizer
 **definition**
 ```
 /* inc/red_black_print_types.h */
