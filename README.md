@@ -26,13 +26,13 @@ TODO
 
 ##Usage
 1. [Build](#build) `red_black_tree` libraries
-2. `#include` [inc/red_black_tree.h](inc/red_black_tree.h) in your source code
+2. `#include` [red_black_tree.h](inc/red_black_tree.h) in your source code
 3. implement an ordered set or associative array with the provided [interface](#interface)
 4. compile and link with either static or shared `red_black_tree` library
 
 
 
-###Interface
+##Interface
 **[Functions](#functions)**
 - [red_black_tree_init](#red_black_tree_init)
 - [red_black_tree_destroy](#red_black_tree_destroy)
@@ -55,18 +55,16 @@ TODO
 
 
 
-####Functions
-#####red_black_tree_init
+###Functions
+####red_black_tree_init
 ```
 void
 red_black_tree_init(RedBlackTree *const restrict tree,
                     const RedBlackComparator comparator);
 ```
-**[declaration](inc/red_black_tree.h#L27-L29)**
+**[declaration](inc/red_black_tree.h#L27-L29)|[source](src/red_black_tree.c#L10-L18)**
 
-**[source](src/red_black_tree.c#L10-L18)**
-
-**description**
+**description**  
 initializes the tree state
 On return `tree` models a valid, empty red-black tree and can safely be operated upon by the remaining interface.
 
@@ -74,16 +72,14 @@ On return `tree` models a valid, empty red-black tree and can safely be operated
 - allocates no memory on the heap until first call to [red_black_tree_insert](#red_black_tree_insert), after which a call to [red_black_tree_destroy](#red_black_tree_destroy) must be made when done with `tree` to prevent a memory leak
 
 
-#####red_black_tree_destroy
+####red_black_tree_destroy
 ```
 void
 red_black_tree_destroy(RedBlackTree *const restrict tree);
 ```
-**[declaration](#inc/red_black_tree.h#L31-L32)**
+**[declaration](#inc/red_black_tree.h#L31-L32)|[source](#src/red_black_tree.c#L20-L24)**
 
-**[source](#src/red_black_tree.c#L20-L24)**
-
-**description**
+**description**  
 frees all memory allocated by `tree`
 
 **notes**
@@ -91,17 +87,15 @@ frees all memory allocated by `tree`
 - memory is deallocated via [RED_BLACK_FREE](#red_black_malloc/red_black_free)
 
 
-#####red_black_tree_insert
+####red_black_tree_insert
 ```
 int
 red_black_tree_insert(RedBlackTree *const restrict tree,
 		                  const void *const key);
 ```
-**[declaration](#inc/red_black_tree.h#L34-L36)**
+**[declaration](#inc/red_black_tree.h#L34-L36)|[source](#src/red_black_tree.c#L26-L42)**
 
-**[source](#src/red_black_tree.c#L26-L42)**
-
-**description**
+**description**  
 attempts to insert `key` into `tree`
 
 | `return` |                                   meaning                                    | tree state |
@@ -114,17 +108,15 @@ attempts to insert `key` into `tree`
 TODO
 
 
-#####red_black_tree_delete
+####red_black_tree_delete
 ```
 bool
 red_black_tree_delete(RedBlackTree *const restrict tree,
                       const void *const key);
 ```
-**[declaration](#inc/red_black_tree.h#L38-L40)**
+**[declaration](#inc/red_black_tree.h#L38-L40)|[source](#src/red_black_tree.c#L44-L60)**
 
-**[source](#src/red_black_tree.c#L44-L60)**
-
-**description**
+**description**  
 attempts to delete `key` from `tree`
 
 | `return` |                     meaning                     | tree state |
@@ -136,17 +128,15 @@ attempts to delete `key` from `tree`
 TODO
 
 
-#####red_black_tree_find
+####red_black_tree_find
 ```
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,
                     const void *const key);
 ```
-**[declaration](#inc/red_black_tree.h#L42-L44)**
+**[declaration](#inc/red_black_tree.h#L42-L44)|[source](#src/red_black_tree.c#L62-L69)**
 
-**[source](#src/red_black_tree.c#L62-L69)**
-
-**description**
+**description**  
 attempts to find `key` in `tree`
 
 | `return` |            meaning             |
@@ -158,9 +148,9 @@ attempts to find `key` in `tree`
 TODO
 
 
-####Types
+###Types
 
-#####RedBlackTree
+####RedBlackTree
 ```
 /* inc/red_black_tree.h */
 
@@ -181,7 +171,7 @@ stores
 - node allocator ([struct RedBlackAllocator](#struct-redblackallocator))
 
 
-#####RedBlackComparator
+####RedBlackComparator
 ```
 typedef int
 (*RedBlackComparator)(const void *key1,
@@ -203,7 +193,7 @@ should compare two typeless keys according to the table:
 without altering their values
 
 
-#####RedBlackTreeIterator
+####RedBlackTreeIterator
 ```
 struct _RedBlackIterator {
         const struct RedBlackNode *restrict *restrict cursor;
@@ -218,7 +208,7 @@ typedef struct _RedBlackIterator RedBlackIterator;
 - maintain state of iteration across calls to [`red_black_iterator_next`](#red_black_iterator_next)
 
 
-#####RedBlackKeySizer
+####RedBlackKeySizer
 **definition**
 ```
 /* inc/red_black_print_types.h */
