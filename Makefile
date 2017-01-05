@@ -7,13 +7,13 @@ BIN_DIR      := bin# binary executable files
 LIB_DIR      := lib# static and shared library files
 TEST_DIR     := test# test source and header files
 EXAMPLES_DIR := examples# example code
-DEMO_DIR     := demo# demo source and header files
+KEY_ACC_DIR  := key_accessors#common key accessors
 
 
 # UTILITY CONFIGURATION
 # ──────────────────────────────────────────────────────────────────────────────
 CC	 := gcc
-CC_FLAGS := -std=gnu99 -I$(INCLUDE_DIR) -Wall -O2 -funroll-loops -c
+CC_FLAGS := -std=gnu99 -I$(INCLUDE_DIR) -I$(KEY_ACC_DIR) -Wall -O2 -funroll-loops -c
 LD	 := ld
 LD_FLAGS := -arch x86_64 -macosx_version_min 10.11.0 -lc
 RM	 := rm
@@ -31,7 +31,6 @@ ITERATOR_H    := $(INCLUDE_DIR)/red_black_iterator.h
 DELETE_H      := $(INCLUDE_DIR)/red_black_delete.h
 FIND_H        := $(INCLUDE_DIR)/red_black_find.h
 INSERT_H      := $(INCLUDE_DIR)/red_black_insert.h
-INT_KEY_H     := $(INCLUDE_DIR)/red_black_int_key.h
 JUMP_H        := $(INCLUDE_DIR)/red_black_jump.h
 LOCK_H        := $(INCLUDE_DIR)/red_black_lock.h
 MALLOC_H      := $(INCLUDE_DIR)/red_black_malloc.h
@@ -50,12 +49,10 @@ ITERATOR_C  := $(SRC_DIR)/red_black_iterator.c
 DELETE_C    := $(SRC_DIR)/red_black_delete.c
 FIND_C      := $(SRC_DIR)/red_black_find.c
 INSERT_C    := $(SRC_DIR)/red_black_insert.c
-INT_KEY_C   := $(SRC_DIR)/red_black_int_key.c
 PRINT_C     := $(SRC_DIR)/red_black_print.c
 TREE_C      := $(SRC_DIR)/red_black_tree.c
 VERIFY_C    := $(SRC_DIR)/red_black_verify.c
 COUNT_C     := $(SRC_DIR)/red_black_count.c
-DEMO_C      := $(SRC_DIR)/red_black_demo.c
 
 
 # TEST FILES
@@ -66,13 +63,17 @@ TEST_C := $(TEST_DIR)/red_black_test.c
 
 # EXAMPLE FILES
 # ──────────────────────────────────────────────────────────────────────────────
-USORT_C := $(EXAMPLES_DIR)/red_black_usort.c
+USORT_C   := $(EXAMPLES_DIR)/red_black_usort.c
+DEMO_C    := $(EXAMPLES_DIR)/red_black_demo.c
 
 
-# DEMO FILES
+# KEY ACCESSOR FILES
 # ──────────────────────────────────────────────────────────────────────────────
-DEMO_C        := $(DEMO_DIR)/red_black_demo.c
-DEMO_H        := $(DEMO_DIR)/red_black_demo.h
+INT_KEY_H := $(KEY_ACC_DIR)/int_key.h
+INT_KEY_C := $(KEY_ACC_DIR)/int_key.c
+STR_KEY_H := $(KEY_ACC_DIR)/str_key.h
+STR_KEY_C := $(KEY_ACC_DIR)/str_key.c
+
 
 # OBJECT FILES
 # ──────────────────────────────────────────────────────────────────────────────
@@ -81,14 +82,15 @@ ITERATOR_O  := $(OBJ_DIR)/red_black_iterator.o
 DELETE_O    := $(OBJ_DIR)/red_black_delete.o
 FIND_O      := $(OBJ_DIR)/red_black_find.o
 INSERT_O    := $(OBJ_DIR)/red_black_insert.o
-INT_KEY_O   := $(OBJ_DIR)/red_black_int_key.o
 PRINT_O     := $(OBJ_DIR)/red_black_print.o
 COUNT_O     := $(OBJ_DIR)/red_black_count.o
 TREE_O      := $(OBJ_DIR)/red_black_tree.o
 VERIFY_O    := $(OBJ_DIR)/red_black_verify.o
-DEMO_O      := $(OBJ_DIR)/red_black_demo.o
 TEST_O      := $(OBJ_DIR)/red_black_test.o
 USORT_O     := $(OBJ_DIR)/red_black_usort.o
+DEMO_O      := $(OBJ_DIR)/red_black_demo.o
+INT_KEY_O   := $(OBJ_DIR)/red_black_int_key.o
+STR_KEY_O   := $(OBJ_DIR)/red_black_str_key.o
 
 
 # PIC OBJECT FILES
@@ -132,9 +134,6 @@ TARGETS := $(USORT) $(USORT_O) $(TREE_ST) $(TREE_SH) $(TREE_O) \
 
 # DEPENDENCIES
 # ──────────────────────────────────────────────────────────────────────────────
-INT_KEY_O_DEP    := $(INT_KEY_C) $(INT_KEY_H)
-INT_KEY_O_GRP    := $(INT_KEY_O)
-
 COUNT_O_DEP      := $(COUNT_C) $(COUNT_H) $(NODE_H) $(STACK_COUNT_H)
 COUNT_O_GRP      := $(COUNT_O)
 COUNT_PO_DEP     := $(COUNT_O_DEP)
@@ -186,25 +185,32 @@ TREE_PO_GRP      := $(TREE_PO) $(ALLOCATOR_PO_GRP) $(INSERT_PO_GRP) $(DELETE_PO_
 TREE_ST_DEP      := $(TREE_O_GRP)
 TREE_SH_DEP      := $(TREE_PO_GRP)
 
-DEMO_O_DEP       := $(DEMO_C) $(DEMO_H) $(TREE_H) $(INT_KEY_H)
-DEMO_O_GRP       := $(DEMO_O) $(TREE_O_GRP) $(INT_KEY_O_GRP)
+INT_KEY_O_DEP    := $(INT_KEY_C) $(INT_KEY_H)
+INT_KEY_O_GRP    := $(INT_KEY_O)
 
-DEMO_DEP         := $(DEMO_O) $(DEMO_O_GRP)
+STR_KEY_O_DEP    := $(STR_KEY_C) $(STR_KEY_H)
+STR_KEY_O_GRP    := $(STR_KEY_O)
+
+USORT_O_DEP      := $(USORT_C) $(TREE_H) $(STR_KEY_H)
+USORT_DEP        := $(USORT_O) $(TREE_ST) $(STR_KEY_O_GRP)
+
+DEMO_O_DEP       := $(DEMO_C) $(TREE_H) $(INT_KEY_H)
+DEMO_DEP         := $(DEMO_O) $(TREE_ST) $(INT_KEY_O_GRP)
 
 TEST_O_DEP       := $(TEST_C) $(TEST_H) $(TREE_H) $(INT_KEY_H)
-TEST_O_GRP       := $(TEST_O) $(TREE_O_GRP) $(INT_KEY_O_GRP)
-
-TEST_DEP         := $(TEST_O) $(TEST_O_GRP)
-
-USORT_O_DEP      := $(USORT_C) $(TREE_H)
-USORT_DEP        := $(USORT_O) $(TREE_ST)
-
+TEST_DEP         := $(TEST_O) $(TREE_ST) $(INT_KEY_O_GRP)
 
 # MAKE RULES
 # ──────────────────────────────────────────────────────────────────────────────
 all: $(TARGETS)
 
+$(DEMO): $(DEMO_DEP)
+	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
+
 $(USORT): $(USORT_DEP)
+	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
+
+$(TEST): $(TEST_DEP)
 	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
 
 $(TREE_ST): $(TREE_ST_DEP)
@@ -212,12 +218,6 @@ $(TREE_ST): $(TREE_ST_DEP)
 
 $(TREE_SH): $(TREE_SH_DEP)
 	$(LD) $^ $(LD_FLAGS) -dylib -o $@
-
-$(TEST): $(TEST_DEP)
-	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
-
-$(DEMO): $(DEMO_DEP)
-	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
 
 $(USORT_O): $(USORT_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
@@ -283,6 +283,9 @@ $(COUNT_PO): $(COUNT_PO_DEP)
 	$(CC) $(CC_FLAGS) -fpic $< -o $@
 
 $(INT_KEY_O): $(INT_KEY_O_DEP)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+$(STR_KEY_O): $(STR_KEY_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 clean:

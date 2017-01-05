@@ -101,7 +101,7 @@ setup(void)
 	srandom((unsigned) time(NULL));
 
 	red_black_tree_init(&tree,
-			    &red_black_int_key_comparator);
+			    &int_key_comparator);
 
 	RETURN("setup");
 }

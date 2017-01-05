@@ -1,13 +1,13 @@
 #ifndef RED_BLACK_TEST_H_
 #define RED_BLACK_TEST_H_
 
-#include "red_black_tree.h"    /* red_black_insert|find|verify|delete */
-#include "red_black_int_key.h" /* red_black_int_key_comparator */
-#include <stdlib.h>            /* (s)random, exit */
-#include <time.h>	       /* time */
-#include <stdio.h>	       /* fprintf */
-#include <unistd.h>	       /* write */
-#include <signal.h>            /* sigaction */
+#include "red_black_tree.h"  /* red_black_insert|find|verify|delete */
+#include "int_key.h"         /* int_key_comparator */
+#include <stdlib.h>          /* (s)random, exit */
+#include <time.h>	     /* time */
+#include <stdio.h>	     /* fprintf */
+#include <unistd.h>	     /* write */
+#include <signal.h>          /* sigaction */
 
 #define EXIT_ON_SYS_FAILURE(LITERAL)					\
 do {									\
@@ -32,8 +32,8 @@ WRITE_STDOUT(LITERAL,							\
 
 #define PRINT_TREE()							\
 red_black_tree_print(&tree,						\
-		     &red_black_int_key_sizer,				\
-		     &red_black_int_key_putter)
+		     &int_key_sizer,					\
+		     &int_key_putter)
 
 #define EXIT_ON_TEST_FAILURE(PRINT_ARGS...)				\
 do {									\

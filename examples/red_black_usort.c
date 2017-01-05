@@ -1,4 +1,5 @@
 #include "red_black_tree.h" /* RedBlackTree|Iterator */
+#include "str_key.h"        /* str_key_comparator */
 #include <stdio.h>          /* puts, perror, EOF */
 #include <stdlib.h>         /* exit, EXIT_FAILURE */
 
@@ -10,36 +11,6 @@ do {								\
 } while (0)
 
 
-/* string comparison function */
-int
-compare_strings(const void *key1,
-		const void *key2)
-{
-	const unsigned char *string1;
-	const unsigned char *string2;
-	int token1;
-	int token2;
-
-	string1 = (const unsigned char *) key1;
-	string2 = (const unsigned char *) key2;
-
-	while (1) {
-		token1 = (int) *string1;
-		token2 = (int) *string2;
-
-		if (token1 != token2)
-			return token1 - token2;
-
-		if (token1 == 0)
-			return 0;
-
-		++string1;
-		++string2;
-	}
-}
-
-
-/* main entry point */
 int
 main(int argc,
      char *argv[])
@@ -50,7 +21,7 @@ main(int argc,
 
 	/* initialize string tree */
 	red_black_tree_init(&tree,
-			    &compare_strings);
+			    &str_key_comparator);
 
 	/* insert arguments */
 	for (int i = 0; i < argc; ++i)

@@ -7,9 +7,8 @@
 - [Build](#build)
 - [Usage](#usage)
 - [Interface](#interface)
-- [Types](#types)
-- [Internals](#internals)
 - [Implementation](#implementation)
+- [Internals](#internals)
 
 TODO `red_black`
 
@@ -312,7 +311,7 @@ without altering their values
 **examples**  
 ```
 /* for trees housing integer keys */
-#include <stdint.h>		/* intptr_t */
+#include <stdint.h>	/* intptr_t */
 int
 compare_integer_keys(const void *key1,
                      const void *key2)
@@ -432,7 +431,7 @@ If a terminating `NUL` byte is written to `buffer`, return a pointer to it so it
 **examples**  
 ```
 /* for trees housing integer keys */
-#include <stdint.h>		/* intptr_t */
+#include <stdint.h> /* intptr_t */
 #define DIGIT_TO_ASCII(DIGIT)	((DIGIT) | 48u) /* 0...9 → '0'...'9' */
 char *
 put_integer_key(char *buffer,
@@ -447,7 +446,7 @@ put_integer_key(char *buffer,
         int_key = (int) (intptr_t) key;
 
         if (int_key < 0) {
-                int_key = -int_key; /* ensure key is positive */
+                int_key = -int_key; /* ensure key is non-negative */
                 *buffer++ = '-';    /* add sign */
         }
 
@@ -467,9 +466,9 @@ put_integer_key(char *buffer,
 
         /* swap digits in place */
         while (--ptr > buffer) {
-             tmp       = *ptr;
-             *ptr      = *buffer;
-             *buffer++ = tmp;
+                tmp       = *ptr;
+                *ptr      = *buffer;
+                *buffer++ = tmp;
         }
 
         return end_ptr; /* done */
@@ -486,7 +485,7 @@ put_string_key(char *buffer,
         string = (const char *) key;
 
         /* copy string */
-        while (*string != '\0');
+        while (*string != '\0')
                 *buffer++ = *string++;
 
         return buffer;

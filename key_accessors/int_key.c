@@ -1,28 +1,13 @@
-#include "red_black_int_key.h"	/* uintmax_t */
-#include <stdint.h>		/* intptr_t, uintmax_t */
-#include <stdlib.h>		/* strtol, NULL */
-#include <stdio.h>		/* sprintf */
-#include <errno.h>		/* errno */
-
-
-bool
-red_black_int_key_init(void *restrict *const restrict key,
-		       const char *const restrict string)
-{
-	*key = (void *) (intptr_t) strtol(string,
-					  NULL,
-					  10);
-
-	return (*key != 0) || (errno == 0);
-}
+#include "int_key.h"	/* size_t, bool */
+#include <stdint.h>	/* intptr_t */
 
 
 int
-red_black_int_key_comparator(const void *key1,
-			     const void *key2)
+int_key_comparator(const void *key1,
+		   const void *key2)
 {
-	const intptr_t int_key1 = (intptr_t) key1;
-	const intptr_t int_key2 = (intptr_t) key2;
+	const long int_key1 = (long) (intptr_t) key1;
+	const long int_key2 = (long) (intptr_t) key2;
 
 	/* to prevent overflow */
 	if (int_key1 < int_key2)
@@ -34,7 +19,7 @@ red_black_int_key_comparator(const void *key1,
 	return 0;
 }
 
-inline unsigned int
+inline size_t
 uint_digit_count(const unsigned long n)
 {
 	if (n < 10000000000llu) {
@@ -118,20 +103,48 @@ uint_digit_count(const unsigned long n)
 }
 
 size_t
-red_black_int_key_sizer(const void *key)
+int_key_sizer(const void *key)
 {
-	const intptr_t int_key = (intptr_t) key;
+	long int_key;
 
-	return (int_key < 0)
-	     ? (uint_digit_count((unsigned long) -int_key) + 1)
-	     : uint_digit_count((unsigned long) int_key);
+	int_key = (long) (intptr_t) key;
+
+	const size_t is_negative = (int_key < 0);
+
+	if (is_negative)
+		int_key = -int_key;
+
+	return is_negative + uint_digit_count((unsigned long) int_key);
 }
 
+
+#define DIGIT_TO_ASCII(DIGIT) ((DIGIT) | 48u) /* 0...9 → '0'...'9' */
 char *
-red_black_int_key_putter(char *buffer,
-			 const void *key)
+int_key_putter(char *buffer,
+	       const void *key)
 {
-	return buffer + sprintf(buffer,
-				"%ld",
-				(long) (intptr_t) key);
+	long digit;
+	long int_key;
+	char *restrict end_ptr;
+
+	int_key = (long) (intptr_t) key;
+
+	if (int_key < 0) {
+		int_key = -int_key; /* ensure key is non-negative */
+		*buffer++ = '-';    /* add sign */
+	}
+
+	end_ptr = buffer + uint_digit_count((unsigned long) int_key);
+	buffer  = end_ptr;
+
+	do {
+		--buffer;
+
+		digit = int_key % 10;
+		int_key /= 10;
+
+		*buffer = (char) DIGIT_TO_ASCII(digit);
+	} while (int_key > 0);
+
+	return end_ptr;
 }
