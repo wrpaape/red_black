@@ -33,8 +33,10 @@ void
 red_black_allocator_init(struct RedBlackAllocator *const restrict allocator);
 
 struct RedBlackNode *
-red_black_allocator_allocate(struct RedBlackAllocator *const restrict allocator,
-			     RedBlackJumpBuffer *const restrict jump_buffer);
+red_black_allocator_new(struct RedBlackAllocator *const restrict allocator,
+			RedBlackJumpBuffer *const restrict jump_buffer,
+			const void *const key,
+			const bool is_red);
 
 void
 red_black_allocator_free(struct RedBlackAllocator *const restrict allocator,

@@ -65,8 +65,10 @@ rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 }
 
 struct RedBlackNode *
-red_black_allocator_allocate(struct RedBlackAllocator *const restrict allocator,
-			     RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_allocator_new(struct RedBlackAllocator *const restrict allocator,
+			RedBlackJumpBuffer *const restrict jump_buffer,
+			const void *const key,
+			const bool is_red)
 {
 	struct RedBlackNode *restrict node;
 
@@ -77,6 +79,11 @@ red_black_allocator_allocate(struct RedBlackAllocator *const restrict allocator,
 					   jump_buffer);
 	else
 		allocator->free = node->left;
+
+	node->key    = key;
+	node->is_red = is_red;
+	node->left   = NULL;
+	node->right  = NULL;
 
 	return node;
 }

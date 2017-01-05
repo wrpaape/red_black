@@ -1,7 +1,9 @@
 #include "red_black_tree.h"
 #include "red_black_insert.h"
+#include "red_black_update.h"
 #include "red_black_delete.h"
 #include "red_black_find.h"
+#include "red_black_fetch.h"
 #include "red_black_count.h"
 #include "red_black_print.h"
 #include "red_black_verify.h"
@@ -42,6 +44,26 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 }
 
 int
+red_black_tree_update(RedBlackTree *const restrict tree,
+		      const void *const key,
+		      void **const restrict old_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_update(&tree->root,
+				tree->comparator,
+				&tree->allocator,
+				&jump_buffer,
+				key,
+				old_ptr) /* 1, 0 */
+	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
+}
+
+int
 red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key)
 {
@@ -66,6 +88,17 @@ red_black_tree_find(const RedBlackTree *const restrict tree,
 	return red_black_find(tree->root,
 			      tree->comparator,
 			      key);
+}
+
+bool
+red_black_tree_fetch(const RedBlackTree *const restrict tree,
+		     const void *const key,
+		     void **const restrict fetch_ptr)
+{
+	return red_black_fetch(tree->root,
+			       tree->comparator,
+			       key,
+			       fetch_ptr);
 }
 
 unsigned int

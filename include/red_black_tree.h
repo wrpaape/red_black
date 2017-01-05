@@ -36,12 +36,22 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 		      const void *const key);
 
 int
+red_black_tree_update(RedBlackTree *const restrict tree,
+		      const void *const key,
+		      void **const restrict old_ptr);
+
+int
 red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key);
 
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,
 		    const void *const key);
+
+bool
+red_black_tree_fetch(const RedBlackTree *const restrict tree,
+		     const void *const key,
+		     void **const restrict fetch_ptr);
 
 unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);
