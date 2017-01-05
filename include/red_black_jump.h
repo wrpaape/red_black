@@ -3,7 +3,7 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include <setjmp.h>
+#include <setjmp.h> /* jmp_buf, setjmp, longjmp */
 
 
 /* typedefs, struct declarations
@@ -12,6 +12,7 @@ typedef jmp_buf RedBlackJumpBuffer;
 
 
 /* status macros
+ * map nonzero setjmp return values unconditionally to a domain including zero
  * ────────────────────────────────────────────────────────────────────────── */
 #define RED_BLACK_JUMP_VALUE_3_TRUE	4	/* ->  1 */
 #define RED_BLACK_JUMP_VALUE_3_FALSE	2	/* ->  0 */
@@ -44,6 +45,7 @@ RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
 #define RED_BLACK_JUMP_3_ERROR(BUFFER_PTR)				\
 RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
 		    RED_BLACK_JUMP_VALUE_3_ERROR)
+
 
 /* jump w/ 2 possible return statuses */
 #define RED_BLACK_JUMP_2_TRUE(BUFFER_PTR)				\

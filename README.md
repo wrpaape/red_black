@@ -15,6 +15,7 @@ TODO `red_black`
 
 
 
+
 ##Prerequisites
 TODO
 
@@ -409,6 +410,7 @@ size_string_key(const void *key)
         while (*string != '\0')
                 ++string;
 
+        /* return string length */
         return string - ((const char *) key);
 }
 ```
@@ -431,7 +433,7 @@ If a terminating `NUL` byte is written to `buffer`, return a pointer to it so it
 ```
 /* for trees housing integer keys */
 #include <stdint.h>		/* intptr_t */
-#define DIGIT_TO_ASCII(DIGIT)	((DIGIT) | 48u) /* 0..9 → '0'..'9' */
+#define DIGIT_TO_ASCII(DIGIT)	((DIGIT) | 48u) /* 0...9 → '0'...'9' */
 char *
 put_integer_key(char *buffer,
                 const void *key)
@@ -495,12 +497,18 @@ put_string_key(char *buffer,
 
 
 
+
 ##Internals
 
 ###struct RedBlackNode
 
+
 ###struct RedBlackAllocator
 
 
-###RED_BLACK_MALLOC, RED_BLACK_FREE
+
+###RED_BLACK_MALLOC/RED_BLACK_FREE
+
+
+###RedBlackJumpBuffer/RED_BLACK_SET_JUMP/RED_BLACK_LONG_JUMP
 
