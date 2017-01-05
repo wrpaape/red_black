@@ -1498,14 +1498,14 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 
 
 
-bool
+int
 red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackAllocator *const restrict allocator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 const void *const key)
 {
-	bool status;
+	int status;
 	struct RedBlackNode *const restrict node = *tree;
 
 	status = (node != NULL);
@@ -1539,7 +1539,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 					    jump_buffer,
 					    key);
 
-			return true; /* updated */
+			return 1; /* updated */
 		}
 	}
 

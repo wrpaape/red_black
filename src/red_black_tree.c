@@ -41,7 +41,7 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
 
-bool
+int
 red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key)
 {
@@ -56,7 +56,7 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 				&tree->allocator,
 				&jump_buffer,
 				key) /* 1, 0 */
-	     : ((bool) RED_BLACK_JUMP_2_STATUS(status)); /* 1, 0 */
+	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 }
 
 bool
@@ -99,13 +99,6 @@ red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
 }
 
 bool
-red_black_tree_verify(const RedBlackTree *const restrict tree)
-{
-	return red_black_verify(tree->root,
-				tree->comparator);
-}
-
-bool
 red_black_tree_print(const RedBlackTree *const restrict tree,
 		     const RedBlackKeySizer key_sizer,
 		     const RedBlackKeyPutter key_putter)
@@ -113,4 +106,11 @@ red_black_tree_print(const RedBlackTree *const restrict tree,
 	return red_black_print(tree->root,
 			       key_sizer,
 			       key_putter);
+}
+
+bool
+red_black_tree_verify(const RedBlackTree *const restrict tree)
+{
+	return red_black_verify(tree->root,
+				tree->comparator);
 }

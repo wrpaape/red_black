@@ -9,7 +9,7 @@
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
-bool
+int
 red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackAllocator *const restrict allocator,
@@ -23,7 +23,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
  *
  * or return
  *
- *	true				OK, tree updated
- *	false				OK, tree NOT updated
+ *	1				OK, tree updated
+ *	0				OK, tree NOT updated
  * ────────────────────────────────────────────────────────────────────────── */
 #endif /* ifndef RED_BLACK_DELETE_H_ */

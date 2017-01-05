@@ -35,7 +35,7 @@ int
 red_black_tree_insert(RedBlackTree *const restrict tree,
 		      const void *const key);
 
-bool
+int
 red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key);
 
@@ -59,12 +59,12 @@ red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
 			     const void **const restrict key_ptr);
 
 bool
-red_black_tree_verify(const RedBlackTree *const restrict tree);
-
-bool
 red_black_tree_print(const RedBlackTree *const restrict tree,
 		     const RedBlackKeySizer key_sizer,
 		     const RedBlackKeyPutter key_putter);
+
+bool
+red_black_tree_verify(const RedBlackTree *const restrict tree);
 
 
 #endif /* ifndef RED_BLACK_TREE_H_ */
