@@ -2,9 +2,9 @@
 #include "red_black_insert.h"
 #include "red_black_delete.h"
 #include "red_black_find.h"
-#include "red_black_verify.h"
-#include "red_black_print.h"
 #include "red_black_count.h"
+#include "red_black_print.h"
+#include "red_black_verify.h"
 
 
 void

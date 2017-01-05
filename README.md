@@ -73,7 +73,7 @@ On return `tree` models a valid, empty red-black tree and can safely be operated
 
 
 ###red_black_tree_destroy
-**[declaration](#include/red_black_tree.h#L31-L32)|[source](#src/red_black_tree.c#L20-L24)**
+**[declaration](include/red_black_tree.h#L31-L32)|[source](src/red_black_tree.c#L20-L24)**
 ```
 void
 red_black_tree_destroy(RedBlackTree *const restrict tree);
@@ -88,7 +88,7 @@ frees all memory allocated by `tree`
 
 
 ###red_black_tree_insert
-**[declaration](#include/red_black_tree.h#L34-L36)|[source](#src/red_black_tree.c#L26-L42)**
+**[declaration](include/red_black_tree.h#L34-L36)|[source](src/red_black_tree.c#L26-L42)**
 ```
 int
 red_black_tree_insert(RedBlackTree *const restrict tree,
@@ -109,7 +109,7 @@ attempts to insert `key` into `tree`
 
 
 ###red_black_tree_delete
-**[declaration](#include/red_black_tree.h#L38-L40)|[source](#src/red_black_tree.c#L44-L60)**
+**[declaration](include/red_black_tree.h#L38-L40)|[source](src/red_black_tree.c#L44-L60)**
 ```
 int
 red_black_tree_delete(RedBlackTree *const restrict tree,
@@ -129,7 +129,7 @@ TODO
 
 
 ###red_black_tree_find
-**[declaration](#include/red_black_tree.h#L42-L44)|[source](#src/red_black_tree.c#L62-L69)**
+**[declaration](include/red_black_tree.h#L42-L44)|[source](src/red_black_tree.c#L62-L69)**
 ```
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,
@@ -150,7 +150,7 @@ TODO
 
 
 ###red_black_tree_count
-**[declaration](#include/red_black_tree.h#L46-L47)|[source](#src/red_black_tree.c#L71-L75)**
+**[declaration](include/red_black_tree.h#L46-L47)|[source](src/red_black_tree.c#L71-L75)**
 ```
 unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);
@@ -166,7 +166,7 @@ returns the count of active nodes in `tree`
 
 
 ###red_black_iterator_init_asc red_black_iterator_init_desc
-**[declaration](#include/red_black_tree.h#L49-L55)|[source](#src/red_black_tree.c#L77-L91)**
+**[declaration](include/red_black_tree.h#L49-L55)|[source](src/red_black_tree.c#L77-L91)**
 ```
 void
 red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
@@ -192,7 +192,7 @@ On return, `iterator` may be passed on successive calls to [red_black_tree_itera
 
 
 ###red_black_iterator_next
-**[declaration](#include/red_black_tree.h#L57-L59)|[source](#src/red_black_tree.c#L93-L99)**
+**[declaration](include/red_black_tree.h#L57-L59)|[source](src/red_black_tree.c#L93-L99)**
 ```
 bool
 red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
@@ -212,7 +212,7 @@ attempts to fetch the next ordered key from `iterator`
 
 
 ###red_black_tree_print
-**[declaration](#include/red_black_tree.h#L61-L64)|[source](#src/red_black_tree.c#L101-L109)**
+**[declaration](include/red_black_tree.h#L61-L64)|[source](src/red_black_tree.c#L101-L109)**
 ```
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,
@@ -251,7 +251,7 @@ attempts to print the internal representation of `tree` to standard output
 
 
 ###red_black_verify
-**[declaration](#include/red_black_tree.h#L66-L67)|[source](#src/red_black_tree.c#L111-L116)**
+**[declaration](include/red_black_tree.h#L66-L67)|[source](src/red_black_tree.c#L111-L116)**
 ```
 bool
 red_black_tree_verify(const RedBlackTree *const restrict tree);
@@ -269,7 +269,7 @@ validates that `tree`'s keys are properly ordered and that its nodes adhere to t
 
 
 ###RedBlackTree
-**[declaration](#include/red_black_tree.h#L14-L20)**
+**[declaration](include/red_black_tree.h#L14-L20)**
 ```
 struct _RedBlackTree {
         struct RedBlackNode *root;
@@ -280,7 +280,7 @@ struct _RedBlackTree {
 typedef struct _RedBlackTree RedBlackTree;
 ```
 
-**responsibilities**  
+**responsibility**  
 stores
 - root node of the tree structure ([struct RedBlackNode](#struct-redblacknode))
 - key comparator ([RedBlackComparator](#redblackcomparator))
@@ -288,13 +288,13 @@ stores
 
 
 ###RedBlackComparator
-**[declaration](#include/red_black_comparator.h#L10-L12)**
+**[declaration](include/red_black_comparator.h#L10-L12)**
 ```
 typedef int
 (*RedBlackComparator)(const void *key1,
                       const void *key2);
 ```
-**responsibilities**  
+**responsibility**  
 maintain proper sorted order of tree nodes
 
 **behaviour**  
@@ -308,16 +308,70 @@ should compare two typeless keys according to the table:
 
 without altering their values
 
+**examples**  
+```
+/* for trees housing integer keys */
+#include <stdint.h>		/* intptr_t */
+int
+compare_integer_keys(const void *key1,
+                     const void *key2)
+{
+        const int int_key1 = (int) (intptr_t) key1;
+        const int int_key2 = (int) (intptr_t) key2;
+
+#if 0 /* if domain of keys is known to be small */
+        return int_key1 - int_key2;
+
+#else /* if subtraction of keys may cause arithmetic overflow */
+        if (int_key1 < int_key2)
+                return -1;
+
+        if (int_key1 > int_key2)
+                return  1;
+
+        return 0;
+#endif
+}
+
+
+/* for trees housing string keys */
+int
+compare_string_keys(const void *key1,
+                    const void *key2)
+{
+        const unsigned char *string1;
+        const unsigned char *string2;
+        int token1;
+        int token2;
+
+        string1 = (const unsigned char *) key1;
+        string2 = (const unsigned char *) key2;
+
+        while (1) {
+                token1 = (int) *string1;
+                token2 = (int) *string2;
+
+                if (token1 != token2)
+                        return token1 - token2;
+
+                if (token1 == 0)
+                        return 0;
+
+                ++string1;
+                ++string2;
+        }
+}
+```
 
 
 ###RedBlackTreeIterator
-**[declaration](#include/red_black_tree.h#L22)**
+**[declaration](include/red_black_tree.h#L22)**
 ```
 typedef struct RedBlackIterator RedBlackTreeIterator;
 ```
 
-**responsibilities**  
-- maintain state of iteration across calls to [`red_black_tree_iterator_next`](#red_black_tree_iterator_next)
+**responsibility**  
+maintain state of iteration across calls to [`red_black_tree_iterator_next`](#red_black_tree_iterator_next)
 
 
 
@@ -327,11 +381,37 @@ typedef size_t
 (*RedBlackKeySizer)(const void *key);
 ```
 
-**responsibilities**  
-- provide [`red_black_tree_print`](#red_black_tree_print) with sizing information for buffer allocation
+**responsibility**  
+provide [`red_black_tree_print`](#red_black_tree_print) with sizing information for buffer allocation
 
 **behaviour**  
 should return the count of `char`s required for [string representation](#redblackkeyputter) of `key` or an overestimation thereof
+
+**examples**  
+```
+/* for trees housing integer keys */
+#include <stddef.h> /* size_t */
+size_t
+size_integer_key(const void *key)
+{
+        return 20; /* enough room for UINT64_MAX ("18446744073709551615") */
+}
+
+
+/* for trees housing string keys */
+size_t
+size_string_key(const void *key)
+{
+        const char *string;
+
+        string = (const char *) key;
+
+        while (*string != '\0')
+                ++string;
+
+        return string - ((const char *) key);
+}
+```
 
 
 ###RedBlackKeyPutter
@@ -340,12 +420,76 @@ typedef char *
 (*RedBlackKeyPutter)(char *buffer,
                      const void *key);
 ```
-**responsibilities**  
-- provide [`red_black_tree_print`](#red_black_tree_print) with a means of stringifying keys
+**responsibility**  
+provide [`red_black_tree_print`](#red_black_tree_print) with a means of stringifying keys
 
-should write the string representation of input `key` to `buffer` and return pointer advanced immediately beyond the final character
+**behaviour**  
+should write the string representation of input `key` to `buffer` and return a pointer advanced immediately beyond the final character  
+If a terminating `NUL` byte is written to `buffer`, return a pointer to it so it may be overwritten by the printer.
+
+**examples**  
+```
+/* for trees housing integer keys */
+#include <stdint.h>		/* intptr_t */
+#define DIGIT_TO_ASCII(DIGIT)	((DIGIT) | 48u) /* 0..9 → '0'..'9' */
+char *
+put_integer_key(char *buffer,
+                const void *key)
+{
+        int digit;
+        int int_key;
+        char tmp;
+        char *restrict ptr;
+        char *restrict end_ptr;
+
+        int_key = (int) (intptr_t) key;
+
+        if (int_key < 0) {
+                int_key = -int_key; /* ensure key is positive */
+                *buffer++ = '-';    /* add sign */
+        }
+
+        ptr = buffer;
+
+        /* write digits in reverse order */
+        do {
+                /* put % and / nearby to hint compiler to emit single idiv
+                 * instruction */
+                digit = int_key % 10;
+                int_key /= 10;
+
+                *ptr++ = (char) DIGIT_TO_ASCII(digit);
+        } while (int_key > 0);
+
+        end_ptr = ptr; /* copy pointer beyond last digit */
+
+        /* swap digits in place */
+        while (--ptr > buffer) {
+             tmp       = *ptr;
+             *ptr      = *buffer;
+             *buffer++ = tmp;
+        }
+
+        return end_ptr; /* done */
+}
 
 
+/* for trees housing string keys */
+char *
+put_string_key(char *buffer,
+               const void *key)
+{
+        const char *string;
+
+        string = (const char *) key;
+
+        /* copy string */
+        while (*string != '\0');
+                *buffer++ = *string++;
+
+        return buffer;
+}
+```
 
 ##Implementation
 
