@@ -62,7 +62,7 @@ void
 red_black_correct_lr_bot(struct RedBlackNode *restrict *const restrict tree,
 			 struct RedBlackNode *const restrict grandparent,
 			 struct RedBlackNode *const restrict parent,
-			 struct RedBlackNode *const restrict child,
+			 struct RedBlackNode *const restrict node,
 			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
@@ -74,13 +74,13 @@ red_black_correct_lr_bot(struct RedBlackNode *restrict *const restrict tree,
 			return; /* need to propogate recolor */
 		}
 
-		/* rotate left-right, recolor child and grandparent
+		/* rotate left-right, recolor node and grandparent
 		 * ────────────────────────────────────────────────────────── */
-		*tree = child;
+		*tree = node;
 
-		child->is_red = false;
-		child->left   = parent;
-		child->right  = grandparent;
+		node->is_red = false;
+		node->left   = parent;
+		node->right  = grandparent;
 
 		parent->right = NULL;
 
@@ -95,7 +95,7 @@ void
 red_black_correct_lr_mid(struct RedBlackNode *restrict *const restrict tree,
 			 struct RedBlackNode *const restrict grandparent,
 			 struct RedBlackNode *const restrict parent,
-			 struct RedBlackNode *const restrict child,
+			 struct RedBlackNode *const restrict node,
 			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
@@ -107,17 +107,17 @@ red_black_correct_lr_mid(struct RedBlackNode *restrict *const restrict tree,
 			return; /* need to propogate recolor */
 		}
 
-		/* rotate left-right, recolor child and grandparent
+		/* rotate left-right, recolor node and grandparent
 		 * ────────────────────────────────────────────────────────── */
-		*tree = child;
+		*tree = node;
 
-		child->is_red = false;
-		parent->right = child->left;
-		child->left   = parent;
+		node->is_red  = false;
+		parent->right = node->left;
+		node->left    = parent;
 
 		grandparent->is_red = true;
-		grandparent->left   = child->right;
-		child->right        = grandparent;
+		grandparent->left   = node->right;
+		node->right         = grandparent;
 	}
 
 	RED_BLACK_JUMP_3_TRUE(jump_buffer); /* all done, node was inserted */
@@ -185,7 +185,7 @@ void
 red_black_correct_rl_bot(struct RedBlackNode *restrict *const restrict tree,
 			 struct RedBlackNode *const restrict grandparent,
 			 struct RedBlackNode *const restrict parent,
-			 struct RedBlackNode *const restrict child,
+			 struct RedBlackNode *const restrict node,
 			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
@@ -197,13 +197,13 @@ red_black_correct_rl_bot(struct RedBlackNode *restrict *const restrict tree,
 			return; /* need to propogate recolor */
 		}
 
-		/* rotate right-left, recolor child and grandparent
+		/* rotate right-left, recolor node and grandparent
 		 * ────────────────────────────────────────────────────────── */
-		*tree = child;
+		*tree = node;
 
-		child->is_red = false;
-		child->left   = grandparent;
-		child->right  = parent;
+		node->is_red = false;
+		node->left   = grandparent;
+		node->right  = parent;
 
 		parent->left = NULL;
 
@@ -218,7 +218,7 @@ void
 red_black_correct_rl_mid(struct RedBlackNode *restrict *const restrict tree,
 			 struct RedBlackNode *const restrict grandparent,
 			 struct RedBlackNode *const restrict parent,
-			 struct RedBlackNode *const restrict child,
+			 struct RedBlackNode *const restrict node,
 			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
@@ -230,17 +230,17 @@ red_black_correct_rl_mid(struct RedBlackNode *restrict *const restrict tree,
 			return; /* need to propogate recolor */
 		}
 
-		/* rotate right-left, recolor child and grandparent
+		/* rotate right-left, recolor node and grandparent
 		 * ────────────────────────────────────────────────────────── */
-		*tree = child;
+		*tree = node;
 
-		child->is_red       = false;
+		node->is_red        = false;
 		grandparent->is_red = true;
-		grandparent->right  = child->left;
-		child->left         = grandparent;
+		grandparent->right  = node->left;
+		node->left          = grandparent;
 
-		parent->left = child->right;
-		child->right = parent;
+		parent->left = node->right;
+		node->right  = parent;
 
 	}
 

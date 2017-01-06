@@ -44,6 +44,11 @@ int
 red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key);
 
+int
+red_black_tree_remove(RedBlackTree *const restrict tree,
+		      const void *const key,
+		      void **const restrict key_ptr);
+
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,
 		    const void *const key);

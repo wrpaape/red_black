@@ -60,6 +60,8 @@ endif
 
 
 
+# PATH CONFIGURATION
+# ══════════════════════════════════════════════════════════════════════════════
 # String Utils
 # ──────────────────────────────────────────────────────────────────────────────
 EMPTY	       :=
@@ -73,10 +75,6 @@ define NEWLINE :=
 endef
 
 
-
-
-# PATH CONFIGURATION
-# ══════════════════════════════════════════════════════════════════════════════
 # Path delimiter, file extensions
 # ──────────────────────────────────────────────────────────────────────────────
 SRC_EXT := .c
@@ -130,8 +128,8 @@ SHARED_LIBRARY_DIR  := shared# shared library files
 
 # Project file paths
 # ──────────────────────────────────────────────────────────────────────────────
-SOURCE_PATH          = $(call SOURCE_FILE_PATH,$(SOURCE_DIR),$1)
-HEADER_PATH          = $(call HEADER_FILE_PATH,$(HEADER_DIR),$1)
+SOURCE_PATH          = $(call SOURCE_FILE_PATH,red_black_$(SOURCE_DIR),$1)
+HEADER_PATH          = $(call HEADER_FILE_PATH,red_black_$(HEADER_DIR),$1)
 TEST_SOURCE_PATH     = $(call SOURCE_FILE_PATH,$(TEST_DIR),$1)
 TEST_HEADER_PATH     = $(call HEADER_FILE_PATH,$(TEST_DIR),$1)
 EXAMPLES_SOURCE_PATH = $(call SOURCE_FILE_PATH,$(EXAMPLES_DIR),$1)
@@ -196,25 +194,30 @@ endif
 # ══════════════════════════════════════════════════════════════════════════════
 # independent headers
 # ──────────────────────────────────────────────────────────────────────────────
-STACK_COUNT_HDR := $(call HEADER_PATH,red_black_stack_count)
-COMPARATOR_HDR  := $(call HEADER_PATH,red_black_comparator)
-JUMP_HDR        := $(call HEADER_PATH,red_black_jump)
+STACK_COUNT_HDR := $(call HEADER_PATH,stack_count)
+COMPARATOR_HDR  := $(call HEADER_PATH,comparator)
+JUMP_HDR        := $(call HEADER_PATH,jump)
+MALLOC_HDR      := $(call HEADER_PATH,malloc)
+NODE_HDR        := $(call HEADER_PATH,node)
+LOCK_HDR        := $(call HEADER_PATH,lock)
+PRINT_TYPES_HDR := $(call HEADER_PATH,print_types)
+
 
 # HEADER FILES
 # ──────────────────────────────────────────────────────────────────────────────
-STACK_COUNT_H := $(INCLUDE_DIR)/red_black_stack_count.h
+# STACK_COUNT_H := $(INCLUDE_DIR)/red_black_stack_count.h
 ALLOCATOR_H   := $(INCLUDE_DIR)/red_black_allocator.h
-COMPARATOR_H  := $(INCLUDE_DIR)/red_black_comparator.h
+# COMPARATOR_H  := $(INCLUDE_DIR)/red_black_comparator.h
 ITERATOR_H    := $(INCLUDE_DIR)/red_black_iterator.h
 DELETE_H      := $(INCLUDE_DIR)/red_black_delete.h
 FIND_H        := $(INCLUDE_DIR)/red_black_find.h
 INSERT_H      := $(INCLUDE_DIR)/red_black_insert.h
-JUMP_H        := $(INCLUDE_DIR)/red_black_jump.h
-LOCK_H        := $(INCLUDE_DIR)/red_black_lock.h
-MALLOC_H      := $(INCLUDE_DIR)/red_black_malloc.h
-NODE_H        := $(INCLUDE_DIR)/red_black_node.h
+# JUMP_H        := $(INCLUDE_DIR)/red_black_jump.h
+# LOCK_H        := $(INCLUDE_DIR)/red_black_lock.h
+# MALLOC_H      := $(INCLUDE_DIR)/red_black_malloc.h
+# NODE_H        := $(INCLUDE_DIR)/red_black_node.h
 PRINT_H       := $(INCLUDE_DIR)/red_black_print.h
-PRINT_TYPES_H := $(INCLUDE_DIR)/red_black_print_types.h
+# PRINT_TYPES_H := $(INCLUDE_DIR)/red_black_print_types.h
 TREE_H        := $(INCLUDE_DIR)/red_black_tree.h
 VERIFY_H      := $(INCLUDE_DIR)/red_black_verify.h
 COUNT_H       := $(INCLUDE_DIR)/red_black_count.h

@@ -81,6 +81,26 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 }
 
+int
+red_black_tree_remove(RedBlackTree *const restrict tree,
+		      const void *const key,
+		      void **const restrict key_ptr);
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_remove(&tree->root,
+				tree->comparator,
+				&tree->allocator,
+				&jump_buffer,
+				key,
+				key_ptr) /* 1, 0 */
+	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+}
+
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,
 		    const void *const key)
