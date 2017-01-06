@@ -53,7 +53,7 @@ rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
 }
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
-typedef bool
+typedef void
 (*RedBlackDeleteNode)(struct RedBlackNode *restrict *const restrict tree,
 		      struct RedBlackNode *const restrict parent,
 		      struct RedBlackNode *const restrict node,

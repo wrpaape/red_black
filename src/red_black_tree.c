@@ -85,7 +85,7 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 int
 red_black_tree_remove(RedBlackTree *const restrict tree,
 		      const void *const key,
-		      void **const restrict key_ptr);
+		      void **const restrict key_ptr)
 {
 	RedBlackJumpBuffer jump_buffer;
 	int status;

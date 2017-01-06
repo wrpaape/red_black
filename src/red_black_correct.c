@@ -1,4 +1,5 @@
 #include "red_black_correct.h" /* RedBlackNode, JumpBuffer */
+#include <stddef.h>	/* NULL */
 
 void
 red_black_correct_ll_bot(struct RedBlackNode *restrict *const restrict tree,

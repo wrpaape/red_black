@@ -154,7 +154,7 @@ CC		:= gcc
 CC_BASE_FLAGS	:= -std=gnu99 -march=native
 CC_ENV_FLAGS	:= -D__USE_FIXED_PROTOTYPES__ $(SYS_ENV_FLAGS)
 CC_INC_FLAGS	:= -I$(HEADER_DIR) -I$(KEY_ACC_DIR)
-CC_FLAGS	:= -O2 -funroll-loops $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS)
+CC_FLAGS	:= $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS) -O2 -funroll-loops -c
 CC_PIC_FLAGS	:= -fpic
 
 # Archiver
@@ -197,13 +197,13 @@ endif
 # ══════════════════════════════════════════════════════════════════════════════
 # independent headers
 # ──────────────────────────────────────────────────────────────────────────────
-STACK_COUNT_HDR := $(call HEADER_PATH,stack_count)
-COMPARATOR_HDR  := $(call HEADER_PATH,comparator)
-JUMP_HDR        := $(call HEADER_PATH,jump)
-MALLOC_HDR      := $(call HEADER_PATH,malloc)
-NODE_HDR        := $(call HEADER_PATH,node)
-LOCK_HDR        := $(call HEADER_PATH,lock)
-PRINT_TYPES_HDR := $(call HEADER_PATH,print_types)
+STACK_COUNT_HDR := $(call HEADER_PATH,red_black_stack_count)
+COMPARATOR_HDR  := $(call HEADER_PATH,red_black_comparator)
+JUMP_HDR        := $(call HEADER_PATH,red_black_jump)
+MALLOC_HDR      := $(call HEADER_PATH,red_black_malloc)
+NODE_HDR        := $(call HEADER_PATH,red_black_node)
+LOCK_HDR        := $(call HEADER_PATH,red_black_lock)
+PRINT_TYPES_HDR := $(call HEADER_PATH,red_black_print_types)
 
 
 # red_black_allocator
@@ -548,8 +548,8 @@ TARGETS			+= $(STR_KEY_OBJ)
 # ══════════════════════════════════════════════════════════════════════════════
 # red_black_tree_test
 # ──────────────────────────────────────────────────────────────────────────────
-TREE_TEST_SRC		:= $(call KEY_ACC_SOURCE_PATH,red_black_tree_test)
-TREE_TEST_HDR		:= $(call KEY_ACC_HEADER_PATH,red_black_tree_test)
+TREE_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_test)
+TREE_TEST_HDR		:= $(call TEST_HEADER_PATH,red_black_tree_test)
 TREE_TEST_OBJ		:= $(call OBJECT_PATH,red_black_tree_test)
 TREE_TEST_BIN		:= $(call BINARY_PATH,red_black_tree_test)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -618,18 +618,18 @@ clean:
 # ──────────────────────────────────────────────────────────────────────────────
 $(DEMO_BIN): $(DEMO_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(DEMO_OBJ): $(DEMO_O_PREQS)
+$(DEMO_OBJ): $(DEMO_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(USORT_BIN): $(USORT_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(USORT_OBJ): $(USORT_O_PREQS)
+$(USORT_OBJ): $(USORT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 # TEST MODULES
 # ──────────────────────────────────────────────────────────────────────────────
 $(TREE_TEST_BIN): $(TREE_TEST_BIN_PREQS)
-	$(LD) $^ $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(TREE_TEST_OBJ): $(TREE_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
@@ -638,7 +638,7 @@ $(TREE_TEST_OBJ): $(TREE_TEST_OBJ_PREQS)
 $(TREE_ST_LIB): $(TREE_ST_LIB_PREQS)
 	$(AR) $(AR_FLAGS) $@ $^
 $(TREE_SH_LIB): $(TREE_SH_LIB_PREQS)
-	$(LD) $^ $(LD_FLAGS) $(LD_SH_FLAGS) -o $@
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_SH_FLAGS) -o $@
 $(TREE_OBJ): $(TREE_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(TREE_PIC_OBJ): $(TREE_PIC_OBJ_PREQS)

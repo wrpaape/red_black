@@ -1,5 +1,6 @@
 #include "red_black_restore.h"
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
+#include <stddef.h>		   /* NULL */
 
 
 static inline bool

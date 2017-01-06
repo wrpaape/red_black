@@ -7,7 +7,7 @@ rb_remove_node(struct RedBlackNode *restrict *const restrict tree,
 	       struct RedBlackNode *const restrict node,
 	       struct RedBlackAllocator *const restrict allocator,
 	       RedBlackJumpBuffer *const restrict jump_buffer,
-	       void **const restrict key_ptr);
+	       void **const restrict key_ptr)
 {
 	bool is_red;
 	struct RedBlackNode *restrict lchild;
@@ -38,7 +38,7 @@ static inline void
 rb_remove_root(struct RedBlackNode *restrict *const restrict tree,
 	       struct RedBlackNode *const restrict root,
 	       struct RedBlackAllocator *const restrict allocator,
-	       void **const restrict key_ptr);
+	       void **const restrict key_ptr)
 {
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
@@ -57,7 +57,7 @@ rb_remove_root(struct RedBlackNode *restrict *const restrict tree,
 }
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
-typedef bool
+typedef void
 (*RedBlackRemoveNode)(struct RedBlackNode *restrict *const restrict tree,
 		      struct RedBlackNode *const restrict parent,
 		      struct RedBlackNode *const restrict node,
@@ -103,7 +103,7 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackAllocator *const restrict allocator,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key,
-	    void **const restrict key_ptr);
+	    void **const restrict key_ptr)
 {
 	RedBlackRemoveNode next_remove;
 	struct RedBlackNode *restrict next_node;
@@ -223,7 +223,7 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 		 struct RedBlackAllocator *const restrict allocator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 const void *const key,
-		 void **const restrict key_ptr);
+		 void **const restrict key_ptr)
 {
 	int status;
 	RedBlackRemoveNode next_remove;
