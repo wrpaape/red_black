@@ -1,10 +1,10 @@
-#include "rb_correct.h" /* RedBlackNode, JumpBuffer */
+#include "red_black_correct.h" /* RedBlackNode, JumpBuffer */
 
 void
-rb_correct_ll_bot(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_ll_bot(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		parent->is_red = false;
@@ -30,10 +30,10 @@ rb_correct_ll_bot(struct RedBlackNode *restrict *const restrict tree,
 }
 
 void
-rb_correct_ll_mid(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_ll_mid(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		parent->is_red = false;
@@ -59,11 +59,11 @@ rb_correct_ll_mid(struct RedBlackNode *restrict *const restrict tree,
 
 
 void
-rb_correct_lr_bot(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  struct RedBlackNode *const restrict child,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_lr_bot(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 struct RedBlackNode *const restrict child,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		struct RedBlackNode *const restrict uncle = grandparent->right;
@@ -92,11 +92,11 @@ rb_correct_lr_bot(struct RedBlackNode *restrict *const restrict tree,
 }
 
 void
-rb_correct_lr_mid(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  struct RedBlackNode *const restrict child,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_lr_mid(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 struct RedBlackNode *const restrict child,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		struct RedBlackNode *const restrict uncle = grandparent->right;
@@ -124,10 +124,10 @@ rb_correct_lr_mid(struct RedBlackNode *restrict *const restrict tree,
 }
 
 void
-rb_correct_rr_bot(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_rr_bot(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		parent->is_red = false;
@@ -153,10 +153,10 @@ rb_correct_rr_bot(struct RedBlackNode *restrict *const restrict tree,
 }
 
 void
-rb_correct_rr_mid(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_rr_mid(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		parent->is_red = false;
@@ -182,11 +182,11 @@ rb_correct_rr_mid(struct RedBlackNode *restrict *const restrict tree,
 
 
 void
-rb_correct_rl_bot(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  struct RedBlackNode *const restrict child,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_rl_bot(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 struct RedBlackNode *const restrict child,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		struct RedBlackNode *const restrict uncle = grandparent->left;
@@ -215,11 +215,11 @@ rb_correct_rl_bot(struct RedBlackNode *restrict *const restrict tree,
 }
 
 void
-rb_correct_rl_mid(struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict grandparent,
-		  struct RedBlackNode *const restrict parent,
-		  struct RedBlackNode *const restrict child,
-		  RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_correct_rl_mid(struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNode *const restrict grandparent,
+			 struct RedBlackNode *const restrict parent,
+			 struct RedBlackNode *const restrict child,
+			 RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	if (parent->is_red) {
 		struct RedBlackNode *const restrict uncle = grandparent->left;

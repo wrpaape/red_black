@@ -1,26 +1,204 @@
-# DIRECTORY CONFIGURATION
+# SYSTEM CONFIG
+# ══════════════════════════════════════════════════════════════════════════════
+# extended from user 'Trevor Robinson''s response to stackoverflow question:
+#
+# 	http://stackoverflow.com/questions/714100/os-detecting-makefile
+
+ifeq ($(OS),Windows_NT)
+        SYSTEM_WINDOWS 	:= T
+        SYS_ENV_FLAGS 	:= -DWIN32
+
+        ifeq      (AMD64,$(PROCESSOR_ARCHITECTURE))
+                ARCH_X86_64	:= T
+                SYS_ARCH_FLAG	:= -arch x86_64
+                SYS_ENV_FLAGS	+= -DAMD_64
+
+        else ifeq (x86,$(PROCESSOR_ARCHITECTURE))
+                ARCH_I386	:= T
+                SYS_ARCH_FLAG	:= -arch i386
+                SYS_ENV_FLAGS	+= -DIA_32
+        endif
+
+else
+        UNAME_S := $(shell uname -s)
+
+        ifeq      ($(UNAME_S),Linux)
+                SYSTEM_LINUX 	:= T
+                SYS_ENV_FLAGS 	:= -DLINUX
+
+        else ifeq ($(UNAME_S),Darwin)
+                SYSTEM_OSX 	:= T
+                SYS_ENV_FLAGS 	:= -DOSX
+        endif
+
+        UNAME_M := $(shell uname -m)
+
+        ifeq      (x86_64,$(UNAME_M))
+                ARCH_X86_64	:= T
+                SYS_ARCH_FLAG	:= -arch x86_64
+                SYS_ENV_FLAGS	+= -DAMD_64
+
+        else ifneq (,$(filter %86,$(UNAME_M)))
+                ARCH_I386	:= T
+                SYS_ARCH_FLAG	:= -arch i386
+                SYS_ENV_FLAGS 	+= -DIA_32
+
+        else ifneq (,$(filter arm%,$(UNAME_M)))
+
+                ifneq (,$(filter %32%,$(UNAME_M)))
+                        ARCH_ARM_32	:= T
+                        SYS_ARCH_FLAG	:= -arch AArch32
+                        SYS_ENV_FLAGS 	+= -DARM_32
+                else
+                        ARCH_ARM_64	:= T
+                        SYS_ARCH_FLAG	:= -arch AArch64
+                        SYS_ENV_FLAGS 	+= -DARM_64
+                endif
+        endif
+endif
+
+
+
+
+# String Utils
 # ──────────────────────────────────────────────────────────────────────────────
-SRC_DIR      := src# .c source files
-INCLUDE_DIR  := include# .h header files
-OBJ_DIR      := obj# .o object files
-BIN_DIR      := bin# binary executable files
-LIB_DIR      := lib# static and shared library files
-TEST_DIR     := test# test source and header files
-EXAMPLES_DIR := examples# example code
-KEY_ACC_DIR  := key_accessors#common key accessors
+EMPTY	       :=
+SPACE	       := $(EMPTY) $(EMPTY)
+TAB	       := $(EMPTY)	$(EMPTY)
+TRIM		= $(subst $(SPACE),$(EMPTY),$1)
+JOIN	        = $(subst $(SPACE),$2,$(strip $1))
+define NEWLINE :=
+
+
+endef
+
+
+
+
+# PATH CONFIGURATION
+# ══════════════════════════════════════════════════════════════════════════════
+# Path delimiter, file extensions
+# ──────────────────────────────────────────────────────────────────────────────
+SRC_EXT := .c
+HDR_EXT := .h
+
+ifeq (T,$(SYSTEM_WINDOWS))
+        PATH_DELIM	:= \\
+        OBJ_EXT         := .obj
+        BIN_EXT		:= .exe
+        ST_LIB_EXT      := .lib
+        SH_LIB_EXT      := .dll
+
+else
+        PATH_DELIM	:= /
+        OBJ_EXT         := .o
+        BIN_EXT		:= $(EMPTY)
+        ST_LIB_EXT      := .a
+
+        ifeq (T,$(SYSTEM_OSX))
+                SH_LIB_EXT := .dylib
+        else
+                SH_LIB_EXT := .so
+        endif
+endif
+
+
+# General file paths
+# ──────────────────────────────────────────────────────────────────────────────
+FILE_PATH = $(call JOIN,$(call TRIM,$1) $(call TRIM,$2),$(PATH_DELIM))
+
+SOURCE_FILE_PATH         = $(call FILE_PATH,$1,$2$(SRC_EXT))
+HEADER_FILE_PATH         = $(call FILE_PATH,$1,$2$(HDR_EXT))
+OBJECT_FILE_PATH         = $(call FILE_PATH,$1,$2$(OBJ_EXT))
+BINARY_FILE_PATH         = $(call FILE_PATH,$1,$2$(BIN_EXT))
+STATIC_LIBRARY_FILE_PATH = $(call FILE_PATH,$1,$2$(ST_LIB_EXT))
+SHARED_LIBRARY_FILE_PATH = $(call FILE_PATH,$1,$2$(SH_LIB_EXT))
+
+
+# Directories
+# ──────────────────────────────────────────────────────────────────────────────
+SOURCE_DIR          := src# library source files
+HEADER_DIR          := include# library header files
+TEST_DIR            := test# test source and header files
+EXAMPLES_DIR        := examples# example source and hear files
+KEY_ACC_DIR         := key_accessors#common key accessors
+OBJECT_DIR          := obj# object files
+BINARY_DIR          := bin# binary executable files
+STATIC_LIBRARY_DIR  := static# static library files
+SHARED_LIBRARY_DIR  := shared# shared library files
+
+
+# Project file paths
+# ──────────────────────────────────────────────────────────────────────────────
+SOURCE_PATH          = $(call SOURCE_FILE_PATH,$(SOURCE_DIR),$1)
+HEADER_PATH          = $(call HEADER_FILE_PATH,$(HEADER_DIR),$1)
+TEST_SOURCE_PATH     = $(call SOURCE_FILE_PATH,$(TEST_DIR),$1)
+TEST_HEADER_PATH     = $(call HEADER_FILE_PATH,$(TEST_DIR),$1)
+EXAMPLES_SOURCE_PATH = $(call SOURCE_FILE_PATH,$(EXAMPLES_DIR),$1)
+EXAMPLES_HEADER_PATH = $(call HEADER_FILE_PATH,$(EXAMPLES_DIR),$1)
+KEY_ACC_SOURCE_PATH  = $(call SOURCE_FILE_PATH,$(KEY_ACC_DIR),$1)
+KEY_ACC_HEADER_PATH  = $(call HEADER_FILE_PATH,$(KEY_ACC_DIR),$1)
+OBJECT_PATH          = $(call OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
+BINARY_PATH          = $(call BINARY_FILE_PATH,$(BINARY_DIR),$1)
+STATIC_LIBRARY_PATH  = $(call STATIC_LIBRARY_FILE_PATH,$(STATIC_LIBRARY_DIR),$1)
+SHARED_LIBRARY_PATH  = $(call SHARED_LIBRARY_FILE_PATH,$(SHARED_LIBRARY_DIR),$1)
+
+
 
 
 # UTILITY CONFIGURATION
 # ──────────────────────────────────────────────────────────────────────────────
-CC	 := gcc
-CC_FLAGS := -std=gnu99 -I$(INCLUDE_DIR) -I$(KEY_ACC_DIR) -Wall -O2 -funroll-loops -c
-LD	 := ld
-LD_FLAGS := -arch x86_64 -macosx_version_min 10.11.0 -lc
-RM	 := rm
-RM_FLAGS := -rf
+# Compiler
+# ──────────────────────────────────────────────────────────────────────────────
+CC		:= gcc
+CC_ENV_FLAGS	:= -D__USE_FIXED_PROTOTYPES__ $(SYS_ENV_FLAGS)
+CC_BASE_FLAGS	:= -std=gnu99 -march=native $(CC_ENV_FLAGS) -I$(HEADER_DIR)
+CC_FLAGS	:= -O2 -funroll-loops $(CC_BASE_FLAGS)
+CC_PIC_FLAGS	:= -fpic
+
+# Archiver
+# ──────────────────────────────────────────────────────────────────────────────
 AR       := ar
 AR_FLAGS := rcs
 
+# Linker
+# ──────────────────────────────────────────────────────────────────────────────
+LD_LIBS	:= -lc
+ifeq (T,$(SYSTEM_OSX))
+        LD		:= ld
+        LD_FLAGS	:= -macosx_version_min 10.11.0 -no_pie $(SYS_ARCH_FLAG)
+        LD_BIN_FLAGS	:= -no_pie
+        LD_SH_FLAGS	:= -dylib
+else
+        LD		:= gcc
+        LD_FLAGS	:= $(EMPTY)
+        LD_BIN_FLAGS	:= $(EMPTY)
+        LD_SH_FLAGS	:= -shared
+endif
+
+# Cleaner
+# ──────────────────────────────────────────────────────────────────────────────
+ifeq (T,$(SYSTEM_WINDOWS))
+# 'clean' command may exceed 8192 character limit for windows
+        RM		:= cmd \/C del
+        RM_FLAGS	:= /F /Q
+        #RM		:= rm
+        #RM_FLAGS	:= -rf
+else
+        RM		:= rm
+        RM_FLAGS	:= -rf
+endif
+
+
+
+
+# PROJECT MODULES
+# ══════════════════════════════════════════════════════════════════════════════
+# independent headers
+# ──────────────────────────────────────────────────────────────────────────────
+STACK_COUNT_HDR := $(call HEADER_PATH,red_black_stack_count)
+COMPARATOR_HDR  := $(call HEADER_PATH,red_black_comparator)
+JUMP_HDR        := $(call HEADER_PATH,red_black_jump)
 
 # HEADER FILES
 # ──────────────────────────────────────────────────────────────────────────────
@@ -200,24 +378,29 @@ DEMO_DEP         := $(DEMO_O) $(TREE_ST) $(INT_KEY_O_GRP)
 TEST_O_DEP       := $(TEST_C) $(TEST_H) $(TREE_H) $(INT_KEY_H)
 TEST_DEP         := $(TEST_O) $(TREE_ST) $(INT_KEY_O_GRP)
 
+# Phony Targets
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: all clean
+
+
 # MAKE RULES
 # ──────────────────────────────────────────────────────────────────────────────
 all: $(TARGETS)
 
 $(DEMO): $(DEMO_DEP)
-	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 
 $(USORT): $(USORT_DEP)
-	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 
 $(TEST): $(TEST_DEP)
-	$(LD) $^ $(LD_FLAGS) -no_pie -o $@
+	$(LD) $^ $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 
 $(TREE_ST): $(TREE_ST_DEP)
 	$(AR) $(AR_FLAGS) $@ $^
 
 $(TREE_SH): $(TREE_SH_DEP)
-	$(LD) $^ $(LD_FLAGS) -dylib -o $@
+	$(LD) $^ $(LD_FLAGS) $(LD_SH_FLAGS) -o $@
 
 $(USORT_O): $(USORT_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
@@ -232,55 +415,55 @@ $(TREE_O): $(TREE_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(TREE_PO): $(TREE_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(DELETE_O): $(DELETE_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(DELETE_PO): $(DELETE_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(INSERT_O): $(INSERT_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(INSERT_PO): $(INSERT_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(ALLOCATOR_O): $(ALLOCATOR_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(ALLOCATOR_PO): $(ALLOCATOR_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(ITERATOR_O): $(ITERATOR_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(ITERATOR_PO): $(ITERATOR_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(FIND_O): $(FIND_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(FIND_PO): $(FIND_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(PRINT_O): $(PRINT_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(PRINT_PO): $(PRINT_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(VERIFY_O): $(VERIFY_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(VERIFY_PO): $(VERIFY_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(COUNT_O): $(COUNT_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(COUNT_PO): $(COUNT_PO_DEP)
-	$(CC) $(CC_FLAGS) -fpic $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(INT_KEY_O): $(INT_KEY_O_DEP)
 	$(CC) $(CC_FLAGS) $< -o $@
