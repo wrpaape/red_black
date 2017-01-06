@@ -37,12 +37,11 @@ TODO
 **Functions**
 - [red_black_tree_init](#red_black_tree_init)
 - [red_black_tree_destroy](#red_black_tree_destroy)
-- [red_black_tree_insert](#red_black_tree_insert)
-- [red_black_tree_delete](#red_black_tree_delete)
-- [red_black_tree_find](#red_black_tree_find)
+- [red_black_tree_insert | red_black_tree_update](#red_black_tree_insert-|-red_black_tree_update)
+- [red_black_tree_delete | red_black_tree_remove](#red_black_tree_delete-|-red_black_tree_remove)
+- [red_black_tree_find red_black_tree_fetch](#red_black_tree_find-red_black_tree_fetch)
 - [red_black_tree_count](#red_black_tree_count)
-- [red_black_tree_iterator_init_asc](#red_black_tree_iterator_init_asc)
-- [red_black_tree_iterator_init_desc](#red_black_tree_iterator_init_desc)
+- [red_black_tree_iterator_init_asc red_black_tree_iterator_init_desc](#red_black_tree_iterator_init_asc-red_black_tree_iterator_init_desc)
 - [red_black_tree_iterator_next](#red_black_tree_iterator_next)
 - [red_black_tree_print](#red_black_tree_print)
 - [red_black_tree_verify](#red_black_tree_verify)
@@ -87,7 +86,7 @@ frees all memory allocated by `tree`
 - memory is deallocated via [RED_BLACK_FREE](#red_black_malloc/red_black_free)
 
 
-###red_black_tree_insert
+###red_black_tree_insert | red_black_tree_update
 **[declaration](include/red_black_tree.h#L34-L36)|[source](src/red_black_tree.c#L26-L42)**
 ```
 int
@@ -102,10 +101,10 @@ attempts to insert `key` into `tree`
 | :------: | ---------------------------------------------------------------------------- | :--------: |
 |    `1`   | successfully inserted unique key `key` into tree                             |  updated   |
 |    `0`   | 'key' was already present in tree, no insertion                              | unchanged  |
-|   `-1`   | [RED_BLACK_MALLOC](#red_black_malloc/red_black_free) failure - out of memory | unchanged  |
+|   `-1`   | [RED_BLACK_MALLOC](#red_black_malloc-red_black_free) failure - out of memory | unchanged  |
 
 **notes**
-- additional memory is allocated occassionally via [RED_BLACK_MALLOC](#red_black_malloc/red_black_free)
+- additional memory is allocated occassionally via [RED_BLACK_MALLOC](#red_black_malloc-red_black_free)
 
 
 ###red_black_tree_delete
@@ -165,7 +164,7 @@ returns the count of active nodes in `tree`
 
 
 
-###red_black_iterator_init_asc red_black_iterator_init_desc
+###red_black_iterator_init_asc/red_black_iterator_init_desc
 **[declaration](include/red_black_tree.h#L49-L55)|[source](src/red_black_tree.c#L77-L91)**
 ```
 void
@@ -437,7 +436,6 @@ char *
 put_integer_key(char *buffer,
                 const void *key)
 {
-        int digit;
         int int_key;
         char tmp;
         char *restrict ptr;
@@ -456,10 +454,8 @@ put_integer_key(char *buffer,
         do {
                 /* put % and / nearby to hint compiler to emit single idiv
                  * instruction */
-                digit = int_key % 10;
+                *ptr++ = (char) DIGIT_TO_ASCII(int_key % 10);
                 int_key /= 10;
-
-                *ptr++ = (char) DIGIT_TO_ASCII(digit);
         } while (int_key > 0);
 
         end_ptr = ptr; /* copy pointer beyond last digit */
@@ -506,8 +502,9 @@ put_string_key(char *buffer,
 
 
 
-###RED_BLACK_MALLOC/RED_BLACK_FREE
+
+###RED_BLACK_MALLOC RED_BLACK_FREE
 
 
-###RedBlackJumpBuffer/RED_BLACK_SET_JUMP/RED_BLACK_LONG_JUMP
+###RedBlackJumpBuffer RED_BLACK_SET_JUMP RED_BLACK_LONG_JUMP
 
