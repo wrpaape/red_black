@@ -37,8 +37,8 @@ TODO
 **Functions**
 - [red_black_tree_init](#red_black_tree_init)
 - [red_black_tree_destroy](#red_black_tree_destroy)
-- [red_black_tree_insert | red_black_tree_update](#red_black_tree_insert-|-red_black_tree_update)
-- [red_black_tree_delete | red_black_tree_remove](#red_black_tree_delete-|-red_black_tree_remove)
+- [red_black_tree_insert, red_black_tree_update](#red_black_tree_insert,-red_black_tree_update)
+- [red_black_tree_delete, red_black_tree_remove](#red_black_tree_delete,-red_black_tree_remove)
 - [red_black_tree_find red_black_tree_fetch](#red_black_tree_find-red_black_tree_fetch)
 - [red_black_tree_count](#red_black_tree_count)
 - [red_black_tree_iterator_init_asc red_black_tree_iterator_init_desc](#red_black_tree_iterator_init_asc-red_black_tree_iterator_init_desc)
@@ -68,7 +68,7 @@ initializes the tree state
 On return `tree` models a valid, empty red-black tree and can safely be operated upon by the remaining interface functions.
 
 **notes**
-- allocates no memory on the heap until first call to [red_black_tree_insert](#red_black_tree_insert), after which a call to [red_black_tree_destroy](#red_black_tree_destroy) must be made when done with `tree` to prevent a memory leak
+- allocates no memory on the heap until first successful [insertion](#red_black_tree_insert), after which a call to [red_black_tree_destroy](#red_black_tree_destroy) must be made when done with `tree` to prevent a memory leak
 
 
 ###red_black_tree_destroy
@@ -86,7 +86,7 @@ frees all memory allocated by `tree`
 - memory is deallocated via [RED_BLACK_FREE](#red_black_malloc/red_black_free)
 
 
-###red_black_tree_insert | red_black_tree_update
+###red_black_tree_insert, red_black_tree_update
 **[declaration](include/red_black_tree.h#L34-L36)|[source](src/red_black_tree.c#L26-L42)**
 ```
 int
@@ -452,8 +452,6 @@ put_integer_key(char *buffer,
 
         /* write digits in reverse order */
         do {
-                /* put % and / nearby to hint compiler to emit single idiv
-                 * instruction */
                 *ptr++ = (char) DIGIT_TO_ASCII(int_key % 10);
                 int_key /= 10;
         } while (int_key > 0);
