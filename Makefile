@@ -195,7 +195,7 @@ endif
 
 # RED_BLACK MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
-# independent headers
+# Independent Headers
 # ──────────────────────────────────────────────────────────────────────────────
 STACK_COUNT_HDR := $(call HEADER_PATH,red_black_stack_count)
 COMPARATOR_HDR  := $(call HEADER_PATH,red_black_comparator)
@@ -567,6 +567,11 @@ TARGETS			+= $(TREE_TEST_OBJ)				\
 
 # EXAMPLE MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
+# Independent Headers
+# ──────────────────────────────────────────────────────────────────────────────
+EXAMPLES_IO_HDR		:= $(call EXAMPLES_HEADER_PATH,examples_io)
+
+
 # demo
 # ──────────────────────────────────────────────────────────────────────────────
 DEMO_SRC		:= $(call EXAMPLES_SOURCE_PATH,demo)
@@ -575,7 +580,8 @@ DEMO_BIN		:= $(call BINARY_PATH,demo)
 # ─────────────── target prequisites ───────────────────────────────────────────
 DEMO_OBJ_PREQS		:= $(DEMO_SRC)					\
 			   $(TREE_HDR)					\
-			   $(INT_KEY_HDR)
+			   $(INT_KEY_HDR)				\
+			   $(EXAMPLES_IO_HDR)
 DEMO_BIN_PREQS		:= $(DEMO_OBJ)					\
 			   $(INT_KEY_OBJ_GROUP)				\
 			   $(TREE_ST_LIB)
@@ -601,6 +607,24 @@ TARGETS			+= $(USORT_OBJ)					\
 			   $(USORT_BIN)
 
 
+# contacts
+# ──────────────────────────────────────────────────────────────────────────────
+CONTACTS_SRC		:= $(call EXAMPLES_SOURCE_PATH,contacts)
+CONTACTS_OBJ		:= $(call OBJECT_PATH,contacts)
+CONTACTS_BIN		:= $(call BINARY_PATH,contacts)
+# ─────────────── target prequisites ───────────────────────────────────────────
+CONTACTS_OBJ_PREQS	:= $(CONTACTS_SRC)				\
+			   $(TREE_HDR)					\
+			   $(STR_KEY_HDR)				\
+			   $(EXAMPLES_IO_HDR)
+CONTACTS_BIN_PREQS	:= $(CONTACTS_OBJ)				\
+			   $(STR_KEY_OBJ_GROUP)				\
+			   $(TREE_ST_LIB)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(CONTACTS_OBJ)				\
+			   $(CONTACTS_BIN)
+
+
 
 
 # MAKE RULES
@@ -614,6 +638,7 @@ all: $(TARGETS)
 clean:
 	$(RM) $(RM_FLAGS) $(TARGETS)
 
+
 # EXAMPLE MODULES
 # ──────────────────────────────────────────────────────────────────────────────
 $(DEMO_BIN): $(DEMO_BIN_PREQS)
@@ -626,12 +651,19 @@ $(USORT_BIN): $(USORT_BIN_PREQS)
 $(USORT_OBJ): $(USORT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
+$(CONTACTS_BIN): $(CONTACTS_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(CONTACTS_OBJ): $(CONTACTS_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+
 # TEST MODULES
 # ──────────────────────────────────────────────────────────────────────────────
 $(TREE_TEST_BIN): $(TREE_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(TREE_TEST_OBJ): $(TREE_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
+
 
 # RED_BLACK MODULES
 # ──────────────────────────────────────────────────────────────────────────────

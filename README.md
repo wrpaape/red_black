@@ -37,8 +37,8 @@ TODO
 **Functions**
 - [red_black_tree_init](#red_black_tree_init)
 - [red_black_tree_destroy](#red_black_tree_destroy)
-- [red_black_tree_insert, red_black_tree_update](#red_black_tree_insert,-red_black_tree_update)
-- [red_black_tree_delete, red_black_tree_remove](#red_black_tree_delete,-red_black_tree_remove)
+- [red_black_tree_insert red_black_tree_update](#red_black_tree_insert-red_black_tree_update)
+- [red_black_tree_delete red_black_tree_remove](#red_black_tree_delete-red_black_tree_remove)
 - [red_black_tree_find red_black_tree_fetch](#red_black_tree_find-red_black_tree_fetch)
 - [red_black_tree_count](#red_black_tree_count)
 - [red_black_tree_iterator_init_asc red_black_tree_iterator_init_desc](#red_black_tree_iterator_init_asc-red_black_tree_iterator_init_desc)
@@ -86,7 +86,7 @@ frees all memory allocated by `tree`
 - memory is deallocated via [RED_BLACK_FREE](#red_black_malloc/red_black_free)
 
 
-###red_black_tree_insert, red_black_tree_update
+###red_black_tree_insert red_black_tree_update
 **[declaration](include/red_black_tree.h#L34-L36)|[source](src/red_black_tree.c#L26-L42)**
 ```
 int

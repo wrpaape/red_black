@@ -2,45 +2,10 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_tree.h" /* RedBlackTree */
 #include "int_key.h"        /* int_key accessors */
+#include "examples_io.h"    /* WRITE/READ macros, stdlib (EXIT_ON_FAILURE) */
 #include <unistd.h>	    /* read, write, STDOUT|ERR_FILENO */
-#include <stdlib.h>	    /* exit, EXIT_FAILURE, strtol, NULL */
 #include <errno.h>	    /* errno */
 
-/* IO interface
- * ────────────────────────────────────────────────────────────────────────── */
-#ifdef WIN32
-#	include <ioh> /* _write */
-#	define WRITE(FILENO,						\
-		     BUFFER,						\
-		     SIZE)						\
-	_write(FILENO,							\
-	       BUFFER,							\
-	       (unsigned int) (SIZE))
-#	define READ(FILENO,						\
-		    BUFFER,						\
-		    SIZE)						\
-	_read(FILENO,							\
-	      BUFFER,							\
-	      (unsigned int) (SIZE))
-#	define STDOUT_FILENO	0
-#	define STDIN_FILENO	1
-#	define STDERR_FILENO	2
-
-#else
-#	include <unistd.h> /* write, STDOUT|IN|ERR_FILENO */
-#	define WRITE(FILENO,						\
-		     BUFFER,						\
-		     SIZE)						\
-	write(FILENO,							\
-	      BUFFER,							\
-	      SIZE)
-#	define READ(FILENO,						\
-		    BUFFER,						\
-		    SIZE)						\
-	read(FILENO,							\
-	      BUFFER,							\
-	      SIZE)
-#endif /* ifdef WIN32 */
 
 
 /* prompts
@@ -54,32 +19,6 @@
 
 /* helpful macros
  * ────────────────────────────────────────────────────────────────────────── */
-#define EXIT_ON_FAILURE(LITERAL)					\
-do {									\
-	(void) WRITE(STDERR_FILENO,					\
-		     "\n" LITERAL "\n",					\
-		     sizeof(LITERAL) + 1);				\
-	exit(EXIT_FAILURE);						\
-} while (0)
-
-#define WRITE_STDOUT(BUFFER,						\
-		     SIZE)						\
-do {									\
-	if (WRITE(STDOUT_FILENO,					\
-		  BUFFER,						\
-		  SIZE) != (SIZE))					\
-		EXIT_ON_FAILURE("write failure");			\
-} while (0)
-
-#define WRITE_LITERAL(LITERAL)						\
-WRITE_STDOUT(LITERAL,							\
-	     sizeof(LITERAL) - 1)
-
-#define READ_INPUT(BUFFER)						\
-READ(STDIN_FILENO,							\
-     BUFFER,								\
-     sizeof(BUFFER) - 1)
-
 #define GET_CHAR(PROMPT,						\
 		 BUFFER)						\
 WRITE_LITERAL(PROMPT);							\
