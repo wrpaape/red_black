@@ -1,4 +1,5 @@
-#include "red_black_delete.h" /* Comparator, Node, Allocator, JumpBuffer */
+#include "red_black_delete.h"  /* Comparator, Node, Allocator, JumpBuffer */
+#include "red_black_restore.h" /* restore API */
 
 
 static inline void

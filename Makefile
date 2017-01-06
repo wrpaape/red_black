@@ -108,6 +108,7 @@ FILE_PATH = $(call JOIN,$(call TRIM,$1) $(call TRIM,$2),$(PATH_DELIM))
 SOURCE_FILE_PATH         = $(call FILE_PATH,$1,$2$(SRC_EXT))
 HEADER_FILE_PATH         = $(call FILE_PATH,$1,$2$(HDR_EXT))
 OBJECT_FILE_PATH         = $(call FILE_PATH,$1,$2$(OBJ_EXT))
+PIC_OBJECT_FILE_PATH     = $(call FILE_PATH,$1,$2_pic$(OBJ_EXT))
 BINARY_FILE_PATH         = $(call FILE_PATH,$1,$2$(BIN_EXT))
 STATIC_LIBRARY_FILE_PATH = $(call FILE_PATH,$1,$2$(ST_LIB_EXT))
 SHARED_LIBRARY_FILE_PATH = $(call FILE_PATH,$1,$2$(SH_LIB_EXT))
@@ -128,8 +129,8 @@ SHARED_LIBRARY_DIR  := shared# shared library files
 
 # Project file paths
 # ──────────────────────────────────────────────────────────────────────────────
-SOURCE_PATH          = $(call SOURCE_FILE_PATH,red_black_$(SOURCE_DIR),$1)
-HEADER_PATH          = $(call HEADER_FILE_PATH,red_black_$(HEADER_DIR),$1)
+SOURCE_PATH          = $(call SOURCE_FILE_PATH,$(SOURCE_DIR),$1)
+HEADER_PATH          = $(call HEADER_FILE_PATH,$(HEADER_DIR),$1)
 TEST_SOURCE_PATH     = $(call SOURCE_FILE_PATH,$(TEST_DIR),$1)
 TEST_HEADER_PATH     = $(call HEADER_FILE_PATH,$(TEST_DIR),$1)
 EXAMPLES_SOURCE_PATH = $(call SOURCE_FILE_PATH,$(EXAMPLES_DIR),$1)
@@ -137,6 +138,7 @@ EXAMPLES_HEADER_PATH = $(call HEADER_FILE_PATH,$(EXAMPLES_DIR),$1)
 KEY_ACC_SOURCE_PATH  = $(call SOURCE_FILE_PATH,$(KEY_ACC_DIR),$1)
 KEY_ACC_HEADER_PATH  = $(call HEADER_FILE_PATH,$(KEY_ACC_DIR),$1)
 OBJECT_PATH          = $(call OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
+PIC_OBJECT_PATH      = $(call PIC_OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
 BINARY_PATH          = $(call BINARY_FILE_PATH,$(BINARY_DIR),$1)
 STATIC_LIBRARY_PATH  = $(call STATIC_LIBRARY_FILE_PATH,$(STATIC_LIBRARY_DIR),$1)
 SHARED_LIBRARY_PATH  = $(call SHARED_LIBRARY_FILE_PATH,$(SHARED_LIBRARY_DIR),$1)
@@ -149,9 +151,10 @@ SHARED_LIBRARY_PATH  = $(call SHARED_LIBRARY_FILE_PATH,$(SHARED_LIBRARY_DIR),$1)
 # Compiler
 # ──────────────────────────────────────────────────────────────────────────────
 CC		:= gcc
+CC_BASE_FLAGS	:= -std=gnu99 -march=native
 CC_ENV_FLAGS	:= -D__USE_FIXED_PROTOTYPES__ $(SYS_ENV_FLAGS)
-CC_BASE_FLAGS	:= -std=gnu99 -march=native $(CC_ENV_FLAGS) -I$(HEADER_DIR)
-CC_FLAGS	:= -O2 -funroll-loops $(CC_BASE_FLAGS)
+CC_INC_FLAGS	:= -I$(HEADER_DIR) -I$(KEY_ACC_DIR)
+CC_FLAGS	:= -O2 -funroll-loops $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS)
 CC_PIC_FLAGS	:= -fpic
 
 # Archiver
@@ -190,7 +193,7 @@ endif
 
 
 
-# PROJECT MODULES
+# RED_BLACK MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
 # independent headers
 # ──────────────────────────────────────────────────────────────────────────────
@@ -203,276 +206,512 @@ LOCK_HDR        := $(call HEADER_PATH,lock)
 PRINT_TYPES_HDR := $(call HEADER_PATH,print_types)
 
 
-# HEADER FILES
+# red_black_allocator
 # ──────────────────────────────────────────────────────────────────────────────
-# STACK_COUNT_H := $(INCLUDE_DIR)/red_black_stack_count.h
-ALLOCATOR_H   := $(INCLUDE_DIR)/red_black_allocator.h
-# COMPARATOR_H  := $(INCLUDE_DIR)/red_black_comparator.h
-ITERATOR_H    := $(INCLUDE_DIR)/red_black_iterator.h
-DELETE_H      := $(INCLUDE_DIR)/red_black_delete.h
-FIND_H        := $(INCLUDE_DIR)/red_black_find.h
-INSERT_H      := $(INCLUDE_DIR)/red_black_insert.h
-# JUMP_H        := $(INCLUDE_DIR)/red_black_jump.h
-# LOCK_H        := $(INCLUDE_DIR)/red_black_lock.h
-# MALLOC_H      := $(INCLUDE_DIR)/red_black_malloc.h
-# NODE_H        := $(INCLUDE_DIR)/red_black_node.h
-PRINT_H       := $(INCLUDE_DIR)/red_black_print.h
-# PRINT_TYPES_H := $(INCLUDE_DIR)/red_black_print_types.h
-TREE_H        := $(INCLUDE_DIR)/red_black_tree.h
-VERIFY_H      := $(INCLUDE_DIR)/red_black_verify.h
-COUNT_H       := $(INCLUDE_DIR)/red_black_count.h
+ALLOCATOR_SRC		:= $(call SOURCE_PATH,red_black_allocator)
+ALLOCATOR_HDR		:= $(call HEADER_PATH,red_black_allocator)
+ALLOCATOR_OBJ		:= $(call OBJECT_PATH,red_black_allocator)
+ALLOCATOR_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_allocator)
+# ─────────────── target prequisites ───────────────────────────────────────────
+ALLOCATOR_OBJ_PREQS	:= $(ALLOCATOR_SRC)				\
+			   $(ALLOCATOR_HDR)				\
+			   $(NODE_HDR)					\
+			   $(JUMP_HDR)					\
+			   $(MALLOC_HDR)
+ALLOCATOR_OBJ_GROUP	:= $(ALLOCATOR_OBJ)
+ALLOCATOR_PIC_OBJ_PREQS	:= $(ALLOCATOR_OBJ_PREQS)
+ALLOCATOR_PIC_OBJ_GROUP := $(ALLOCATOR_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(ALLOCATOR_OBJ)				\
+			   $(ALLOCATOR_PIC_OBJ)
 
 
-# SOURCE FILES
+# red_black_iterator
 # ──────────────────────────────────────────────────────────────────────────────
-ALLOCATOR_C := $(SRC_DIR)/red_black_allocator.c
-ITERATOR_C  := $(SRC_DIR)/red_black_iterator.c
-DELETE_C    := $(SRC_DIR)/red_black_delete.c
-FIND_C      := $(SRC_DIR)/red_black_find.c
-INSERT_C    := $(SRC_DIR)/red_black_insert.c
-PRINT_C     := $(SRC_DIR)/red_black_print.c
-TREE_C      := $(SRC_DIR)/red_black_tree.c
-VERIFY_C    := $(SRC_DIR)/red_black_verify.c
-COUNT_C     := $(SRC_DIR)/red_black_count.c
+ITERATOR_SRC		:= $(call SOURCE_PATH,red_black_iterator)
+ITERATOR_HDR		:= $(call HEADER_PATH,red_black_iterator)
+ITERATOR_OBJ		:= $(call OBJECT_PATH,red_black_iterator)
+ITERATOR_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_iterator)
+# ─────────────── target prequisites ───────────────────────────────────────────
+ITERATOR_OBJ_PREQS	:= $(ITERATOR_SRC)				\
+			   $(ITERATOR_HDR)				\
+			   $(NODE_HDR)					\
+			   $(STACK_COUNT_HDR)
+ITERATOR_OBJ_GROUP	:= $(ITERATOR_OBJ)
+ITERATOR_PIC_OBJ_PREQS	:= $(ITERATOR_OBJ_PREQS)
+ITERATOR_PIC_OBJ_GROUP	:= $(ITERATOR_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(ITERATOR_OBJ)				\
+			   $(ITERATOR_PIC_OBJ)
 
-
-# TEST FILES
+# red_black_correct
 # ──────────────────────────────────────────────────────────────────────────────
-TEST_H := $(TEST_DIR)/red_black_test.h
-TEST_C := $(TEST_DIR)/red_black_test.c
+CORRECT_SRC		:= $(call SOURCE_PATH,red_black_correct)
+CORRECT_HDR		:= $(call HEADER_PATH,red_black_correct)
+CORRECT_OBJ		:= $(call OBJECT_PATH,red_black_correct)
+CORRECT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_correct)
+# ─────────────── target prequisites ───────────────────────────────────────────
+CORRECT_OBJ_PREQS	:= $(CORRECT_SRC)				\
+			   $(CORRECT_HDR)				\
+			   $(NODE_HDR)					\
+			   $(JUMP_HDR)
+CORRECT_OBJ_GROUP	:= $(CORRECT_OBJ)
+CORRECT_PIC_OBJ_PREQS	:= $(CORRECT_OBJ_PREQS)
+CORRECT_PIC_OBJ_GROUP	:= $(CORRECT_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(CORRECT_OBJ)				\
 
 
-# EXAMPLE FILES
+# red_black_insert
 # ──────────────────────────────────────────────────────────────────────────────
-USORT_C   := $(EXAMPLES_DIR)/red_black_usort.c
-DEMO_C    := $(EXAMPLES_DIR)/red_black_demo.c
+INSERT_SRC		:= $(call SOURCE_PATH,red_black_insert)
+INSERT_HDR		:= $(call HEADER_PATH,red_black_insert)
+INSERT_OBJ		:= $(call OBJECT_PATH,red_black_insert)
+INSERT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_insert)
+# ─────────────── target prequisites ───────────────────────────────────────────
+INSERT_OBJ_PREQS	:= $(INSERT_SRC)				\
+			   $(INSERT_HDR)				\
+			   $(COMPARATOR_HDR)				\
+			   $(ALLOCATOR_HDR)				\
+			   $(CORRECT_HDR)
+INSERT_OBJ_GROUP	:= $(INSERT_OBJ)				\
+			   $(CORRECT_OBJ_GROUP)
+INSERT_PIC_OBJ_PREQS	:= $(INSERT_OBJ_PREQS)
+INSERT_PIC_OBJ_GROUP	:= $(INSERT_PIC_OBJ)				\
+			   $(CORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(INSERT_OBJ)				\
+			   $(INSERT_PIC_OBJ)
 
 
-# KEY ACCESSOR FILES
+# red_black_update
 # ──────────────────────────────────────────────────────────────────────────────
-INT_KEY_H := $(KEY_ACC_DIR)/int_key.h
-INT_KEY_C := $(KEY_ACC_DIR)/int_key.c
-STR_KEY_H := $(KEY_ACC_DIR)/str_key.h
-STR_KEY_C := $(KEY_ACC_DIR)/str_key.c
+UPDATE_SRC		:= $(call SOURCE_PATH,red_black_update)
+UPDATE_HDR		:= $(call HEADER_PATH,red_black_update)
+UPDATE_OBJ		:= $(call OBJECT_PATH,red_black_update)
+UPDATE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_update)
+# ─────────────── target prequisites ───────────────────────────────────────────
+UPDATE_OBJ_PREQS	:= $(UPDATE_SRC)				\
+			   $(UPDATE_HDR)				\
+			   $(COMPARATOR_HDR)				\
+			   $(ALLOCATOR_HDR)				\
+			   $(CORRECT_HDR)
+UPDATE_OBJ_GROUP	:= $(UPDATE_OBJ)				\
+			   $(CORRECT_OBJ_GROUP)
+UPDATE_PIC_OBJ_PREQS	:= $(UPDATE_OBJ_PREQS)
+UPDATE_PIC_OBJ_GROUP	:= $(UPDATE_PIC_OBJ)				\
+			   $(CORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(UPDATE_OBJ)				\
+			   $(UPDATE_PIC_OBJ)
 
 
-# OBJECT FILES
+# red_black_restore
 # ──────────────────────────────────────────────────────────────────────────────
-ALLOCATOR_O := $(OBJ_DIR)/red_black_allocator.o
-ITERATOR_O  := $(OBJ_DIR)/red_black_iterator.o
-DELETE_O    := $(OBJ_DIR)/red_black_delete.o
-FIND_O      := $(OBJ_DIR)/red_black_find.o
-INSERT_O    := $(OBJ_DIR)/red_black_insert.o
-PRINT_O     := $(OBJ_DIR)/red_black_print.o
-COUNT_O     := $(OBJ_DIR)/red_black_count.o
-TREE_O      := $(OBJ_DIR)/red_black_tree.o
-VERIFY_O    := $(OBJ_DIR)/red_black_verify.o
-TEST_O      := $(OBJ_DIR)/red_black_test.o
-USORT_O     := $(OBJ_DIR)/red_black_usort.o
-DEMO_O      := $(OBJ_DIR)/red_black_demo.o
-INT_KEY_O   := $(OBJ_DIR)/red_black_int_key.o
-STR_KEY_O   := $(OBJ_DIR)/red_black_str_key.o
+RESTORE_SRC		:= $(call SOURCE_PATH,red_black_restore)
+RESTORE_HDR		:= $(call HEADER_PATH,red_black_restore)
+RESTORE_OBJ		:= $(call OBJECT_PATH,red_black_restore)
+RESTORE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_restore)
+# ─────────────── target prequisites ───────────────────────────────────────────
+RESTORE_OBJ_PREQS	:= $(RESTORE_SRC)				\
+			   $(RESTORE_HDR)				\
+			   $(NODE_HDR)					\
+			   $(JUMP_HDR)					\
+			   $(STACK_COUNT_HDR)
+RESTORE_OBJ_GROUP	:= $(RESTORE_OBJ)
+RESTORE_PIC_OBJ_PREQS	:= $(RESTORE_OBJ_PREQS)
+RESTORE_PIC_OBJ_GROUP	:= $(RESTORE_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(RESTORE_OBJ)				\
 
 
-# PIC OBJECT FILES
+# red_black_delete
 # ──────────────────────────────────────────────────────────────────────────────
-ALLOCATOR_PO := $(OBJ_DIR)/red_black_allocator_pic.o
-ITERATOR_PO  := $(OBJ_DIR)/red_black_iterator_pic.o
-DELETE_PO    := $(OBJ_DIR)/red_black_delete_pic.o
-FIND_PO      := $(OBJ_DIR)/red_black_find_pic.o
-INSERT_PO    := $(OBJ_DIR)/red_black_insert_pic.o
-PRINT_PO     := $(OBJ_DIR)/red_black_print_pic.o
-COUNT_PO     := $(OBJ_DIR)/red_black_count_pic.o
-VERIFY_PO    := $(OBJ_DIR)/red_black_verify_pic.o
+DELETE_SRC		:= $(call SOURCE_PATH,red_black_delete)
+DELETE_HDR		:= $(call HEADER_PATH,red_black_delete)
+DELETE_OBJ		:= $(call OBJECT_PATH,red_black_delete)
+DELETE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_delete)
+# ─────────────── target prequisites ───────────────────────────────────────────
+DELETE_OBJ_PREQS	:= $(DELETE_SRC)				\
+			   $(DELETE_HDR)				\
+			   $(COMPARATOR_HDR)				\
+			   $(ALLOCATOR_HDR)				\
+			   $(RESTORE_HDR)
+DELETE_OBJ_GROUP	:= $(DELETE_OBJ)				\
+			   $(RESTORE_OBJ_GROUP)
+DELETE_PIC_OBJ_PREQS	:= $(DELETE_OBJ_PREQS)
+DELETE_PIC_OBJ_GROUP	:= $(DELETE_PIC_OBJ)				\
+			   $(RESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(DELETE_OBJ)				\
+			   $(DELETE_PIC_OBJ)
 
 
-# BINARY FILES
+# red_black_remove
 # ──────────────────────────────────────────────────────────────────────────────
-DEMO  := $(BIN_DIR)/red_black_demo
-TEST  := $(BIN_DIR)/red_black_test
-USORT := $(BIN_DIR)/red_black_usort
+REMOVE_SRC		:= $(call SOURCE_PATH,red_black_remove)
+REMOVE_HDR		:= $(call HEADER_PATH,red_black_remove)
+REMOVE_OBJ		:= $(call OBJECT_PATH,red_black_remove)
+REMOVE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_remove)
+# ─────────────── target prequisites ───────────────────────────────────────────
+REMOVE_OBJ_PREQS	:= $(REMOVE_SRC)				\
+			   $(REMOVE_HDR)				\
+			   $(COMPARATOR_HDR)				\
+			   $(ALLOCATOR_HDR)				\
+			   $(RESTORE_HDR)
+REMOVE_OBJ_GROUP	:= $(REMOVE_OBJ)				\
+			   $(RESTORE_OBJ_GROUP)
+REMOVE_PIC_OBJ_PREQS	:= $(REMOVE_OBJ_PREQS)
+REMOVE_PIC_OBJ_GROUP	:= $(REMOVE_PIC_OBJ)				\
+			   $(RESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(REMOVE_OBJ)				\
+			   $(REMOVE_PIC_OBJ)
 
 
-# STATIC LIBRARY FILES
+# red_black_find
 # ──────────────────────────────────────────────────────────────────────────────
-TREE_ST := $(LIB_DIR)/red_black_tree.a
+FIND_SRC		:= $(call SOURCE_PATH,red_black_find)
+FIND_HDR		:= $(call HEADER_PATH,red_black_find)
+FIND_OBJ		:= $(call OBJECT_PATH,red_black_find)
+FIND_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_find)
+# ─────────────── target prequisites ───────────────────────────────────────────
+FIND_OBJ_PREQS		:= $(FIND_SRC)					\
+			   $(FIND_HDR)					\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+FIND_OBJ_GROUP		:= $(FIND_OBJ)
+FIND_PIC_OBJ_PREQS	:= $(FIND_OBJ_PREQS)
+FIND_PIC_OBJ_GROUP	:= $(FIND_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(FIND_OBJ)					\
+			   $(FIND_PIC_OBJ)
 
 
-# SHARED LIBRARY FILES
+# red_black_fetch
 # ──────────────────────────────────────────────────────────────────────────────
-TREE_SH := $(LIB_DIR)/red_black_tree.dylib
+FETCH_SRC		:= $(call SOURCE_PATH,red_black_fetch)
+FETCH_HDR		:= $(call HEADER_PATH,red_black_fetch)
+FETCH_OBJ		:= $(call OBJECT_PATH,red_black_fetch)
+FETCH_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_fetch)
+# ─────────────── target prequisites ───────────────────────────────────────────
+FETCH_OBJ_PREQS		:= $(FETCH_SRC)					\
+			   $(FETCH_HDR)					\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+FETCH_OBJ_GROUP		:= $(FETCH_OBJ)
+FETCH_PIC_OBJ_PREQS	:= $(FETCH_OBJ_PREQS)
+FETCH_PIC_OBJ_GROUP	:= $(FETCH_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(FETCH_OBJ)					\
+			   $(FETCH_PIC_OBJ)
 
 
-# ALL TARGETS
+# red_black_count
 # ──────────────────────────────────────────────────────────────────────────────
-TARGETS := $(USORT) $(USORT_O) $(TREE_ST) $(TREE_SH) $(TREE_O) \
-	   $(TEST) $(TEST_O) $(DEMO) $(DEMO_O) \
-	   $(ALLOCATOR_O) $(DELETE_O) $(FIND_O) $(INSERT_O) \
-	   $(INT_KEY_O) $(PRINT_O) $(VERIFY_O) $(COUNT_O) \
-           $(ALLOCATOR_PO) $(DELETE_PO) $(FIND_PO) $(INSERT_PO) \
-	   $(PRINT_PO) $(VERIFY_PO) $(COUNT_PO)
+COUNT_SRC		:= $(call SOURCE_PATH,red_black_count)
+COUNT_HDR		:= $(call HEADER_PATH,red_black_count)
+COUNT_OBJ		:= $(call OBJECT_PATH,red_black_count)
+COUNT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_count)
+# ─────────────── target prequisites ───────────────────────────────────────────
+COUNT_OBJ_PREQS		:= $(COUNT_SRC)					\
+			   $(COUNT_HDR)					\
+			   $(NODE_HDR)					\
+			   $(STACK_COUNT_HDR)
+COUNT_OBJ_GROUP		:= $(COUNT_OBJ)
+COUNT_PIC_OBJ_PREQS	:= $(COUNT_OBJ_PREQS)
+COUNT_PIC_OBJ_GROUP	:= $(COUNT_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(COUNT_OBJ)					\
+			   $(COUNT_PIC_OBJ)
 
 
-# DEPENDENCIES
+# red_black_print
 # ──────────────────────────────────────────────────────────────────────────────
-COUNT_O_DEP      := $(COUNT_C) $(COUNT_H) $(NODE_H) $(STACK_COUNT_H)
-COUNT_O_GRP      := $(COUNT_O)
-COUNT_PO_DEP     := $(COUNT_O_DEP)
-COUNT_PO_GRP     := $(COUNT_PO)
+PRINT_SRC		:= $(call SOURCE_PATH,red_black_print)
+PRINT_HDR		:= $(call HEADER_PATH,red_black_print)
+PRINT_OBJ		:= $(call OBJECT_PATH,red_black_print)
+PRINT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_print)
+# ─────────────── target prequisites ───────────────────────────────────────────
+PRINT_OBJ_PREQS		:= $(PRINT_SRC)					\
+			   $(PRINT_HDR)					\
+			   $(NODE_HDR)					\
+			   $(PRINT_TYPES_HDR)				\
+			   $(MALLOC_HDR)
+PRINT_OBJ_GROUP		:= $(PRINT_OBJ)
+PRINT_PIC_OBJ_PREQS	:= $(PRINT_OBJ_PREQS)
+PRINT_PIC_OBJ_GROUP	:= $(PRINT_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(PRINT_OBJ)					\
+			   $(PRINT_PIC_OBJ)
 
-VERIFY_O_DEP     := $(VERIFY_C) $(VERIFY_H) $(NODE_H) $(COMPARATOR_H)
-VERIFY_O_GRP     := $(VERIFY_O)
-VERIFY_PO_DEP    := $(VERIFY_O_DEP)
-VERIFY_PO_GRP    := $(VERIFY_PO)
 
-PRINT_O_DEP      := $(PRINT_C) $(PRINT_H) $(NODE_H) $(PRINT_TYPES_H) $(MALLOC_H)
-PRINT_O_GRP      := $(PRINT_O)
-PRINT_PO_DEP     := $(PRINT_O_DEP)
-PRINT_PO_GRP     := $(PRINT_PO)
-
-FIND_O_DEP       := $(FIND_C) $(FIND_H) $(NODE_H) $(COMPARATOR_H)
-FIND_O_GRP       := $(FIND_O)
-FIND_PO_DEP      := $(FIND_O_DEP)
-FIND_PO_GRP      := $(FIND_PO)
-
-ALLOCATOR_O_DEP  := $(ALLOCATOR_C) $(ALLOCATOR_H) $(NODE_H) $(JUMP_H) $(MALLOC_H)
-ALLOCATOR_O_GRP  := $(ALLOCATOR_O)
-ALLOCATOR_PO_DEP := $(ALLOCATOR_O_DEP)
-ALLOCATOR_PO_GRP := $(ALLOCATOR_PO)
-
-ITERATOR_O_DEP   := $(ITERATOR_C) $(ITERATOR_H) $(NODE_H) $(STACK_COUNT_H)
-ITERATOR_O_GRP   := $(ITERATOR_O)
-ITERATOR_PO_DEP  := $(ITERATOR_O_DEP)
-ITERATOR_PO_GRP  := $(ITERATOR_PO)
-
-INSERT_O_DEP     := $(INSERT_C) $(INSERT_H) $(COMPARATOR_H) $(ALLOCATOR_H)
-INSERT_O_GRP     := $(INSERT_O) $(ALLOCATOR_O_GRP)
-INSERT_PO_DEP    := $(INSERT_O_DEP)
-INSERT_PO_GRP    := $(INSERT_PO) $(ALLOCATOR_PO_GRP)
-
-DELETE_O_DEP     := $(DELETE_C) $(DELETE_H) $(COMPARATOR_H) $(ALLOCATOR_H) $(STACK_COUNT_H)
-DELETE_O_GRP     := $(DELETE_O) $(ALLOCATOR_O_GRP)
-DELETE_PO_DEP    := $(DELETE_O_DEP)
-DELETE_PO_GRP    := $(DELETE_PO) $(ALLOCATOR_PO_GRP)
-
-TREE_O_DEP       := $(TREE_C) $(TREE_H) $(COMPARATOR_H) $(ALLOCATOR_H) \
-	            $(ITERATOR_H) $(PRINT_TYPES_H) $(INSERT_H) $(DELETE_H) \
-	            $(FIND_H) $(VERIFY_H) $(PRINT_H) $(COUNT_H)
-TREE_O_GRP       := $(TREE_O) $(ALLOCATOR_O_GRP) $(INSERT_O_GRP) $(DELETE_O_GRP) \
-	            $(FIND_O_GRP) $(VERIFY_O_GRP) $(PRINT_O_GRP) $(COUNT_O_GRP) $(ITERATOR_O_GRP)
-TREE_PO_DEP      := $(TREE_O_DEP)
-TREE_PO_GRP      := $(TREE_PO) $(ALLOCATOR_PO_GRP) $(INSERT_PO_GRP) $(DELETE_PO_GRP) \
-	            $(FIND_PO_GRP) $(VERIFY_PO_GRP) $(PRINT_PO_GRP) $(COUNT_PO_GRP) $(ITERATOR_PO_GRP)
-TREE_ST_DEP      := $(TREE_O_GRP)
-TREE_SH_DEP      := $(TREE_PO_GRP)
-
-INT_KEY_O_DEP    := $(INT_KEY_C) $(INT_KEY_H)
-INT_KEY_O_GRP    := $(INT_KEY_O)
-
-STR_KEY_O_DEP    := $(STR_KEY_C) $(STR_KEY_H)
-STR_KEY_O_GRP    := $(STR_KEY_O)
-
-USORT_O_DEP      := $(USORT_C) $(TREE_H) $(STR_KEY_H)
-USORT_DEP        := $(USORT_O) $(TREE_ST) $(STR_KEY_O_GRP)
-
-DEMO_O_DEP       := $(DEMO_C) $(TREE_H) $(INT_KEY_H)
-DEMO_DEP         := $(DEMO_O) $(TREE_ST) $(INT_KEY_O_GRP)
-
-TEST_O_DEP       := $(TEST_C) $(TEST_H) $(TREE_H) $(INT_KEY_H)
-TEST_DEP         := $(TEST_O) $(TREE_ST) $(INT_KEY_O_GRP)
-
-# Phony Targets
+# red_black_verify
 # ──────────────────────────────────────────────────────────────────────────────
-.PHONY: all clean
+VERIFY_SRC		:= $(call SOURCE_PATH,red_black_verify)
+VERIFY_HDR		:= $(call HEADER_PATH,red_black_verify)
+VERIFY_OBJ		:= $(call OBJECT_PATH,red_black_verify)
+VERIFY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_verify)
+# ─────────────── target prequisites ───────────────────────────────────────────
+VERIFY_OBJ_PREQS	:= $(VERIFY_SRC)				\
+			   $(VERIFY_HDR)				\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+VERIFY_OBJ_GROUP	:= $(VERIFY_OBJ)
+VERIFY_PIC_OBJ_PREQS	:= $(VERIFY_OBJ_PREQS)
+VERIFY_PIC_OBJ_GROUP	:= $(VERIFY_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(VERIFY_OBJ)				\
+			   $(VERIFY_PIC_OBJ)
+
+
+# red_black_tree
+# ──────────────────────────────────────────────────────────────────────────────
+TREE_SRC	:= $(call SOURCE_PATH,red_black_tree)
+TREE_HDR	:= $(call HEADER_PATH,red_black_tree)
+TREE_OBJ	:= $(call OBJECT_PATH,red_black_tree)
+TREE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_tree)
+TREE_ST_LIB	:= $(call STATIC_LIBRARY_PATH,red_black_tree)
+TREE_SH_LIB	:= $(call SHARED_LIBRARY_PATH,red_black_tree)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREE_OBJ_PREQS		:= $(TREE_SRC)					\
+			   $(TREE_HDR)					\
+		   	   $(COMPARATOR_HDR)				\
+		   	   $(ALLOCATOR_HDR)				\
+		   	   $(ITERATOR_HDR)				\
+		   	   $(PRINT_TYPES_HDR)
+TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
+			   $(ALLOCATOR_OBJ_GROUP)			\
+			   $(ITERATOR_OBJ_GROUP)			\
+			   $(INSERT_OBJ_GROUP)				\
+			   $(UPDATE_OBJ_GROUP)				\
+			   $(DELETE_OBJ_GROUP)				\
+			   $(REMOVE_OBJ_GROUP)				\
+			   $(FIND_OBJ_GROUP)				\
+			   $(FETCH_OBJ_GROUP)				\
+			   $(COUNT_OBJ_GROUP)				\
+			   $(PRINT_OBJ_GROUP)				\
+			   $(VERIFY_OBJ_GROUP)
+TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
+TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
+			   $(ALLOCATOR_PIC_OBJ_GROUP)			\
+			   $(ITERATOR_PIC_OBJ_GROUP)			\
+			   $(INSERT_PIC_OBJ_GROUP)			\
+			   $(UPDATE_PIC_OBJ_GROUP)			\
+			   $(DELETE_PIC_OBJ_GROUP)			\
+			   $(REMOVE_PIC_OBJ_GROUP)			\
+			   $(FIND_PIC_OBJ_GROUP)			\
+			   $(FETCH_PIC_OBJ_GROUP)			\
+			   $(COUNT_PIC_OBJ_GROUP)			\
+			   $(PRINT_PIC_OBJ_GROUP)			\
+			   $(VERIFY_PIC_OBJ_GROUP)
+TREE_ST_LIB_PREQS	:= $(TREE_OBJ_GROUP)
+TREE_SH_LIB_PREQS	:= $(TREE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(TREE_OBJ)					\
+			   $(TREE_PIC_OBJ)				\
+			   $(TREE_ST_LIB)				\
+			   $(TREE_SH_LIB)
+
+
+
+# KEY_ACCESSOR MODULESS
+# ══════════════════════════════════════════════════════════════════════════════
+# int_key
+# ──────────────────────────────────────────────────────────────────────────────
+INT_KEY_SRC		:= $(call KEY_ACC_SOURCE_PATH,int_key)
+INT_KEY_HDR		:= $(call KEY_ACC_HEADER_PATH,int_key)
+INT_KEY_OBJ		:= $(call OBJECT_PATH,int_key)
+# ─────────────── target prequisites ───────────────────────────────────────────
+INT_KEY_OBJ_PREQS	:= $(INT_KEY_SRC)				\
+			   $(INT_KEY_HDR)
+INT_KEY_OBJ_GROUP	:= $(INT_KEY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(INT_KEY_OBJ)
+
+
+# str_key
+# ──────────────────────────────────────────────────────────────────────────────
+STR_KEY_SRC		:= $(call KEY_ACC_SOURCE_PATH,str_key)
+STR_KEY_HDR		:= $(call KEY_ACC_HEADER_PATH,str_key)
+STR_KEY_OBJ		:= $(call OBJECT_PATH,str_key)
+# ─────────────── target prequisites ───────────────────────────────────────────
+STR_KEY_OBJ_PREQS	:= $(STR_KEY_SRC)				\
+			   $(STR_KEY_HDR)
+STR_KEY_OBJ_GROUP	:= $(STR_KEY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(STR_KEY_OBJ)
+
+
+
+# TEST MODULESS
+# ══════════════════════════════════════════════════════════════════════════════
+# red_black_tree_test
+# ──────────────────────────────────────────────────────────────────────────────
+TREE_TEST_SRC		:= $(call KEY_ACC_SOURCE_PATH,red_black_tree_test)
+TREE_TEST_HDR		:= $(call KEY_ACC_HEADER_PATH,red_black_tree_test)
+TREE_TEST_OBJ		:= $(call OBJECT_PATH,red_black_tree_test)
+TREE_TEST_BIN		:= $(call BINARY_PATH,red_black_tree_test)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREE_TEST_OBJ_PREQS	:= $(TREE_TEST_SRC)				\
+			   $(TREE_TEST_HDR)				\
+			   $(TREE_HDR)					\
+			   $(INT_KEY_HDR)
+TREE_TEST_BIN_PREQS	:= $(TREE_TEST_OBJ)				\
+			   $(INT_KEY_OBJ_GROUP)				\
+			   $(TREE_ST_LIB)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(TREE_TEST_OBJ)				\
+			   $(TREE_TEST_BIN)
+
+
+# EXAMPLE MODULESS
+# ══════════════════════════════════════════════════════════════════════════════
+# demo
+# ──────────────────────────────────────────────────────────────────────────────
+DEMO_SRC		:= $(call EXAMPLES_SOURCE_PATH,demo)
+DEMO_OBJ		:= $(call OBJECT_PATH,demo)
+DEMO_BIN		:= $(call BINARY_PATH,demo)
+# ─────────────── target prequisites ───────────────────────────────────────────
+DEMO_OBJ_PREQS		:= $(DEMO_SRC)					\
+			   $(TREE_HDR)					\
+			   $(INT_KEY_HDR)
+DEMO_BIN_PREQS		:= $(DEMO_OBJ)					\
+			   $(INT_KEY_OBJ_GROUP)				\
+			   $(TREE_ST_LIB)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(DEMO_OBJ)					\
+			   $(DEMO_BIN)
+
+
+# usort
+# ──────────────────────────────────────────────────────────────────────────────
+USORT_SRC		:= $(call EXAMPLES_SOURCE_PATH,usort)
+USORT_OBJ		:= $(call OBJECT_PATH,usort)
+USORT_BIN		:= $(call BINARY_PATH,usort)
+# ─────────────── target prequisites ───────────────────────────────────────────
+USORT_OBJ_PREQS		:= $(USORT_SRC)					\
+			   $(TREE_HDR)					\
+			   $(STR_KEY_HDR)
+USORT_BIN_PREQS		:= $(USORT_OBJ)					\
+			   $(STR_KEY_OBJ_GROUP)				\
+			   $(TREE_ST_LIB)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(USORT_OBJ)					\
+			   $(USORT_BIN)
+
+
 
 
 # MAKE RULES
+# ══════════════════════════════════════════════════════════════════════════════
+# Phony targets
 # ──────────────────────────────────────────────────────────────────────────────
+.PHONY: all clean
+
 all: $(TARGETS)
-
-$(DEMO): $(DEMO_DEP)
-	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-
-$(USORT): $(USORT_DEP)
-	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-
-$(TEST): $(TEST_DEP)
-	$(LD) $^ $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-
-$(TREE_ST): $(TREE_ST_DEP)
-	$(AR) $(AR_FLAGS) $@ $^
-
-$(TREE_SH): $(TREE_SH_DEP)
-	$(LD) $^ $(LD_FLAGS) $(LD_SH_FLAGS) -o $@
-
-$(USORT_O): $(USORT_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(TEST_O): $(TEST_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(DEMO_O): $(DEMO_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(TREE_O): $(TREE_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(TREE_PO): $(TREE_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(DELETE_O): $(DELETE_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(DELETE_PO): $(DELETE_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(INSERT_O): $(INSERT_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(INSERT_PO): $(INSERT_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(ALLOCATOR_O): $(ALLOCATOR_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(ALLOCATOR_PO): $(ALLOCATOR_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(ITERATOR_O): $(ITERATOR_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(ITERATOR_PO): $(ITERATOR_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(FIND_O): $(FIND_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(FIND_PO): $(FIND_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(PRINT_O): $(PRINT_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(PRINT_PO): $(PRINT_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(VERIFY_O): $(VERIFY_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(VERIFY_PO): $(VERIFY_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(COUNT_O): $(COUNT_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(COUNT_PO): $(COUNT_PO_DEP)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(INT_KEY_O): $(INT_KEY_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-$(STR_KEY_O): $(STR_KEY_O_DEP)
-	$(CC) $(CC_FLAGS) $< -o $@
 
 clean:
 	$(RM) $(RM_FLAGS) $(TARGETS)
+
+# EXAMPLE MODULES
+# ──────────────────────────────────────────────────────────────────────────────
+$(DEMO_BIN): $(DEMO_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(DEMO_OBJ): $(DEMO_O_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+$(USORT_BIN): $(USORT_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(USORT_OBJ): $(USORT_O_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+# TEST MODULES
+# ──────────────────────────────────────────────────────────────────────────────
+$(TREE_TEST_BIN): $(TREE_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(TREE_TEST_OBJ): $(TREE_TEST_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+# RED_BLACK MODULES
+# ──────────────────────────────────────────────────────────────────────────────
+$(TREE_ST_LIB): $(TREE_ST_LIB_PREQS)
+	$(AR) $(AR_FLAGS) $@ $^
+$(TREE_SH_LIB): $(TREE_SH_LIB_PREQS)
+	$(LD) $^ $(LD_FLAGS) $(LD_SH_FLAGS) -o $@
+$(TREE_OBJ): $(TREE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(TREE_PIC_OBJ): $(TREE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(ALLOCATOR_OBJ): $(ALLOCATOR_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(ALLOCATOR_PIC_OBJ): $(ALLOCATOR_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(ITERATOR_OBJ): $(ITERATOR_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(ITERATOR_PIC_OBJ): $(ITERATOR_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(INSERT_OBJ): $(INSERT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(INSERT_PIC_OBJ): $(INSERT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(UPDATE_OBJ): $(UPDATE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(UPDATE_PIC_OBJ): $(UPDATE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(CORRECT_OBJ): $(CORRECT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(CORRECT_PIC_OBJ): $(CORRECT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+
+$(DELETE_OBJ): $(DELETE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(DELETE_PIC_OBJ): $(DELETE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(REMOVE_OBJ): $(REMOVE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(REMOVE_PIC_OBJ): $(REMOVE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(RESTORE_OBJ): $(RESTORE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(RESTORE_PIC_OBJ): $(RESTORE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(FIND_OBJ): $(FIND_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(FIND_PIC_OBJ): $(FIND_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(FETCH_OBJ): $(FETCH_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(FETCH_PIC_OBJ): $(FETCH_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(COUNT_OBJ): $(COUNT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(COUNT_PIC_OBJ): $(COUNT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(PRINT_OBJ): $(PRINT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(PRINT_PIC_OBJ): $(PRINT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(VERIFY_OBJ): $(VERIFY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(VERIFY_PIC_OBJ): $(VERIFY_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+
+$(INT_KEY_OBJ): $(INT_KEY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(STR_KEY_OBJ): $(STR_KEY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@

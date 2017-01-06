@@ -2,8 +2,6 @@
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 #include <stddef.h>                /* NULL */
 
-#include <stdio.h>
-
 unsigned int
 red_black_count(const struct RedBlackNode *restrict node)
 {

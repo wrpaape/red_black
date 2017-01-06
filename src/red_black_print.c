@@ -1,6 +1,22 @@
-#include "red_black_print.h"  /* stddef included -> NULL */
+#include "red_black_print.h"  /* stddef included -> size_t, NULL */
 #include "red_black_malloc.h" /* RED_BLACK_MALLOC|FREE */
-#include <unistd.h>	      /* write, STDOUT_FILENO */
+
+#ifdef WIN32
+#	include <ioh> /* _write */
+#	define WRITE_STDOUT(BUFFER,					\
+			    SIZE)					\
+	_write(0,							\
+	       BUFFER,							\
+	       (unsigned int) (SIZE))
+
+#else
+#	include <unistd.h> /* write, STDOUT_FILENO */
+#	define WRITE_STDOUT(BUFFER,					\
+			    SIZE)					\
+	write(STDOUT_FILENO,						\
+	      BUFFER,							\
+	      SIZE)
+#endif /* ifdef WIN32 */
 
 
 #define SIZE_RED_BLACK_NULL(INDENT) (INDENT + sizeof("(BLACK) NULL"))
@@ -11,8 +27,8 @@ size_red_black_node(const struct RedBlackNode *const restrict node,
 		    const unsigned int indent)
 {
 	return indent
-	     + (node->is_red ? sizeof("(RED) ") : sizeof("(BLACK) "))
-	     + key_sizer(node->key);
+	     + key_sizer(node->key)
+	     + (node->is_red ? sizeof("(RED) ") : sizeof("(BLACK) "));
 }
 
 
@@ -174,9 +190,8 @@ red_black_print(const struct RedBlackNode *const restrict root,
 
 		size = ptr - buffer;
 
-		success = (write(STDOUT_FILENO,
-				 buffer,
-				 size) == size);
+		success = (WRITE_STDOUT(buffer,
+					size) == size);
 
 		RED_BLACK_FREE(buffer);
 	}

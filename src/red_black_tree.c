@@ -1,12 +1,13 @@
-#include "red_black_tree.h"
-#include "red_black_insert.h"
-#include "red_black_update.h"
-#include "red_black_delete.h"
-#include "red_black_find.h"
-#include "red_black_fetch.h"
-#include "red_black_count.h"
-#include "red_black_print.h"
-#include "red_black_verify.h"
+#include "red_black_tree.h"	/* types */
+#include "red_black_insert.h"	/* red_black_insert */
+#include "red_black_update.h"	/* red_black_update */
+#include "red_black_delete.h"	/* red_black_delete */
+#include "red_black_remove.h"	/* red_black_remove */
+#include "red_black_find.h"	/* red_black_find */
+#include "red_black_fetch.h"	/* red_black_fetch */
+#include "red_black_count.h"	/* red_black_count */
+#include "red_black_print.h"	/* red_black_print */
+#include "red_black_verify.h"	/* red_black_verify */
 
 
 void

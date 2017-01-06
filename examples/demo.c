@@ -6,6 +6,42 @@
 #include <stdlib.h>	    /* exit, EXIT_FAILURE, strtol, NULL */
 #include <errno.h>	    /* errno */
 
+/* IO interface
+ * ────────────────────────────────────────────────────────────────────────── */
+#ifdef WIN32
+#	include <ioh> /* _write */
+#	define WRITE(FILENO,						\
+		     BUFFER,						\
+		     SIZE)						\
+	_write(FILENO,							\
+	       BUFFER,							\
+	       (unsigned int) (SIZE))
+#	define READ(FILENO,						\
+		    BUFFER,						\
+		    SIZE)						\
+	_read(FILENO,							\
+	      BUFFER,							\
+	      (unsigned int) (SIZE))
+#	define STDOUT_FILENO	0
+#	define STDIN_FILENO	1
+#	define STDERR_FILENO	2
+
+#else
+#	include <unistd.h> /* write, STDOUT|IN|ERR_FILENO */
+#	define WRITE(FILENO,						\
+		     BUFFER,						\
+		     SIZE)						\
+	write(FILENO,							\
+	      BUFFER,							\
+	      SIZE)
+#	define READ(FILENO,						\
+		    BUFFER,						\
+		    SIZE)						\
+	read(FILENO,							\
+	      BUFFER,							\
+	      SIZE)
+#endif /* ifdef WIN32 */
+
 
 /* prompts
  * ────────────────────────────────────────────────────────────────────────── */
@@ -20,7 +56,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #define EXIT_ON_FAILURE(LITERAL)					\
 do {									\
-	(void) write(STDERR_FILENO,					\
+	(void) WRITE(STDERR_FILENO,					\
 		     "\n" LITERAL "\n",					\
 		     sizeof(LITERAL) + 1);				\
 	exit(EXIT_FAILURE);						\
@@ -29,7 +65,7 @@ do {									\
 #define WRITE_STDOUT(BUFFER,						\
 		     SIZE)						\
 do {									\
-	if (write(STDOUT_FILENO,					\
+	if (WRITE(STDOUT_FILENO,					\
 		  BUFFER,						\
 		  SIZE) != (SIZE))					\
 		EXIT_ON_FAILURE("write failure");			\
@@ -40,7 +76,7 @@ WRITE_STDOUT(LITERAL,							\
 	     sizeof(LITERAL) - 1)
 
 #define READ_INPUT(BUFFER)						\
-read(STDIN_FILENO,							\
+READ(STDIN_FILENO,							\
      BUFFER,								\
      sizeof(BUFFER) - 1)
 

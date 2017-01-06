@@ -1,17 +1,37 @@
-#ifndef RED_BLACK_TEST_H_
-#define RED_BLACK_TEST_H_
+#ifndef RED_BLACK_TREE_TEST_H_
+#define RED_BLACK_TREE_TEST_H_
 
 #include "red_black_tree.h"  /* red_black_insert|find|verify|delete */
 #include "int_key.h"         /* int_key_comparator */
 #include <stdlib.h>          /* (s)random, exit */
 #include <time.h>	     /* time */
 #include <stdio.h>	     /* fprintf */
-#include <unistd.h>	     /* write */
 #include <signal.h>          /* sigaction */
+
+#ifdef WIN32
+#	include <ioh> /* _write */
+#	define WRITE(FILENO,						\
+		     BUFFER,						\
+		     SIZE)						\
+	_write(FILENO,							\
+	       BUFFER,							\
+	       (unsigned int) (SIZE))
+#	define STDOUT_FILENO 0
+#	define STDERR_FILENO 2
+
+#else
+#	include <unistd.h> /* write, STDOUT|ERR_FILENO */
+#	define WRITE(FILENO,						\
+		     BUFFER,						\
+		     SIZE)						\
+	write(FILENO,							\
+	      BUFFER,							\
+	      SIZE)
+#endif /* ifdef WIN32 */
 
 #define EXIT_ON_SYS_FAILURE(LITERAL)					\
 do {									\
-	(void) write(STDERR_FILENO,					\
+	(void) WRITE(STDERR_FILENO,					\
 		     "\n" LITERAL "\n",					\
 		     sizeof(LITERAL) + 1);				\
 	exit(EXIT_FAILURE);						\
@@ -20,7 +40,7 @@ do {									\
 #define WRITE_STDOUT(BUFFER,						\
 		     SIZE)						\
 do {									\
-	if (write(STDOUT_FILENO,					\
+	if (WRITE(STDOUT_FILENO,					\
 		  BUFFER,						\
 		  SIZE) != (SIZE))					\
 		EXIT_ON_SYS_FAILURE("write failure");			\
@@ -62,4 +82,4 @@ EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 #define TEST_PASS(TEST) WRITE_LITERAL("---\ntest_" TEST " passed!\n---\n")
 
 
-#endif /* ifndef RED_BLACK_TEST_H_ */
+#endif /* ifndef RED_BLACK_TREE_TEST_H_ */

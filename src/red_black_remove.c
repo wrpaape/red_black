@@ -1,4 +1,5 @@
-#include "red_black_remove.h" /* Comparator, Node, Allocator, JumpBuffer */
+#include "red_black_remove.h"  /* Comparator, Node, Allocator, JumpBuffer */
+#include "red_black_restore.h" /* restore API */
 
 
 static inline void
@@ -12,7 +13,7 @@ rb_remove_node(struct RedBlackNode *restrict *const restrict tree,
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
 
-	*key_ptr = node->key;
+	*key_ptr = (void *) node->key;
 	is_red   = node->is_red;
 	lchild   = node->left;
 	rchild   = node->right;
@@ -42,7 +43,7 @@ rb_remove_root(struct RedBlackNode *restrict *const restrict tree,
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
 
-	*key_ptr = root->key;
+	*key_ptr = (void *) root->key;
 	lchild   = root->left;
 	rchild   = root->right;
 
@@ -143,7 +144,8 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 			    comparator,
 			    allocator,
 			    jump_buffer,
-			    key);
+			    key,
+			    key_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_l_mid(tree,
@@ -202,7 +204,8 @@ rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 			    comparator,
 			    allocator,
 			    jump_buffer,
-			    key);
+			    key,
+			    key_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_r_mid(tree,
@@ -258,7 +261,8 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 				    comparator,
 				    allocator,
 				    jump_buffer,
-				    key);
+				    key,
+				    key_ptr);
 
 			return 1; /* updated */
 		}
