@@ -30,7 +30,7 @@ typedef void
 struct RedBlackAllocator {
 	struct RedBlackNode *restrict free;
 	struct RedBlackAllocatorBuffer buffer;
-	RedBlackAllocatorInitializer init;
+	RedBlackAllocatorInitializer initializer;
 };
 
 

@@ -17,7 +17,7 @@ red_black_hash_bucket_init(struct RedBlackHashBucket *const restrict bucket)
 
 	bucket->root = NULL;
 
-	red_black_hash_node_allocator_init(&bucket->allocator);
+	rba_bucket_allocator_init(&bucket->allocator);
 }
 
 
@@ -28,21 +28,21 @@ red_black_hash_bucket_insert(struct RedBlackHashBucket *const restrict bucket,
 	RedBlackJumpBuffer jump_buffer;
 	int status;
 
-	if (RED_BLACK_LOCK_WRITE(&buffer->lock) != 0)
-		return -2;
+	if (RED_BLACK_LOCK_WRITE(&buffer->lock) == 0) {
+		status = RED_BLACK_SET_JUMP(jump_buffer);
 
-	status = RED_BLACK_SET_JUMP(jump_buffer);
+		status = (status == 0)
+		       ? red_black_insert(&bucket->root,
+					  &red_black_hash_key_comparator,
+					  &bucket->allocator,
+					  &jump_buffer,
+					  key) /* 1, 0 */
+		       : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 
-	status = (status == 0)
-	       ? red_black_insert(&bucket->root,
-				  &red_black_hash_key_comparator,
-				  &bucket->allocator,
-				  &jump_buffer,
-				  key) /* 1, 0 */
-	       : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
+		if (RED_BLACK_UNLOCK(&buffer->lock) == 0)
+			return status;
+	}
 
-	return (RED_BLACK_UNLOCK(&buffer->lock) == 0)
-	     ? status
-	     : -2;
+	return -2; /* lock failure */
 }
 

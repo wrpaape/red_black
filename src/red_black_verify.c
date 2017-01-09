@@ -2,7 +2,7 @@
 #include <stddef.h>           /* NULL */
 
 unsigned int
-do_red_black_verify(const struct RedBlackNode *const restrict node,
+rb_verify(const struct RedBlackNode *const restrict node,
 		    const RedBlackComparator comparator,
 		    const void *const min_key,
 		    const void *const max_key,
@@ -31,24 +31,22 @@ do_red_black_verify(const struct RedBlackNode *const restrict node,
 		++black_height;
 	}
 
-	const unsigned int left_black_height
-	= do_red_black_verify(node->left,
-			      comparator,
-			      min_key,
-			      node_key,
-			      node_is_red,
-			      black_height,
-			      jump_buffer);
+	const unsigned int left_black_height = rb_verify(node->left,
+							 comparator,
+							 min_key,
+							 node_key,
+							 node_is_red,
+							 black_height,
+							 jump_buffer);
 
 
-	const unsigned int right_black_height
-	= do_red_black_verify(node->right,
-			      comparator,
-			      node_key,
-			      max_key,
-			      node_is_red,
-			      black_height,
-			      jump_buffer);
+	const unsigned int right_black_height = rb_verify(node->right,
+							  comparator,
+							  node_key,
+							  max_key,
+							  node_is_red,
+							  black_height,
+							  jump_buffer);
 
 	if (left_black_height != right_black_height)
 		RED_BLACK_JUMP_1(jump_buffer); /* tree imbalanced */
@@ -83,14 +81,13 @@ red_black_verify(const struct RedBlackNode *const restrict root,
 	const void *const root_key = root->key;
 
 	/* check left black height */
-	const unsigned int left_black_height
-	= do_red_black_verify(root->left,
-			      comparator,
-			      node->key,
-			      root_key,
-			      false,
-			      0,
-			      jump_buffer);
+	const unsigned int left_black_height = rb_verify(root->left,
+							 comparator,
+							 node->key,
+							 root_key,
+							 false,
+							 0,
+							 jump_buffer);
 
 	/* fetch max_key */
 	node = root;
@@ -104,14 +101,13 @@ red_black_verify(const struct RedBlackNode *const restrict root,
 	}
 
 	/* check right black height */
-	const unsigned int right_black_height
-	= do_red_black_verify(root->right,
-			      comparator,
-			      root_key,
-			      node->key,
-			      false,
-			      0,
-			      jump_buffer);
+	const unsigned int right_black_height = rb_verify(root->right,
+							  comparator,
+							  root_key,
+							  node->key,
+							  false,
+							  0,
+							  jump_buffer);
 
 	/* if returned both left and right subtrees are valid red black trees,
 	 * final check for balance */

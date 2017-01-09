@@ -18,25 +18,70 @@ rbab_init(struct RedBlackAllocatorBuffer *const restrict buffer,
 	buffer->blocks    = NULL;
 }
 
-void
-rba_bucket_allocator_init(struct RedBlackAllocator *const restrict allocator)
-
-
-
-
-void
-rba_tree_allocator_init(struct RedBlackAllocator *const restrict allocator)
+static inline void
+rba_init_node(struct RedBlackNode *const restrict node,
+	      const void *const key,
+	      const bool is_red)
 {
-	allocator->free = NULL;
+	node->key    = key;
+	node->is_red = is_red;
+	node->left   = NULL;
+	node->right  = NULL;
+}
 
-	rbab_init(&allocator->buffer);
+static void
+rba_init_hash_node(struct RedBlackNode *const restrict node,
+		   const void *const key,
+		   const bool is_red)
+{
+	struct RedBlackHashNode *restrict hash_node;
+	struct RedBlackHashKey *restrict hash_key;
+
+	hash_node = (struct RedBlackHashNode *restrict) node;
+
+	hash_key = &hash_node->hash_key;
+
+	rba_init_node(node,
+		      (const void *) hash_key,
+		      is_red);
+
+	*hash_key = *((const struct RedBlackHashKey *restrict) key);
 }
 
 
 
-static inline void *
+static inline void
+rba_allocator_init(struct RedBlackAllocator *const restrict allocator,
+		   const size_t size_node,
+		   const RedBlackAllocatorInitializer initializer)
+{
+	allocator->free = NULL;
+
+	rbab_init(&allocator->buffer,
+		  sizeof(struct RedBlackHashNode));
+
+	allocator->initializer = initializer;
+}
+
+void
+rba_tree_allocator_init(struct RedBlackAllocator *const restrict allocator)
+{
+	rba_allocator_init(allocator,
+			   sizeof(struct RedBlackNode),
+			   &rba_init_node);
+}
+
+void
+rba_bucket_allocator_init(struct RedBlackAllocator *const restrict allocator)
+{
+	rba_allocator_init(allocator,
+			   sizeof(struct RedBlackHashNode),
+			   &rba_init_hash_node);
+}
+
+
+static inline struct RedBlackNode *
 rbab_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
-	      const size_t size_node,
 	      RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	char *restrict node;
@@ -68,7 +113,7 @@ rbab_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 		buffer->until  = ((char *) block) + allocate_size;
 	}
 
-	return (void *) node;
+	return (struct RedBlackNode *) node;
 }
 
 struct RedBlackNode *
@@ -82,23 +127,17 @@ rba_new(struct RedBlackAllocator *const restrict allocator,
 	node = allocator->free;
 
 	if (node == NULL)
-		node = (struct RedBlackNode *) rbab_allocate(&allocator->buffer,
-							     jump_buffer);
+		node = rbab_allocate(&allocator->buffer,
+				     jump_buffer);
 	else
 		allocator->free = node->left;
 
-	allocator->init(node,
-			key,
-			is_red);
-
-	node->key    = key;
-	node->is_red = is_red;
-	node->left   = NULL;
-	node->right  = NULL;
+	allocator->initializer(node,
+			       key,
+			       is_red);
 
 	return node;
 }
-
 
 
 void
