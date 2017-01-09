@@ -74,10 +74,10 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 	struct RedBlackNode *const restrict grandparent = *tree;
 
 	if (grandparent == NULL) {
-		*tree = red_black_allocator_new(allocator,
-						jump_buffer,
-						key,
-						false); /* BLACK */
+		*tree = rba_new(allocator,
+				jump_buffer,
+				key,
+				false); /* BLACK */
 		return 1; /* tree updated */
 	}
 
@@ -91,11 +91,10 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 			parent = grandparent->left;
 
 			if (parent == NULL) {
-				grandparent->left
-				= red_black_allocator_new(allocator,
-							  jump_buffer,
-							  key,
-							  true); /* RED */
+				grandparent->left = rba_new(allocator,
+							    jump_buffer,
+							    key,
+							    true); /* RED */
 
 			} else {
 				compare = comparator(key,
@@ -124,11 +123,10 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 			parent = grandparent->right;
 
 			if (parent == NULL) {
-				grandparent->right
-				= red_black_allocator_new(allocator,
-							  jump_buffer,
-							  key,
-							  true); /* RED */
+				grandparent->right = rba_new(allocator,
+							     jump_buffer,
+							     key,
+							     true); /* RED */
 
 			} else {
 				compare = comparator(key,
@@ -178,10 +176,10 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		parent->left = red_black_allocator_new(allocator,
-						       jump_buffer,
-						       key,
-						       true); /* RED */
+		parent->left = rba_new(allocator,
+				       jump_buffer,
+				       key,
+				       true); /* RED */
 
 		/* need to correct */
 		red_black_correct_ll_bot(tree,
@@ -242,10 +240,10 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		node = red_black_allocator_new(allocator,
-					       jump_buffer,
-					       key,
-					       true); /* RED */
+		node = rba_new(allocator,
+			       jump_buffer,
+			       key,
+			       true); /* RED */
 
 		parent->right = node;
 
@@ -310,10 +308,10 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		parent->right = red_black_allocator_new(allocator,
-							jump_buffer,
-							key,
-							true); /* RED */
+		parent->right = rba_new(allocator,
+					jump_buffer,
+					key,
+					true); /* RED */
 
 		/* need to correct */
 		red_black_correct_rr_bot(tree,
@@ -374,10 +372,10 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		node = red_black_allocator_new(allocator,
-					       jump_buffer,
-					       key,
-					       true); /* RED */
+		node = rba_new(allocator,
+			       jump_buffer,
+			       key,
+			       true); /* RED */
 
 		parent->left = node;
 

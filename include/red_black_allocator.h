@@ -17,32 +17,42 @@ struct RedBlackAllocatorBufferBlock {
 struct RedBlackAllocatorBuffer {
 	char *restrict cursor;
 	const char *restrict until;
+	size_t size_node;
 	size_t expand;
 	struct RedBlackAllocatorBufferBlock *restrict blocks;
 };
 
+typedef void
+(*RedBlackAllocatorInitializer)(struct RedBlackNode *const restrict node,
+				const void *const key,
+				const bool is_red);
+
 struct RedBlackAllocator {
 	struct RedBlackNode *restrict free;
 	struct RedBlackAllocatorBuffer buffer;
+	RedBlackAllocatorInitializer init;
 };
 
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_allocator_init(struct RedBlackAllocator *const restrict allocator);
+rba_bucket_allocator_init(struct RedBlackAllocator *const restrict allocator);
+
+void
+rba_tree_allocator_init(struct RedBlackAllocator *const restrict allocator);
 
 struct RedBlackNode *
-red_black_allocator_new(struct RedBlackAllocator *const restrict allocator,
-			RedBlackJumpBuffer *const restrict jump_buffer,
-			const void *const key,
-			const bool is_red);
+rba_new(struct RedBlackAllocator *const restrict allocator,
+	RedBlackJumpBuffer *const restrict jump_buffer,
+	const void *const key,
+	const bool is_red);
 
 void
-red_black_allocator_free(struct RedBlackAllocator *const restrict allocator,
-			 struct RedBlackNode *const restrict node);
+rba_free(struct RedBlackAllocator *const restrict allocator,
+	 struct RedBlackNode *const restrict node);
 
 void
-red_black_allocator_destroy(struct RedBlackAllocator *const restrict allocator);
+rba_destroy(struct RedBlackAllocator *const restrict allocator);
 
 #endif /* ifndef RED_BLACK_ALLOCATOR_H_ */

@@ -17,13 +17,13 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 	tree->root	 = NULL;
 	tree->comparator = comparator;
 
-	red_black_allocator_init(&tree->allocator);
+	rba_tree_allocator_init(&tree->allocator);
 }
 
 void
 red_black_tree_destroy(RedBlackTree *const restrict tree)
 {
-	red_black_allocator_destroy(&tree->allocator);
+	rba_destroy(&tree->allocator);
 }
 
 int
@@ -165,6 +165,15 @@ red_black_tree_print(const RedBlackTree *const restrict tree,
 bool
 red_black_tree_verify(const RedBlackTree *const restrict tree)
 {
-	return red_black_verify(tree->root,
-				tree->comparator);
+	bool status;
+	RedBlackJumpBuffer jump_buffer;
+
+	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
+
+	if (status)
+		status = red_black_verify(tree->root,
+					  tree->comparator,
+					  &jump_buffer);
+
+	return status;
 }

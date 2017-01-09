@@ -17,8 +17,8 @@ rb_delete_node(struct RedBlackNode *restrict *const restrict tree,
 	rchild = node->right;
 
 	/* free node */
-	red_black_allocator_free(allocator,
-				 node);
+	rba_free(allocator,
+		 node);
 
 	if (is_red)
 		red_black_restore_red(tree, /* always restorable if node is RED */
@@ -44,8 +44,8 @@ rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
 	rchild = root->right;
 
 	/* free node */
-	red_black_allocator_free(allocator,
-				 root);
+	rba_free(allocator,
+		 root);
 
 	(void) red_black_restore_black(tree,
 				       lchild,
