@@ -11,23 +11,23 @@
 - [Internals](#internals)
 
 
-`red_black` is a collection of C libraries providing a simple interface for
+`red_black` is a collection of C libraries that provide a simple interface for
 implementing [(ordered) sets](https://en.wikipedia.org/wiki/Set_(abstract_data_type))
 and [associative arrays](https://en.wikipedia.org/wiki/Associative_array) in single and multi-threaded applications.
 `red_black` containers are designed from the primitives:
 - [red-black tree](https://en.wikipedia.org/wiki/Red-black_tree)
 - [hashing](https://en.wikipedia.org/wiki/Hash_function)
-- [readers-writer/shared-exclusive lock](https://en.wikipedia.org/wiki/Readers-writer_lock)
+- [readers-writer/shared-exclusive lock](https://en.wikipedia.org/wiki/Readers-writer_lock)  
 to provide the following operations:
 - insert
 - update
 - find
 - delete
-- (ordered) traversal
+- (ordered) traversal  
 with competitive [worst-case performance guarantees](https://en.wikipedia.org/wiki/Worst-case_complexity)
 and limited [contention](https://en.wikipedia.org/wiki/Lock_(computer_science)#Granularity).
 `red_black` distinguishes itself from many other balanced tree/balanced tree-hash table hybrid implementations
-by preferring [finer casewise granularity](#Implementation) over heavier abstraction throughout container mutations.
+by preferring [finer casewise granularity](#implementation) over heavier abstraction throughout container mutations.
 
 
 
