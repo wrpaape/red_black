@@ -34,24 +34,41 @@ TODO
 
 
 ##Interface
-**Functions**
-- [red_black_tree_init](#red_black_tree_init)
-- [red_black_tree_destroy](#red_black_tree_destroy)
-- [red_black_tree_insert red_black_tree_update](#red_black_tree_insert-red_black_tree_update)
-- [red_black_tree_delete red_black_tree_remove](#red_black_tree_delete-red_black_tree_remove)
-- [red_black_tree_find red_black_tree_fetch](#red_black_tree_find-red_black_tree_fetch)
-- [red_black_tree_count](#red_black_tree_count)
-- [red_black_tree_iterator_init_asc red_black_tree_iterator_init_desc](#red_black_tree_iterator_init_asc-red_black_tree_iterator_init_desc)
-- [red_black_tree_iterator_next](#red_black_tree_iterator_next)
-- [red_black_tree_print](#red_black_tree_print)
-- [red_black_tree_verify](#red_black_tree_verify)
+- [red_black_tree](#red_black_tree)
+    - **Functions**
+        - [red_black_tree_init](#red_black_tree_init)
+        - [red_black_tree_destroy](#red_black_tree_destroy)
+        - [red_black_tree_insert red_black_tree_update](#red_black_tree_insert-red_black_tree_update)
+        - [red_black_tree_delete red_black_tree_remove](#red_black_tree_delete-red_black_tree_remove)
+        - [red_black_tree_find red_black_tree_fetch](#red_black_tree_find-red_black_tree_fetch)
+        - [red_black_tree_count](#red_black_tree_count)
+        - [red_black_tree_iterator_init_asc red_black_tree_iterator_init_desc](#red_black_tree_iterator_init_asc-red_black_tree_iterator_init_desc)
+        - [red_black_tree_iterator_next](#red_black_tree_iterator_next)
+        - [red_black_tree_print](#red_black_tree_print)
+        - [red_black_tree_verify](#red_black_tree_verify)
 
-**Types**
-- [RedBlackTree](#redblacktree)
-- [RedBlackComparator](#redblackcomparator)
-- [RedBlackIterator](#redblackiterator)
-- [RedBlackKeySizer](#redblackkeysizer)
-- [RedBlackKeyPutter](#redblackkeyputter)
+    - **Types**
+        - [RedBlackTree](#redblacktree)
+        - [RedBlackComparator](#redblackcomparator)
+        - [RedBlackTreeIterator](#redblacktreeiterator)
+        - [RedBlackKeySizer](#redblackkeysizer)
+        - [RedBlackKeyPutter](#redblackkeyputter)
+
+- [red_black_hash_map](#red_black_hash_map)
+    - **Functions**
+        - [red_black_hash_map_init](#red_black_hash_map_init)
+        - [red_black_hash_map_destroy](#red_black_hash_map_destroy)
+        - [red_black_hash_map_insert red_black_hash_map_update](#red_black_hash_map_insert-red_black_hash_map_update)
+        - [red_black_hash_map_delete red_black_hash_map_remove](#red_black_hash_map_delete-red_black_hash_map_remove)
+        - [red_black_hash_map_find red_black_hash_map_fetch](#red_black_hash_map_find-red_black_hash_map_fetch)
+        - [red_black_hash_map_count](#red_black_hash_map_count)
+        - [red_black_hash_map_iterator_init](#red_black_hash_map_iterator_init)
+        - [red_black_hash_map_iterator_next](#red_black_hash_map_iterator_next)
+        - [red_black_hash_map_verify](#red_black_hash_map_verify)
+
+    - **Types**
+        - [RedBlackHashMap](#redblackhashmap)
+        - [RedBlackHashMapIterator](#redblackhashmapiterator)
 
 
 

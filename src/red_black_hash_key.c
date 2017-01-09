@@ -171,7 +171,7 @@ rbhk_hash(register const unsigned char *k, /* the key */
 
 void
 red_black_hash_key_init(struct RedBlackHashKey *const restrict hash_key,
-			const void *key,
+			const void *const key,
 			const size_t length)
 {
 	hash_key->hash   = rbhk_hash((const unsigned char *) key,

@@ -9,12 +9,13 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-#if 0
-typedef uint32_t RedBlackHash;
-#define RED_BLACK_HASH_MAX UINT32_MAX
+#if 0 /* toggle 32/64 bit hash */
+	typedef uint32_t RedBlackHash;
+#	define RED_BLACK_HASH_MAX UINT32_MAX
+
 # else
-typedef uint64_t RedBlackHash;
-#define RED_BLACK_HASH_MAX UINT64_MAX
+	typedef uint64_t RedBlackHash;
+#	define RED_BLACK_HASH_MAX UINT64_MAX
 #endif
 
 struct RedBlackHashKey {
@@ -28,7 +29,7 @@ struct RedBlackHashKey {
  * ────────────────────────────────────────────────────────────────────────── */
 void
 red_black_hash_key_init(struct RedBlackHashKey *const restrict hash_key,
-			const void *key,
+			const void *const key,
 			const size_t length);
 
 int

@@ -260,6 +260,7 @@ CORRECT_PIC_OBJ_PREQS	:= $(CORRECT_OBJ_PREQS)
 CORRECT_PIC_OBJ_GROUP	:= $(CORRECT_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(CORRECT_OBJ)				\
+			   $(CORRECT_PIC_OBJ)
 
 
 # red_black_insert
@@ -323,6 +324,7 @@ RESTORE_PIC_OBJ_PREQS	:= $(RESTORE_OBJ_PREQS)
 RESTORE_PIC_OBJ_GROUP	:= $(RESTORE_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(RESTORE_OBJ)				\
+			   $(RESTORE_PIC_OBJ)
 
 
 # red_black_delete
