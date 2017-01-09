@@ -10,7 +10,26 @@
 - [Implementation](#implementation)
 - [Internals](#internals)
 
-TODO `red_black`
+
+`red_black` is a collection of C libraries providing a simple interface for
+implementing [(ordered) sets](https://en.wikipedia.org/wiki/Set_(abstract_data_type))
+and [associative arrays](https://en.wikipedia.org/wiki/Associative_array) in single and multi-threaded applications.
+`red_black` containers are designed from the primitives:
+- [red-black tree](https://en.wikipedia.org/wiki/Red-black_tree)
+- [hashing](https://en.wikipedia.org/wiki/Hash_function)
+- [readers-writer/shared-exclusive lock](https://en.wikipedia.org/wiki/Readers-writer_lock)
+to provide the following operations:
+- insert
+- update
+- find
+- delete
+- (ordered) traversal
+with competitive [worst-case performance guarantees](https://en.wikipedia.org/wiki/Worst-case_complexity)
+and limited [contention](https://en.wikipedia.org/wiki/Lock_(computer_science)#Granularity).
+`red_black` distinguishes itself from many other balanced tree/balanced tree-hash table hybrid implementations
+by preferring [finer casewise granularity](#Implementation) over heavier abstraction throughout container mutations.
+
+
 
 
 
@@ -20,8 +39,10 @@ TODO
 
 
 
+
 ##Build
 TODO
+
 
 
 
@@ -88,6 +109,7 @@ On return `tree` models a valid, empty red-black tree and can safely be operated
 - allocates no memory on the heap until first successful [insertion](#red_black_tree_insert), after which a call to [red_black_tree_destroy](#red_black_tree_destroy) must be made when done with `tree` to prevent a memory leak
 
 
+
 ###red_black_tree_destroy
 **[declaration](include/red_black_tree.h#L31-L32)|[source](src/red_black_tree.c#L20-L24)**
 ```
@@ -101,6 +123,7 @@ frees all memory allocated by `tree`
 **notes**
 - safe to call before first insertion
 - memory is deallocated via [RED_BLACK_FREE](#red_black_malloc/red_black_free)
+
 
 
 ###red_black_tree_insert red_black_tree_update
@@ -503,7 +526,10 @@ put_string_key(char *buffer,
 }
 ```
 
+
 ##Implementation
+TODO
+
 
 
 
@@ -513,7 +539,9 @@ put_string_key(char *buffer,
 ###struct RedBlackNode
 
 
+
 ###struct RedBlackAllocator
+
 
 
 
@@ -521,5 +549,7 @@ put_string_key(char *buffer,
 ###RED_BLACK_MALLOC RED_BLACK_FREE
 
 
+
 ###RedBlackJumpBuffer RED_BLACK_SET_JUMP RED_BLACK_LONG_JUMP
+
 
