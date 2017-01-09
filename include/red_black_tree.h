@@ -12,7 +12,7 @@
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
 struct _RedBlackTree {
-	struct RedBlackNode *root;
+	struct RedBlackNode *restrict root;
 	RedBlackComparator comparator;
 	struct RedBlackAllocator allocator;
 };

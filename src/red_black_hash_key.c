@@ -1,7 +1,78 @@
-#include "red_black_hash_key.h"	/* RedBlackHashKey */
+#include "red_black_hash_key.h"	/* RedBlackHashKey, SIZE_MAX */
+#include <limits.h>		/* UINT_MAX, ULONG_MAX */
 
-#define JHASH_INIT_LEVEL 0xfedcba987654321
 
+#if (RED_BLACK_HASH_MAX == UINT32_MAX)
+/* taken from bob jenkin's website */
+/* The mixing step */
+#define mix32(a, b, c)							    \
+{									    \
+	a -= b;  a -= c;  a ^= (c >> 13); b -= c;  b -= a;  b ^= (a <<  8); \
+	c -= a;  c -= b;  c ^= (b >> 13); a -= b;  a -= c;  a ^= (c >> 12); \
+	b -= c;  b -= a;  b ^= (a << 16); c -= a;  c -= b;  c ^= (b >>  5); \
+	a -= b;  a -= c;  a ^= (c >>  3); b -= c;  b -= a;  b ^= (a << 10); \
+	c -= a;  c -= b;  c ^= (b >> 15);				    \
+}
+
+static inline RedBlackHash
+rbhk_hash(register const unsigned char *k,  /* the key */
+	  register const size_t length)     /* length of the key in bytes */
+{
+	register uint32_t a, b, c; /* the internal state */
+	register size_t len;	   /* how many key bytes still need mixing */
+
+	/* Set up the internal state */
+	a = b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+	c = 0xfedcba98ULL;  /* variable initialization of internal state */
+
+	/*---------------------------------------- handle most of the key */
+	for (len = length; len >= 12; k += 12, len -= 12) {
+		a += (   ((uint32_t) k[ 0])
+		      + (((uint32_t) k[ 1]) <<  8)
+		      + (((uint32_t) k[ 2]) << 16)
+		      + (((uint32_t) k[ 3]) << 24));
+
+		b += (   ((uint32_t) k[ 4])
+		      + (((uint32_t) k[ 5]) <<  8)
+		      + (((uint32_t) k[ 6]) << 16)
+		      + (((uint32_t) k[ 7]) << 24));
+
+		c += (   ((uint32_t) k[ 8])
+		      + (((uint32_t) k[ 9]) <<  8)
+		      + (((uint32_t) k[10]) << 16)
+		      + (((uint32_t) k[11]) << 24));
+
+		mix32(a, b, c);
+	}
+
+	/*------------------------------------- handle the last 11 bytes */
+	c += length;
+
+	switch (len) {
+	/* all the case statements fall through */
+	case 11: c += ((uint32_t) k[10] << 24);
+	case 10: c += ((uint32_t) k[ 9] << 16);
+	case  9: c += ((uint32_t) k[ 8] <<  8);
+	/* the first byte of c is reserved for the length */
+	case  8: b += ((uint32_t) k[ 7] << 24);
+	case  7: b += ((uint32_t) k[ 6] << 16);
+	case  6: b += ((uint32_t) k[ 5] <<  8);
+	case  5: b += ((uint32_t) k[ 4]	     );
+	case  4: a += ((uint32_t) k[ 3] << 24);
+	case  3: a += ((uint32_t) k[ 2] << 16);
+	case  2: a += ((uint32_t) k[ 1] <<  8);
+	case  1: a += ((uint32_t) k[ 0]	     );
+	/* case 0: nothing left  to add */
+	}
+
+	mix32(a, b, c);
+
+	/*-------------------------------------------- report the result */
+	return (RedBlackHash) c;
+}
+#undef mix32
+
+#elif (RED_BLACK_HASH_MAX == UINT64_MAX)
 /* taken from bob jenkin's website */
 /* The mixing step */
 #define mix64(a, b, c)							    \
@@ -14,35 +85,45 @@
 	b -= c;  b -= a;  b ^= (a << 18); c -= a;  c -= b;  c ^= (b >> 22); \
 }
 
-static inline uint64_t
-jhash64(register const unsigned char *k, /* the key */
-	register const size_t length,    /* num bytes of key */
-	register const uint64_t level)   /* prev hash or arb val */
+static inline RedBlackHash
+rbhk_hash(register const unsigned char *k, /* the key */
+	  register const size_t length)    /* num bytes of key */
 {
 	register uint64_t a, b, c; /* the internal state */
 	register size_t len;	   /* how many key bytes still need mixing */
 
 	/* Set up the internal state */
-	a = b = level;		  /* variable initialization of internal state */
-	c = 0x9e3779b97f4a7c13LL; /* the golden ratio; an arbitrary value */
+	a = b = 0xfedcba9876543210ULL; /* initialization of internal state */
+	c = 0x9e3779b97f4a7c13ULL;     /* the golden ratio; an arbitrary value */
 
 	/*---------------------------------------- handle most of the key */
 	for (len = length; len >= 24; k += 24, len -= 24) {
+		a += (   ((uint64_t) k[ 0])
+		      + (((uint64_t) k[ 1]) <<  8)
+		      + (((uint64_t) k[ 2]) << 16)
+		      + (((uint64_t) k[ 3]) << 24)
+		      + (((uint64_t) k[ 4]) << 32)
+		      + (((uint64_t) k[ 5]) << 40)
+		      + (((uint64_t) k[ 6]) << 48)
+		      + (((uint64_t) k[ 7]) << 56));
 
-		a += (  k[ 0]			   + (((uint64_t) k[ 1]) <<  8)
-		      + (((uint64_t) k[ 2]) << 16) + (((uint64_t) k[ 3]) << 24)
-		      + (((uint64_t) k[ 4]) << 32) + (((uint64_t) k[ 5]) << 40)
-		      + (((uint64_t) k[ 6]) << 48) + (((uint64_t) k[ 7]) << 56));
+		b += (   ((uint64_t) k[ 8])
+		      + (((uint64_t) k[ 9]) <<  8)
+		      + (((uint64_t) k[10]) << 16)
+		      + (((uint64_t) k[11]) << 24)
+		      + (((uint64_t) k[12]) << 32)
+		      + (((uint64_t) k[13]) << 40)
+		      + (((uint64_t) k[14]) << 48)
+		      + (((uint64_t) k[15]) << 56));
 
-		b += (  k[ 8]			   + (((uint64_t) k[ 9]) <<  8)
-		      + (((uint64_t) k[10]) << 16) + (((uint64_t) k[11]) << 24)
-		      + (((uint64_t) k[12]) << 32) + (((uint64_t) k[13]) << 40)
-		      + (((uint64_t) k[14]) << 48) + (((uint64_t) k[15]) << 56));
-
-		c += (  k[16]			   + (((uint64_t) k[17]) <<  8)
-		      + (((uint64_t) k[18]) << 16) + (((uint64_t) k[19]) << 24)
-		      + (((uint64_t) k[20]) << 32) + (((uint64_t) k[21]) << 40)
-		      + (((uint64_t) k[22]) << 48) + (((uint64_t) k[23]) << 56));
+		c += (   ((uint64_t) k[16])
+		      + (((uint64_t) k[17]) <<  8)
+		      + (((uint64_t) k[18]) << 16)
+		      + (((uint64_t) k[19]) << 24)
+		      + (((uint64_t) k[20]) << 32)
+		      + (((uint64_t) k[21]) << 40)
+		      + (((uint64_t) k[22]) << 48)
+		      + (((uint64_t) k[23]) << 56));
 
 		mix64(a, b, c);
 	}
@@ -82,9 +163,10 @@ jhash64(register const unsigned char *k, /* the key */
 	mix64(a, b, c);
 
 	/*-------------------------------------------- report the result */
-	return c;
+	return (RedBlackHash) c;
 }
 #undef mix64
+#endif /* if (RED_BLACK_HASH_MAX == UINT32_MAX) */
 
 
 void
@@ -92,8 +174,134 @@ red_black_hash_key_init(struct RedBlackHashKey *const restrict hash_key,
 			const void *key,
 			const size_t length)
 {
-	hash_key->hash = jhash64((const unsigned char *) key,
-				 length,
-				 0xfedcba98);
+	hash_key->hash   = rbhk_hash((const unsigned char *) key,
+				     length);
+
+	hash_key->key    = (const unsigned char *) key;
+	hash_key->length = length;
+}
+
+
+static inline int
+rbhk_memory_compare(const unsigned char *restrict key1,
+		    const unsigned char *restrict key2,
+		    const size_t length)
+{
+	int token1;
+	int token2;
+	unsigned long word1;
+	unsigned long word2;
+	const unsigned long *restrict word_key1;
+	const unsigned long *restrict word_key2;
+
+	const size_t count_words = length / sizeof(unsigned long);
+	const size_t rem_bytes   = length % sizeof(unsigned long);
+
+	/* compare misaligned bytes */
+	switch (rem_bytes) {
+#define COMPARE_BYTES()							\
+	token1 = (int) *key1;						\
+	token2 = (int) *key2;						\
+	if (token1 != token2)						\
+		return token1 - token2					\
+	++key1;								\
+	++key2
+#if (ULONG_MAX == UINT64_MAX)
+	case 7: COMPARE_BYTES();
+		/* fall through */
+	case 6: COMPARE_BYTES();
+		/* fall through */
+	case 5: COMPARE_BYTES();
+		/* fall through */
+	case 4: COMPARE_BYTES();
+		/* fall through */
+#endif /* if (ULONG_MAX == UINT64_MAX) */
+	case 3: COMPARE_BYTES();
+		/* fall through */
+	case 2: COMPARE_BYTES();
+		/* fall through */
+	case 1: COMPARE_BYTES();
+		/* fall through */
+#undef COMPARE_BYTES
+	/* 0 byte offset from word boundary, do nothing */
+	}
+
+	/* compare aligned words */
+	word_key1 = (const unsigned long *) key1;
+	word_key2 = (const unsigned long *) key2;
+
+	const unsigned long *const restrict word_key_until
+	= word_key2 + count_words;
+
+	while (word_key2 < word_key_until) {
+		word1 = *word_key1;
+		word2 = *word_key2;
+
+		if (word1 != word2)
+			return (word1 < word2) ? -1 : 1;
+
+		++word_key1;
+		++word_key2;
+	}
+
+	return 0; /* compared equal */
+}
+
+int
+red_black_hash_key_comparator(const void *key1,
+			      const void *key2)
+{
+	const struct RedBlackHashKey *hash_key1;
+	const struct RedBlackHashKey *hash_key2;
+	RedBlackHash hk1_hash;
+	RedBlackHash hk2_hash;
+	const unsigned char *restrict hk1_key;
+	const unsigned char *restrict hk2_key;
+	size_t hk1_length;
+	size_t hk2_length;
+
+	hash_key1 = (const struct RedBlackHashKey *) key1;
+	hash_key2 = (const struct RedBlackHashKey *) key2;
+
+	hk1_hash = hash_key1->hash;
+	hk2_hash = hash_key2->hash;
+
+#if (RED_BLACK_HASH_MAX < UINT_MAX)
+	if (hk1_hash != hk2_hash)
+		return (int) (hk1_hash - hk2_hash);
+
+#else
+	if (hk1_hash < hk2_hash)
+		return -1;
+
+	if (hk1_hash > hk2_hash)
+		return 1;
+#endif /* if (RED_BLACK_HASH_MAX < UINT_MAX) */
+
+	hk1_key = hash_key1->key;
+	hk2_key = hash_key2->key;
+
+	if (hk1_key == hk2_key)
+		return 0; /* ensure keys don't point to same memory */
+
+	hk1_length = hash_key1->length;
+	hk2_length = hash_key2->length;
+
+#if (SIZE_MAX < UINT_MAX)
+	if (hk1_length != hk2_length)
+		return (int) (hk1_length - hk2_length);
+
+#else
+	if (hk1_length < hk2_length)
+		return -1;
+
+	if (hk1_length > hk2_length)
+		return 1;
+#endif /* if (RED_BLACK_HASH_MAX < UINT_MAX) */
+
+	/* unsigned memory compare */
+	return rbhk_memory_compare(hk1_key,
+				   hk2_key,
+				   hk1_length);
 }
 

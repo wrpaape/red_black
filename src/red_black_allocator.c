@@ -9,7 +9,7 @@
 
 
 static inline void
-rba_buffer_init(struct RedBlackAllocatorBuffer *const restrict buffer)
+rbab_init(struct RedBlackAllocatorBuffer *const restrict buffer)
 {
 	buffer->cursor = NULL;
 	buffer->until  = NULL;
@@ -19,26 +19,30 @@ rba_buffer_init(struct RedBlackAllocatorBuffer *const restrict buffer)
 
 void
 red_black_allocator_init(struct RedBlackAllocator *const restrict allocator)
+
+void
+red_black_allocator_init(struct RedBlackAllocator *const restrict allocator)
 {
 	allocator->free = NULL;
 
-	rba_buffer_init(&allocator->buffer);
+	rbab_init(&allocator->buffer);
 }
 
 
 
-static inline struct RedBlackNode *
-rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
-		    RedBlackJumpBuffer *const restrict jump_buffer)
+static inline void *
+rbab_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
+	      const size_t size_node,
+	      RedBlackJumpBuffer *const restrict jump_buffer)
 {
-	struct RedBlackNode *restrict node;
+	char *restrict node;
 	struct RedBlackAllocatorBufferBlock *restrict block;
 	size_t allocate_size;
 
 	node = buffer->cursor;
 
 	if (node < buffer->until) {
-		++(buffer->cursor);
+		buffer->cursor += size_node;
 
 	} else {
 		allocate_size = sizeof(struct RedBlackAllocatorBufferBlock)
@@ -54,14 +58,13 @@ rba_buffer_allocate(struct RedBlackAllocatorBuffer *const restrict buffer,
 		block->next    = buffer->blocks;
 		buffer->blocks = block;
 
-		node = (struct RedBlackNode *) (block + 1);
+		node = (char *) (block + 1);
 
-		buffer->cursor = node + 1;
-		buffer->until  = (struct RedBlackNode *)
-				  (((char *) block) + allocate_size);
+		buffer->cursor = node + size_node;
+		buffer->until  = ((char *) block) + allocate_size;
 	}
 
-	return node;
+	return (void *) node;
 }
 
 struct RedBlackNode *
@@ -75,8 +78,9 @@ red_black_allocator_new(struct RedBlackAllocator *const restrict allocator,
 	node = allocator->free;
 
 	if (node == NULL)
-		node = rba_buffer_allocate(&allocator->buffer,
-					   jump_buffer);
+		node = (struct RedBlackNode *) rbab_allocate(&allocator->buffer,
+							     sizeof(*node),
+							     jump_buffer);
 	else
 		allocator->free = node->left;
 
