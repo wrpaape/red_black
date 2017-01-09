@@ -18,12 +18,15 @@ and [associative arrays](https://en.wikipedia.org/wiki/Associative_array) in sin
 - [red-black tree](https://en.wikipedia.org/wiki/Red-black_tree)
 - [hashing](https://en.wikipedia.org/wiki/Hash_function)
 - [readers-writer/shared-exclusive lock](https://en.wikipedia.org/wiki/Readers-writer_lock)  
+
 to provide the following operations:
+
 - insert
 - update
 - find
 - delete
 - (ordered) traversal  
+
 with competitive [worst-case performance guarantees](https://en.wikipedia.org/wiki/Worst-case_complexity)
 and limited [contention](https://en.wikipedia.org/wiki/Lock_(computer_science)#Granularity).
 `red_black` distinguishes itself from many other balanced tree/balanced tree-hash table hybrid implementations
