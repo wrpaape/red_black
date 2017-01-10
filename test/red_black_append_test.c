@@ -54,7 +54,7 @@ main(void)
 	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
 		goto CONTINUE_APPENDING;
 
-	for (volatile int i = 0; i < KEY_COUNT; ++i) {
+	for (int i = 0; i < KEY_COUNT; ++i) {
 		node = &nodes[i];
 
 		node->key = (const void *) (intptr_t) keys[i];
