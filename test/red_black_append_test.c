@@ -1,7 +1,7 @@
 #include "red_black_tree.h"    /* RedBlackTree, struct RedBlackNode */
 #include "int_key.h"           /* int_key_comparator */
 #include "red_black_append.h"  /* red_black_append */
-#include <stdio.h>             /* perror, printf */
+#include <stdio.h>             /* fprintf */
 #include <stdlib.h>            /* exit */
 
 
@@ -25,19 +25,6 @@ do {									\
 	red_black_tree_destroy(&tree);					\
 	exit(1);							\
 } while (0)
-
-
-/* static inline void */
-/* do_append(const int i) */
-/* { */
-/* 	RedBlackJumpBuffer jump_buffer; */
-
-/* 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0) */
-/* 		red_black_append(&tree.root, */
-/* 				 tree.comparator, */
-/* 				 &jump_buffer, */
-/* 				 node); */
-/* } */
 
 int
 main(void)

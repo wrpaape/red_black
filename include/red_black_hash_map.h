@@ -3,22 +3,29 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_hash_bucket.h" /* HashBucket, Lock, MALLOC/FREE */
+#include "red_black_lock.h"      /* RedBlackLock */
+#include "red_black_allocator.h" /* RedBlackAllocator */
 
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
+struct RedBlackHashBucket {
+	RedBlackLock lock;
+	struct RedBlackNode *restrict root;
+	struct RedBlackAllocator allocator;
+};
+
 struct RedBlackHashMapCount {
 	unsigned int buckets_m1;
 	unsigned int entries;
-	unsigned int shrink;
-	unsigned int expand;
+	unsigned int max_capacity;
 };
 
 struct _RedBlackHashMap {
 	RedBlackLock lock;
 	struct RedBlackHashBucket *restrict buckets;
 	struct RedBlackHashMapCount count;
+	struct RedBlackAllocator *restrict allocators;
 };
 
 typedef struct _RedBlackHashMap RedBlackHashMap;

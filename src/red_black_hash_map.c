@@ -1,4 +1,63 @@
-#include "red_black_hash_map.h"
+#include "red_black_hash_map.h" /* HashMap types */
+#include "red_black_insert.h"	/* red_black_insert */
+#include "red_black_update.h"	/* red_black_update */
+#include "red_black_delete.h"	/* red_black_delete */
+#include "red_black_remove.h"	/* red_black_remove */
+#include "red_black_find.h"	/* red_black_find */
+#include "red_black_fetch.h"	/* red_black_fetch */
+#include "red_black_verify.h"	/* red_black_verify */
+#include "red_black_flatten.h"  /* red_black_flatten */
+#include "red_black_append.h"   /* red_black_append */
+
+#define FETCH_BUCKET(BUCKETS, HASH, COUNT_BUCKETS_M1)
+
+/* static inline int */
+/* rbhb_insert(struct RedBlackHashBucket *const restrict bucket, */
+/* 	    const struct RedBlackHashKey *const restrict key) */
+/* { */
+/* 	RedBlackJumpBuffer jump_buffer; */
+/* 	int status; */
+
+/* 	status = RED_BLACK_SET_JUMP(jump_buffer); */
+
+/* 	if (status == 0) { */
+/* 		if (RED_BLACK_LOCK_WRITE(&buffer->lock) != 0) */
+/* 			return -2; */
+
+/* 		status = red_black_insert(&bucket->root, */
+/* 					  &red_black_hash_key_comparator, */
+/* 					  &bucket->allocator, */
+/* 					  &jump_buffer, */
+/* 					  key) /1* 1, 0 *1/ */
+/* 	} else { */
+/* 		status = RED_BLACK_JUMP_3_STATUS(status); */
+/* 	} */
+
+/* 	return (RED_BLACK_UNLOCK(&buffer->lock) == 0) */
+/* 	     ? status */
+/* 	     : -2; */
+/* } */
+
+static inline void
+rbhb_init(struct RedBlackHashBucket *const restrict bucket,
+	  struct RedBlackAllocator *const restrict allocator)
+{
+	RED_BLACK_LOCK_INIT(&bucket->lock);
+
+	bucket->root = NULL;
+
+	bucket->allocator = allocator;
+
+	rba_bucket_allocator_init(allocator);
+}
+
+static inline void
+rbhb_unload(struct RedBlackHashBucket *const restrict bucket,
+	    struct RedBlackHashBucket *const restrict new_buckets,
+	    const unsigned int new_buckets_m1)
+{
+	struct RedBlackNode *restrict node;
+}
 
 
 int
@@ -14,53 +73,26 @@ rbhm_fetch_bucket(const struct RedBlackHashMap *const restrict map,
 	return &map->buckets[key->hash & map->count.buckets_m1];
 }
 
-static inline int
-rbhm_expand_map(struct RedBlackHashMap *const restrict map)
+static inline void
+rbhm_do_expand(struct RedBlackHashBucket *restrict old_bucket,
+	       const unsigned int count_old,
+	       struct RedBlackHashBucket *const restrict new_buckets,
+	       const unsigned int new_buckets_m1)
 {
-	struct RedBlackIterator iterator;
-	RedBlackJumpBuffer jump_buffer;
-	int status;
+	       const struct RedBlackHashBucket *restrict old_bucket_until,
+}
 
-	const struct RedBlackHashKey *restrict hash_key;
+static inline int
+rbhm_expand(struct RedBlackHashMap *const restrict map)
+{
+	const unsigned int count_old = map->count.buckets_m1 + 1;
+	const unsigned int count_new = count_old * 2;
 
-	struct RedBlackHashBucket *restrict new_bucket;
-	struct RedBlackHashBucket *restrict old_bucket;
-	struct RedBlackHashBucket *restrict old_buckets;
-	struct RedBlackHashBucket *restrict last_old_bucket;
+	struct RedBlackHashBucket *const restrict new_buckets
+	= RED_BLACK_REALLOC(map->buckets,
+			    sizeof(struct RedBlackHashBucket) * count_new);
 
-	old_buckets     = map->buckets;
-	last_old_bucket = old_buckets + map->count.buckets_m1;
-
-	old_bucket = old_buckets;
-
-	status = RED_BLACK_SET_JUMP(jump_buffer);
-
-	if (status == RED_BLACK_JUMP_VALUE_3_TRUE) /* will NEVER jump FALSE */
-		goto NEXT_BUCKET;
-
-	if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
-		return -1; /* OUT OF MEMORY */
-
-	do {
-		red_black_iterator_init_asc(&iterator,
-					    old_bucket->root);
-
-		while (red_black_iterator_next(&iterator,
-					       (const void **) &hash_key)) {
-
-			new_bucket = rbhm_fetch_bucket(map,
-						       hash_key);
-
-			(void) red_black_insert(&new_bucket->root,
-						&red_black_hash_key_comparator,
-						&new_bucket->allocator,
-						&jump_buffer,
-						(const void *) hash_key);
-		}
-NEXT_BUCKET:
-		rba_destroy(&bucket->allocator);
-		++old_bucket;
-	} while (old_bucket <= last_old_bucket);
+	if ()
 
 
 	RED_BLACK_FREE(old_buckets);
@@ -97,13 +129,12 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 
 		++(map->count.entries);
 
-		if (map->count.entries > map->count.expand)
-			status = rbhm_expand_map(map);
+		if (map->count.entries > map->count.max_capacity)
+			status = rbhm_expand(map);
 
 		if (RED_BLACK_UNLOCK(&map->lock) != 0)
 			return -2; /* lock failure */
 	}
-
 
 	return status;
 }

@@ -616,7 +616,6 @@ TARGETS			+= $(FLATTEN_TEST_OBJ)				\
 			   $(FLATTEN_TEST_BIN)
 
 
-
 # red_black_append_test
 # ──────────────────────────────────────────────────────────────────────────────
 APPEND_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_append_test)
