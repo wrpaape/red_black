@@ -1,22 +1,24 @@
 #include "red_black_flatten.h"	   /* struct RedBlackNode */
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
+#include <stddef.h>		   /* NULL */
 
 struct RedBlackNode *restrict *restrict
 rb_concat_rtree(struct RedBlackNode *restrict node,
-		struct RedBlackNode *restrict *const restrict end_ptr)
+		struct RedBlackNode *restrict *restrict end_ptr)
 {
 	struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
 	struct RedBlackNode *restrict *restrict cursor;
-	struct RedBlackNode *restrict *restrict end_ptr;
 	struct RedBlackNode *restrict next;
 
 	if (node == NULL)
 		return end_ptr;
 
-	*end_ptr = node;
+	*end_ptr = node; /* concat with root of right subtree */
 
 	cursor  = &stack[0];
 	*cursor = NULL;
+
+	/* fetch next end_ptr */
 
 	while (1) {
 		next = node->left;
@@ -32,6 +34,7 @@ rb_concat_rtree(struct RedBlackNode *restrict node,
 
 	end_ptr = &node->left;
 
+	/* unwind stack, concatting right subtrees along the way */
 	while (1) {
 		end_ptr = rb_concat_rtree(node->right,
 					  end_ptr);

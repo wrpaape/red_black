@@ -467,6 +467,24 @@ TARGETS			+= $(VERIFY_OBJ)				\
 			   $(VERIFY_PIC_OBJ)
 
 
+# red_black_flatten
+# ──────────────────────────────────────────────────────────────────────────────
+FLATTEN_SRC		:= $(call SOURCE_PATH,red_black_flatten)
+FLATTEN_HDR		:= $(call HEADER_PATH,red_black_flatten)
+FLATTEN_OBJ		:= $(call OBJECT_PATH,red_black_flatten)
+FLATTEN_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_flatten)
+# ─────────────── target prequisites ───────────────────────────────────────────
+FLATTEN_OBJ_PREQS	:= $(FLATTEN_SRC)				\
+			   $(FLATTEN_HDR)				\
+			   $(NODE_HDR)
+FLATTEN_OBJ_GROUP	:= $(FLATTEN_OBJ)
+FLATTEN_PIC_OBJ_PREQS	:= $(FLATTEN_OBJ_PREQS)
+FLATTEN_PIC_OBJ_GROUP	:= $(FLATTEN_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(FLATTEN_OBJ)				\
+			   $(FLATTEN_PIC_OBJ)
+
+
 # red_black_tree
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_SRC	:= $(call SOURCE_PATH,red_black_tree)
@@ -548,6 +566,25 @@ TARGETS			+= $(STR_KEY_OBJ)
 
 # TEST MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
+# red_black_flatten_test
+# ──────────────────────────────────────────────────────────────────────────────
+FLATTEN_TEST_SRC	:= $(call TEST_SOURCE_PATH,red_black_flatten_test)
+FLATTEN_TEST_OBJ	:= $(call OBJECT_PATH,red_black_flatten_test)
+FLATTEN_TEST_BIN	:= $(call BINARY_PATH,red_black_flatten_test)
+# ─────────────── target prequisites ───────────────────────────────────────────
+FLATTEN_TEST_OBJ_PREQS	:= $(FLATTEN_TEST_SRC)				\
+			   $(TREE_HDR)					\
+			   $(INT_KEY_HDR)				\
+			   $(FLATTEN_HDR)
+FLATTEN_TEST_BIN_PREQS	:= $(FLATTEN_TEST_OBJ)				\
+			   $(FLATTEN_OBJ_GROUP)				\
+			   $(INT_KEY_OBJ_GROUP)				\
+			   $(TREE_ST_LIB)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(FLATTEN_TEST_OBJ)				\
+			   $(FLATTEN_TEST_BIN)
+
+
 # red_black_tree_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_test)
@@ -565,6 +602,7 @@ TREE_TEST_BIN_PREQS	:= $(TREE_TEST_OBJ)				\
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(TREE_TEST_OBJ)				\
 			   $(TREE_TEST_BIN)
+
 
 
 # EXAMPLE MODULESS
@@ -666,6 +704,11 @@ $(TREE_TEST_BIN): $(TREE_TEST_BIN_PREQS)
 $(TREE_TEST_OBJ): $(TREE_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
+$(FLATTEN_TEST_BIN): $(FLATTEN_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(FLATTEN_TEST_OBJ): $(FLATTEN_TEST_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
 
 # RED_BLACK MODULES
 # ──────────────────────────────────────────────────────────────────────────────
@@ -744,6 +787,10 @@ $(VERIFY_OBJ): $(VERIFY_OBJ_PREQS)
 $(VERIFY_PIC_OBJ): $(VERIFY_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
+$(FLATTEN_OBJ): $(FLATTEN_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(FLATTEN_PIC_OBJ): $(FLATTEN_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(INT_KEY_OBJ): $(INT_KEY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
