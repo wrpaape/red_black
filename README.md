@@ -22,14 +22,14 @@ and [associative arrays](https://en.wikipedia.org/wiki/Associative_array) in sin
 to provide the following operations:
 
 - insert
-- update
 - find
+- update
 - delete
 - (ordered) traversal  
 
 with competitive [worst-case performance guarantees](https://en.wikipedia.org/wiki/Worst-case_complexity)
 and limited [contention](https://en.wikipedia.org/wiki/Lock_(computer_science)#Granularity).
-`red_black` distinguishes itself from many other balanced tree/balanced tree-hash table hybrid implementations
+`red_black` distinguishes itself from many other balanced tree/hash table-balanced tree hybrid implementations
 by preferring [finer casewise granularity](#implementation) over heavier abstraction throughout container mutations.
 
 
@@ -54,6 +54,7 @@ TODO
 2. `#include` [red_black_tree.h](include/red_black_tree.h) in your source code
 3. implement an ordered set or associative array with the provided [interface](#interface)
 4. compile and link with either static or shared `red_black_tree` library
+
 
 
 

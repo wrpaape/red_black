@@ -8,11 +8,17 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
+struct RedBlackHashMapCount {
+	unsigned int buckets_m1;
+	unsigned int entries;
+	unsigned int shrink;
+	unsigned int expand;
+};
+
 struct _RedBlackHashMap {
 	RedBlackLock lock;
 	struct RedBlackHashBucket *restrict buckets;
-	unsigned int count_entries;
-	unsigned int count_buckets;
+	struct RedBlackHashMapCount count;
 };
 
 typedef struct _RedBlackHashMap RedBlackHashMap;
