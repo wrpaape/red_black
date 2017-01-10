@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_FLATTEN_H_
-#define RED_BLACK_FLATTEN_H_
+#ifndef RED_BLACK_CONCAT_H_
+#define RED_BLACK_CONCAT_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -9,7 +9,8 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 /* turns a binary tree into a list (node->left->left-> ... left->NULL) */
-void
-red_black_flatten(struct RedBlackNode *const restrict root);
+struct RedBlackNode *restrict *restrict
+red_black_concat(struct RedBlackNode *restrict node,
+		 struct RedBlackNode *restrict *restrict end_ptr);
 
-#endif /* ifndef RED_BLACK_FLATTEN_H_ */
+#endif /* ifndef RED_BLACK_CONCAT_H_ */

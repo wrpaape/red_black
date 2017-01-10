@@ -1,6 +1,6 @@
 #include "red_black_tree.h"    /* RedBlackTree, struct RedBlackNode */
 #include "int_key.h"           /* int_key_comparator */
-#include "red_black_flatten.h" /* red_black_flatten */
+#include "red_black_concat.h"  /* red_black_concat */
 #include <stdio.h>             /* perror, printf */
 #include <stdlib.h>            /* exit */
 
@@ -51,7 +51,8 @@ main(void)
 
 	node = tree.root;
 
-	red_black_flatten(node);
+	(void) red_black_concat(node,
+				&node);
 
 	while (node != NULL) {
 		key = (int) (intptr_t) node->key;
@@ -70,7 +71,7 @@ main(void)
 		if (!key_set[i])
 			TEST_FAILURE("INCOMPLETE LIST");
 
-	puts("red_black_flatten TEST PASSED");
+	puts("red_black_concat TEST PASSED");
 
 	return 0;
 }
