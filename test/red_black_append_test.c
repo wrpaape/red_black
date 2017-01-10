@@ -27,10 +27,21 @@ do {									\
 } while (0)
 
 
+/* static inline void */
+/* do_append(const int i) */
+/* { */
+/* 	RedBlackJumpBuffer jump_buffer; */
+
+/* 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0) */
+/* 		red_black_append(&tree.root, */
+/* 				 tree.comparator, */
+/* 				 &jump_buffer, */
+/* 				 node); */
+/* } */
+
 int
 main(void)
 {
-	int i;
 	bool *restrict key_set_ptr;
 	int key;
 	struct RedBlackNode *restrict node;
@@ -43,7 +54,7 @@ main(void)
 	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
 		goto CONTINUE_APPENDING;
 
-	for (i = 0; i < KEY_COUNT; ++i) {
+	for (volatile int i = 0; i < KEY_COUNT; ++i) {
 		node = &nodes[i];
 
 		node->key = (const void *) (intptr_t) keys[i];
@@ -69,7 +80,7 @@ CONTINUE_APPENDING:
 		*key_set_ptr = true;
 	}
 
-	for (i = 0; i < KEY_COUNT; ++i)
+	for (int i = 0; i < KEY_COUNT; ++i)
 		if (!key_set[i])
 			TEST_FAILURE("INCOMPLETE TREE");
 
