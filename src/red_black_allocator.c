@@ -64,7 +64,7 @@ rba_allocator_init(struct RedBlackAllocator *const restrict allocator,
 }
 
 void
-rba_tree_allocator_init(struct RedBlackAllocator *const restrict allocator)
+node_allocator_init(struct RedBlackAllocator *const restrict allocator)
 {
 	rba_allocator_init(allocator,
 			   sizeof(struct RedBlackNode),
@@ -72,11 +72,19 @@ rba_tree_allocator_init(struct RedBlackAllocator *const restrict allocator)
 }
 
 void
-rba_bucket_allocator_init(struct RedBlackAllocator *const restrict allocator)
+hash_node_allocator_init(struct RedBlackAllocator *const restrict allocator)
 {
 	rba_allocator_init(allocator,
 			   sizeof(struct RedBlackHashNode),
 			   &rba_init_hash_node);
+}
+
+
+void
+hash_node_allocator_reset(struct RedBlackAllocator *const restrict allocator)
+{
+	allocator->buffer.expand = sizeof(struct RedBlackHashNode)
+				 * RBAB_INIT_EXPAND_COUNT;
 }
 
 

@@ -39,24 +39,83 @@
 /* } */
 
 static inline void
-rbhb_init(struct RedBlackHashBucket *const restrict bucket,
-	  struct RedBlackAllocator *const restrict allocator)
+rbhb_init(struct RedBlackHashBucket *const restrict bucket)
 {
 	RED_BLACK_LOCK_INIT(&bucket->lock);
 
 	bucket->root = NULL;
 
-	bucket->allocator = allocator;
-
-	rba_bucket_allocator_init(allocator);
+	hash_node_allocator_init(&bucket->allocator);
 }
 
 static inline void
-rbhb_unload(struct RedBlackHashBucket *const restrict bucket,
-	    struct RedBlackHashBucket *const restrict new_buckets,
-	    const unsigned int new_buckets_m1)
+rbhb_destroy(struct RedBlackHashBucket *const restrict bucket)
 {
+	RED_BLACK_LOCK_DESTROY(&bucket->lock);
+
+	rba_destroy(&bucket->allocator);
+}
+
+static inline void
+rbhb_reset(struct RedBlackHashBucket *const restrict buckets,
+	   const unsigned int old_count,
+	   const unsigned int new_count_m1)
+{
+	RedBlackHash hash;
 	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict head;
+	struct RedBlackNode *restrict *restrict end_ptr;
+	struct RedBlackHashBucket *restrict bucket;
+	struct RedBlackHashBucket *restrict bucket_until;
+	RedBlackJumpBuffer jump_buffer;
+
+	bucket       = buckets;
+	bucket_until = bucket + old_count;
+
+	end_ptr = &head; /* concat 1st list with itself, set head */
+
+	/* gather nodes in first half, reset allocator expand constants */
+	do {
+		node         = bucket->root;
+		bucket->root = NULL; /* remove tree */
+
+		end_ptr = red_black_concat(node,
+					   end_ptr);
+
+		hash_node_allocator_reset(&bucket->allocator);
+
+		++bucket;
+	} while (bucket < bucket_until);
+
+	bucket_until = bucket + old_count;
+
+	/* initialize newly allocated second half */
+	do {
+		rbhb_init(bucket);
+
+		++bucket;
+	} while (bucket < bucket_until);
+
+
+	/* dump node list into empty hash table */
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
+		goto NEXT_NODE;
+
+	do {
+		/* fetch hash key hash */
+		hash = ((struct RedBlackHashNode *) head)->hash_key.hash;
+
+		/* fetch new bucket */
+		bucket = &buckets[hash & new_count_m1];
+
+		/* append to bucket tree, may jump */
+		red_black_append(&bucket->root,
+				 &red_black_hash_key_comparator,
+				 &jump_buffer,
+				 head);
+NEXT_NODE:
+		head = head->left;
+	} while (head != NULL);
 }
 
 

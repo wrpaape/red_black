@@ -17,7 +17,7 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 	tree->root	 = NULL;
 	tree->comparator = comparator;
 
-	rba_tree_allocator_init(&tree->allocator);
+	node_allocator_init(&tree->allocator);
 }
 
 void

@@ -37,10 +37,13 @@ struct RedBlackAllocator {
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-rba_bucket_allocator_init(struct RedBlackAllocator *const restrict allocator);
+node_allocator_init(struct RedBlackAllocator *const restrict allocator);
 
 void
-rba_tree_allocator_init(struct RedBlackAllocator *const restrict allocator);
+hash_node_allocator_init(struct RedBlackAllocator *const restrict allocator);
+
+void
+hash_node_allocator_reset(struct RedBlackAllocator *const restrict allocator);
 
 struct RedBlackNode *
 rba_new(struct RedBlackAllocator *const restrict allocator,
