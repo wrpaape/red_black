@@ -10,7 +10,7 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 int
-red_black_insert(struct RedBlackNode *restrict *const restrict root,
+red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackAllocator *const restrict allocator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,

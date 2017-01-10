@@ -276,9 +276,11 @@ INSERT_OBJ_PREQS	:= $(INSERT_SRC)				\
 			   $(ALLOCATOR_HDR)				\
 			   $(CORRECT_HDR)
 INSERT_OBJ_GROUP	:= $(INSERT_OBJ)				\
+			   $(ALLOCATOR_OBJ_GROUP)			\
 			   $(CORRECT_OBJ_GROUP)
 INSERT_PIC_OBJ_PREQS	:= $(INSERT_OBJ_PREQS)
 INSERT_PIC_OBJ_GROUP	:= $(INSERT_PIC_OBJ)				\
+			   $(ALLOCATOR_PIC_OBJ_GROUP)			\
 			   $(CORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(INSERT_OBJ)				\
@@ -298,13 +300,38 @@ UPDATE_OBJ_PREQS	:= $(UPDATE_SRC)				\
 			   $(ALLOCATOR_HDR)				\
 			   $(CORRECT_HDR)
 UPDATE_OBJ_GROUP	:= $(UPDATE_OBJ)				\
+			   $(ALLOCATOR_OBJ_GROUP)			\
 			   $(CORRECT_OBJ_GROUP)
 UPDATE_PIC_OBJ_PREQS	:= $(UPDATE_OBJ_PREQS)
 UPDATE_PIC_OBJ_GROUP	:= $(UPDATE_PIC_OBJ)				\
+			   $(ALLOCATOR_PIC_OBJ_GROUP)			\
 			   $(CORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(UPDATE_OBJ)				\
 			   $(UPDATE_PIC_OBJ)
+
+
+# red_black_append
+# ──────────────────────────────────────────────────────────────────────────────
+APPEND_SRC		:= $(call SOURCE_PATH,red_black_append)
+APPEND_HDR		:= $(call HEADER_PATH,red_black_append)
+APPEND_OBJ		:= $(call OBJECT_PATH,red_black_append)
+APPEND_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_append)
+# ─────────────── target prequisites ───────────────────────────────────────────
+APPEND_OBJ_PREQS	:= $(APPEND_SRC)				\
+			   $(APPEND_HDR)				\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)				\
+			   $(JUMP_HDR)					\
+			   $(CORRECT_HDR)
+APPEND_OBJ_GROUP	:= $(APPEND_OBJ)				\
+			   $(CORRECT_OBJ_GROUP)
+APPEND_PIC_OBJ_PREQS	:= $(APPEND_OBJ_PREQS)
+APPEND_PIC_OBJ_GROUP	:= $(APPEND_PIC_OBJ)				\
+			   $(CORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(APPEND_OBJ)				\
+			   $(APPEND_PIC_OBJ)
 
 
 # red_black_restore
@@ -340,9 +367,11 @@ DELETE_OBJ_PREQS	:= $(DELETE_SRC)				\
 			   $(ALLOCATOR_HDR)				\
 			   $(RESTORE_HDR)
 DELETE_OBJ_GROUP	:= $(DELETE_OBJ)				\
+			   $(ALLOCATOR_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)
 DELETE_PIC_OBJ_PREQS	:= $(DELETE_OBJ_PREQS)
 DELETE_PIC_OBJ_GROUP	:= $(DELETE_PIC_OBJ)				\
+			   $(ALLOCATOR_PIC_OBJ_GROUP)			\
 			   $(RESTORE_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(DELETE_OBJ)				\
@@ -362,9 +391,11 @@ REMOVE_OBJ_PREQS	:= $(REMOVE_SRC)				\
 			   $(ALLOCATOR_HDR)				\
 			   $(RESTORE_HDR)
 REMOVE_OBJ_GROUP	:= $(REMOVE_OBJ)				\
+			   $(ALLOCATOR_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)
 REMOVE_PIC_OBJ_PREQS	:= $(REMOVE_OBJ_PREQS)
 REMOVE_PIC_OBJ_GROUP	:= $(REMOVE_PIC_OBJ)				\
+			   $(ALLOCATOR_PIC_OBJ_GROUP)			\
 			   $(RESTORE_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(REMOVE_OBJ)				\
@@ -585,6 +616,25 @@ TARGETS			+= $(FLATTEN_TEST_OBJ)				\
 			   $(FLATTEN_TEST_BIN)
 
 
+
+# red_black_append_test
+# ──────────────────────────────────────────────────────────────────────────────
+APPEND_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_append_test)
+APPEND_TEST_OBJ		:= $(call OBJECT_PATH,red_black_append_test)
+APPEND_TEST_BIN		:= $(call BINARY_PATH,red_black_append_test)
+# ─────────────── target prequisites ───────────────────────────────────────────
+APPEND_TEST_OBJ_PREQS	:= $(APPEND_TEST_SRC)				\
+			   $(TREE_HDR)					\
+			   $(INT_KEY_HDR)				\
+			   $(APPEND_HDR)
+APPEND_TEST_BIN_PREQS	:= $(APPEND_TEST_OBJ)				\
+			   $(APPEND_OBJ_GROUP)				\
+			   $(INT_KEY_OBJ_GROUP)				\
+			   $(TREE_ST_LIB)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(APPEND_TEST_OBJ)				\
+			   $(APPEND_TEST_BIN)
+
 # red_black_tree_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_test)
@@ -709,6 +759,11 @@ $(FLATTEN_TEST_BIN): $(FLATTEN_TEST_BIN_PREQS)
 $(FLATTEN_TEST_OBJ): $(FLATTEN_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
+$(APPEND_TEST_BIN): $(APPEND_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(APPEND_TEST_OBJ): $(APPEND_TEST_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
 
 # RED_BLACK MODULES
 # ──────────────────────────────────────────────────────────────────────────────
@@ -739,6 +794,11 @@ $(INSERT_PIC_OBJ): $(INSERT_PIC_OBJ_PREQS)
 $(UPDATE_OBJ): $(UPDATE_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(UPDATE_PIC_OBJ): $(UPDATE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(APPEND_OBJ): $(APPEND_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(APPEND_PIC_OBJ): $(APPEND_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(CORRECT_OBJ): $(CORRECT_OBJ_PREQS)
