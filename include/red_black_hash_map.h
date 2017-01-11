@@ -25,7 +25,6 @@ struct _RedBlackHashMap {
 	RedBlackLock lock;
 	struct RedBlackHashBucket *restrict buckets;
 	struct RedBlackHashMapCount count;
-	struct RedBlackAllocator *restrict allocators;
 };
 
 typedef struct _RedBlackHashMap RedBlackHashMap;
