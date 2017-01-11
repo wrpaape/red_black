@@ -203,7 +203,7 @@ rbhk_memory_compare(const unsigned char *restrict key1,
 	token1 = (int) *key1;						\
 	token2 = (int) *key2;						\
 	if (token1 != token2)						\
-		return token1 - token2					\
+		return token1 - token2;					\
 	++key1;								\
 	++key2
 #if (ULONG_MAX == UINT64_MAX)

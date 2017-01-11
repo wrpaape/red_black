@@ -1,13 +1,15 @@
-#include "red_black_hash_map.h" /* HashMap types */
-#include "red_black_insert.h"	/* red_black_insert */
-#include "red_black_update.h"	/* red_black_update */
-#include "red_black_delete.h"	/* red_black_delete */
-#include "red_black_remove.h"	/* red_black_remove */
-#include "red_black_find.h"	/* red_black_find */
-#include "red_black_fetch.h"	/* red_black_fetch */
-#include "red_black_verify.h"	/* red_black_verify */
-#include "red_black_flatten.h"  /* red_black_flatten */
-#include "red_black_append.h"   /* red_black_append */
+#include "red_black_hash_map.h"  /* HashMap types */
+#include "red_black_hash_node.h" /* HashNode|Key, initializer, comparator */
+#include "red_black_insert.h"	 /* red_black_insert */
+#include "red_black_update.h"	 /* red_black_update */
+#include "red_black_delete.h"	 /* red_black_delete */
+#include "red_black_remove.h"	 /* red_black_remove */
+#include "red_black_find.h"	 /* red_black_find */
+#include "red_black_fetch.h"	 /* red_black_fetch */
+#include "red_black_verify.h"	 /* red_black_verify */
+#include "red_black_concat.h"    /* red_black_concat */
+#include "red_black_append.h"    /* red_black_append */
+#include "red_black_malloc.h"    /* RED_BLACK_MALLOC|REALLOC|FREE */
 
 /* hash map macros
  * ────────────────────────────────────────────────────────────────────────── */
@@ -28,6 +30,7 @@ rbhb_init(struct RedBlackHashBucket *const restrict bucket)
 	hash_node_allocator_init(&bucket->allocator);
 }
 
+
 static inline void
 rbhb_destroy(struct RedBlackHashBucket *const restrict bucket)
 {
@@ -36,10 +39,11 @@ rbhb_destroy(struct RedBlackHashBucket *const restrict bucket)
 	rba_destroy(&bucket->allocator);
 }
 
+
 static inline void
-rbhb_reset(struct RedBlackHashBucket *const restrict buckets,
-	   const unsigned int old_count,
-	   const unsigned int new_count_m1)
+rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
+		   const unsigned int old_count,
+		   const unsigned int new_count_m1)
 {
 	RedBlackHash hash;
 	struct RedBlackNode *restrict node;
@@ -102,7 +106,7 @@ NEXT_NODE:
 
 
 static inline int
-rbhm_expand(struct RedBlackHashMap *const restrict map)
+rbhm_expand(RedBlackHashMap *const restrict map)
 {
 	const unsigned int old_count = map->count.buckets_m1 + 1;
 	const unsigned int new_count = old_count * 2;
@@ -122,9 +126,9 @@ rbhm_expand(struct RedBlackHashMap *const restrict map)
 	map->count.max_capacity *= 2;
 
 	/* take care of initialization of new memory, re-insert nodes */
-	rbhb_reset(new_buckets,
-		   old_count,
-		   new_count_m1);
+	rbhm_reset_buckets(new_buckets,
+			   old_count,
+			   new_count_m1);
 
 	return 1; /* return successful insertion status */
 }
@@ -140,10 +144,12 @@ red_black_hash_map_init(RedBlackHashMap *const restrict map)
 	if (map->buckets == NULL)
 		return -1;
 
-	map->count.buckets_m1 = RBHM_INIT_BUCKET_COUNT - 1;
-	map->count.entries    = 0;
-	map->max_capacity     = RBHM_INIT_BUCKET_COUNT
-			      * RBHM_MAX_AVG_COLLISIONS;
+	map->count.buckets_m1   = RBHM_INIT_BUCKET_COUNT - 1;
+	map->count.entries      = 0;
+	map->count.max_capacity = RBHM_INIT_BUCKET_COUNT
+				* RBHM_MAX_AVG_COLLISIONS;
+
+	return 0;
 }
 
 void
@@ -494,7 +500,7 @@ red_black_hash_map_remove(RedBlackHashMap *const restrict map,
 }
 
 int
-red_black_hash_map_find(const RedBlackHashMap *const restrict map,
+red_black_hash_map_find(RedBlackHashMap *const restrict map,
 			const void *const key,
 			const size_t length)
 {
@@ -546,7 +552,7 @@ red_black_hash_map_find(const RedBlackHashMap *const restrict map,
 
 
 int
-red_black_hash_map_fetch(const RedBlackHashMap *const restrict map,
+red_black_hash_map_fetch(RedBlackHashMap *const restrict map,
 			 const void *const key,
 			 const size_t length,
 			 void **const restrict key_ptr)
@@ -604,7 +610,7 @@ red_black_hash_map_fetch(const RedBlackHashMap *const restrict map,
 
 
 int
-red_black_tree_count(const RedBlackHashMap *const restrict map)
+red_black_tree_count(RedBlackHashMap *const restrict map)
 {
 	RedBlackLock *restrict map_lock;
 	int count;
@@ -627,7 +633,7 @@ red_black_tree_count(const RedBlackHashMap *const restrict map)
 
 int
 red_black_hash_map_iterator_init(RedBlackHashMapIterator *const restrict iterator,
-				 const RedBlackHashMap *const restrict map)
+				 RedBlackHashMap *const restrict map)
 {
 	RedBlackLock *const restrict map_lock = &map->lock;
 
@@ -676,6 +682,7 @@ red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
 {
 	struct RedBlackIterator *restrict bucket_iterator;
 	struct RedBlackHashBucket *restrict bucket;
+	struct RedBlackHashBucket *restrict last_bucket;
 	RedBlackLock *restrict bucket_lock;
 
 	bucket_iterator = &iterator->bucket_iterator;
@@ -731,10 +738,10 @@ red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
 }
 
 int
-red_black_tree_verify(const RedBlackHashMap *const restrict map)
+red_black_tree_verify(RedBlackHashMap *const restrict map)
 {
-	const struct RedBlackHashBucket *restrict bucket;
-	const struct RedBlackHashBucket *restrict last_bucket;
+	struct RedBlackHashBucket *restrict bucket;
+	struct RedBlackHashBucket *restrict last_bucket;
 	RedBlackLock *restrict map_lock;
 	RedBlackLock *restrict bucket_lock;
 	int status;

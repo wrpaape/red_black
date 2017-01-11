@@ -5,6 +5,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_lock.h"      /* RedBlackLock */
 #include "red_black_allocator.h" /* RedBlackAllocator */
+#include "red_black_iterator.h"	 /* RedBlackIterator */
 
 
 /* typedefs, struct declarations
@@ -32,8 +33,8 @@ typedef struct _RedBlackHashMap RedBlackHashMap;
 
 struct _RedBlackHashMapIterator {
 	struct RedBlackIterator bucket_iterator;
-	const struct RedBlackHashBucket *restrict bucket;
-	const struct RedBlackHashBucket *restrict last_bucket;
+	struct RedBlackHashBucket *restrict bucket;
+	struct RedBlackHashBucket *restrict last_bucket;
 	RedBlackLock *restrict map_lock;
 };
 
@@ -71,22 +72,22 @@ red_black_hash_map_remove(RedBlackHashMap *const restrict map,
 			  void **const restrict key_ptr);
 
 int
-red_black_hash_map_find(const RedBlackHashMap *const restrict map,
+red_black_hash_map_find(RedBlackHashMap *const restrict map,
 			const void *const key,
 			const size_t length);
 
 int
-red_black_hash_map_fetch(const RedBlackHashMap *const restrict map,
+red_black_hash_map_fetch(RedBlackHashMap *const restrict map,
 			 const void *const key,
 			 const size_t length,
 			 void **const restrict key_ptr);
 
 int
-red_black_tree_count(const RedBlackHashMap *const restrict map);
+red_black_tree_count(RedBlackHashMap *const restrict map);
 
 int
 red_black_hash_map_iterator_init(RedBlackHashMapIterator *const restrict iterator,
-				 const RedBlackHashMap *const restrict map);
+				 RedBlackHashMap *const restrict map);
 int
 red_black_hash_map_iterator_bail(RedBlackHashMapIterator *const restrict iterator);
 
@@ -95,6 +96,6 @@ red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
 			     void **const restrict key_ptr);
 
 int
-red_black_tree_verify(const RedBlackHashMap *const restrict map);
+red_black_tree_verify(RedBlackHashMap *const restrict map);
 
 #endif /* ifndef RED_BLACK_HASH_MAP_H_ */
