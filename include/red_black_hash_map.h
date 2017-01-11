@@ -31,10 +31,10 @@ typedef struct _RedBlackHashMap RedBlackHashMap;
 
 
 struct _RedBlackHashMapIterator {
-	RedBlackLock *restrict map_lock;
-	const struct RedBlackHashBucket *restrict bucket;
-	const struct RedBlackHashBucket *restrict bucket_until;
 	struct RedBlackIterator bucket_iterator;
+	const struct RedBlackHashBucket *restrict bucket;
+	const struct RedBlackHashBucket *restrict last_bucket;
+	RedBlackLock *restrict map_lock;
 };
 
 typedef struct _RedBlackHashMapIterator RedBlackHashMapIterator;
@@ -86,10 +86,15 @@ red_black_tree_count(const RedBlackHashMap *const restrict map);
 
 int
 red_black_hash_map_iterator_init(RedBlackHashMapIterator *const restrict iterator,
-				 const RedBlackTree *const restrict tree);
+				 const RedBlackHashMap *const restrict map);
+int
+red_black_hash_map_iterator_bail(RedBlackHashMapIterator *const restrict iterator);
 
 int
 red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
 			     void **const restrict key_ptr);
+
+int
+red_black_tree_verify(const RedBlackHashMap *const restrict map);
 
 #endif /* ifndef RED_BLACK_HASH_MAP_H_ */
