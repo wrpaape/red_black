@@ -165,6 +165,13 @@ AR_FLAGS := rcs
 # Linker
 # ──────────────────────────────────────────────────────────────────────────────
 LD_LIBS	:= -lc
+
+ifeq (T,$(SYSTEM_WINDOWS))
+        THREADS_LIB := -lKernel32
+else
+        THREADS_LIB := -lpthread
+endif
+
 ifeq (T,$(SYSTEM_OSX))
         LD		:= ld
         LD_FLAGS	:= -macosx_version_min 10.11.0 -no_pie $(SYS_ARCH_FLAG)

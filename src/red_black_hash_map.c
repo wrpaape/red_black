@@ -21,7 +21,7 @@
 static inline void
 rbhb_init(struct RedBlackHashBucket *const restrict bucket)
 {
-	RED_BLACK_LOCK_INIT(&bucket->lock);
+	RBL_INIT(&bucket->lock);
 
 	bucket->root = NULL;
 
@@ -31,7 +31,7 @@ rbhb_init(struct RedBlackHashBucket *const restrict bucket)
 static inline void
 rbhb_destroy(struct RedBlackHashBucket *const restrict bucket)
 {
-	RED_BLACK_LOCK_DESTROY(&bucket->lock);
+	RBL_DESTROY(&bucket->lock);
 
 	rba_destroy(&bucket->allocator);
 }
@@ -112,7 +112,7 @@ rbhm_expand(struct RedBlackHashMap *const restrict map)
 			    sizeof(struct RedBlackHashBucket) * new_count);
 
 	if (new_buckets == NULL)
-		return -1; /* old buckets still valid */
+		return -1; /* OUT OF MEMORY, old buckets still valid */
 
 	const unsigned int new_count_m1 = new_count - 1;
 
@@ -125,13 +125,13 @@ rbhm_expand(struct RedBlackHashMap *const restrict map)
 		   old_count,
 		   new_count_m1);
 
-	return 1;
+	return 1; /* return successful insertion status */
 }
 
 int
 red_black_hash_map_init(RedBlackHashMap *const restrict map)
 {
-	RED_BLACK_LOCK_INIT(&map->lock);
+	RBL_INIT(&map->lock);
 
 	map->buckets = RED_BLACK_MALLOC(sizeof(struct RedBlackHashBucket)
 					* RBHM_INIT_BUCKET_COUNT);
@@ -153,7 +153,7 @@ red_black_hash_map_destroy(RedBlackHashMap *const restrict map)
 	struct RedBlackHashBucket *restrict last_bucket;
 
 	/* destroy lock */
-	RED_BLACK_LOCK_DESTROY(&map->lock);
+	RBL_DESTROY(&map->lock);
 
 	buckets     = map->buckets;
 	last_bucket = buckets + map->count.buckets_m1;
@@ -187,7 +187,7 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 				length);
 
 	/* obtain a SHARED lock on map */
-	if (RED_BLACK_LOCK_READ(&map->lock) != 0)
+	if (RBL_LOCK_READ(&map->lock) != 0)
 		return -2; /* lock failure */
 
 	/* fetch bucket */
@@ -197,8 +197,8 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 
 	if (status == 0) {
 		/* 1st entry, obtain an EXCLUSIVE lock on bucket */
-		if (RED_BLACK_LOCK_WRITE(&bucket->lock) != 0) {
-			(void) RED_BLACK_UNLOCK(&map->lock);
+		if (RBL_LOCK_WRITE(&bucket->lock) != 0) {
+			(void) RBL_UNLOCK_READ(&map->lock);
 			return -2;
 		}
 
@@ -214,20 +214,20 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 	}
 
 	/* release EXCLUSIVE lock on bucket */
-	if (RED_BLACK_UNLOCK(&bucket->lock) != 0) {
-		(void) RED_BLACK_UNLOCK(&map->lock);
+	if (RBL_UNLOCK_WRITE(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
 		return -2;
 	}
 
 	/* release SHARED lock on map */
-	if (RED_BLACK_UNLOCK(&map->lock) != 0)
+	if (RBL_UNLOCK_READ(&map->lock) != 0)
 		return -2; /* lock failure */
 
 
 	/* if successfully inserted hash_key, update count.entries */
 	if (status == 1) {
 		/* obtain an EXCLUSIVE lock on map */
-		if (RED_BLACK_LOCK_WRITE(&map->lock) != 0)
+		if (RBL_LOCK_WRITE(&map->lock) != 0)
 			return -2; /* lock failure */
 
 		++(map->count.entries);
@@ -237,7 +237,7 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 			status = rbhm_expand(map); /* 1, -1 */
 
 		/* release EXCLUSIVE lock on map */
-		if (RED_BLACK_UNLOCK(&map->lock) != 0)
+		if (RBL_UNLOCK_WRITE(&map->lock) != 0)
 			return -2; /* lock failure */
 	}
 

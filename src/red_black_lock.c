@@ -1,11 +1,8 @@
-#include "red_black_lock.h" /* RedBlackLock, RED_BLACK_LOCK_INITIALIZER */
+#include "red_black_lock.h" /* RedBlackLock, RBL_INITIALIZER */
 
 
-#ifdef WIN32
-#error TODO: windows readers-writer lock API
-
-#else
+#ifndef WIN32
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
-const RedBlackLock RED_BLACK_LOCK_PROTOTYPE = RED_BLACK_LOCK_INITIALIZER;
+const RedBlackLock RBL_PROTOTYPE = RBL_INITIALIZER;
 #endif /* ifdef WIN32 */
