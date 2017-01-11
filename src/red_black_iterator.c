@@ -97,14 +97,14 @@ red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
 
 bool
 red_black_iterator_next(struct RedBlackIterator *const restrict iterator,
-			const void **const restrict key_ptr)
+			void **const restrict key_ptr)
 {
 	const struct RedBlackNode *const restrict node = *(iterator->cursor);
 
 	const bool has_next = (node != NULL);
 
 	if (has_next) {
-		*key_ptr = node->key;
+		*key_ptr = (void *) node->key;
 
 		iterator->cursor = iterator->update(iterator->cursor,
 						    node);

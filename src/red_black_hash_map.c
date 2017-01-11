@@ -107,6 +107,7 @@ rbhm_expand(struct RedBlackHashMap *const restrict map)
 	const unsigned int old_count = map->count.buckets_m1 + 1;
 	const unsigned int new_count = old_count * 2;
 
+	/* double bucket capacity */
 	struct RedBlackHashBucket *const restrict new_buckets
 	= RED_BLACK_REALLOC(map->buckets,
 			    sizeof(struct RedBlackHashBucket) * new_count);
@@ -210,7 +211,7 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 					  (const void *) &hash_key); /* 1, 0 */
 	} else {
 		/* jumped, fetch jump status */
-		status = RED_BLACK_JUMP_3_STATUS(status);
+		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 	}
 
 	/* release EXCLUSIVE lock on bucket */
@@ -223,8 +224,7 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 	if (RBL_UNLOCK_READ(&map->lock) != 0)
 		return -2; /* lock failure */
 
-
-	/* if successfully inserted hash_key, update count.entries */
+	/* if successfully inserted hash_key, increment count.entries */
 	if (status == 1) {
 		/* obtain an EXCLUSIVE lock on map */
 		if (RBL_LOCK_WRITE(&map->lock) != 0)
@@ -242,4 +242,345 @@ red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 	}
 
 	return status;
+}
+
+
+int
+red_black_hash_map_update(RedBlackHashMap *const restrict map,
+			  const void *const key,
+			  const size_t length,
+			  void **const restrict old_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHashKey hash_key;
+	struct RedBlackHashKey *restrict old_hash_key_ptr;
+	struct RedBlackHashBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hash_key_init(&hash_key,
+				key,
+				length);
+
+	/* obtain a SHARED lock on map */
+	if (RBL_LOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	/* fetch bucket */
+	bucket = &map->buckets[hash_key.hash & map->count.buckets_m1];
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	if (status == 0) {
+		/* 1st entry, obtain an EXCLUSIVE lock on bucket */
+		if (RBL_LOCK_WRITE(&bucket->lock) != 0) {
+			(void) RBL_UNLOCK_READ(&map->lock);
+			return -2;
+		}
+
+		/* insert hash_key into bucket tree */
+		status = red_black_update(&bucket->root,
+					  &red_black_hash_key_comparator,
+					  &bucket->allocator,
+					  &jump_buffer,
+					  (const void *) &hash_key,
+					  (void **) &old_hash_key_ptr); /* 1, 0 */
+	} else {
+		/* jumped, fetch jump status */
+		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
+	}
+
+	/* release EXCLUSIVE lock on bucket */
+	if (RBL_UNLOCK_WRITE(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
+		return -2;
+	}
+
+	/* release SHARED lock on map */
+	if (RBL_UNLOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	if (status == 0) {
+		/* old_hash_key_ptr points to old hash_key, retrieve key */
+		*old_ptr = (void *) old_hash_key_ptr->key;
+
+	} else if (status == 1) {
+		/* successfully inserted hash_key, increment count.entries */
+		/* obtain an EXCLUSIVE lock on map */
+		if (RBL_LOCK_WRITE(&map->lock) != 0)
+			return -2; /* lock failure */
+
+		++(map->count.entries);
+
+		/* expand if too many collisions */
+		if (map->count.entries > map->count.max_capacity)
+			status = rbhm_expand(map); /* 1, -1 */
+
+		/* release EXCLUSIVE lock on map */
+		if (RBL_UNLOCK_WRITE(&map->lock) != 0)
+			return -2; /* lock failure */
+	}
+
+	return status;
+}
+
+
+int
+red_black_hash_map_delete(RedBlackHashMap *const restrict map,
+			  const void *const key,
+			  const size_t length)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHashKey hash_key;
+	struct RedBlackHashBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hash_key_init(&hash_key,
+				key,
+				length);
+
+	/* obtain a SHARED lock on map */
+	if (RBL_LOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	/* fetch bucket */
+	bucket = &map->buckets[hash_key.hash & map->count.buckets_m1];
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	if (status == 0) {
+		/* 1st entry, obtain an EXCLUSIVE lock on bucket */
+		if (RBL_LOCK_WRITE(&bucket->lock) != 0) {
+			(void) RBL_UNLOCK_READ(&map->lock);
+			return -2;
+		}
+
+		/* delete hash_key from bucket tree */
+		status = red_black_delete(&bucket->root,
+					  &red_black_hash_key_comparator,
+					  &bucket->allocator,
+					  &jump_buffer,
+					  (const void *) &hash_key); /* 1, 0 */
+	} else {
+		/* jumped, fetch jump status */
+		status = RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+	}
+
+	/* release EXCLUSIVE lock on bucket */
+	if (RBL_UNLOCK_WRITE(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
+		return -2;
+	}
+
+	/* release SHARED lock on map */
+	if (RBL_UNLOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	/* if successfully deleted hash_key, decrement count.entries */
+	if (status != 0) {
+		/* obtain an EXCLUSIVE lock on map */
+		if (RBL_LOCK_WRITE(&map->lock) != 0)
+			return -2; /* lock failure */
+
+		--(map->count.entries);
+
+		/* release EXCLUSIVE lock on map */
+		if (RBL_UNLOCK_WRITE(&map->lock) != 0)
+			return -2; /* lock failure */
+	}
+
+	return status;
+}
+
+
+int
+red_black_hash_map_remove(RedBlackHashMap *const restrict map,
+			  const void *const key,
+			  const size_t length,
+			  void **const restrict key_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHashKey hash_key;
+	struct RedBlackHashKey *restrict hash_key_ptr;
+	struct RedBlackHashBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hash_key_init(&hash_key,
+				key,
+				length);
+
+	/* obtain a SHARED lock on map */
+	if (RBL_LOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	/* fetch bucket */
+	bucket = &map->buckets[hash_key.hash & map->count.buckets_m1];
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	if (status == 0) {
+		/* 1st entry, obtain an EXCLUSIVE lock on bucket */
+		if (RBL_LOCK_WRITE(&bucket->lock) != 0) {
+			(void) RBL_UNLOCK_READ(&map->lock);
+			return -2;
+		}
+
+		/* remove hash_key from bucket tree */
+		status = red_black_remove(&bucket->root,
+					  &red_black_hash_key_comparator,
+					  &bucket->allocator,
+					  &jump_buffer,
+					  (const void *) &hash_key,
+					  (void **) &hash_key_ptr); /* 1, 0 */
+	} else {
+		/* jumped, fetch jump status */
+		status = RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+	}
+
+	/* release EXCLUSIVE lock on bucket */
+	if (RBL_UNLOCK_WRITE(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
+		return -2;
+	}
+
+	/* release SHARED lock on map */
+	if (RBL_UNLOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	if (status == 0) {
+		/* hash_key_ptr points to old hash_key, retrieve key */
+		*key_ptr = (void *) hash_key_ptr->key;
+
+	} else {
+		/* successfully removed hash_key, decrement count.entries */
+		/* obtain an EXCLUSIVE lock on map */
+		if (RBL_LOCK_WRITE(&map->lock) != 0)
+			return -2; /* lock failure */
+
+		--(map->count.entries);
+
+		/* release EXCLUSIVE lock on map */
+		if (RBL_UNLOCK_WRITE(&map->lock) != 0)
+			return -2; /* lock failure */
+	}
+
+	return status;
+}
+
+int
+red_black_hash_map_find(const RedBlackHashMap *const restrict map,
+			const void *const key,
+			const size_t length)
+{
+	struct RedBlackHashKey hash_key;
+	struct RedBlackHashBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hash_key_init(&hash_key,
+				key,
+				length);
+
+	/* obtain a SHARED lock on map */
+	if (RBL_LOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	/* fetch bucket */
+	bucket = &map->buckets[hash_key.hash & map->count.buckets_m1];
+
+	/* obtain a SHARED lock on bucket */
+	if (RBL_LOCK_READ(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
+		return -2;
+	}
+
+	/* perform binary search on bucket's tree */
+	status = (int) red_black_find(bucket->root,
+				      &red_black_hash_key_comparator,
+				      (const void *) &hash_key); /* 1, 0 */
+
+	/* release SHARED lock on bucket */
+	if (RBL_UNLOCK_READ(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
+		return -2;
+	}
+
+	/* release SHARED lock on map */
+	if (RBL_UNLOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	return status; /* return found status */
+}
+
+
+int
+red_black_hash_map_fetch(const RedBlackHashMap *const restrict map,
+			 const void *const key,
+			 const size_t length,
+			 void **const restrict key_ptr)
+{
+	struct RedBlackHashKey hash_key;
+	struct RedBlackHashKey *restrict hash_key_ptr;
+	struct RedBlackHashBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hash_key_init(&hash_key,
+				key,
+				length);
+
+	/* obtain a SHARED lock on map */
+	if (RBL_LOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	/* fetch bucket */
+	bucket = &map->buckets[hash_key.hash & map->count.buckets_m1];
+
+	/* obtain a SHARED lock on bucket */
+	if (RBL_LOCK_READ(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
+		return -2;
+	}
+
+	/* perform binary search on bucket's tree */
+	status = (int) red_black_fetch(bucket->root,
+				       &red_black_hash_key_comparator,
+				       (const void *) &hash_key,
+				       (void **) &hash_key_ptr); /* 1, 0 */
+
+	/* release SHARED lock on bucket */
+	if (RBL_UNLOCK_READ(&bucket->lock) != 0) {
+		(void) RBL_UNLOCK_READ(&map->lock);
+		return -2;
+	}
+
+	/* release SHARED lock on map */
+	if (RBL_UNLOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	if (status != 0) /* retrieve key from hash_key_ptr */
+		*key_ptr = (void *) hash_key_ptr->key;
+
+	return status; /* return found status */
+}
+
+
+int
+red_black_tree_count(const RedBlackHashMap *const restrict map)
+{
+	int count;
+
+	/* obtain a SHARED lock on map */
+	if (RBL_LOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	count = map->count.entries;
+
+	/* release SHARED lock on map */
+	if (RBL_UNLOCK_READ(&map->lock) != 0)
+		return -2; /* lock failure */
+
+	return count;
 }

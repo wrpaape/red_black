@@ -114,12 +114,12 @@ red_black_tree_find(const RedBlackTree *const restrict tree,
 bool
 red_black_tree_fetch(const RedBlackTree *const restrict tree,
 		     const void *const key,
-		     void **const restrict fetch_ptr)
+		     void **const restrict key_ptr)
 {
 	return red_black_fetch(tree->root,
 			       tree->comparator,
 			       key,
-			       fetch_ptr);
+			       key_ptr);
 }
 
 unsigned int
@@ -146,7 +146,7 @@ red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
 
 bool
 red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
-			     const void **const restrict key_ptr)
+			     void **const restrict key_ptr)
 {
 	return red_black_iterator_next(iterator,
 				       key_ptr);

@@ -210,7 +210,7 @@ test_iterator(void)
 	count    = 0;
 
 	while (red_black_tree_iterator_next(&iterator,
-					    (const void **) &next_key)) {
+					    (void **) &next_key)) {
 		if (last_key > next_key)
 			TEST_FAILURE("iterator",
 				     "ASCENDING ITERATOR OUT OF ORDER");
@@ -236,7 +236,7 @@ test_iterator(void)
 	count    = 0;
 
 	while (red_black_tree_iterator_next(&iterator,
-					    (const void **) &next_key)) {
+					    (void **) &next_key)) {
 		if (last_key < next_key)
 			TEST_FAILURE("iterator",
 				     "DESCENDING ITERATOR OUT OF ORDER");

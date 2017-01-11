@@ -17,7 +17,7 @@ main(int argc,
 {
 	RedBlackTree tree;
 	RedBlackTreeIterator iterator;
-	const void *key;
+	const char *restrict key;
 
 	/* initialize string tree */
 	red_black_tree_init(&tree,
@@ -35,8 +35,8 @@ main(int argc,
 
 	/* print unique arguments in ascending order */
 	while (red_black_tree_iterator_next(&iterator,
-					    &key))
-		if (puts((const char *) key) == EOF)
+					    (void **) &key))
+		if (puts(key) == EOF)
 			EXIT_ON_FAILURE("puts failure");
 
 	/* free tree allocations */

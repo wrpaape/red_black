@@ -32,6 +32,6 @@ red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
 
 bool
 red_black_iterator_next(struct RedBlackIterator *const restrict iterator,
-			const void **const restrict key_ptr);
+			void **const restrict key_ptr);
 
 #endif /* ifndef RED_BLACK_ITERATOR_H_ */

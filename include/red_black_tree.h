@@ -71,7 +71,7 @@ red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
 
 bool
 red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
-			     const void **const restrict key_ptr);
+			     void **const restrict key_ptr);
 
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,

@@ -45,10 +45,51 @@ typedef struct _RedBlackHashMapIterator RedBlackHashMapIterator;
 int
 red_black_hash_map_init(RedBlackHashMap *const restrict map);
 
+void
+red_black_hash_map_destroy(RedBlackHashMap *const restrict map);
+
 int
 red_black_hash_map_insert(RedBlackHashMap *const restrict map,
 			  const void *const key,
 			  const size_t length);
 
+int
+red_black_hash_map_update(RedBlackHashMap *const restrict map,
+			  const void *const key,
+			  const size_t length,
+			  void **const restrict old_ptr);
+
+int
+red_black_hash_map_delete(RedBlackHashMap *const restrict map,
+			  const void *const key,
+			  const size_t length);
+
+int
+red_black_hash_map_remove(RedBlackHashMap *const restrict map,
+			  const void *const key,
+			  const size_t length,
+			  void **const restrict key_ptr);
+
+int
+red_black_hash_map_find(const RedBlackHashMap *const restrict map,
+			const void *const key,
+			const size_t length);
+
+int
+red_black_hash_map_fetch(const RedBlackHashMap *const restrict map,
+			 const void *const key,
+			 const size_t length,
+			 void **const restrict key_ptr);
+
+int
+red_black_tree_count(const RedBlackHashMap *const restrict map);
+
+int
+red_black_hash_map_iterator_init(RedBlackHashMapIterator *const restrict iterator,
+				 const RedBlackTree *const restrict tree);
+
+int
+red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
+			     void **const restrict key_ptr);
 
 #endif /* ifndef RED_BLACK_HASH_MAP_H_ */

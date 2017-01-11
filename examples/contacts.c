@@ -111,7 +111,7 @@ static inline char *
 put_contacts(char *restrict buffer)
 {
 	RedBlackTreeIterator iterator;
-	const void *contact;
+	const struct Contact *contact;
 
 	(void) memcpy(buffer,
 		      CONTACTS_HEADER,
@@ -123,9 +123,9 @@ put_contacts(char *restrict buffer)
 					 &contacts);
 
 	while (red_black_tree_iterator_next(&iterator,
-					    &contact))
+					    (void **) &contact))
 		buffer = put_contact(buffer,
-				     (const struct Contact *) contact);
+				     contact);
 
 	return buffer;
 }
@@ -195,8 +195,8 @@ add_contact(void)
 	GET_CONTACT(scratch);
 
 	status = red_black_tree_update(&contacts,
-				       scratch,
-				       &scratch);
+				       (void *) scratch,
+				       (void **) &scratch);
 
 	if (status < 0)
 		EXIT_ON_FAILURE("OUT OF MEMORY");
@@ -233,8 +233,8 @@ remove_contact(void)
 		free(scratch);
 
 	if (red_black_tree_remove(&contacts,
-				  &remove_name,
-				  &scratch))
+				  (void *) &remove_name,
+				  (void **) &scratch))
 		remove_success();
 	else
 		remove_dne();
@@ -258,7 +258,7 @@ teardown(void)
 					 &contacts);
 
 	while (red_black_tree_iterator_next(&iterator,
-					    &contact))
+					    (void **) &contact))
 		free(contact);
 
 	red_black_tree_destroy(&contacts);

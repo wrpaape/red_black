@@ -58,7 +58,7 @@ CONTINUE_APPENDING:
 					 &tree);
 
 	while (red_black_tree_iterator_next(&iterator,
-					    (const void **) &key)) {
+					    (void **) &key)) {
 		key_set_ptr = &key_set[key];
 
 		if (*key_set_ptr)

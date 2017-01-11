@@ -13,6 +13,6 @@ bool
 red_black_fetch(const struct RedBlackNode *restrict node,
 		const RedBlackComparator comparator,
 		const void *const key,
-		void **const restrict fetch_ptr);
+		void **const restrict key_ptr);
 
 #endif /* ifndef RED_BLACK_FETCH_H_ */

@@ -5,4 +5,4 @@
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 const RedBlackLock RBL_PROTOTYPE = RBL_INITIALIZER;
-#endif /* ifdef WIN32 */
+#endif /* ifndef WIN32 */
