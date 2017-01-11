@@ -1,22 +1,28 @@
-#include "red_black_tree_test.h"	/* deps, print macros */
+#include "red_black_test.h" /* print macros */
+#include "red_black_tree.h" /* red_black_insert|find|verify|delete */
+#include "int_key.h"        /* int_key_comparator */
+#include <signal.h>         /* sigaction */
 
 
-/* defines length of array of unique integer keys to be inserted/deleted */
-#define KEYS_COUNT 1000000
-
-/* check validity of RedBlackTree after every potential modification
- * O(KEYS_COUNT²), set nonzero for small (upto ~10k) KEYS_COUNT */
-#define DO_VERIFY 0
 
 
-#define I_LAST     (KEYS_COUNT - 1)
-#define STR(X)  #X
-#define XSTR(X) STR(X)
-#define KC_STR  XSTR(KEYS_COUNT)
+#define PRINT_TREE()							\
+red_black_tree_print(&tree,						\
+		     &int_key_sizer,					\
+		     &int_key_putter)
+#define EXIT_ON_TEST_FAILURE(PRINT_ARGS...)				\
+do {									\
+	if (   PRINT_TREE()						\
+	    && (fprintf(stderr, PRINT_ARGS) >= 0))			\
+	       exit(EXIT_SUCCESS);					\
+	else								\
+		EXIT_ON_SYS_FAILURE("write or fprintf failure or OOM");	\
+} while (0)
 
+
+/* global variables
+ * ────────────────────────────────────────────────────────────────────────── */
 static RedBlackTree tree;
-static int keys[KEYS_COUNT];
-static const int *const restrict keys_until = &keys[KEYS_COUNT];
 
 void
 handle_segfault(int signo)
@@ -29,52 +35,9 @@ handle_segfault(int signo)
 		EXIT_ON_SYS_FAILURE("segfault and write/OOM");
 }
 
-static inline unsigned int
-random_upto(const unsigned int upto)
-{
-	unsigned long rand;
-
-	const unsigned long span      = (unsigned long) (upto + 1);
-	const unsigned long threshold = -span % span;
-
-	do {
-		rand = (unsigned long) random();
-	} while (rand < threshold);
-
-	return (unsigned int) (rand % span);
-}
-
-static inline void
-swap(int *const restrict x,
-     int *const restrict y)
-{
-	const int tmp = *x;
-	*x = *y;
-	*y = tmp;
-}
-
-static inline void
-shuffle(void)
-{
-	int i_old;
-	int i_new;
-
-	ENTER("shuffle");
-
-	for (i_old = 0; i_old < I_LAST; ++i_old) {
-		i_new = i_old + random_upto(I_LAST - i_old);
-
-		swap(&keys[i_old],
-		     &keys[i_new]);
-	}
-
-	RETURN("shuffle");
-}
-
 static inline void
 setup(void)
 {
-	int i;
 	struct sigaction action;
 
 	ENTER("setup");
@@ -91,14 +54,9 @@ setup(void)
 		      NULL) < 0)
 		EXIT_ON_SYS_FAILURE("sigaction failure");
 
-	i = 0;
+	init_keys();
 
-	do {
-		keys[i] = i;
-		++i;
-	} while (i < KEYS_COUNT);
-
-	srandom((unsigned) time(NULL));
+	seed_random();
 
 	red_black_tree_init(&tree,
 			    &int_key_comparator);
@@ -114,7 +72,7 @@ test_insert(void)
 
 	ENTER("test_insert");
 
-	shuffle();
+	shuffle_keys();
 
 	key = &keys[0];
 
@@ -166,7 +124,7 @@ test_find(void)
 
 	ENTER("test_find");
 
-	shuffle();
+	shuffle_keys();
 
 	key = &keys[0];
 
@@ -289,7 +247,7 @@ test_delete(void)
 
 	ENTER("test_delete");
 
-	shuffle();
+	shuffle_keys();
 
 	if (red_black_tree_delete(&tree,
 				  (void *) (intptr_t) -1))
@@ -349,7 +307,7 @@ teardown(void)
 int
 main(void)
 {
-	WRITE_LITERAL("---\nstarting tests for KEYS_COUNT = " KC_STR "\n---\n");
+	STARTING_TESTS();
 
 	setup();
 
@@ -369,7 +327,7 @@ main(void)
 
 	teardown();
 
-	WRITE_LITERAL("---\nall tests passed!\n---\n");
+	ALL_TESTS_PASSED();
 
 	return 0;
 }

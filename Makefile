@@ -712,6 +712,19 @@ TARGETS			+= $(STR_KEY_OBJ)
 
 # TEST MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
+# red_black_test
+# ──────────────────────────────────────────────────────────────────────────────
+TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_test)
+TEST_HDR		:= $(call TEST_HEADER_PATH,red_black_test)
+TEST_OBJ		:= $(call OBJECT_PATH,red_black_test)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TEST_OBJ_PREQS		:= $(TEST_SRC)					\
+			   $(TEST_HDR)
+TEST_OBJ_GROUP		:= $(TEST_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(TEST_OBJ)
+
+
 # red_black_concat_test
 # ──────────────────────────────────────────────────────────────────────────────
 CONCAT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_concat_test)
@@ -752,15 +765,15 @@ TARGETS			+= $(APPEND_TEST_OBJ)				\
 # red_black_tree_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_test)
-TREE_TEST_HDR		:= $(call TEST_HEADER_PATH,red_black_tree_test)
 TREE_TEST_OBJ		:= $(call OBJECT_PATH,red_black_tree_test)
 TREE_TEST_BIN		:= $(call BINARY_PATH,red_black_tree_test)
 # ─────────────── target prequisites ───────────────────────────────────────────
 TREE_TEST_OBJ_PREQS	:= $(TREE_TEST_SRC)				\
-			   $(TREE_TEST_HDR)				\
+			   $(TEST_HDR)					\
 			   $(TREE_HDR)					\
 			   $(INT_KEY_HDR)
 TREE_TEST_BIN_PREQS	:= $(TREE_TEST_OBJ)				\
+			   $(TEST_OBJ_GROUP)				\
 			   $(INT_KEY_OBJ_GROUP)				\
 			   $(TREE_ST_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
@@ -876,6 +889,9 @@ $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
 $(APPEND_TEST_BIN): $(APPEND_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(APPEND_TEST_OBJ): $(APPEND_TEST_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+$(TEST_OBJ): $(TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 
