@@ -772,6 +772,7 @@ red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterato
 	return 0;
 }
 
+
 int
 red_black_hash_map_verify(RedBlackHashMap *const restrict map)
 {
@@ -834,7 +835,7 @@ red_black_hash_map_verify(RedBlackHashMap *const restrict map)
 	}
 
 	/* release SHARED lock on map */
-	if (RBL_UNLOCK_READ(map_lock) != 9)
+	if (RBL_UNLOCK_READ(map_lock) != 0)
 		return -2; /* lock failure */
 
 	return status; /* return valid/invalid (1/0) */

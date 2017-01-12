@@ -81,14 +81,14 @@ EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 /* defines length of array of unique integer keys to be inserted/deleted */
-#define KEYS_COUNT 100000
+#define KEYS_COUNT 100
 
 extern int keys[KEYS_COUNT];
 extern const int *const restrict keys_until;
 
 /* check validity after every potential modification ->
  * O(KEYS_COUNT²), set nonzero for small (upto ~10k) KEYS_COUNT */
-#define DO_VERIFY 0
+#define DO_VERIFY 1
 
 #define STR(X)  #X
 #define XSTR(X) STR(X)

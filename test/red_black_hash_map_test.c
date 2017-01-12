@@ -109,7 +109,7 @@ test_single_thread_insert(void)
 		} else {
 			status = red_black_hash_map_verify(&hash_map);
 
-			if (status != 0) {
+			if (status != 1) {
 				if (status < 0)
 					SYS_FAILURE("hash_map_verify",
 						    "LOCK FAILURE");
@@ -144,7 +144,7 @@ test_single_thread_insert(void)
 	} else {
 		status = red_black_hash_map_verify(&hash_map);
 
-		if (status != 0) {
+		if (status != 1) {
 			if (status < 0)
 				SYS_FAILURE("hash_map_verify",
 					    "LOCK FAILURE");
@@ -307,7 +307,7 @@ test_single_thread_delete(void)
 	} else {
 		status = red_black_hash_map_verify(&hash_map);
 
-		if (status != 0) {
+		if (status != 1) {
 			if (status < 0)
 				SYS_FAILURE("hash_map_verify",
 					    "LOCK FAILURE");
@@ -338,7 +338,7 @@ test_single_thread_delete(void)
 		} else {
 			status = red_black_hash_map_verify(&hash_map);
 
-			if (status != 0) {
+			if (status != 1) {
 				if (status < 0)
 					SYS_FAILURE("hash_map_verify",
 						    "LOCK FAILURE");
@@ -370,7 +370,7 @@ test_single_thread_delete(void)
 	} else {
 		status = red_black_hash_map_verify(&hash_map);
 
-		if (status != 0) {
+		if (status != 1) {
 			if (status < 0)
 				SYS_FAILURE("hash_map_verify",
 					    "LOCK FAILURE");
