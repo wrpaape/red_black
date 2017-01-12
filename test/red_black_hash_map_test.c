@@ -84,7 +84,7 @@ test_single_thread_insert(void)
 
 	ENTER("test_single_thread_insert");
 
-	/* shuffle_keys(); */
+	shuffle_keys();
 
 	key = &keys[0];
 
@@ -152,9 +152,9 @@ test_single_thread_find(void)
 
 	int status;
 
-	ENTER("test_single_thread_find");
+	/* DON'T SHUFFLE, HASH KEYS WILL CHANGE! */
 
-	shuffle_keys();
+	ENTER("test_single_thread_find");
 
 	key = &keys[0];
 
@@ -162,8 +162,6 @@ test_single_thread_find(void)
 		status = red_black_hash_map_find(&hash_map,
 						 (void *) key,
 						 sizeof(*key));
-
-		printf("got status: %d\n", status);
 
 		if (status != 1) {
 			if (status < 0)
@@ -206,6 +204,7 @@ test_single_thread_iterator(void)
 	int last_key;
 	int *restrict key;
 	unsigned int count;
+	size_t length;
 	int status;
 
 	static bool key_set[KEYS_COUNT];
@@ -224,8 +223,14 @@ test_single_thread_iterator(void)
 	count = 0;
 
 	while (1) {
+		puts("DOIN IT"); fflush(stdout);
+
+
 		status = red_black_hash_map_iterator_next(&iterator,
-							  (void **) &key);
+							  (void **) &key,
+							  &length);
+
+		puts("DID IT"); fflush(stdout);
 
 		if (status == 0)
 			break;
@@ -233,6 +238,14 @@ test_single_thread_iterator(void)
 		if (status < 0)
 			SYS_FAILURE("hash_map_iterator_next",
 				    "LOCK FAILURE");
+
+		if (length != sizeof(*key))
+			TEST_FAILURE("hash_map_iterator_next",
+				     "GOT UNEXPECTED LENGTH %zu INSTEAD OF %zu",
+				     length,
+				     sizeof(*key));
+
+		printf("got key: %d, length: %zu\n", *key, length); fflush(stdout);
 
 		/* got next key */
 		key_set_ptr = &key_set[*key];

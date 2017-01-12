@@ -69,6 +69,14 @@ void
 red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
 				  const RedBlackTree *const restrict tree);
 
+void
+red_black_tree_iterator_reset_asc(RedBlackTreeIterator *const restrict iterator,
+				  const RedBlackTree *const restrict tree);
+
+void
+red_black_tree_iterator_reset_desc(RedBlackTreeIterator *const restrict iterator,
+				   const RedBlackTree *const restrict tree);
+
 bool
 red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
 			     void **const restrict key_ptr);

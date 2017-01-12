@@ -48,18 +48,11 @@ rbi_update_desc(const struct RedBlackNode *restrict *restrict cursor,
 	}
 }
 
-void
-red_black_iterator_init_asc(struct RedBlackIterator *const restrict iterator,
-			    const struct RedBlackNode *restrict node)
+
+static inline const struct RedBlackNode *restrict *restrict
+rbi_init_asc_cursor(const struct RedBlackNode *restrict *restrict cursor,
+		    const struct RedBlackNode *restrict node)
 {
-	const struct RedBlackNode *restrict *restrict cursor;
-
-	iterator->update = &rbi_update_asc;
-
-	cursor = &iterator->stack[0];
-
-	*cursor = NULL;
-
 	/* set cursor to min node, keep track of stack */
 	while (node != NULL) {
 		++cursor;
@@ -68,21 +61,37 @@ red_black_iterator_init_asc(struct RedBlackIterator *const restrict iterator,
 		node = node->left;
 	}
 
-	iterator->cursor = cursor;
+	return cursor;
 }
 
 void
-red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
+red_black_iterator_reset_asc(struct RedBlackIterator *const restrict iterator,
 			     const struct RedBlackNode *restrict node)
 {
-	const struct RedBlackNode *restrict *restrict cursor;
+	iterator->cursor = rbi_init_asc_cursor(&iterator->stack[0],
+					       node);
+}
 
-	iterator->update = &rbi_update_desc;
+void
+red_black_iterator_init_asc(struct RedBlackIterator *const restrict iterator,
+			    const struct RedBlackNode *restrict node)
+{
+	const struct RedBlackNode *restrict *restrict cursor;
 
 	cursor = &iterator->stack[0];
 
 	*cursor = NULL; /* mark top of stack */
 
+	iterator->cursor = rbi_init_asc_cursor(cursor,
+					       node);
+
+	iterator->update = &rbi_update_asc;
+}
+
+static inline const struct RedBlackNode *restrict *restrict
+rbi_init_desc_cursor(const struct RedBlackNode *restrict *restrict cursor,
+		     const struct RedBlackNode *restrict node)
+{
 	/* set cursor to max node, keep track of stack */
 	while (node != NULL) {
 		++cursor;
@@ -91,7 +100,31 @@ red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
 		node = node->right;
 	}
 
-	iterator->cursor = cursor;
+	return cursor;
+}
+
+void
+red_black_iterator_reset_desc(struct RedBlackIterator *const restrict iterator,
+			      const struct RedBlackNode *restrict node)
+{
+	iterator->cursor = rbi_init_desc_cursor(&iterator->stack[0],
+						node);
+}
+
+void
+red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
+			     const struct RedBlackNode *restrict node)
+{
+	const struct RedBlackNode *restrict *restrict cursor;
+
+	cursor = &iterator->stack[0];
+
+	*cursor = NULL; /* mark top of stack */
+
+	iterator->cursor = rbi_init_desc_cursor(cursor,
+						node);
+
+	iterator->update = &rbi_update_desc;
 }
 
 

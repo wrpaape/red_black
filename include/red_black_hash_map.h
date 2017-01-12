@@ -93,7 +93,8 @@ red_black_hash_map_iterator_bail(RedBlackHashMapIterator *const restrict iterato
 
 int
 red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterator,
-				 void **const restrict key_ptr);
+				 void **const restrict key_ptr,
+				 size_t *const restrict length_ptr);
 
 int
 red_black_hash_map_verify(RedBlackHashMap *const restrict map);

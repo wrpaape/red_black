@@ -546,6 +546,7 @@ red_black_hash_map_find(RedBlackHashMap *const restrict map,
 	if (RBL_LOCK_READ(map_lock) != 0)
 		return -2; /* lock failure */
 
+	/* printf("count_m1: %u\n", map->count.buckets_m1); */
 	/* fetch bucket */
 	bucket = &map->buckets[hash_key.hash & map->count.buckets_m1];
 
@@ -701,21 +702,28 @@ red_black_hash_map_iterator_bail(RedBlackHashMapIterator *const restrict iterato
 }
 
 
+#include <stdio.h>
+#include <strings.h>
 int
 red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterator,
-				 void **const restrict key_ptr)
+				 void **const restrict key_ptr,
+				 size_t *const restrict length_ptr)
 {
 	struct RedBlackIterator *restrict bucket_iterator;
 	struct RedBlackHashBucket *restrict bucket;
 	struct RedBlackHashBucket *restrict last_bucket;
+	struct RedBlackHashKey *restrict hash_key_ptr;
 	RedBlackLock *restrict bucket_lock;
 
 	bucket_iterator = &iterator->bucket_iterator;
 
-	/* if current bucket has remaining keys, return with next */
+	/* if current bucket has remaining keys, return with next key, length */
 	if (red_black_iterator_next(bucket_iterator,
-				    key_ptr))
+				    (void **) &hash_key_ptr)) {
+		*key_ptr    = (void *) hash_key_ptr->key;
+		*length_ptr = hash_key_ptr->length;
 		return 1;
+	}
 
 	bucket = iterator->bucket;
 
@@ -739,14 +747,18 @@ red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterato
 		}
 
 		/* re-initialize bucket iterator */
-		red_black_iterator_init_asc(bucket_iterator,
-					    bucket->root);
+		red_black_iterator_reset_asc(bucket_iterator,
+					     bucket->root);
 
-		/* if bucket is non-empty, return with first key */
+		/* if bucket is non-empty, return with first key, length */
 		if (red_black_iterator_next(bucket_iterator,
-					    key_ptr))
-			return 1;
+					    (void **) &hash_key_ptr)) {
+			iterator->bucket = bucket; /* update bucket */
 
+			*key_ptr    = (void *) hash_key_ptr->key;
+			*length_ptr = hash_key_ptr->length;
+			return 1;
+		}
 
 		/* release SHARED lock on bucket */
 		if (RBL_UNLOCK_READ(bucket_lock) != 0) {
