@@ -735,7 +735,7 @@ red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterato
 			return -2;
 		}
 
-		if (bucket == last_bucket) {
+		if (bucket >= last_bucket) {
 			/* all buckets traversed, release SHARED lock on map */
 			if (RBL_UNLOCK_READ(iterator->map_lock) != 0)
 				return -2;

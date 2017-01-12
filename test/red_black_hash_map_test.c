@@ -82,9 +82,9 @@ setup(void)
 
 	ENTER("setup");
 
-	seed_random();
-
 	init_keys();
+
+	seed_random();
 
 	shuffle_keys();
 
@@ -269,6 +269,7 @@ test_find(void *arg)
 	return (ThreadReturn) 0;
 }
 
+#include <strings.h>
 
 ThreadReturn
 test_iterator(void *arg)
@@ -280,16 +281,20 @@ test_iterator(void *arg)
 	int status;
 	bool *restrict key_set_ptr;
 
+	/* static bool key_set[KEYS_COUNT]; */
+
 	RedBlackHashMapIterator iterator;
+
 
 	ENTER("test_iterator");
 
-	/* calloc to preserve thread stack space */
-	bool *const restrict key_set = calloc(KEYS_COUNT,
-					      sizeof(*key_set));
+	/* /1* calloc to preserve thread stack space *1/ */
+	bool *const restrict key_set = malloc(KEYS_COUNT * sizeof(*key_set));
 
 	if (key_set == NULL)
 		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
+
+	bzero(key_set, KEYS_COUNT * sizeof(*key_set));
 
 	/* test iterator */
 	if (red_black_hash_map_iterator_init(&iterator,
@@ -318,11 +323,13 @@ test_iterator(void *arg)
 				     sizeof(*key));
 
 		/* got next key */
-		key_set_ptr = &key_set[*key];
+		key_set_ptr = key_set + *key;
 
-		if (*key_set_ptr)
+		if (*key_set_ptr) {
 			TEST_FAILURE("hash_map_iterator_next",
-				     "ITERATOR TRAVERSED SAME KEY TWICE");
+				     "ITERATOR TRAVERSED SAME KEY TWICE: %d (%d) (%d)",
+				     *key, *key_set_ptr, (int) (key - &keys[0]));
+		}
 
 		*key_set_ptr = true;
 		++count;
@@ -557,7 +564,7 @@ main(void)
 
 	test_single_thread_operations();
 
-	test_multi_thread_operations();
+	/* test_multi_thread_operations(); */
 
 	ALL_TESTS_PASSED();
 
