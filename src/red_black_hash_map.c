@@ -11,6 +11,8 @@
 #include "red_black_append.h"    /* red_black_append */
 #include "red_black_malloc.h"    /* RED_BLACK_MALLOC|REALLOC|FREE */
 
+#include <stdio.h>
+
 /* hash map macros
  * ────────────────────────────────────────────────────────────────────────── */
 /* initial bucket count, MUST be non-zero multiple of 2 */
@@ -39,6 +41,26 @@ rbhb_destroy(struct RedBlackHashBucket *const restrict bucket)
 	rba_destroy(&bucket->allocator);
 }
 
+static inline void
+print_list(const struct RedBlackNode *restrict node)
+{
+	int i;
+
+	i = 1;
+
+	if (node == NULL)
+		puts("EMPTY");
+	else
+		do {
+			printf("%d. %d\n",
+			       i, *((int *) (((struct RedBlackHashNode *) node)->hash_key.key)));
+
+			++i;
+			node = node->left;
+		} while (node != NULL);
+
+}
+
 
 static inline void
 rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
@@ -47,6 +69,7 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 {
 	RedBlackHash hash;
 	struct RedBlackNode *restrict node;
+	struct RedBlackNode *volatile restrict next;
 	struct RedBlackNode *restrict head;
 	struct RedBlackNode *restrict *restrict end_ptr;
 	struct RedBlackHashBucket *restrict bucket;
@@ -67,6 +90,8 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 		end_ptr = red_black_concat(node,
 					   end_ptr);
 
+		print_list(head);
+
 		/* reset expansion constant of allocators */
 		hash_node_allocator_reset(&bucket->allocator);
 
@@ -84,32 +109,62 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 
 
 	/* dump node list into empty hash table */
-	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
+		puts("JUMPED"); fflush(stdout);
 		goto NEXT_NODE;
+	}
 
-	do {
+	while (1) {
+		next = head->left;
+
+		printf("re-inserting: (%p) %d\n", head,
+		       *((int *) (((struct RedBlackHashNode *) head)->hash_key.key)));
+
+		printf("old next: %p\n", next);
+
 		/* fetch hash key hash */
 		hash = ((struct RedBlackHashNode *) head)->hash_key.hash;
 
 		/* fetch new bucket */
 		bucket = &buckets[hash & new_count_m1];
 
+		puts("DOING IT"); fflush(stdout);
+
+		printf("bucket = %p\n", bucket); fflush(stdout);
+
+		printf("bucket->root = %p\n", bucket->root); fflush(stdout);
+
+		printf("&bucket->root = %p\n", &bucket->root); fflush(stdout);
+
+		puts("DOING IT FOR REAL"); fflush(stdout);
 		/* append to bucket tree, may jump */
 		red_black_append(&bucket->root,
 				 &red_black_hash_key_comparator,
 				 &jump_buffer,
 				 head);
 NEXT_NODE:
-		head = head->left;
-	} while (head != NULL);
-}
+		puts("DID IT"); fflush(stdout);
 
+		/* printf("inserted: %d\n", */
+		/*        *((int *) (((struct RedBlackHashNode *) head)->hash_key.key))); */
+
+		printf("new next: %p\n", next);
+
+		if (next == NULL) {
+			puts("DONE");
+			return;
+		}
+
+		head = next;
+	}
+}
 
 static inline int
 rbhm_expand(RedBlackHashMap *const restrict map)
 {
 	const unsigned int old_count = map->count.buckets_m1 + 1;
 	const unsigned int new_count = old_count * 2;
+	puts("EXPANDING"); fflush(stdout);
 
 	/* double bucket capacity */
 	struct RedBlackHashBucket *const restrict new_buckets
@@ -136,14 +191,29 @@ rbhm_expand(RedBlackHashMap *const restrict map)
 int
 red_black_hash_map_init(RedBlackHashMap *const restrict map)
 {
-	RBL_INIT(&map->lock);
 
-	map->buckets = RED_BLACK_MALLOC(sizeof(struct RedBlackHashBucket)
-					* RBHM_INIT_BUCKET_COUNT);
+	struct RedBlackHashBucket *restrict bucket;
+	struct RedBlackHashBucket *restrict buckets;
+	struct RedBlackHashBucket *restrict bucket_until;
 
-	if (map->buckets == NULL)
+	buckets = RED_BLACK_MALLOC(  sizeof(struct RedBlackHashBucket)
+				   * RBHM_INIT_BUCKET_COUNT);
+
+	if (buckets == NULL)
 		return -1;
 
+	bucket       = buckets;
+	bucket_until = bucket + RBHM_INIT_BUCKET_COUNT;
+
+	do {
+		rbhb_init(bucket);
+
+		++bucket;
+	} while (bucket < bucket_until);
+
+	RBL_INIT(&map->lock);
+
+	map->buckets            = buckets;
 	map->count.buckets_m1   = RBHM_INIT_BUCKET_COUNT - 1;
 	map->count.entries      = 0;
 	map->count.max_capacity = RBHM_INIT_BUCKET_COUNT
@@ -173,7 +243,7 @@ red_black_hash_map_destroy(RedBlackHashMap *const restrict map)
 		++bucket;
 	} while (bucket <= last_bucket);
 
-	/* free bucket buffer */
+	/* free buckets buffer */
 	RED_BLACK_FREE(buckets);
 }
 
@@ -610,7 +680,7 @@ red_black_hash_map_fetch(RedBlackHashMap *const restrict map,
 
 
 int
-red_black_tree_count(RedBlackHashMap *const restrict map)
+red_black_hash_map_count(RedBlackHashMap *const restrict map)
 {
 	RedBlackLock *restrict map_lock;
 	int count;
@@ -677,8 +747,8 @@ red_black_hash_map_iterator_bail(RedBlackHashMapIterator *const restrict iterato
 
 
 int
-red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
-			     void **const restrict key_ptr)
+red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterator,
+				 void **const restrict key_ptr)
 {
 	struct RedBlackIterator *restrict bucket_iterator;
 	struct RedBlackHashBucket *restrict bucket;
@@ -738,7 +808,7 @@ red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
 }
 
 int
-red_black_tree_verify(RedBlackHashMap *const restrict map)
+red_black_hash_map_verify(RedBlackHashMap *const restrict map)
 {
 	struct RedBlackHashBucket *restrict bucket;
 	struct RedBlackHashBucket *restrict last_bucket;

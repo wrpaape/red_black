@@ -52,12 +52,19 @@ WRITE_STDOUT(LITERAL,							\
 	     sizeof(LITERAL) - 1)
 
 
-
+#define EXIT_ON_TEST_FAILURE(PRINT_ARGS...)				\
+do {									\
+	if (fprintf(stderr, PRINT_ARGS) >= 0)				\
+	       exit(EXIT_SUCCESS);					\
+	else								\
+		EXIT_ON_SYS_FAILURE("fprintf failure");			\
+} while (0)
 #define TEST_FAILURE(MODE,						\
 		     FORMAT,						\
 		     ...)						\
-EXIT_ON_TEST_FAILURE("\nred_black_" MODE " test failure -- "		\
+EXIT_ON_TEST_FAILURE("\nred_black_" MODE " test failure -- "	\
 		     FORMAT "\n", ##__VA_ARGS__)
+
 
 #define SYS_FAILURE(MODE,						\
 		    FORMAT,						\
@@ -74,7 +81,7 @@ EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 /* defines length of array of unique integer keys to be inserted/deleted */
-#define KEYS_COUNT 100
+#define KEYS_COUNT 65
 
 extern int keys[KEYS_COUNT];
 extern const int *const restrict keys_until;

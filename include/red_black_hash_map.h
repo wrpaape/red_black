@@ -83,7 +83,7 @@ red_black_hash_map_fetch(RedBlackHashMap *const restrict map,
 			 void **const restrict key_ptr);
 
 int
-red_black_tree_count(RedBlackHashMap *const restrict map);
+red_black_hash_map_count(RedBlackHashMap *const restrict map);
 
 int
 red_black_hash_map_iterator_init(RedBlackHashMapIterator *const restrict iterator,
@@ -92,10 +92,10 @@ int
 red_black_hash_map_iterator_bail(RedBlackHashMapIterator *const restrict iterator);
 
 int
-red_black_tree_iterator_next(RedBlackHashMapIterator *const restrict iterator,
-			     void **const restrict key_ptr);
+red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterator,
+				 void **const restrict key_ptr);
 
 int
-red_black_tree_verify(RedBlackHashMap *const restrict map);
+red_black_hash_map_verify(RedBlackHashMap *const restrict map);
 
 #endif /* ifndef RED_BLACK_HASH_MAP_H_ */

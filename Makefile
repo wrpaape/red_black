@@ -781,6 +781,23 @@ TARGETS			+= $(TREE_TEST_OBJ)				\
 			   $(TREE_TEST_BIN)
 
 
+# red_black_hash_map_test
+# ──────────────────────────────────────────────────────────────────────────────
+HASH_MAP_TEST_SRC	:= $(call TEST_SOURCE_PATH,red_black_hash_map_test)
+HASH_MAP_TEST_OBJ	:= $(call OBJECT_PATH,red_black_hash_map_test)
+HASH_MAP_TEST_BIN	:= $(call BINARY_PATH,red_black_hash_map_test)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HASH_MAP_TEST_OBJ_PREQS	:= $(HASH_MAP_TEST_SRC)				\
+			   $(TEST_HDR)					\
+			   $(HASH_MAP_HDR)
+HASH_MAP_TEST_BIN_PREQS	:= $(HASH_MAP_TEST_OBJ)				\
+			   $(TEST_OBJ_GROUP)				\
+			   $(HASH_MAP_ST_LIB)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HASH_MAP_TEST_OBJ)				\
+			   $(HASH_MAP_TEST_BIN)
+
+
 
 # EXAMPLE MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
@@ -879,6 +896,11 @@ $(CONTACTS_OBJ): $(CONTACTS_OBJ_PREQS)
 $(TREE_TEST_BIN): $(TREE_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(TREE_TEST_OBJ): $(TREE_TEST_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+$(HASH_MAP_TEST_BIN): $(HASH_MAP_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(HASH_MAP_TEST_OBJ): $(HASH_MAP_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)

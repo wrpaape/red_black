@@ -1,23 +1,10 @@
-#include "red_black_test.h" /* print macros */
+#include "red_black_test.h" /* print macros, keys */
 #include "red_black_tree.h" /* red_black_insert|find|verify|delete */
 #include "int_key.h"        /* int_key_comparator */
 #include <signal.h>         /* sigaction */
 
 
 
-
-#define PRINT_TREE()							\
-red_black_tree_print(&tree,						\
-		     &int_key_sizer,					\
-		     &int_key_putter)
-#define EXIT_ON_TEST_FAILURE(PRINT_ARGS...)				\
-do {									\
-	if (   PRINT_TREE()						\
-	    && (fprintf(stderr, PRINT_ARGS) >= 0))			\
-	       exit(EXIT_SUCCESS);					\
-	else								\
-		EXIT_ON_SYS_FAILURE("write or fprintf failure or OOM");	\
-} while (0)
 
 
 /* global variables
@@ -29,7 +16,9 @@ handle_segfault(int signo)
 {
 	WRITE_LITERAL("\ncaught SIGSEGV\n");
 
-	if (PRINT_TREE())
+	if (red_black_tree_print(&tree,
+				 &int_key_sizer,
+				 &int_key_putter))
 		EXIT_ON_SYS_FAILURE("segfault");
 	else
 		EXIT_ON_SYS_FAILURE("segfault and write/OOM");
@@ -54,9 +43,9 @@ setup(void)
 		      NULL) < 0)
 		EXIT_ON_SYS_FAILURE("sigaction failure");
 
-	init_keys();
-
 	seed_random();
+
+	init_keys();
 
 	red_black_tree_init(&tree,
 			    &int_key_comparator);
@@ -81,15 +70,15 @@ test_insert(void)
 					       (void *) (intptr_t) *key);
 
 		if (status < 0)
-			SYS_FAILURE("insert",
+			SYS_FAILURE("tree_insert",
 				    "OUT OF MEMORY");
 		else if (status == 0)
-			TEST_FAILURE("insert",
+			TEST_FAILURE("tree_insert",
 				     "KEY NOT UNIQUE: %d",
 				     *key);
 #if DO_VERIFY
 		else if (!red_black_tree_verify(&tree))
-			TEST_FAILURE("insert",
+			TEST_FAILURE("tree_insert",
 				     "NOT VALID TREE (inserted %d)",
 				     *key);
 #endif /* if DO_VERIFY */
@@ -101,14 +90,14 @@ test_insert(void)
 				       (void *) (intptr_t) 0);
 
 	if (status < 0)
-		SYS_FAILURE("insert",
+		SYS_FAILURE("tree_insert",
 			    "OUT OF MEMORY");
 	else if (status == 1)
-		TEST_FAILURE("insert",
+		TEST_FAILURE("tree_insert",
 			     "'0' INSERTED TWICE");
 #if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
-		TEST_FAILURE("insert",
+		TEST_FAILURE("tree_insert",
 			     "NOT VALID TREE (no insertion)");
 #endif /* if DO_VERIFY */
 
@@ -131,7 +120,7 @@ test_find(void)
 	do {
 		if (!red_black_tree_find(&tree,
 					 (void *) (intptr_t) *key))
-			TEST_FAILURE("find",
+			TEST_FAILURE("tree_find",
 				     "KEY NOT FOUND: %d",
 				     *key);
 
@@ -140,7 +129,7 @@ test_find(void)
 
 	if (red_black_tree_find(&tree,
 				(void *) (intptr_t) -1))
-		TEST_FAILURE("find",
+		TEST_FAILURE("tree_find",
 			     "FOUND NEGATIVE KEY");
 
 	TEST_PASS("find");
@@ -170,7 +159,7 @@ test_iterator(void)
 	while (red_black_tree_iterator_next(&iterator,
 					    (void **) &next_key)) {
 		if (last_key > next_key)
-			TEST_FAILURE("iterator",
+			TEST_FAILURE("tree_iterator",
 				     "ASCENDING ITERATOR OUT OF ORDER");
 
 		last_key = next_key;
@@ -179,10 +168,10 @@ test_iterator(void)
 	}
 
 	if (count < KEYS_COUNT)
-		TEST_FAILURE("iterator",
+		TEST_FAILURE("tree_iterator",
 			     "ASCENDING ITERATOR SKIPPED ENTRIES");
 	else if (count > KEYS_COUNT)
-		TEST_FAILURE("iterator",
+		TEST_FAILURE("tree_iterator",
 			     "ASCENDING ITERATOR REPEATED ENTRIES");
 
 	/* test descending iterator */
@@ -196,7 +185,7 @@ test_iterator(void)
 	while (red_black_tree_iterator_next(&iterator,
 					    (void **) &next_key)) {
 		if (last_key < next_key)
-			TEST_FAILURE("iterator",
+			TEST_FAILURE("tree_iterator",
 				     "DESCENDING ITERATOR OUT OF ORDER");
 
 		last_key = next_key;
@@ -205,10 +194,10 @@ test_iterator(void)
 	}
 
 	if (count < KEYS_COUNT)
-		TEST_FAILURE("iterator",
+		TEST_FAILURE("tree_iterator",
 			     "DESCENDING ITERATOR SKIPPED ENTRIES");
 	else if (count > KEYS_COUNT)
-		TEST_FAILURE("iterator",
+		TEST_FAILURE("tree_iterator",
 			     "DESCENDING ITERATOR REPEATED ENTRIES");
 
 	TEST_PASS("iterator");
@@ -225,12 +214,12 @@ test_count(const unsigned int expected)
 	const unsigned int count = red_black_tree_count(&tree);
 
 	if (count < expected)
-		TEST_FAILURE("count",
+		TEST_FAILURE("tree_count",
 			     "COUNT LESS THAN EXPECTED: %u < %u",
 			     count,
 			     expected);
 	else if (count > expected)
-		TEST_FAILURE("count",
+		TEST_FAILURE("tree_count",
 			     "COUNT GREATER THAN EXPECTED: %u > %u",
 			     count,
 			     expected);
@@ -251,11 +240,11 @@ test_delete(void)
 
 	if (red_black_tree_delete(&tree,
 				  (void *) (intptr_t) -1))
-		TEST_FAILURE("delete",
+		TEST_FAILURE("tree_delete",
 			     "DELETED NEGATIVE KEY");
 #if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
-		TEST_FAILURE("delete",
+		TEST_FAILURE("tree_delete",
 			     "NOT VALID TREE (no deletion)");
 #endif /* if DO_VERIFY */
 
@@ -264,12 +253,12 @@ test_delete(void)
 	do {
 		if (!red_black_tree_delete(&tree,
 					   (void *) (intptr_t) *key))
-			TEST_FAILURE("delete",
+			TEST_FAILURE("tree_delete",
 				     "KEY NOT FOUND: %d",
 				     *key);
 #if DO_VERIFY
 		else if (!red_black_tree_verify(&tree))
-			TEST_FAILURE("delete",
+			TEST_FAILURE("tree_delete",
 				     "NOT VALID TREE (deleted %d)",
 				     *key);
 #endif /* if DO_VERIFY */
@@ -279,11 +268,11 @@ test_delete(void)
 
 	if (red_black_tree_delete(&tree,
 				  (void *) (intptr_t) 0))
-		TEST_FAILURE("delete",
+		TEST_FAILURE("tree_delete",
 			     "DELETED 0 TWICE");
 #if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
-		TEST_FAILURE("delete",
+		TEST_FAILURE("tree_delete",
 			     "NOT VALID TREE (no deletion)");
 #endif /* if DO_VERIFY */
 
@@ -307,9 +296,9 @@ teardown(void)
 int
 main(void)
 {
-	STARTING_TESTS();
-
 	setup();
+
+	STARTING_TESTS();
 
 	test_count(0);
 
@@ -325,9 +314,9 @@ main(void)
 
 	test_count(0);
 
-	teardown();
-
 	ALL_TESTS_PASSED();
+
+	teardown();
 
 	return 0;
 }
