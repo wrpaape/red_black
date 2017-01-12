@@ -9,18 +9,76 @@ static RedBlackHashMap hash_map;
 
 /* macros
  * ────────────────────────────────────────────────────────────────────────── */
-#define WORKERS_COUNT	4
-#define REG_INTERVAL	(KEYS_COUNT / WORKERS_COUNT)
-#define LONG_INTERVAL	(REG_INTERVAL + (KEYS_COUNT % WORKERS_COUNT))
+#define THREADS_COUNT		4
 
+/* threads API */
+#ifdef WIN32
+typedef HANDLE Thread;
+typedef DWORD ThreadReturn;
+
+#define SPAWN_THREAD(THREAD, FUNC_PTR, ARG_PTR)				\
+((THREAD) = CreateThread(NULL,						\
+			 0,						\
+			 FUNC_PTR,					\
+			 ARG_PTR,					\
+			 0,						\
+			 NULL) != NULL)
+
+#define WAIT_THREAD(THREAD)						\
+(WaitForSingleObject(THREAD,						\
+		     INFINITE) == WAIT_OBJECT_0)
+
+
+#else
+typedef pthread_t Thread;
+typedef void *ThreadReturn;
+
+#define SPAWN_THREAD(THREAD, FUNC_PTR, ARG_PTR)				\
+(pthread_create(&(THREAD),						\
+		NULL,							\
+		FUNC_PTR,						\
+		ARG_PTR) == 0)
+
+#define WAIT_THREAD(THREAD)						\
+(pthread_join(THREAD,							\
+	      NULL) == 0)
+
+#endif
+
+
+/* global variables
+ * ────────────────────────────────────────────────────────────────────────── */
 struct KeyInterval {
-	int from;
-	int until;
+	int *restrict from;
+	const int *restrict until;
 };
 
-/* static struct KeyInterval intervals[WORKERS_COUNT] = { */
-/* 	[0] = */
-/* }; */
+static const struct KeyInterval total_interval = {
+	.from  = &keys[0],
+	.until = &keys[KEYS_COUNT]
+};
+
+#define MID_INTERVAL_LENGTH	(KEYS_COUNT / THREADS_COUNT)
+#define LAST_INTERVAL_LENGTH	(MID_INTERVAL + (KEYS_COUNT % THREADS_COUNT))
+
+#define DEF_INTERVAL(I, FROM, UNTIL)					\
+[I] = { .from = &keys[FROM], .until = &keys[UNTIL] }
+#define DEF_MID_INTERVAL(I)						\
+DEF_INTERVAL(I, (I) * MID_INTERVAL_LENGTH, ((I) + 1) * MID_INTERVAL_LENGTH)
+#define DEF_LAST_INTERVAL(I)						\
+DEF_INTERVAL(I, (I) * MID_INTERVAL_LENGTH, KEYS_COUNT)
+
+static const struct KeyInterval intervals[THREADS_COUNT] = {
+	DEF_MID_INTERVAL(0),
+	DEF_MID_INTERVAL(1),
+	DEF_MID_INTERVAL(2),
+	DEF_LAST_INTERVAL(THREADS_COUNT - 1)
+};
+
+
+static Thread thread[THREADS_COUNT];
+
+
 
 static inline void
 setup(void)
@@ -78,17 +136,18 @@ test_count(const int expected)
 	RETURN("test_count");
 }
 
-static inline void
-test_single_thread_insert(void)
+static inline ThreadReturn
+test_insert(void *arg)
 {
 	int *restrict key;
+	struct KeyInterval *restrict interval;
 	int status;
 
-	ENTER("test_single_thread_insert");
+	ENTER("test_insert");
 
-	key = &keys[0];
+	interval = (struct KeyInterval *) arg;
 
-	do {
+	for (key = interval->from; key < interval->until; ++key) {
 		status = red_black_hash_map_insert(&hash_map,
 						   (void *) key,
 						   sizeof(*key));
@@ -121,13 +180,12 @@ test_single_thread_insert(void)
 			}
 #endif /* if DO_VERIFY */
 		}
+	}
 
-		++key;
-	} while (key < keys_until);
 
 	status = red_black_hash_map_insert(&hash_map,
-					   (void *) &keys[0],
-					   sizeof(keys[0]));
+					   (void *) interval->from,
+					   sizeof(*(interval->from)));
 
 	if (status < 0) {
 		if (status == -1)
@@ -156,27 +214,28 @@ test_single_thread_insert(void)
 #endif /* if DO_VERIFY */
 	}
 
-	TEST_PASS("single_thread_insert");
+	TEST_PASS("insert");
 
-	RETURN("test_single_thread_insert");
+	RETURN("test_insert");
+
+	return (ThreadReturn) 0;
 }
 
 
-static inline void
-test_single_thread_find(void)
+static inline ThreadReturn
+test_find(void *arg)
 {
 	int *restrict key;
 	int unused_key;
-
 	int status;
 
 	/* DON'T SHUFFLE, HASH KEYS WILL CHANGE! */
 
-	ENTER("test_single_thread_find");
+	ENTER("test_find");
 
 	key = &keys[0];
 
-	do {
+	for (key = total_interval.from; key < total_interval.until; ++key) {
 		status = red_black_hash_map_find(&hash_map,
 						 (void *) key,
 						 sizeof(*key));
@@ -190,9 +249,8 @@ test_single_thread_find(void)
 					     "KEY NOT FOUND: %d",
 					     *key);
 		}
+	}
 
-		++key;
-	} while (key < keys_until);
 
 	unused_key = -1;
 
@@ -209,27 +267,28 @@ test_single_thread_find(void)
 				     "FOUND UNUSED KEY");
 	}
 
-	TEST_PASS("single_thread_find");
+	TEST_PASS("find");
 
-	RETURN("test_single_thread_find");
+	RETURN("test_find");
+
+	return (ThreadReturn) 0;
 }
 
 
-static inline void
-test_single_thread_iterator(void)
+static inline ThreadReturn
+test_iterator(void *arg)
 {
 	int last_key;
 	int *restrict key;
 	unsigned int count;
 	size_t length;
 	int status;
-
-	static bool key_set[KEYS_COUNT];
+	bool key_set[KEYS_COUNT] = { 0 };
 	bool *restrict key_set_ptr;
 
 	RedBlackHashMapIterator iterator;
 
-	ENTER("test_single_thread_iterator");
+	ENTER("test_iterator");
 
 	/* test iterator */
 	if (red_black_hash_map_iterator_init(&iterator,
@@ -275,20 +334,23 @@ test_single_thread_iterator(void)
 		TEST_FAILURE("hash_map_iterator",
 			     "ITERATOR TRAVERSED MORE THAN " KC_STR " KEYS");
 
-	TEST_PASS("single_thread_iterator");
+	TEST_PASS("iterator");
 
-	RETURN("test_single_thread_iterator");
+	RETURN("test_iterator");
+
+	return (ThreadReturn) 0;
 }
 
 
-static inline void
-test_single_thread_delete(void)
+static inline ThreadReturn
+test_delete(void *arg)
 {
 	int *restrict key;
+	struct KeyInterval *restrict interval;
 	int unused_key;
 	int status;
 
-	ENTER("test_single_thread_delete");
+	ENTER("test_delete");
 
 	unused_key = -1;
 
@@ -319,9 +381,11 @@ test_single_thread_delete(void)
 #endif /* if DO_VERIFY */
 	}
 
+	interval = (struct KeyInterval *) arg;
+
 	key = &keys[0];
 
-	do {
+	for (key = interval->from; key < interval->until; ++key) {
 		status = red_black_hash_map_delete(&hash_map,
 						   (void *) key,
 						   sizeof(*key));
@@ -350,14 +414,12 @@ test_single_thread_delete(void)
 			}
 #endif /* if DO_VERIFY */
 		}
-
-		++key;
-	} while (key < keys_until);
+	}
 
 
 	status = red_black_hash_map_delete(&hash_map,
-					   (void *) &keys[0],
-					   sizeof(keys[0]));
+					   (void *) interval->from,
+					   sizeof(*(interval->from)));
 
 	if (status != 0) {
 		if (status < 0)
@@ -382,9 +444,11 @@ test_single_thread_delete(void)
 #endif /* if DO_VERIFY */
 	}
 
-	TEST_PASS("single_thread_delete");
+	TEST_PASS("delete");
 
-	RETURN("test_single_thread_delete");
+	RETURN("test_delete");
+
+	return (ThreadReturn) 0;
 }
 
 
@@ -397,19 +461,21 @@ test_single_thread_operations(void)
 
 	test_count(0);
 
-	test_single_thread_insert();
+	(void) test_insert((void *) &total_interval);
 
 	test_count(KEYS_COUNT);
 
-	test_single_thread_find();
+	(void) test_find(NULL);
 
 	test_count(KEYS_COUNT);
 
-	test_single_thread_iterator();
+	(void) test_iterator(NULL);
 
 	test_count(KEYS_COUNT);
 
-	test_single_thread_delete();
+	(void) test_delete((void *) &total_interval);
+
+	test_count(0);
 
 	teardown();
 
@@ -423,6 +489,24 @@ test_multi_thread_operations(void)
 	ENTER("test_multi_thread_operations");
 
 	setup();
+
+	test_count(0);
+
+	/* test_multi_thread_insert(); */
+
+	/* test_count(KEYS_COUNT); */
+
+	/* test_multi_thread_find(); */
+
+	/* test_count(KEYS_COUNT); */
+
+	/* test_multi_thread_iterator(); */
+
+	/* test_count(KEYS_COUNT); */
+
+	/* test_multi_thread_delete(); */
+
+	/* test_count(0); */
 
 	teardown();
 
