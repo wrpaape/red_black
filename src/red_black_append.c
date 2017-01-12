@@ -308,7 +308,7 @@ rb_append_rl(struct RedBlackNode *restrict *const restrict tree,
 		red_black_correct_rl_bot(tree,
 					 grandparent,
 					 parent,
-					 next,
+					 node,
 					 jump_buffer);
 
 	} else {

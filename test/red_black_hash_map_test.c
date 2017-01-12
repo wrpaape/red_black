@@ -87,13 +87,9 @@ test_single_thread_insert(void)
 	key = &keys[0];
 
 	do {
-		printf("inserting: %d\n", *key); fflush(stdout);
-
 		status = red_black_hash_map_insert(&hash_map,
 						   (void *) key,
 						   sizeof(*key));
-
-		printf("inserted: %d\n", *key); fflush(stdout);
 
 		if (status < 0) {
 			if (status == -1)

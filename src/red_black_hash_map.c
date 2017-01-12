@@ -41,26 +41,6 @@ rbhb_destroy(struct RedBlackHashBucket *const restrict bucket)
 	rba_destroy(&bucket->allocator);
 }
 
-static inline void
-print_list(const struct RedBlackNode *restrict node)
-{
-	int i;
-
-	i = 1;
-
-	if (node == NULL)
-		puts("EMPTY");
-	else
-		do {
-			printf("%d. %d\n",
-			       i, *((int *) (((struct RedBlackHashNode *) node)->hash_key.key)));
-
-			++i;
-			node = node->left;
-		} while (node != NULL);
-
-}
-
 
 static inline void
 rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
@@ -90,8 +70,6 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 		end_ptr = red_black_concat(node,
 					   end_ptr);
 
-		print_list(head);
-
 		/* reset expansion constant of allocators */
 		hash_node_allocator_reset(&bucket->allocator);
 
@@ -109,18 +87,11 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 
 
 	/* dump node list into empty hash table */
-	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
-		puts("JUMPED"); fflush(stdout);
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
 		goto NEXT_NODE;
-	}
 
 	while (1) {
-		next = head->left;
-
-		printf("re-inserting: (%p) %d\n", head,
-		       *((int *) (((struct RedBlackHashNode *) head)->hash_key.key)));
-
-		printf("old next: %p\n", next);
+		next = head->left; /* must fetch next before NULLed in append */
 
 		/* fetch hash key hash */
 		hash = ((struct RedBlackHashNode *) head)->hash_key.hash;
@@ -128,32 +99,14 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 		/* fetch new bucket */
 		bucket = &buckets[hash & new_count_m1];
 
-		puts("DOING IT"); fflush(stdout);
-
-		printf("bucket = %p\n", bucket); fflush(stdout);
-
-		printf("bucket->root = %p\n", bucket->root); fflush(stdout);
-
-		printf("&bucket->root = %p\n", &bucket->root); fflush(stdout);
-
-		puts("DOING IT FOR REAL"); fflush(stdout);
 		/* append to bucket tree, may jump */
 		red_black_append(&bucket->root,
 				 &red_black_hash_key_comparator,
 				 &jump_buffer,
 				 head);
 NEXT_NODE:
-		puts("DID IT"); fflush(stdout);
-
-		/* printf("inserted: %d\n", */
-		/*        *((int *) (((struct RedBlackHashNode *) head)->hash_key.key))); */
-
-		printf("new next: %p\n", next);
-
-		if (next == NULL) {
-			puts("DONE");
+		if (next == NULL)
 			return;
-		}
 
 		head = next;
 	}
@@ -164,7 +117,6 @@ rbhm_expand(RedBlackHashMap *const restrict map)
 {
 	const unsigned int old_count = map->count.buckets_m1 + 1;
 	const unsigned int new_count = old_count * 2;
-	puts("EXPANDING"); fflush(stdout);
 
 	/* double bucket capacity */
 	struct RedBlackHashBucket *const restrict new_buckets
