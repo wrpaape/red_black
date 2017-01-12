@@ -286,7 +286,7 @@ test_iterator(void *arg)
 
 	/* calloc to preserve thread stack space */
 	bool *const restrict key_set = calloc(KEYS_COUNT,
-					      sizeof(keys[9]));
+					      sizeof(*key_set));
 
 	if (key_set == NULL)
 		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");

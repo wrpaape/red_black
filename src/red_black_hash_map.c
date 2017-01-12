@@ -18,7 +18,7 @@
 #define RBHM_INIT_BUCKET_COUNT	8
 
 /* maximum average collision count per bucket without requiring expansion */
-#define RBHM_MAX_AVG_COLLISIONS	16
+#define RBHM_MAX_AVG_COLLISIONS	8
 
 
 static inline void
@@ -723,17 +723,26 @@ red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterato
 		return 1;
 	}
 
-	bucket = iterator->bucket;
-
-	/* release SHARED lock on bucket */
-	if (RBL_UNLOCK_READ(&bucket->lock) != 0) {
-		(void) RBL_UNLOCK_READ(iterator->map_lock);
-		return -2;
-	}
-
+	bucket      = iterator->bucket;
 	last_bucket = iterator->last_bucket;
 
-	while (bucket < last_bucket) {
+	bucket_lock = &bucket->lock;
+
+	while (1) {
+		/* release SHARED lock on bucket */
+		if (RBL_UNLOCK_READ(bucket_lock) != 0) {
+			(void) RBL_UNLOCK_READ(iterator->map_lock);
+			return -2;
+		}
+
+		if (bucket == last_bucket) {
+			/* all buckets traversed, release SHARED lock on map */
+			if (RBL_UNLOCK_READ(iterator->map_lock) != 0)
+				return -2;
+
+			return 0;
+		}
+
 		++bucket; /* advance to next bucket */
 
 		bucket_lock = &bucket->lock;
@@ -757,19 +766,7 @@ red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterato
 			*length_ptr = hash_key_ptr->length;
 			return 1;
 		}
-
-		/* release SHARED lock on bucket */
-		if (RBL_UNLOCK_READ(bucket_lock) != 0) {
-			(void) RBL_UNLOCK_READ(iterator->map_lock);
-			return -2;
-		}
 	}
-
-	/* all buckets traversed, release SHARED lock on map */
-	if (RBL_UNLOCK_READ(iterator->map_lock) != 0)
-		return -2;
-
-	return 0;
 }
 
 
