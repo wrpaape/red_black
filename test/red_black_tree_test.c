@@ -130,7 +130,7 @@ test_find(void)
 	if (red_black_tree_find(&tree,
 				(void *) (intptr_t) -1))
 		TEST_FAILURE("tree_find",
-			     "FOUND NEGATIVE KEY");
+			     "FOUND UNUSED KEY");
 
 	TEST_PASS("find");
 
@@ -304,7 +304,11 @@ main(void)
 
 	test_insert();
 
+	test_count(KEYS_COUNT);
+
 	test_find();
+
+	test_count(KEYS_COUNT);
 
 	test_iterator();
 

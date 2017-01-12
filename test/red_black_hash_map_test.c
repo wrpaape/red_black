@@ -34,7 +34,8 @@ setup(void)
 	init_keys();
 
 	if (red_black_hash_map_init(&hash_map) < 0)
-		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
+		SYS_FAILURE("hash_map_init",
+			    "OUT OF MEMORY");
 
 	RETURN("setup");
 }
@@ -57,7 +58,8 @@ test_count(const int expected)
 	const int count = red_black_hash_map_count(&hash_map);
 
 	if (count < 0)
-		EXIT_ON_SYS_FAILURE("LOCK FAILURE");
+		SYS_FAILURE("hash_map_count",
+			    "LOCK FAILURE");
 	else if (count < expected)
 		TEST_FAILURE("hash_map_count",
 			     "COUNT LESS THAN EXPECTED: %u < %u",
@@ -98,6 +100,7 @@ test_single_thread_insert(void)
 			else
 				SYS_FAILURE("hash_map_insert",
 					    "LOCK FAILURE");
+
 		} else if (status == 0) {
 			TEST_FAILURE("hash_map_insert",
 				     "KEY NOT UNIQUE: %d",
@@ -124,6 +127,7 @@ test_single_thread_insert(void)
 		else
 			SYS_FAILURE("hash_map_insert",
 				    "LOCK FAILURE");
+
 	} else if (status == 1) {
 		TEST_FAILURE("hash_map_insert",
 			     "KEY INSERTED TWICE");
@@ -139,6 +143,121 @@ test_single_thread_insert(void)
 	RETURN("test_single_thread_insert");
 }
 
+
+static inline void
+test_single_thread_find(void)
+{
+	int *restrict key;
+	int unused_key;
+
+	int status;
+
+	ENTER("test_single_thread_find");
+
+	shuffle_keys();
+
+	key = &keys[0];
+
+	do {
+		status = red_black_hash_map_find(&hash_map,
+						 (void *) key,
+						 sizeof(*key));
+
+		printf("got status: %d\n", status);
+
+		if (status != 1) {
+			if (status < 0)
+				SYS_FAILURE("hash_map_find",
+					    "LOCK FAILURE");
+			else
+				TEST_FAILURE("hash_map_find",
+					     "KEY NOT FOUND: %d",
+					     *key);
+		}
+
+		++key;
+	} while (key < keys_until);
+
+	unused_key = -1;
+
+
+	status = red_black_hash_map_find(&hash_map,
+					 (void *) &unused_key,
+					 sizeof(unused_key));
+
+	if (status != 0) {
+		if (status < 0)
+			SYS_FAILURE("hash_map_find",
+				    "LOCK FAILURE");
+		else
+			TEST_FAILURE("hash_map_find",
+				     "FOUND UNUSED KEY");
+	}
+
+	TEST_PASS("single_thread_find");
+
+	RETURN("test_single_thread_find");
+}
+
+
+static inline void
+test_single_thread_iterator(void)
+{
+	int last_key;
+	int *restrict key;
+	unsigned int count;
+	int status;
+
+	static bool key_set[KEYS_COUNT];
+	bool *restrict key_set_ptr;
+
+	RedBlackHashMapIterator iterator;
+
+	ENTER("test_single_thread_iterator");
+
+	/* test iterator */
+	if (red_black_hash_map_iterator_init(&iterator,
+					     &hash_map) < 0)
+				SYS_FAILURE("hash_map_iterator_init",
+					    "LOCK FAILURE");
+
+	count = 0;
+
+	while (1) {
+		status = red_black_hash_map_iterator_next(&iterator,
+							  (void **) &key);
+
+		if (status == 0)
+			break;
+
+		if (status < 0)
+			SYS_FAILURE("hash_map_iterator_next",
+				    "LOCK FAILURE");
+
+		/* got next key */
+		key_set_ptr = &key_set[*key];
+
+		if (*key_set_ptr)
+			TEST_FAILURE("hash_map_iterator_next",
+				     "ITERATOR TRAVERSED SAME KEY TWICE");
+
+		*key_set_ptr = true;
+		++count;
+	}
+
+	if (count < KEYS_COUNT)
+		TEST_FAILURE("hash_map_iterator",
+			     "ITERATOR SKIPPED ENTRIES");
+	else if (count > KEYS_COUNT)
+		TEST_FAILURE("hash_map_iterator",
+			     "ITERATOR TRAVERSED MORE THAN " KC_STR " KEYS");
+
+	TEST_PASS("single_thread_iterator");
+
+	RETURN("test_single_thread_iterator");
+}
+
+
 static inline void
 test_single_thread_operations(void)
 {
@@ -149,6 +268,12 @@ test_single_thread_operations(void)
 	test_single_thread_insert();
 
 	test_count(KEYS_COUNT);
+
+	test_single_thread_find();
+
+	test_count(KEYS_COUNT);
+
+	test_single_thread_iterator();
 
 	RETURN("test_single_thread_operations");
 }

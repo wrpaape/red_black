@@ -11,7 +11,6 @@
 #include "red_black_append.h"    /* red_black_append */
 #include "red_black_malloc.h"    /* RED_BLACK_MALLOC|REALLOC|FREE */
 
-#include <stdio.h>
 
 /* hash map macros
  * ────────────────────────────────────────────────────────────────────────── */
@@ -157,12 +156,14 @@ red_black_hash_map_init(RedBlackHashMap *const restrict map)
 	bucket       = buckets;
 	bucket_until = bucket + RBHM_INIT_BUCKET_COUNT;
 
+	/* initialize buckets */
 	do {
 		rbhb_init(bucket);
 
 		++bucket;
 	} while (bucket < bucket_until);
 
+	/* initialize lock */
 	RBL_INIT(&map->lock);
 
 	map->buckets            = buckets;
@@ -173,6 +174,7 @@ red_black_hash_map_init(RedBlackHashMap *const restrict map)
 
 	return 0;
 }
+
 
 void
 red_black_hash_map_destroy(RedBlackHashMap *const restrict map)
@@ -520,6 +522,7 @@ red_black_hash_map_remove(RedBlackHashMap *const restrict map,
 
 	return status;
 }
+
 
 int
 red_black_hash_map_find(RedBlackHashMap *const restrict map,

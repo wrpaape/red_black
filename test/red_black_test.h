@@ -72,7 +72,7 @@ EXIT_ON_TEST_FAILURE("\nred_black_" MODE " test failure -- "	\
 EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 		    FORMAT "\n", ##__VA_ARGS__)
 
-#define ENTER(NAME)	WRITE_LITERAL("entering " NAME "\n")
+#define ENTER(NAME)	WRITE_LITERAL("entering       " NAME "\n")
 #define RETURN(NAME)	WRITE_LITERAL("returning from " NAME "\n")
 
 #define TEST_PASS(TEST) WRITE_LITERAL("---\ntest_" TEST " passed!\n---\n")
@@ -81,7 +81,7 @@ EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 /* defines length of array of unique integer keys to be inserted/deleted */
-#define KEYS_COUNT 1000000
+#define KEYS_COUNT 10
 
 extern int keys[KEYS_COUNT];
 extern const int *const restrict keys_until;
