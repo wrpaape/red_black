@@ -14,11 +14,11 @@
 
 /* hash map macros
  * ────────────────────────────────────────────────────────────────────────── */
-/* initial bucket count, MUST be non-zero multiple of 2 */
+/* initial bucket count, MUST be power of 2 */
 #define RBHM_INIT_BUCKET_COUNT	8
 
 /* maximum average collision count per bucket without requiring expansion */
-#define RBHM_MAX_AVG_COLLISIONS	8
+#define RBHM_MAX_AVG_COLLISIONS	16
 
 
 static inline void

@@ -42,8 +42,10 @@ typedef void *ThreadReturn;
 #define WAIT_THREAD(THREAD)						\
 (pthread_join(THREAD,							\
 	      NULL) == 0)
-
 #endif
+
+typedef ThreadReturn
+(*ThreadRoutine)(void *arg);
 
 
 /* global variables
@@ -53,31 +55,24 @@ struct KeyInterval {
 	const int *restrict until;
 };
 
-static const struct KeyInterval total_interval = {
-	.from  = &keys[0],
-	.until = &keys[KEYS_COUNT]
-};
 
-#define MID_INTERVAL_LENGTH	(KEYS_COUNT / THREADS_COUNT)
-#define LAST_INTERVAL_LENGTH	(MID_INTERVAL + (KEYS_COUNT % THREADS_COUNT))
-
-#define DEF_INTERVAL(I, FROM, UNTIL)					\
-[I] = { .from = &keys[FROM], .until = &keys[UNTIL] }
-#define DEF_MID_INTERVAL(I)						\
-DEF_INTERVAL(I, (I) * MID_INTERVAL_LENGTH, ((I) + 1) * MID_INTERVAL_LENGTH)
-#define DEF_LAST_INTERVAL(I)						\
-DEF_INTERVAL(I, (I) * MID_INTERVAL_LENGTH, KEYS_COUNT)
+static const unsigned int Q0 = 0;
+static const unsigned int Q1 = KEYS_COUNT / THREADS_COUNT;
+static const unsigned int Q2 = 2 * Q1;
+static const unsigned int Q3 = 3 * Q1;
+static const unsigned int Q4 = KEYS_COUNT;
 
 static const struct KeyInterval intervals[THREADS_COUNT] = {
-	DEF_MID_INTERVAL(0),
-	DEF_MID_INTERVAL(1),
-	DEF_MID_INTERVAL(2),
-	DEF_LAST_INTERVAL(THREADS_COUNT - 1)
+	[0] = { .from = &keys[Q0], .until = &keys[Q1] },
+	[1] = { .from = &keys[Q1], .until = &keys[Q2] },
+	[2] = { .from = &keys[Q2], .until = &keys[Q3] },
+	[3] = { .from = &keys[Q3], .until = &keys[Q4] },
 };
 
-
-static Thread thread[THREADS_COUNT];
-
+static const struct KeyInterval total_interval = {
+	.from  = &keys[Q0],
+	.until = &keys[Q4]
+};
 
 
 static inline void
@@ -136,7 +131,7 @@ test_count(const int expected)
 	RETURN("test_count");
 }
 
-static inline ThreadReturn
+ThreadReturn
 test_insert(void *arg)
 {
 	int *restrict key;
@@ -222,7 +217,7 @@ test_insert(void *arg)
 }
 
 
-static inline ThreadReturn
+ThreadReturn
 test_find(void *arg)
 {
 	int *restrict key;
@@ -275,7 +270,7 @@ test_find(void *arg)
 }
 
 
-static inline ThreadReturn
+ThreadReturn
 test_iterator(void *arg)
 {
 	int last_key;
@@ -283,12 +278,18 @@ test_iterator(void *arg)
 	unsigned int count;
 	size_t length;
 	int status;
-	bool key_set[KEYS_COUNT] = { 0 };
 	bool *restrict key_set_ptr;
 
 	RedBlackHashMapIterator iterator;
 
 	ENTER("test_iterator");
+
+	/* calloc to preserve thread stack space */
+	bool *const restrict key_set = calloc(KEYS_COUNT,
+					      sizeof(keys[9]));
+
+	if (key_set == NULL)
+		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
 
 	/* test iterator */
 	if (red_black_hash_map_iterator_init(&iterator,
@@ -327,6 +328,8 @@ test_iterator(void *arg)
 		++count;
 	}
 
+	free(key_set);
+
 	if (count < KEYS_COUNT)
 		TEST_FAILURE("hash_map_iterator",
 			     "ITERATOR SKIPPED ENTRIES");
@@ -342,7 +345,7 @@ test_iterator(void *arg)
 }
 
 
-static inline ThreadReturn
+ThreadReturn
 test_delete(void *arg)
 {
 	int *restrict key;
@@ -475,11 +478,45 @@ test_single_thread_operations(void)
 
 	(void) test_delete((void *) &total_interval);
 
-	test_count(0);
+	/* test_count(0); */
 
 	teardown();
 
 	RETURN("test_single_thread_operations");
+}
+
+#include <unistd.h>
+static inline void
+multi_thread_test(const ThreadRoutine test)
+{
+	int i;
+	void *arg;
+	Thread threads[THREADS_COUNT];
+
+	ENTER("multi_thread_test");
+
+	i = 0;
+
+	do {
+		if (!SPAWN_THREAD(threads[i],
+				  test,
+				  (void *) &intervals[i]))
+			EXIT_ON_SYS_FAILURE("SPAWN_THREAD failure");
+
+
+		++i;
+	} while (i < THREADS_COUNT);
+
+	i = 0;
+
+	do {
+		if (!WAIT_THREAD(threads[i]))
+			EXIT_ON_SYS_FAILURE("WAIT_THREAD failure");
+
+		++i;
+	} while (i < THREADS_COUNT);
+
+	RETURN("multi_thread_test");
 }
 
 
@@ -492,21 +529,21 @@ test_multi_thread_operations(void)
 
 	test_count(0);
 
-	/* test_multi_thread_insert(); */
+	multi_thread_test(&test_insert);
 
-	/* test_count(KEYS_COUNT); */
+	test_count(KEYS_COUNT);
 
-	/* test_multi_thread_find(); */
+	multi_thread_test(&test_find);
 
-	/* test_count(KEYS_COUNT); */
+	test_count(KEYS_COUNT);
 
-	/* test_multi_thread_iterator(); */
+	multi_thread_test(&test_iterator);
 
-	/* test_count(KEYS_COUNT); */
+	test_count(KEYS_COUNT);
 
-	/* test_multi_thread_delete(); */
+	multi_thread_test(&test_delete);
 
-	/* test_count(0); */
+	test_count(0);
 
 	teardown();
 
