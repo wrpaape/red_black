@@ -33,6 +33,8 @@ setup(void)
 
 	init_keys();
 
+	shuffle_keys();
+
 	if (red_black_hash_map_init(&hash_map) < 0)
 		SYS_FAILURE("hash_map_init",
 			    "OUT OF MEMORY");
@@ -84,8 +86,6 @@ test_single_thread_insert(void)
 
 	ENTER("test_single_thread_insert");
 
-	shuffle_keys();
-
 	key = &keys[0];
 
 	do {
@@ -106,10 +106,19 @@ test_single_thread_insert(void)
 				     "KEY NOT UNIQUE: %d",
 				     *key);
 #if DO_VERIFY
-		} else if (!red_black_hash_map_verify(&hash_map)) {
-			TEST_FAILURE("hash_map_insert",
-				     "NOT VALID HASH MAP (inserted %d)",
-				     *key);
+		} else {
+			status = red_black_hash_map_verify(&hash_map);
+
+			if (status != 0) {
+				if (status < 0)
+					SYS_FAILURE("hash_map_verify",
+						    "LOCK FAILURE");
+				else
+					TEST_FAILURE("hash_map_insert",
+						     "NOT VALID HASH MAP "
+						     "(inserted %d)",
+						     *key);
+			}
 #endif /* if DO_VERIFY */
 		}
 
@@ -132,9 +141,18 @@ test_single_thread_insert(void)
 		TEST_FAILURE("hash_map_insert",
 			     "KEY INSERTED TWICE");
 #if DO_VERIFY
-	} else if (!red_black_hash_map_verify(&hash_map)) {
-		TEST_FAILURE("hash_map_insert",
-			     "NOT VALID HASH MAP (no insertion)");
+	} else {
+		status = red_black_hash_map_verify(&hash_map);
+
+		if (status != 0) {
+			if (status < 0)
+				SYS_FAILURE("hash_map_verify",
+					    "LOCK FAILURE");
+			else
+				TEST_FAILURE("hash_map_insert",
+					     "NOT VALID HASH MAP "
+					     "(no insertion)");
+		}
 #endif /* if DO_VERIFY */
 	}
 
@@ -177,7 +195,6 @@ test_single_thread_find(void)
 	} while (key < keys_until);
 
 	unused_key = -1;
-
 
 	status = red_black_hash_map_find(&hash_map,
 					 (void *) &unused_key,
@@ -223,14 +240,9 @@ test_single_thread_iterator(void)
 	count = 0;
 
 	while (1) {
-		puts("DOIN IT"); fflush(stdout);
-
-
 		status = red_black_hash_map_iterator_next(&iterator,
 							  (void **) &key,
 							  &length);
-
-		puts("DID IT"); fflush(stdout);
 
 		if (status == 0)
 			break;
@@ -244,8 +256,6 @@ test_single_thread_iterator(void)
 				     "GOT UNEXPECTED LENGTH %zu INSTEAD OF %zu",
 				     length,
 				     sizeof(*key));
-
-		printf("got key: %d, length: %zu\n", *key, length); fflush(stdout);
 
 		/* got next key */
 		key_set_ptr = &key_set[*key];
@@ -272,9 +282,118 @@ test_single_thread_iterator(void)
 
 
 static inline void
+test_single_thread_delete(void)
+{
+	int *restrict key;
+	int unused_key;
+	int status;
+
+	ENTER("test_single_thread_delete");
+
+	unused_key = -1;
+
+	status = red_black_hash_map_delete(&hash_map,
+					   (void *) &unused_key,
+					   sizeof(unused_key));
+
+	if (status != 0) {
+		if (status < 0)
+			SYS_FAILURE("hash_map_delete",
+				    "LOCK FAILURE");
+		else
+			TEST_FAILURE("hash_map_delete",
+				     "DELETED UNUSED KEY");
+#if DO_VERIFY
+	} else {
+		status = red_black_hash_map_verify(&hash_map);
+
+		if (status != 0) {
+			if (status < 0)
+				SYS_FAILURE("hash_map_verify",
+					    "LOCK FAILURE");
+			else
+				TEST_FAILURE("hash_map_delete",
+					     "NOT VALID HASH MAP "
+					     "(no deletion)");
+		}
+#endif /* if DO_VERIFY */
+	}
+
+	key = &keys[0];
+
+	do {
+		status = red_black_hash_map_delete(&hash_map,
+						   (void *) key,
+						   sizeof(*key));
+
+		if (status != 1) {
+			if (status < 0)
+				SYS_FAILURE("hash_map_delete",
+					    "LOCK FAILURE");
+			else
+				TEST_FAILURE("hash_map_delete",
+					     "KEY NOT FOUND: %d",
+					     *key);
+#if DO_VERIFY
+		} else {
+			status = red_black_hash_map_verify(&hash_map);
+
+			if (status != 0) {
+				if (status < 0)
+					SYS_FAILURE("hash_map_verify",
+						    "LOCK FAILURE");
+				else
+					TEST_FAILURE("hash_map_delete",
+						     "NOT VALID HASH MAP "
+						     "(deleted %d)",
+						     *key);
+			}
+#endif /* if DO_VERIFY */
+		}
+
+		++key;
+	} while (key < keys_until);
+
+
+	status = red_black_hash_map_delete(&hash_map,
+					   (void *) &keys[0],
+					   sizeof(keys[0]));
+
+	if (status != 0) {
+		if (status < 0)
+			SYS_FAILURE("hash_map_delete",
+				    "LOCK FAILURE");
+		else
+			TEST_FAILURE("hash_map_delete",
+				     "DELETED KEY TWICE");
+#if DO_VERIFY
+	} else {
+		status = red_black_hash_map_verify(&hash_map);
+
+		if (status != 0) {
+			if (status < 0)
+				SYS_FAILURE("hash_map_verify",
+					    "LOCK FAILURE");
+			else
+				TEST_FAILURE("hash_map_delete",
+					     "NOT VALID HASH MAP "
+					     "(no deletion)");
+		}
+#endif /* if DO_VERIFY */
+	}
+
+	TEST_PASS("single_thread_delete");
+
+	RETURN("test_single_thread_delete");
+}
+
+
+static inline void
 test_single_thread_operations(void)
 {
 	ENTER("test_single_thread_operations");
+
+	setup();
 
 	test_count(0);
 
@@ -288,6 +407,12 @@ test_single_thread_operations(void)
 
 	test_single_thread_iterator();
 
+	test_count(KEYS_COUNT);
+
+	test_single_thread_delete();
+
+	teardown();
+
 	RETURN("test_single_thread_operations");
 }
 
@@ -297,14 +422,16 @@ test_multi_thread_operations(void)
 {
 	ENTER("test_multi_thread_operations");
 
+	setup();
+
+	teardown();
+
 	RETURN("test_multi_thread_operations");
 }
 
 int
 main(void)
 {
-	setup();
-
 	STARTING_TESTS();
 
 	test_single_thread_operations();
@@ -312,8 +439,6 @@ main(void)
 	test_multi_thread_operations();
 
 	ALL_TESTS_PASSED();
-
-	teardown();
 
 	return 0;
 }

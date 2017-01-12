@@ -702,8 +702,6 @@ red_black_hash_map_iterator_bail(RedBlackHashMapIterator *const restrict iterato
 }
 
 
-#include <stdio.h>
-#include <strings.h>
 int
 red_black_hash_map_iterator_next(RedBlackHashMapIterator *const restrict iterator,
 				 void **const restrict key_ptr,

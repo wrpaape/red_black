@@ -94,7 +94,7 @@ test_insert(void)
 			    "OUT OF MEMORY");
 	else if (status == 1)
 		TEST_FAILURE("tree_insert",
-			     "'0' INSERTED TWICE");
+			     "KEY INSERTED TWICE");
 #if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
 		TEST_FAILURE("tree_insert",
@@ -241,7 +241,7 @@ test_delete(void)
 	if (red_black_tree_delete(&tree,
 				  (void *) (intptr_t) -1))
 		TEST_FAILURE("tree_delete",
-			     "DELETED NEGATIVE KEY");
+			     "DELETED UNUSED KEY");
 #if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
 		TEST_FAILURE("tree_delete",
@@ -267,9 +267,9 @@ test_delete(void)
 	} while (key < keys_until);
 
 	if (red_black_tree_delete(&tree,
-				  (void *) (intptr_t) 0))
+				  (void *) (intptr_t) keys[0]))
 		TEST_FAILURE("tree_delete",
-			     "DELETED 0 TWICE");
+			     "DELETED KEY TWICE");
 #if DO_VERIFY
 	else if (!red_black_tree_verify(&tree))
 		TEST_FAILURE("tree_delete",
