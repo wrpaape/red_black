@@ -3,6 +3,7 @@
 #include "red_black_append.h"  /* red_black_append */
 #include <stdio.h>             /* fprintf */
 #include <stdlib.h>            /* exit */
+#include <stdint.h>	       /* intptr_t */
 
 
 static RedBlackTree tree;

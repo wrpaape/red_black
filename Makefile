@@ -151,11 +151,10 @@ SHARED_LIBRARY_PATH  = $(call SHARED_LIBRARY_FILE_PATH,$(SHARED_LIBRARY_DIR),$1)
 # Compiler
 # ──────────────────────────────────────────────────────────────────────────────
 CC		:= gcc
-CC_BASE_FLAGS	:= -std=gnu99 -march=native
+CC_BASE_FLAGS	:= -std=gnu99 -march=native -Wall -Wno-unused-result
 CC_ENV_FLAGS	:= -D__USE_FIXED_PROTOTYPES__ $(SYS_ENV_FLAGS)
 CC_INC_FLAGS	:= -I$(HEADER_DIR) -I$(KEY_ACC_DIR)
 CC_FLAGS	:= $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS) -O2 -funroll-loops -c
-# CC_FLAGS	:= $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS) -c
 CC_PIC_FLAGS	:= -fpic
 
 # Archiver
@@ -739,7 +738,7 @@ CONCAT_TEST_OBJ_PREQS	:= $(CONCAT_TEST_SRC)				\
 CONCAT_TEST_BIN_PREQS	:= $(CONCAT_TEST_OBJ)				\
 			   $(CONCAT_OBJ_GROUP)				\
 			   $(INT_KEY_OBJ_GROUP)				\
-			   $(TREE_ST_LIB)
+			   $(TREE_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(CONCAT_TEST_OBJ)				\
 			   $(CONCAT_TEST_BIN)
@@ -758,7 +757,7 @@ APPEND_TEST_OBJ_PREQS	:= $(APPEND_TEST_SRC)				\
 APPEND_TEST_BIN_PREQS	:= $(APPEND_TEST_OBJ)				\
 			   $(APPEND_OBJ_GROUP)				\
 			   $(INT_KEY_OBJ_GROUP)				\
-			   $(TREE_ST_LIB)
+			   $(TREE_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(APPEND_TEST_OBJ)				\
 			   $(APPEND_TEST_BIN)
@@ -776,7 +775,7 @@ TREE_TEST_OBJ_PREQS	:= $(TREE_TEST_SRC)				\
 TREE_TEST_BIN_PREQS	:= $(TREE_TEST_OBJ)				\
 			   $(TEST_OBJ_GROUP)				\
 			   $(INT_KEY_OBJ_GROUP)				\
-			   $(TREE_ST_LIB)
+			   $(TREE_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(TREE_TEST_OBJ)				\
 			   $(TREE_TEST_BIN)
@@ -793,7 +792,7 @@ HASH_MAP_TEST_OBJ_PREQS	:= $(HASH_MAP_TEST_SRC)				\
 			   $(HASH_MAP_HDR)
 HASH_MAP_TEST_BIN_PREQS	:= $(HASH_MAP_TEST_OBJ)				\
 			   $(TEST_OBJ_GROUP)				\
-			   $(HASH_MAP_ST_LIB)
+			   $(HASH_MAP_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(HASH_MAP_TEST_OBJ)				\
 			   $(HASH_MAP_TEST_BIN)
@@ -900,7 +899,7 @@ $(TREE_TEST_OBJ): $(TREE_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(HASH_MAP_TEST_BIN): $(HASH_MAP_TEST_BIN_PREQS)
-	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+	$(LD) $^ $(THREADS_LIB) $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(HASH_MAP_TEST_OBJ): $(HASH_MAP_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 

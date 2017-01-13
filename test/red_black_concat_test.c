@@ -3,6 +3,7 @@
 #include "red_black_concat.h"  /* red_black_concat */
 #include <stdio.h>             /* perror, printf */
 #include <stdlib.h>            /* exit */
+#include <stdint.h>	       /* intptr_t */
 
 
 static RedBlackTree tree;

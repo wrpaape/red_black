@@ -56,11 +56,11 @@ struct KeyInterval {
 };
 
 
-static const unsigned int Q0 = 0;
-static const unsigned int Q1 = KEYS_COUNT / THREADS_COUNT;
-static const unsigned int Q2 = 2 * Q1;
-static const unsigned int Q3 = 3 * Q1;
-static const unsigned int Q4 = KEYS_COUNT;
+#define Q0 0
+#define Q1 (KEYS_COUNT / THREADS_COUNT)
+#define Q2 (2 * Q1)
+#define Q3 (3 * Q1)
+#define Q4 KEYS_COUNT
 
 static const struct KeyInterval intervals[THREADS_COUNT] = {
 	[0] = { .from = &keys[Q0], .until = &keys[Q1] },
@@ -78,8 +78,6 @@ static const struct KeyInterval total_interval = {
 static inline void
 setup(void)
 {
-	struct sigaction action;
-
 	ENTER("setup");
 
 	init_keys();
@@ -276,7 +274,6 @@ test_find(void *arg)
 ThreadReturn
 test_iterator(void *arg)
 {
-	int last_key;
 	int *restrict key;
 	unsigned int count;
 	size_t length;
@@ -498,7 +495,6 @@ static inline void
 multi_thread_test(const ThreadRoutine test)
 {
 	int i;
-	void *arg;
 	Thread threads[THREADS_COUNT];
 
 	ENTER("multi_thread_test");
