@@ -147,6 +147,8 @@ test_insert(void *arg)
 						   (void *) key,
 						   sizeof(*key));
 
+		/* printf("%d\n", *key); fflush(stdout); */
+
 		if (status < 0) {
 			if (status == -1)
 				SYS_FAILURE("hash_map_insert",
@@ -269,7 +271,7 @@ test_find(void *arg)
 	return (ThreadReturn) 0;
 }
 
-#include <strings.h>
+
 
 ThreadReturn
 test_iterator(void *arg)
@@ -288,13 +290,12 @@ test_iterator(void *arg)
 
 	ENTER("test_iterator");
 
-	/* /1* calloc to preserve thread stack space *1/ */
-	bool *const restrict key_set = malloc(KEYS_COUNT * sizeof(*key_set));
+	/* calloc to preserve thread stack space */
+	bool *const restrict key_set = calloc(KEYS_COUNT,
+					      sizeof(*key_set));
 
 	if (key_set == NULL)
 		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
-
-	bzero(key_set, KEYS_COUNT * sizeof(*key_set));
 
 	/* test iterator */
 	if (red_black_hash_map_iterator_init(&iterator,
@@ -564,7 +565,7 @@ main(void)
 
 	test_single_thread_operations();
 
-	/* test_multi_thread_operations(); */
+	test_multi_thread_operations();
 
 	ALL_TESTS_PASSED();
 

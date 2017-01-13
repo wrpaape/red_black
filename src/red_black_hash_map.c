@@ -62,6 +62,8 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 
 	/* traverse old buckets in first half */
 	do {
+		RBL_INIT(&bucket->lock);
+
 		node         = bucket->root;
 		bucket->root = NULL; /* remove tree */
 
@@ -69,6 +71,7 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 		end_ptr = red_black_concat(node,
 					   end_ptr);
 
+		/* FIXME: if don't touch allocator, lock failure later on */
 		/* reset expansion constant of allocators */
 		hash_node_allocator_reset(&bucket->allocator);
 
@@ -83,7 +86,6 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 
 		++bucket;
 	} while (bucket < bucket_until);
-
 
 	/* dump node list into empty hash table */
 	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
@@ -103,6 +105,7 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 				 &red_black_hash_key_comparator,
 				 &jump_buffer,
 				 head);
+
 NEXT_NODE:
 		if (next == NULL)
 			return;

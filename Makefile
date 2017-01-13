@@ -155,6 +155,7 @@ CC_BASE_FLAGS	:= -std=gnu99 -march=native
 CC_ENV_FLAGS	:= -D__USE_FIXED_PROTOTYPES__ $(SYS_ENV_FLAGS)
 CC_INC_FLAGS	:= -I$(HEADER_DIR) -I$(KEY_ACC_DIR)
 CC_FLAGS	:= $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS) -O2 -funroll-loops -c
+# CC_FLAGS	:= $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS) -c
 CC_PIC_FLAGS	:= -fpic
 
 # Archiver

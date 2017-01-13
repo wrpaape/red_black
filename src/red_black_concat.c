@@ -19,7 +19,6 @@ red_black_concat(struct RedBlackNode *restrict node,
 	*cursor = NULL;
 
 	/* fetch next end_ptr */
-
 	while (1) {
 		next = node->left;
 

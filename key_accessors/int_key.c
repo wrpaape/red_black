@@ -19,7 +19,7 @@ int_key_comparator(const void *key1,
 	return 0;
 }
 
-inline size_t
+static inline size_t
 uint_digit_count(const unsigned long n)
 {
 	if (n < 10000000000llu) {

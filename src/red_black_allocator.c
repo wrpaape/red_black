@@ -45,6 +45,7 @@ rba_init_hash_node(struct RedBlackNode *const restrict node,
 		      (const void *) hash_key,
 		      is_red);
 
+	/* copy input hash key to node */
 	*hash_key = *((const struct RedBlackHashKey *restrict) key);
 }
 
@@ -58,7 +59,7 @@ rba_allocator_init(struct RedBlackAllocator *const restrict allocator,
 	allocator->free = NULL;
 
 	rbab_init(&allocator->buffer,
-		  sizeof(struct RedBlackHashNode));
+		  size_node);
 
 	allocator->initializer = initializer;
 }
