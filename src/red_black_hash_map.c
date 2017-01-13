@@ -62,6 +62,10 @@ rbhm_reset_buckets(struct RedBlackHashBucket *const restrict buckets,
 
 	/* traverse old buckets in first half */
 	do {
+#ifdef OSX
+		/* FIXME: need to retouch all realloc'd memory for OSX */
+		RBL_INIT(&bucket->lock);
+#endif /* ifdef OSX */
 		node         = bucket->root;
 		bucket->root = NULL; /* remove tree */
 

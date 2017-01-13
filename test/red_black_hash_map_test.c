@@ -7,11 +7,8 @@
 static RedBlackHashMap hash_map;
 
 
-/* macros
+/* threads API
  * ────────────────────────────────────────────────────────────────────────── */
-#define THREADS_COUNT		4
-
-/* threads API */
 #ifdef WIN32
 typedef HANDLE Thread;
 typedef DWORD ThreadReturn;
@@ -55,6 +52,7 @@ struct KeyInterval {
 	const int *restrict until;
 };
 
+#define THREADS_COUNT		4
 
 #define Q0 0
 #define Q1 (KEYS_COUNT / THREADS_COUNT)
