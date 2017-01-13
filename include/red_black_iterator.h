@@ -23,15 +23,15 @@ struct RedBlackIterator {
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_iterator_reset_asc(struct RedBlackIterator *const restrict iterator,
-			     const struct RedBlackNode *restrict node);
+red_black_iterator_set_asc(struct RedBlackIterator *const restrict iterator,
+			   const struct RedBlackNode *restrict node);
 void
 red_black_iterator_init_asc(struct RedBlackIterator *const restrict iterator,
 			    const struct RedBlackNode *restrict node);
 
 void
-red_black_iterator_reset_desc(struct RedBlackIterator *const restrict iterator,
-			      const struct RedBlackNode *restrict node);
+red_black_iterator_set_desc(struct RedBlackIterator *const restrict iterator,
+			    const struct RedBlackNode *restrict node);
 void
 red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
 			     const struct RedBlackNode *restrict node);

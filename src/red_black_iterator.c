@@ -65,8 +65,8 @@ rbi_init_asc_cursor(const struct RedBlackNode *restrict *restrict cursor,
 }
 
 void
-red_black_iterator_reset_asc(struct RedBlackIterator *const restrict iterator,
-			     const struct RedBlackNode *restrict node)
+red_black_iterator_set_asc(struct RedBlackIterator *const restrict iterator,
+			   const struct RedBlackNode *restrict node)
 {
 	iterator->cursor = rbi_init_asc_cursor(&iterator->stack[0],
 					       node);
@@ -104,8 +104,8 @@ rbi_init_desc_cursor(const struct RedBlackNode *restrict *restrict cursor,
 }
 
 void
-red_black_iterator_reset_desc(struct RedBlackIterator *const restrict iterator,
-			      const struct RedBlackNode *restrict node)
+red_black_iterator_set_desc(struct RedBlackIterator *const restrict iterator,
+			    const struct RedBlackNode *restrict node)
 {
 	iterator->cursor = rbi_init_desc_cursor(&iterator->stack[0],
 						node);

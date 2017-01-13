@@ -1,4 +1,4 @@
-#include "red_black_insert.h"  /* Node, Comparator, Allocator, JumpBuffer */
+#include "red_black_insert.h"  /* Node, Comparator, NodeFactory, JumpBuffer */
 #include "red_black_correct.h" /* post-insertion correction functions */
 
 
@@ -9,7 +9,7 @@ typedef bool
 		      struct RedBlackNode *const restrict grandparent,
 		      struct RedBlackNode *const restrict parent,
 		      const RedBlackComparator comparator,
-		      struct RedBlackAllocator *const restrict allocator,
+		      struct RedBlackNodeFactory *const restrict factory,
 		      RedBlackJumpBuffer *const restrict jump_buffer,
 		      const void *const key);
 
@@ -30,7 +30,7 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key);
 static bool
@@ -38,7 +38,7 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key);
 static bool
@@ -46,7 +46,7 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key);
 static bool
@@ -54,7 +54,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key);
 
@@ -62,7 +62,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 int
 red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
-		 struct RedBlackAllocator *const restrict allocator,
+		 struct RedBlackNodeFactory *const restrict factory,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 const void *const key)
 {
@@ -74,10 +74,10 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 	struct RedBlackNode *const restrict grandparent = *tree;
 
 	if (grandparent == NULL) {
-		*tree = rba_new(allocator,
-				jump_buffer,
-				key,
-				false); /* BLACK */
+		*tree = rbnf_new(factory,
+				 jump_buffer,
+				 key,
+				 false); /* BLACK */
 		return 1; /* tree updated */
 	}
 
@@ -91,10 +91,10 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 			parent = grandparent->left;
 
 			if (parent == NULL) {
-				grandparent->left = rba_new(allocator,
-							    jump_buffer,
-							    key,
-							    true); /* RED */
+				grandparent->left = rbnf_new(factory,
+							     jump_buffer,
+							     key,
+							     true); /* RED */
 
 			} else {
 				compare = comparator(key,
@@ -111,7 +111,7 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
                                                            grandparent,
                                                            parent,
                                                            comparator,
-                                                           allocator,
+                                                           factory,
                                                            jump_buffer,
                                                            key);
 					/* if return, tree must have updated */
@@ -123,10 +123,10 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 			parent = grandparent->right;
 
 			if (parent == NULL) {
-				grandparent->right = rba_new(allocator,
-							     jump_buffer,
-							     key,
-							     true); /* RED */
+				grandparent->right = rbnf_new(factory,
+							      jump_buffer,
+							      key,
+							      true); /* RED */
 
 			} else {
 				compare = comparator(key,
@@ -143,7 +143,7 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
                                                            grandparent,
                                                            parent,
                                                            comparator,
-                                                           allocator,
+                                                           factory,
                                                            jump_buffer,
                                                            key);
 					/* if return, tree must have updated */
@@ -162,7 +162,7 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key)
 {
@@ -176,10 +176,10 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		parent->left = rba_new(allocator,
-				       jump_buffer,
-				       key,
-				       true); /* RED */
+		parent->left = rbnf_new(factory,
+					jump_buffer,
+					key,
+					true); /* RED */
 
 		/* need to correct */
 		red_black_correct_ll_bot(tree,
@@ -202,7 +202,7 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 				     parent,
 				     node,
 				     comparator,
-				     allocator,
+				     factory,
 				     jump_buffer,
 				     key);
 
@@ -226,7 +226,7 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key)
 {
@@ -240,10 +240,10 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		node = rba_new(allocator,
-			       jump_buffer,
-			       key,
-			       true); /* RED */
+		node = rbnf_new(factory,
+				jump_buffer,
+				key,
+				true); /* RED */
 
 		parent->right = node;
 
@@ -269,7 +269,7 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 				     parent,
 				     node,
 				     comparator,
-				     allocator,
+				     factory,
 				     jump_buffer,
 				     key);
 
@@ -294,7 +294,7 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key)
 {
@@ -308,10 +308,10 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		parent->right = rba_new(allocator,
-					jump_buffer,
-					key,
-					true); /* RED */
+		parent->right = rbnf_new(factory,
+					 jump_buffer,
+					 key,
+					 true); /* RED */
 
 		/* need to correct */
 		red_black_correct_rr_bot(tree,
@@ -334,7 +334,7 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 				     parent,
 				     node,
 				     comparator,
-				     allocator,
+				     factory,
 				     jump_buffer,
 				     key);
 
@@ -358,7 +358,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
-	     struct RedBlackAllocator *const restrict allocator,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     const void *const key)
 {
@@ -372,10 +372,10 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	status = (node == NULL);
 
 	if (status) {
-		node = rba_new(allocator,
-			       jump_buffer,
-			       key,
-			       true); /* RED */
+		node = rbnf_new(factory,
+				jump_buffer,
+				key,
+				true); /* RED */
 
 		parent->left = node;
 
@@ -401,7 +401,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 				     parent,
 				     node,
 				     comparator,
-				     allocator,
+				     factory,
 				     jump_buffer,
 				     key);
 

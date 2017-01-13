@@ -1,4 +1,4 @@
-#include "red_black_test.h" /* print macros, keys */
+#include "red_black_test.h" /* print/exit macros, keys */
 #include "red_black_tree.h" /* red_black_insert|find|verify|delete */
 #include "int_key.h"        /* int_key_comparator */
 #include <signal.h>         /* sigaction */
@@ -51,6 +51,16 @@ setup(void)
 			    &int_key_comparator);
 
 	RETURN("setup");
+}
+
+static inline void
+teardown(void)
+{
+	ENTER("teardown");
+
+	red_black_tree_destroy(&tree);
+
+	RETURN("teardown");
 }
 
 static inline void
@@ -279,16 +289,6 @@ test_delete(void)
 	TEST_PASS("delete");
 
 	RETURN("test_delete");
-}
-
-static inline void
-teardown(void)
-{
-	ENTER("teardown");
-
-	red_black_tree_destroy(&tree);
-
-	RETURN("teardown");
 }
 
 

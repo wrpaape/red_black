@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_HASH_KEY_H_
-#define RED_BLACK_HASH_KEY_H_
+#ifndef RED_BLACK_HKEY_H_
+#define RED_BLACK_HKEY_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -18,7 +18,7 @@
 #	define RED_BLACK_HASH_MAX UINT64_MAX
 #endif
 
-struct RedBlackHashKey {
+struct RedBlackHKey {
 	RedBlackHash hash;
 	const unsigned char *key;
 	size_t length;
@@ -28,12 +28,12 @@ struct RedBlackHashKey {
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_hash_key_init(struct RedBlackHashKey *const restrict hash_key,
-			const void *const key,
-			const size_t length);
+red_black_hkey_init(struct RedBlackHKey *const restrict hkey,
+		    const void *const key,
+		    const size_t length);
 
 int
-red_black_hash_key_comparator(const void *key1,
-			      const void *key2);
+red_black_hkey_comparator(const void *key1,
+			  const void *key2);
 
-#endif /* ifndef RED_BLACK_HASH_KEY_H_ */
+#endif /* ifndef RED_BLACK_HKEY_H_ */

@@ -1,10 +1,10 @@
-#include "red_black_test.h"	/* print macros */
-#include "red_black_hash_map.h" /* red_hash_map_insert|find|verify|delete */
+#include "red_black_test.h"  /* print/exit macros */
+#include "red_black_lhmap.h" /* red_lhmap_insert|find|verify|delete */
 
 
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
-static RedBlackHashMap hash_map;
+static RedBlackLHMap lhmap;
 
 
 /* threads API
@@ -64,7 +64,7 @@ static const struct KeyInterval intervals[THREADS_COUNT] = {
 	[0] = { .from = &keys[Q0], .until = &keys[Q1] },
 	[1] = { .from = &keys[Q1], .until = &keys[Q2] },
 	[2] = { .from = &keys[Q2], .until = &keys[Q3] },
-	[3] = { .from = &keys[Q3], .until = &keys[Q4] },
+	[3] = { .from = &keys[Q3], .until = &keys[Q4] }
 };
 
 static const struct KeyInterval total_interval = {
@@ -84,8 +84,8 @@ setup(void)
 
 	shuffle_keys();
 
-	if (red_black_hash_map_init(&hash_map) < 0)
-		SYS_FAILURE("hash_map_init",
+	if (red_black_lhmap_init(&lhmap) < 0)
+		SYS_FAILURE("lhmap_init",
 			    "OUT OF MEMORY");
 
 	RETURN("setup");
@@ -96,7 +96,7 @@ teardown(void)
 {
 	ENTER("teardown");
 
-	red_black_hash_map_destroy(&hash_map);
+	red_black_lhmap_destroy(&lhmap);
 
 	RETURN("teardown");
 }
@@ -106,18 +106,18 @@ test_count(const int expected)
 {
 	ENTER("test_count");
 
-	const int count = red_black_hash_map_count(&hash_map);
+	const int count = red_black_lhmap_count(&lhmap);
 
 	if (count < 0)
-		SYS_FAILURE("hash_map_count",
+		SYS_FAILURE("lhmap_count",
 			    "LOCK FAILURE");
 	else if (count < expected)
-		TEST_FAILURE("hash_map_count",
+		TEST_FAILURE("lhmap_count",
 			     "COUNT LESS THAN EXPECTED: %u < %u",
 			     count,
 			     expected);
 	else if (count > expected)
-		TEST_FAILURE("hash_map_count",
+		TEST_FAILURE("lhmap_count",
 			     "COUNT GREATER THAN EXPECTED: %u > %u",
 			     count,
 			     expected);
@@ -139,34 +139,34 @@ test_insert(void *arg)
 	interval = (struct KeyInterval *) arg;
 
 	for (key = interval->from; key < interval->until; ++key) {
-		status = red_black_hash_map_insert(&hash_map,
-						   (void *) key,
-						   sizeof(*key));
+		status = red_black_lhmap_insert(&lhmap,
+						(void *) key,
+						sizeof(*key));
 
 		/* printf("%d\n", *key); fflush(stdout); */
 
 		if (status < 0) {
 			if (status == -1)
-				SYS_FAILURE("hash_map_insert",
+				SYS_FAILURE("lhmap_insert",
 					    "OUT OF MEMORY");
 			else
-				SYS_FAILURE("hash_map_insert",
+				SYS_FAILURE("lhmap_insert",
 					    "LOCK FAILURE");
 
 		} else if (status == 0) {
-			TEST_FAILURE("hash_map_insert",
+			TEST_FAILURE("lhmap_insert",
 				     "KEY NOT UNIQUE: %d",
 				     *key);
 #if DO_VERIFY
 		} else {
-			status = red_black_hash_map_verify(&hash_map);
+			status = red_black_lhmap_verify(&lhmap);
 
 			if (status != 1) {
 				if (status < 0)
-					SYS_FAILURE("hash_map_verify",
+					SYS_FAILURE("lhmap_verify",
 						    "LOCK FAILURE");
 				else
-					TEST_FAILURE("hash_map_insert",
+					TEST_FAILURE("lhmap_insert",
 						     "NOT VALID HASH MAP "
 						     "(inserted %d)",
 						     *key);
@@ -176,31 +176,31 @@ test_insert(void *arg)
 	}
 
 
-	status = red_black_hash_map_insert(&hash_map,
-					   (void *) interval->from,
-					   sizeof(*(interval->from)));
+	status = red_black_lhmap_insert(&lhmap,
+					(void *) interval->from,
+					sizeof(*(interval->from)));
 
 	if (status < 0) {
 		if (status == -1)
-			SYS_FAILURE("hash_map_insert",
+			SYS_FAILURE("lhmap_insert",
 				    "OUT OF MEMORY");
 		else
-			SYS_FAILURE("hash_map_insert",
+			SYS_FAILURE("lhmap_insert",
 				    "LOCK FAILURE");
 
 	} else if (status == 1) {
-		TEST_FAILURE("hash_map_insert",
+		TEST_FAILURE("lhmap_insert",
 			     "KEY INSERTED TWICE");
 #if DO_VERIFY
 	} else {
-		status = red_black_hash_map_verify(&hash_map);
+		status = red_black_lhmap_verify(&lhmap);
 
 		if (status != 1) {
 			if (status < 0)
-				SYS_FAILURE("hash_map_verify",
+				SYS_FAILURE("lhmap_verify",
 					    "LOCK FAILURE");
 			else
-				TEST_FAILURE("hash_map_insert",
+				TEST_FAILURE("lhmap_insert",
 					     "NOT VALID HASH MAP "
 					     "(no insertion)");
 		}
@@ -229,16 +229,16 @@ test_find(void *arg)
 	key = &keys[0];
 
 	for (key = total_interval.from; key < total_interval.until; ++key) {
-		status = red_black_hash_map_find(&hash_map,
-						 (void *) key,
-						 sizeof(*key));
+		status = red_black_lhmap_find(&lhmap,
+					      (void *) key,
+					      sizeof(*key));
 
 		if (status != 1) {
 			if (status < 0)
-				SYS_FAILURE("hash_map_find",
+				SYS_FAILURE("lhmap_find",
 					    "LOCK FAILURE");
 			else
-				TEST_FAILURE("hash_map_find",
+				TEST_FAILURE("lhmap_find",
 					     "KEY NOT FOUND: %d",
 					     *key);
 		}
@@ -247,16 +247,16 @@ test_find(void *arg)
 
 	unused_key = -1;
 
-	status = red_black_hash_map_find(&hash_map,
-					 (void *) &unused_key,
-					 sizeof(unused_key));
+	status = red_black_lhmap_find(&lhmap,
+				      (void *) &unused_key,
+				      sizeof(unused_key));
 
 	if (status != 0) {
 		if (status < 0)
-			SYS_FAILURE("hash_map_find",
+			SYS_FAILURE("lhmap_find",
 				    "LOCK FAILURE");
 		else
-			TEST_FAILURE("hash_map_find",
+			TEST_FAILURE("lhmap_find",
 				     "FOUND UNUSED KEY");
 	}
 
@@ -280,7 +280,7 @@ test_iterator(void *arg)
 
 	/* static bool key_set[KEYS_COUNT]; */
 
-	RedBlackHashMapIterator iterator;
+	RedBlackLHMapLIterator iterator;
 
 
 	ENTER("test_iterator");
@@ -293,27 +293,27 @@ test_iterator(void *arg)
 		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
 
 	/* test iterator */
-	if (red_black_hash_map_iterator_init(&iterator,
-					     &hash_map) < 0)
-				SYS_FAILURE("hash_map_iterator_init",
+	if (red_black_lhmap_literator_init(&iterator,
+					   &lhmap) < 0)
+				SYS_FAILURE("lhmap_literator_init",
 					    "LOCK FAILURE");
 
 	count = 0;
 
 	while (1) {
-		status = red_black_hash_map_iterator_next(&iterator,
-							  (void **) &key,
-							  &length);
+		status = red_black_lhmap_literator_next(&iterator,
+							(void **) &key,
+							&length);
 
 		if (status == 0)
 			break;
 
 		if (status < 0)
-			SYS_FAILURE("hash_map_iterator_next",
+			SYS_FAILURE("lhmap_literator_next",
 				    "LOCK FAILURE");
 
 		if (length != sizeof(*key))
-			TEST_FAILURE("hash_map_iterator_next",
+			TEST_FAILURE("lhmap_literator_next",
 				     "GOT UNEXPECTED LENGTH %zu INSTEAD OF %zu",
 				     length,
 				     sizeof(*key));
@@ -321,11 +321,10 @@ test_iterator(void *arg)
 		/* got next key */
 		key_set_ptr = key_set + *key;
 
-		if (*key_set_ptr) {
-			TEST_FAILURE("hash_map_iterator_next",
+		if (*key_set_ptr)
+			TEST_FAILURE("lhmap_literator_next",
 				     "ITERATOR TRAVERSED SAME KEY TWICE: %d (%d) (%d)",
 				     *key, *key_set_ptr, (int) (key - &keys[0]));
-		}
 
 		*key_set_ptr = true;
 		++count;
@@ -334,10 +333,10 @@ test_iterator(void *arg)
 	free(key_set);
 
 	if (count < KEYS_COUNT)
-		TEST_FAILURE("hash_map_iterator",
+		TEST_FAILURE("lhmap_literator",
 			     "ITERATOR SKIPPED ENTRIES");
 	else if (count > KEYS_COUNT)
-		TEST_FAILURE("hash_map_iterator",
+		TEST_FAILURE("lhmap_literator",
 			     "ITERATOR TRAVERSED MORE THAN " KC_STR " KEYS");
 
 	TEST_PASS("iterator");
@@ -360,27 +359,27 @@ test_delete(void *arg)
 
 	unused_key = -1;
 
-	status = red_black_hash_map_delete(&hash_map,
+	status = red_black_lhmap_delete(&lhmap,
 					   (void *) &unused_key,
 					   sizeof(unused_key));
 
 	if (status != 0) {
 		if (status < 0)
-			SYS_FAILURE("hash_map_delete",
+			SYS_FAILURE("lhmap_delete",
 				    "LOCK FAILURE");
 		else
-			TEST_FAILURE("hash_map_delete",
+			TEST_FAILURE("lhmap_delete",
 				     "DELETED UNUSED KEY");
 #if DO_VERIFY
 	} else {
-		status = red_black_hash_map_verify(&hash_map);
+		status = red_black_lhmap_verify(&lhmap);
 
 		if (status != 1) {
 			if (status < 0)
-				SYS_FAILURE("hash_map_verify",
+				SYS_FAILURE("lhmap_verify",
 					    "LOCK FAILURE");
 			else
-				TEST_FAILURE("hash_map_delete",
+				TEST_FAILURE("lhmap_delete",
 					     "NOT VALID HASH MAP "
 					     "(no deletion)");
 		}
@@ -392,28 +391,28 @@ test_delete(void *arg)
 	key = &keys[0];
 
 	for (key = interval->from; key < interval->until; ++key) {
-		status = red_black_hash_map_delete(&hash_map,
+		status = red_black_lhmap_delete(&lhmap,
 						   (void *) key,
 						   sizeof(*key));
 
 		if (status != 1) {
 			if (status < 0)
-				SYS_FAILURE("hash_map_delete",
+				SYS_FAILURE("lhmap_delete",
 					    "LOCK FAILURE");
 			else
-				TEST_FAILURE("hash_map_delete",
+				TEST_FAILURE("lhmap_delete",
 					     "KEY NOT FOUND: %d",
 					     *key);
 #if DO_VERIFY
 		} else {
-			status = red_black_hash_map_verify(&hash_map);
+			status = red_black_lhmap_verify(&lhmap);
 
 			if (status != 1) {
 				if (status < 0)
-					SYS_FAILURE("hash_map_verify",
+					SYS_FAILURE("lhmap_verify",
 						    "LOCK FAILURE");
 				else
-					TEST_FAILURE("hash_map_delete",
+					TEST_FAILURE("lhmap_delete",
 						     "NOT VALID HASH MAP "
 						     "(deleted %d)",
 						     *key);
@@ -423,27 +422,27 @@ test_delete(void *arg)
 	}
 
 
-	status = red_black_hash_map_delete(&hash_map,
+	status = red_black_lhmap_delete(&lhmap,
 					   (void *) interval->from,
 					   sizeof(*(interval->from)));
 
 	if (status != 0) {
 		if (status < 0)
-			SYS_FAILURE("hash_map_delete",
+			SYS_FAILURE("lhmap_delete",
 				    "LOCK FAILURE");
 		else
-			TEST_FAILURE("hash_map_delete",
+			TEST_FAILURE("lhmap_delete",
 				     "DELETED KEY TWICE");
 #if DO_VERIFY
 	} else {
-		status = red_black_hash_map_verify(&hash_map);
+		status = red_black_lhmap_verify(&lhmap);
 
 		if (status != 1) {
 			if (status < 0)
-				SYS_FAILURE("hash_map_verify",
+				SYS_FAILURE("lhmap_verify",
 					    "LOCK FAILURE");
 			else
-				TEST_FAILURE("hash_map_delete",
+				TEST_FAILURE("lhmap_delete",
 					     "NOT VALID HASH MAP "
 					     "(no deletion)");
 		}

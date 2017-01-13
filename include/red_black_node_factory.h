@@ -1,0 +1,66 @@
+#ifndef RED_BLACK_NODE_FACTORY_H_
+#define RED_BLACK_NODE_FACTORY_H_
+
+/* external dependencies
+ * ────────────────────────────────────────────────────────────────────────── */
+#include "red_black_jump.h"	/* RedBlackJumpBuffer, RED_BLACK_JUMP_ERROR */
+#include "red_black_node.h"	/* struct RedBlackNode */
+#include <stddef.h>		/* size_t */
+
+
+/* typedefs, struct declarations
+ * ────────────────────────────────────────────────────────────────────────── */
+struct RedBlackNodeFactoryBufferBlock {
+	struct RedBlackNodeFactoryBufferBlock *next;
+};
+
+struct RedBlackNodeFactoryBuffer {
+	char *restrict cursor;
+	const char *restrict until;
+	size_t expand;
+	struct RedBlackNodeFactoryBufferBlock *restrict blocks;
+};
+
+typedef void
+(*RedBlackNodeFactoryInitializer)(struct RedBlackNode *const restrict node,
+				  const void *const key,
+				  const bool is_red);
+
+struct RedBlackNodeFactoryBlueprint {
+	RedBlackNodeFactoryInitializer initializer;
+	size_t size_node;
+	size_t init_expand;
+};
+
+struct RedBlackNodeFactory {
+	struct RedBlackNode *restrict free;
+	const struct RedBlackNodeFactoryBlueprint *restrict blueprint;
+	struct RedBlackNodeFactoryBuffer buffer;
+};
+
+
+/* external API
+ * ────────────────────────────────────────────────────────────────────────── */
+void
+rbnf_node_factory_init(struct RedBlackNodeFactory *const restrict factory);
+
+void
+rbnf_hnode_factory_init(struct RedBlackNodeFactory *const restrict factory);
+
+void
+rbnf_reset(struct RedBlackNodeFactory *const restrict factory);
+
+struct RedBlackNode *
+rbnf_new(struct RedBlackNodeFactory *const restrict factory,
+	 RedBlackJumpBuffer *const restrict jump_buffer,
+	 const void *const key,
+	 const bool is_red);
+
+void
+rbnf_free(struct RedBlackNodeFactory *const restrict factory,
+	  struct RedBlackNode *const restrict node);
+
+void
+rbnf_destroy(struct RedBlackNodeFactory *const restrict factory);
+
+#endif /* ifndef RED_BLACK_NODE_FACTORY_H_ */

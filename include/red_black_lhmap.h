@@ -1,0 +1,101 @@
+#ifndef RED_BLACK_LHMAP_H_
+#define RED_BLACK_LHMAP_H_
+
+/* external dependencies
+ * ────────────────────────────────────────────────────────────────────────── */
+#include "red_black_lock.h"         /* RedBlackLock */
+#include "red_black_node_factory.h" /* RedBlackNodeFactory */
+#include "red_black_hmap_count.h"   /* RedBlackHMapCount */
+#include "red_black_iterator.h"	    /* RedBlackIterator */
+
+
+/* typedefs, struct declarations
+ * ────────────────────────────────────────────────────────────────────────── */
+struct RedBlackLHBucket {
+	RedBlackLock lock;
+	struct RedBlackNode *restrict root;
+	struct RedBlackNodeFactory node_factory;
+};
+
+struct _RedBlackLHMap {
+	RedBlackLock lock;
+	struct RedBlackLHBucket *restrict buckets;
+	struct RedBlackHMapCount count;
+};
+typedef struct _RedBlackLHMap RedBlackLHMap;
+
+struct _RedBlackLHMapLIterator {
+	struct RedBlackIterator bucket_iter;
+	struct RedBlackLHBucket *restrict bucket;
+	struct RedBlackLHBucket *restrict last_bucket;
+	RedBlackLock *restrict map_lock;
+};
+typedef struct _RedBlackLHMapLIterator RedBlackLHMapLIterator;
+
+struct _RedBlackLHMapIterator {
+	struct RedBlackIterator bucket_iter;
+	struct RedBlackLHBucket *restrict bucket;
+	struct RedBlackLHBucket *restrict last_bucket;
+};
+typedef struct _RedBlackLHMapIterator RedBlackLHMapIterator;
+
+
+/* external API
+ * ────────────────────────────────────────────────────────────────────────── */
+int
+red_black_lhmap_init(RedBlackLHMap *const restrict map);
+
+void
+red_black_lhmap_destroy(RedBlackLHMap *const restrict map);
+
+int
+red_black_lhmap_insert(RedBlackLHMap *const restrict map,
+		       const void *const key,
+		       const size_t length);
+
+int
+red_black_lhmap_update(RedBlackLHMap *const restrict map,
+		       const void *const key,
+		       const size_t length,
+		       void **const restrict old_ptr);
+
+int
+red_black_lhmap_delete(RedBlackLHMap *const restrict map,
+		       const void *const key,
+		       const size_t length);
+
+int
+red_black_lhmap_remove(RedBlackLHMap *const restrict map,
+		       const void *const key,
+		       const size_t length,
+		       void **const restrict key_ptr);
+
+int
+red_black_lhmap_find(RedBlackLHMap *const restrict map,
+		     const void *const key,
+		     const size_t length);
+
+int
+red_black_lhmap_fetch(RedBlackLHMap *const restrict map,
+		      const void *const key,
+		      const size_t length,
+		      void **const restrict key_ptr);
+
+int
+red_black_lhmap_count(RedBlackLHMap *const restrict map);
+
+int
+red_black_lhmap_literator_init(RedBlackLHMapLIterator *const restrict iter,
+			       RedBlackLHMap *const restrict map);
+int
+red_black_lhmap_literator_unlock(RedBlackLHMapLIterator *const restrict iter);
+
+int
+red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
+			       void **const restrict key_ptr,
+			       size_t *const restrict length_ptr);
+
+int
+red_black_lhmap_verify(RedBlackLHMap *const restrict map);
+
+#endif /* ifndef RED_BLACK_LHMAP_H_ */

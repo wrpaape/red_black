@@ -17,13 +17,13 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 	tree->root	 = NULL;
 	tree->comparator = comparator;
 
-	node_allocator_init(&tree->allocator);
+	rbnf_node_factory_init(&tree->node_factory);
 }
 
 void
 red_black_tree_destroy(RedBlackTree *const restrict tree)
 {
-	rba_destroy(&tree->allocator);
+	rbnf_destroy(&tree->node_factory);
 }
 
 int
@@ -38,7 +38,7 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 	return (status == 0)
 	     ? red_black_insert(&tree->root,
 				tree->comparator,
-				&tree->allocator,
+				&tree->node_factory,
 				&jump_buffer,
 				key) /* 1, 0 */
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
@@ -57,7 +57,7 @@ red_black_tree_update(RedBlackTree *const restrict tree,
 	return (status == 0)
 	     ? red_black_update(&tree->root,
 				tree->comparator,
-				&tree->allocator,
+				&tree->node_factory,
 				&jump_buffer,
 				key,
 				old_ptr) /* 1, 0 */
@@ -76,7 +76,7 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 	return (status == 0)
 	     ? red_black_delete(&tree->root,
 				tree->comparator,
-				&tree->allocator,
+				&tree->node_factory,
 				&jump_buffer,
 				key) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
@@ -95,7 +95,7 @@ red_black_tree_remove(RedBlackTree *const restrict tree,
 	return (status == 0)
 	     ? red_black_remove(&tree->root,
 				tree->comparator,
-				&tree->allocator,
+				&tree->node_factory,
 				&jump_buffer,
 				key,
 				key_ptr) /* 1, 0 */
@@ -129,42 +129,42 @@ red_black_tree_count(const RedBlackTree *const restrict tree)
 }
 
 void
-red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree)
 {
-	red_black_iterator_init_asc(iterator,
+	red_black_iterator_init_asc(iter,
 				    tree->root);
 }
 
 void
-red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iter,
 				  const RedBlackTree *const restrict tree)
 {
-	red_black_iterator_init_desc(iterator,
+	red_black_iterator_init_desc(iter,
 				     tree->root);
 }
 
 void
-red_black_tree_iterator_reset_asc(RedBlackTreeIterator *const restrict iterator,
-				  const RedBlackTree *const restrict tree)
+red_black_tree_iterator_set_asc(RedBlackTreeIterator *const restrict iter,
+				const RedBlackTree *const restrict tree)
 {
-	red_black_iterator_reset_asc(iterator,
-				     tree->root);
+	red_black_iterator_set_asc(iter,
+				   tree->root);
 }
 
 void
-red_black_tree_iterator_reset_desc(RedBlackTreeIterator *const restrict iterator,
-				   const RedBlackTree *const restrict tree)
+red_black_tree_iterator_set_desc(RedBlackTreeIterator *const restrict iter,
+				 const RedBlackTree *const restrict tree)
 {
-	red_black_iterator_reset_desc(iterator,
-				      tree->root);
+	red_black_iterator_set_desc(iter,
+				    tree->root);
 }
 
 bool
-red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iter,
 			     void **const restrict key_ptr)
 {
-	return red_black_iterator_next(iterator,
+	return red_black_iterator_next(iter,
 				       key_ptr);
 }
 

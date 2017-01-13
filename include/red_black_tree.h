@@ -3,10 +3,10 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_comparator.h"  /* Comparator */
-#include "red_black_allocator.h"   /* Node, Allocator, JumpBuffer, bool */
-#include "red_black_iterator.h"    /* RedBlackIterator */
-#include "red_black_print_types.h" /* KeySizer|Putter, size_t */
+#include "red_black_comparator.h"   /* Comparator */
+#include "red_black_node_factory.h" /* Node, NodeFactory, JumpBuffer, bool */
+#include "red_black_iterator.h"     /* RedBlackIterator */
+#include "red_black_print_types.h"  /* KeySizer|Putter, size_t */
 
 
 /* typedefs, struct declarations
@@ -14,7 +14,7 @@
 struct _RedBlackTree {
 	struct RedBlackNode *restrict root;
 	RedBlackComparator comparator;
-	struct RedBlackAllocator allocator;
+	struct RedBlackNodeFactory node_factory;
 };
 
 typedef struct _RedBlackTree RedBlackTree;
@@ -62,23 +62,23 @@ unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iter,
 				  const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_iterator_reset_asc(RedBlackTreeIterator *const restrict iterator,
-				  const RedBlackTree *const restrict tree);
+red_black_tree_iterator_set_asc(RedBlackTreeIterator *const restrict iter,
+				const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_iterator_reset_desc(RedBlackTreeIterator *const restrict iterator,
-				   const RedBlackTree *const restrict tree);
+red_black_tree_iterator_set_desc(RedBlackTreeIterator *const restrict iter,
+				 const RedBlackTree *const restrict tree);
 
 bool
-red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iter,
 			     void **const restrict key_ptr);
 
 bool

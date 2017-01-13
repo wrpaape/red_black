@@ -1,11 +1,11 @@
-#include "red_black_delete.h"  /* Comparator, Node, Allocator, JumpBuffer */
+#include "red_black_delete.h"  /* Comparator, Node, NodeFactory, JumpBuffer */
 #include "red_black_restore.h" /* restore API */
 
 
 static inline void
 rb_delete_node(struct RedBlackNode *restrict *const restrict tree,
 	       struct RedBlackNode *const restrict node,
-	       struct RedBlackAllocator *const restrict allocator,
+	       struct RedBlackNodeFactory *const restrict factory,
 	       RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	bool is_red;
@@ -17,8 +17,8 @@ rb_delete_node(struct RedBlackNode *restrict *const restrict tree,
 	rchild = node->right;
 
 	/* free node */
-	rba_free(allocator,
-		 node);
+	rbnf_free(factory,
+		  node);
 
 	if (is_red)
 		red_black_restore_red(tree, /* always restorable if node is RED */
@@ -35,7 +35,7 @@ rb_delete_node(struct RedBlackNode *restrict *const restrict tree,
 static inline void
 rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
 	       struct RedBlackNode *const restrict root,
-	       struct RedBlackAllocator *const restrict allocator)
+	       struct RedBlackNodeFactory *const restrict factory)
 {
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
@@ -44,8 +44,8 @@ rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
 	rchild = root->right;
 
 	/* free node */
-	rba_free(allocator,
-		 root);
+	rbnf_free(factory,
+		  root);
 
 	(void) red_black_restore_black(tree,
 				       lchild,
@@ -58,7 +58,7 @@ typedef void
 		      struct RedBlackNode *const restrict parent,
 		      struct RedBlackNode *const restrict node,
 		      const RedBlackComparator comparator,
-		      struct RedBlackAllocator *const restrict allocator,
+		      struct RedBlackNodeFactory *const restrict factory,
 		      RedBlackJumpBuffer *const restrict jump_buffer,
 		      const void *const key);
 
@@ -76,7 +76,7 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    struct RedBlackNode *const restrict lnode,
 	    const RedBlackComparator comparator,
-	    struct RedBlackAllocator *const restrict allocator,
+	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key);
 static void
@@ -84,7 +84,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    struct RedBlackNode *const restrict rnode,
 	    const RedBlackComparator comparator,
-	    struct RedBlackAllocator *const restrict allocator,
+	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key);
 
@@ -93,7 +93,7 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    struct RedBlackNode *const restrict lnode,
 	    const RedBlackComparator comparator,
-	    struct RedBlackAllocator *const restrict allocator,
+	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key)
 {
@@ -111,7 +111,7 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	if (compare == 0) {
 		rb_delete_node(subtree,
 			       lnode,
-			       allocator,
+			       factory,
 			       jump_buffer);
 
 		/* if returned, need to restore */
@@ -133,7 +133,7 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 			    lnode,
 			    next_node,
 			    comparator,
-			    allocator,
+			    factory,
 			    jump_buffer,
 			    key);
 
@@ -150,7 +150,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    struct RedBlackNode *const restrict rnode,
 	    const RedBlackComparator comparator,
-	    struct RedBlackAllocator *const restrict allocator,
+	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key)
 {
@@ -168,7 +168,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	if (compare == 0) {
 		rb_delete_node(subtree,
 			       rnode,
-			       allocator,
+			       factory,
 			       jump_buffer);
 
 		/* if returned, need to restore */
@@ -190,7 +190,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 			    rnode,
 			    next_node,
 			    comparator,
-			    allocator,
+			    factory,
 			    jump_buffer,
 			    key);
 
@@ -207,7 +207,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 int
 red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
-		 struct RedBlackAllocator *const restrict allocator,
+		 struct RedBlackNodeFactory *const restrict factory,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 const void *const key)
 {
@@ -228,7 +228,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		if (status) {
 			rb_delete_root(tree,
 				       node,
-				       allocator);
+				       factory);
 
 		} else {
 			if (compare < 0) {
@@ -244,7 +244,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 				    node,
 				    next_node,
 				    comparator,
-				    allocator,
+				    factory,
 				    jump_buffer,
 				    key);
 

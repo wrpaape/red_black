@@ -1,4 +1,4 @@
-#include "red_black_hash_key.h"	/* RedBlackHashKey, SIZE_MAX */
+#include "red_black_hkey.h"	/* RedBlackHKey, SIZE_MAX */
 #include <limits.h>		/* UINT_MAX, ULONG_MAX */
 
 
@@ -170,15 +170,15 @@ rbhk_hash(register const unsigned char *k, /* the key */
 
 
 void
-red_black_hash_key_init(struct RedBlackHashKey *const restrict hash_key,
-			const void *const key,
-			const size_t length)
+red_black_hkey_init(struct RedBlackHKey *const restrict hkey,
+		    const void *const key,
+		    const size_t length)
 {
-	hash_key->hash   = rbhk_hash((const unsigned char *) key,
-				     length);
+	hkey->hash   = rbhk_hash((const unsigned char *) key,
+				 length);
 
-	hash_key->key    = (const unsigned char *) key;
-	hash_key->length = length;
+	hkey->key    = (const unsigned char *) key;
+	hkey->length = length;
 }
 
 
@@ -248,11 +248,11 @@ rbhk_memory_compare(const unsigned char *restrict key1,
 }
 
 int
-red_black_hash_key_comparator(const void *key1,
-			      const void *key2)
+red_black_hkey_comparator(const void *key1,
+			  const void *key2)
 {
-	const struct RedBlackHashKey *hash_key1;
-	const struct RedBlackHashKey *hash_key2;
+	const struct RedBlackHKey *hkey1;
+	const struct RedBlackHKey *hkey2;
 	RedBlackHash hk1_hash;
 	RedBlackHash hk2_hash;
 	const unsigned char *restrict hk1_key;
@@ -260,11 +260,11 @@ red_black_hash_key_comparator(const void *key1,
 	size_t hk1_length;
 	size_t hk2_length;
 
-	hash_key1 = (const struct RedBlackHashKey *) key1;
-	hash_key2 = (const struct RedBlackHashKey *) key2;
+	hkey1 = (const struct RedBlackHKey *) key1;
+	hkey2 = (const struct RedBlackHKey *) key2;
 
-	hk1_hash = hash_key1->hash;
-	hk2_hash = hash_key2->hash;
+	hk1_hash = hkey1->hash;
+	hk2_hash = hkey2->hash;
 
 #if (RED_BLACK_HASH_MAX < UINT_MAX)
 	if (hk1_hash != hk2_hash)
@@ -278,14 +278,14 @@ red_black_hash_key_comparator(const void *key1,
 		return 1;
 #endif /* if (RED_BLACK_HASH_MAX < UINT_MAX) */
 
-	hk1_key = hash_key1->key;
-	hk2_key = hash_key2->key;
+	hk1_key = hkey1->key;
+	hk2_key = hkey2->key;
 
 	if (hk1_key == hk2_key)
 		return 0; /* ensure keys don't point to same memory */
 
-	hk1_length = hash_key1->length;
-	hk2_length = hash_key2->length;
+	hk1_length = hkey1->length;
+	hk2_length = hkey2->length;
 
 #if (SIZE_MAX < UINT_MAX)
 	if (hk1_length != hk2_length)

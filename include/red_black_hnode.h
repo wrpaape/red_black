@@ -1,17 +1,17 @@
-#ifndef RED_BLACK_HASH_NODE_H_
-#define RED_BLACK_HASH_NODE_H_
+#ifndef RED_BLACK_HNODE_H_
+#define RED_BLACK_HNODE_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node.h"	/* RedBlackNode, bool */
-#include "red_black_hash_key.h"	/* RedBlackHashKey */
+#include "red_black_hkey.h"	/* RedBlackHKey */
 
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-struct RedBlackHashNode {
+struct RedBlackHNode {
 	struct RedBlackNode node;
-	struct RedBlackHashKey hash_key;
+	struct RedBlackHKey hkey;
 };
 
-#endif /* ifndef RED_BLACK_HASH_NODE_H_ */
+#endif /* ifndef RED_BLACK_HNODE_H_ */
