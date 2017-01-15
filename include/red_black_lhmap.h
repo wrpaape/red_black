@@ -41,11 +41,13 @@ typedef struct _RedBlackLHMapLIterator RedBlackLHMapLIterator;
  * ────────────────────────────────────────────────────────────────────────── */
 int
 red_black_lhmap_init(RedBlackLHMap *const restrict map);
+
 void
 red_black_lhmap_destroy(RedBlackLHMap *const restrict map);
 
 int
 red_black_lhmap_lock(RedBlackLHMap *const restrict map);
+
 int
 red_black_lhmap_unlock(RedBlackLHMap *const restrict map);
 
@@ -122,6 +124,7 @@ red_black_lhmap_verify_u(RedBlackLHMap *const restrict map);
 void
 red_black_lhmap_iterator_init(RedBlackLHMapIterator *const restrict iter,
 			      RedBlackLHMap *const restrict map);
+
 bool
 red_black_lhmap_iterator_next(RedBlackLHMapIterator *const restrict iter,
 			      void **const restrict key_ptr,
@@ -130,14 +133,17 @@ red_black_lhmap_iterator_next(RedBlackLHMapIterator *const restrict iter,
 int
 red_black_lhmap_literator_init(RedBlackLHMapLIterator *const restrict iter,
 			       RedBlackLHMap *const restrict map);
+
 int
 red_black_lhmap_literator_unlock(RedBlackLHMapLIterator *const restrict iter);
+
+int
+red_black_lhmap_literator_lock(RedBlackLHMapLIterator *const restrict iter);
 
 int
 red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 			       void **const restrict key_ptr,
 			       size_t *const restrict length_ptr);
-
 bool
 red_black_lhmap_literator_next_u(RedBlackLHMapLIterator *const restrict iter,
 				 void **const restrict key_ptr,

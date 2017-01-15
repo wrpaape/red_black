@@ -294,7 +294,7 @@ test_iterator(void *arg)
 
 	/* test iterator */
 	if (red_black_lhmap_literator_init(&iterator,
-					   &lhmap) < 0)
+					   &lhmap) != 0)
 				SYS_FAILURE("lhmap_literator_init",
 					    "LOCK FAILURE");
 
