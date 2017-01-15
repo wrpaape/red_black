@@ -55,7 +55,7 @@ CONTINUE_APPENDING:
 		continue;
 	}
 
-	red_black_tree_iterator_init_asc(&iterator,
+	red_black_tree_asc_iterator_init(&iterator,
 					 &tree);
 
 	while (red_black_tree_iterator_next(&iterator,

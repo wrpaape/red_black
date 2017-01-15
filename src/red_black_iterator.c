@@ -65,15 +65,7 @@ rbi_init_asc_cursor(const struct RedBlackNode *restrict *restrict cursor,
 }
 
 void
-red_black_iterator_set_asc(struct RedBlackIterator *const restrict iterator,
-			   const struct RedBlackNode *restrict node)
-{
-	iterator->cursor = rbi_init_asc_cursor(&iterator->stack[0],
-					       node);
-}
-
-void
-red_black_iterator_init_asc(struct RedBlackIterator *const restrict iterator,
+red_black_asc_iterator_init(struct RedBlackIterator *const restrict iterator,
 			    const struct RedBlackNode *restrict node)
 {
 	const struct RedBlackNode *restrict *restrict cursor;
@@ -87,6 +79,15 @@ red_black_iterator_init_asc(struct RedBlackIterator *const restrict iterator,
 
 	iterator->update = &rbi_update_asc;
 }
+
+void
+red_black_asc_iterator_set(struct RedBlackIterator *const restrict iterator,
+			   const struct RedBlackNode *restrict node)
+{
+	iterator->cursor = rbi_init_asc_cursor(&iterator->stack[0],
+					       node);
+}
+
 
 static inline const struct RedBlackNode *restrict *restrict
 rbi_init_desc_cursor(const struct RedBlackNode *restrict *restrict cursor,
@@ -104,15 +105,7 @@ rbi_init_desc_cursor(const struct RedBlackNode *restrict *restrict cursor,
 }
 
 void
-red_black_iterator_set_desc(struct RedBlackIterator *const restrict iterator,
-			    const struct RedBlackNode *restrict node)
-{
-	iterator->cursor = rbi_init_desc_cursor(&iterator->stack[0],
-						node);
-}
-
-void
-red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
+red_black_desc_iterator_init(struct RedBlackIterator *const restrict iterator,
 			     const struct RedBlackNode *restrict node)
 {
 	const struct RedBlackNode *restrict *restrict cursor;
@@ -127,6 +120,14 @@ red_black_iterator_init_desc(struct RedBlackIterator *const restrict iterator,
 	iterator->update = &rbi_update_desc;
 }
 
+void
+red_black_desc_iterator_set(struct RedBlackIterator *const restrict iterator,
+			    const struct RedBlackNode *restrict node)
+{
+	iterator->cursor = rbi_init_desc_cursor(&iterator->stack[0],
+						node);
+}
+
 
 bool
 red_black_iterator_next(struct RedBlackIterator *const restrict iterator,
@@ -137,10 +138,10 @@ red_black_iterator_next(struct RedBlackIterator *const restrict iterator,
 	const bool has_next = (node != NULL);
 
 	if (has_next) {
-		*key_ptr = (void *) node->key;
-
 		iterator->cursor = iterator->update(iterator->cursor,
 						    node);
+
+		*key_ptr = (void *) node->key;
 	}
 
 	return has_next;

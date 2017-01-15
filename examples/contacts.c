@@ -119,7 +119,7 @@ put_contacts(char *restrict buffer)
 
 	buffer += CONTACTS_HEADER_LENGTH;
 
-	red_black_tree_iterator_init_asc(&iterator,
+	red_black_tree_asc_iterator_init(&iterator,
 					 &contacts);
 
 	while (red_black_tree_iterator_next(&iterator,
@@ -254,7 +254,7 @@ teardown(void)
 	RedBlackTreeIterator iterator;
 	struct Contact *restrict contact;
 
-	red_black_tree_iterator_init_asc(&iterator,
+	red_black_tree_asc_iterator_init(&iterator,
 					 &contacts);
 
 	while (red_black_tree_iterator_next(&iterator,

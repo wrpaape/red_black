@@ -747,6 +747,21 @@ TEST_OBJ_GROUP		:= $(TEST_OBJ)
 TARGETS			+= $(TEST_OBJ)
 
 
+# red_black_mt_test
+# ──────────────────────────────────────────────────────────────────────────────
+MT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_mt_test)
+MT_TEST_HDR		:= $(call TEST_HEADER_PATH,red_black_mt_test)
+MT_TEST_OBJ		:= $(call OBJECT_PATH,red_black_mt_test)
+# ─────────────── target prequisites ───────────────────────────────────────────
+MT_TEST_OBJ_PREQS	:= $(MT_TEST_SRC)				\
+			   $(MT_TEST_HDR)				\
+			   $(TEST_HDR)
+MT_TEST_OBJ_GROUP	:= $(MT_TEST_OBJ)				\
+			   $(TEST_OBJ_GROUP) 
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(MT_TEST_OBJ)
+
+
 # red_black_concat_test
 # ──────────────────────────────────────────────────────────────────────────────
 CONCAT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_concat_test)
@@ -784,6 +799,8 @@ APPEND_TEST_BIN_PREQS	:= $(APPEND_TEST_OBJ)				\
 TARGETS			+= $(APPEND_TEST_OBJ)				\
 			   $(APPEND_TEST_BIN)
 
+
+
 # red_black_tree_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_test)
@@ -814,6 +831,7 @@ LHMAP_TEST_OBJ_PREQS	:= $(LHMAP_TEST_SRC)				\
 			   $(LHMAP_HDR)
 LHMAP_TEST_BIN_PREQS	:= $(LHMAP_TEST_OBJ)				\
 			   $(TEST_OBJ_GROUP)				\
+			   $(MT_TEST_OBJ_GROUP)				\
 			   $(LHMAP_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(LHMAP_TEST_OBJ)				\
@@ -933,6 +951,9 @@ $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
 $(APPEND_TEST_BIN): $(APPEND_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(APPEND_TEST_OBJ): $(APPEND_TEST_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+
+$(MT_TEST_OBJ): $(MT_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(TEST_OBJ): $(TEST_OBJ_PREQS)

@@ -94,9 +94,18 @@ extern const int *const restrict keys_until;
 #define XSTR(X) STR(X)
 #define KC_STR  XSTR(KEYS_COUNT)
 
+#define ST_1 "---\nstarting tests for KEYS_COUNT = " KC_STR " and "
+
+#if DO_VERIFY
+#define ST_2 "WITH"
+#else
+#define ST_2 "WITHOUT"
+#endif /* if DO_VERIFY */
+
+#define ST_3 " step-by-step verification O(n²)\n---\n"
 
 #define STARTING_TESTS()						\
-WRITE_LITERAL("---\nstarting tests for KEYS_COUNT = " KC_STR "\n---\n")
+WRITE_LITERAL(ST_1 ST_2 ST_3)
 
 #define ALL_TESTS_PASSED()						\
 WRITE_LITERAL("---\nall tests passed!\n---\n")

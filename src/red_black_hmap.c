@@ -127,34 +127,36 @@ rbhm_expand(RedBlackHMap *const restrict map)
 }
 
 
-int
+bool
 red_black_hmap_init(RedBlackHMap *const restrict map)
 {
 	struct RedBlackHBucket *restrict bucket;
 	struct RedBlackHBucket *restrict buckets;
 	struct RedBlackHBucket *restrict bucket_until;
+	bool status;
 
 	buckets = RED_BLACK_MALLOC(  sizeof(*buckets)
 				   * RBHMC_INIT_BUCKET_COUNT);
 
-	if (buckets == NULL)
-		return -1;
+	status = (buckets != NULL);
 
-	bucket       = buckets;
-	bucket_until = bucket + RBHMC_INIT_BUCKET_COUNT;
+	if (status) {
+		bucket       = buckets;
+		bucket_until = bucket + RBHMC_INIT_BUCKET_COUNT;
 
-	/* initialize buckets */
-	do {
-		rblhb_init(bucket);
+		/* initialize buckets */
+		do {
+			rblhb_init(bucket);
 
-		++bucket;
-	} while (bucket < bucket_until);
+			++bucket;
+		} while (bucket < bucket_until);
 
-	map->buckets = buckets;
+		map->buckets = buckets;
 
-	red_black_hmap_count_init(&map->count);
+		red_black_hmap_count_init(&map->count);
+	}
 
-	return 0;
+	return status;
 }
 
 
@@ -459,7 +461,7 @@ red_black_hmap_iterator_init(RedBlackHMapIterator *const restrict iter,
 	first_bucket = map->buckets;
 
 	/* initialize first bucket iterator */
-	red_black_iterator_init_asc(&iter->bucket_iter,
+	red_black_asc_iterator_init(&iter->bucket_iter,
 				    first_bucket->root);
 
 	iter->bucket      = first_bucket;
@@ -491,7 +493,7 @@ red_black_hmap_iterator_next(RedBlackHMapIterator *const restrict iter,
 		++bucket; /* advance to next bucket */
 
 		/* reset bucket iterator */
-		red_black_iterator_set_asc(bucket_iter,
+		red_black_asc_iterator_set(bucket_iter,
 					   bucket->root);
 
 		/* if bucket is non-empty, return with first key, length */

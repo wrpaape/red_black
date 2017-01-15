@@ -67,7 +67,7 @@ TODO
         - [red_black_tree_delete red_black_tree_remove](#red_black_tree_delete-red_black_tree_remove)
         - [red_black_tree_find red_black_tree_fetch](#red_black_tree_find-red_black_tree_fetch)
         - [red_black_tree_count](#red_black_tree_count)
-        - [red_black_tree_iterator_init_asc red_black_tree_iterator_init_desc](#red_black_tree_iterator_init_asc-red_black_tree_iterator_init_desc)
+        - [red_black_tree_asc_iterator_init red_black_tree_desc_iterator_init](#red_black_tree_asc_iterator_init-red_black_tree_desc_iterator_init)
         - [red_black_tree_iterator_next](#red_black_tree_iterator_next)
         - [red_black_tree_print](#red_black_tree_print)
         - [red_black_tree_verify](#red_black_tree_verify)
@@ -208,24 +208,24 @@ returns the count of active nodes in `tree`
 
 
 
-###red_black_iterator_init_asc/red_black_iterator_init_desc
+###red_black_tree_asc_iterator_init/red_black_tree_desc_iterator_init
 **[declaration](include/red_black_tree.h#L49-L55)|[source](src/red_black_tree.c#L77-L91)**
 ```
 void
-red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_asc_iterator_init(RedBlackTreeIterator *const restrict iterator,
                                  const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iterator,
+red_black_tree_desc_iterator_init(RedBlackTreeIterator *const restrict iterator,
                                   const RedBlackTree *const restrict tree);
 ```
 
 **description**  
-*red_black_iterator_init_asc*  
+*red_black_tree_asc_iterator_init*  
 initializes a tree iterator for traversing all member nodes in *ascending* order according to `tree`'s [RedBlackComparator](#redblackcomparator)  
 On return, `iterator` may be passed on successive calls to [red_black_tree_iterator_next](#red_black_tree_iterator_next) to retrieve the next largest key, starting with the smallest.
 
-*red_black_iterator_init_desc*  
+*red_black_tree_desc_iterator_init*  
 initializes a tree iterator for traversing all member nodes in *descending* order according to `tree`'s [RedBlackComparator](#redblackcomparator)  
 On return, `iterator` may be passed on successive calls to [red_black_tree_iterator_next](#red_black_tree_iterator_next) to retrieve the next smallest key, starting with the largest.
 
@@ -234,7 +234,7 @@ On return, `iterator` may be passed on successive calls to [red_black_tree_itera
 - makes no heap allocations for internal state, no need to pair with a destructor on completion
 
 
-###red_black_iterator_next
+###red_black_tree_iterator_next
 **[declaration](include/red_black_tree.h#L57-L59)|[source](src/red_black_tree.c#L93-L99)**
 ```
 bool
@@ -252,6 +252,7 @@ attempts to fetch the next ordered key from `iterator`
 
 **notes**
 - relies on coupled `tree` remaining unmodified from `iterator`'s initialization until iteration completion
+
 
 
 ###red_black_tree_print

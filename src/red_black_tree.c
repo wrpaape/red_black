@@ -129,34 +129,34 @@ red_black_tree_count(const RedBlackTree *const restrict tree)
 }
 
 void
-red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iter,
+red_black_tree_asc_iterator_init(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree)
 {
-	red_black_iterator_init_asc(iter,
+	red_black_asc_iterator_init(iter,
 				    tree->root);
 }
 
 void
-red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iter,
-				  const RedBlackTree *const restrict tree)
-{
-	red_black_iterator_init_desc(iter,
-				     tree->root);
-}
-
-void
-red_black_tree_iterator_set_asc(RedBlackTreeIterator *const restrict iter,
+red_black_tree_asc_iterator_set(RedBlackTreeIterator *const restrict iter,
 				const RedBlackTree *const restrict tree)
 {
-	red_black_iterator_set_asc(iter,
+	red_black_asc_iterator_set(iter,
 				   tree->root);
 }
 
 void
-red_black_tree_iterator_set_desc(RedBlackTreeIterator *const restrict iter,
+red_black_tree_desc_iterator_init(RedBlackTreeIterator *const restrict iter,
+				  const RedBlackTree *const restrict tree)
+{
+	red_black_desc_iterator_init(iter,
+				     tree->root);
+}
+
+void
+red_black_tree_desc_iterator_set(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree)
 {
-	red_black_iterator_set_desc(iter,
+	red_black_desc_iterator_set(iter,
 				    tree->root);
 }
 

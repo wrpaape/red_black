@@ -1,76 +1,11 @@
-#include "red_black_test.h"  /* print/exit macros */
-#include "red_black_lhmap.h" /* red_lhmap_insert|find|verify|delete */
+#include "red_black_test.h"     /* print/exit macros */
+#include "red_black_mt_test.h"  /* multi_thread_test */
+#include "red_black_lhmap.h"    /* red_lhmap_insert|find|verify|delete */
 
 
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 static RedBlackLHMap lhmap;
-
-
-/* threads API
- * ────────────────────────────────────────────────────────────────────────── */
-#ifdef WIN32
-typedef HANDLE Thread;
-typedef DWORD ThreadReturn;
-
-#define SPAWN_THREAD(THREAD, FUNC_PTR, ARG_PTR)				\
-((THREAD) = CreateThread(NULL,						\
-			 0,						\
-			 FUNC_PTR,					\
-			 ARG_PTR,					\
-			 0,						\
-			 NULL) != NULL)
-
-#define WAIT_THREAD(THREAD)						\
-(WaitForSingleObject(THREAD,						\
-		     INFINITE) == WAIT_OBJECT_0)
-
-
-#else
-typedef pthread_t Thread;
-typedef void *ThreadReturn;
-
-#define SPAWN_THREAD(THREAD, FUNC_PTR, ARG_PTR)				\
-(pthread_create(&(THREAD),						\
-		NULL,							\
-		FUNC_PTR,						\
-		ARG_PTR) == 0)
-
-#define WAIT_THREAD(THREAD)						\
-(pthread_join(THREAD,							\
-	      NULL) == 0)
-#endif
-
-typedef ThreadReturn
-(*ThreadRoutine)(void *arg);
-
-
-/* global variables
- * ────────────────────────────────────────────────────────────────────────── */
-struct KeyInterval {
-	int *restrict from;
-	const int *restrict until;
-};
-
-#define THREADS_COUNT		4
-
-#define Q0 0
-#define Q1 (KEYS_COUNT / THREADS_COUNT)
-#define Q2 (2 * Q1)
-#define Q3 (3 * Q1)
-#define Q4 KEYS_COUNT
-
-static const struct KeyInterval intervals[THREADS_COUNT] = {
-	[0] = { .from = &keys[Q0], .until = &keys[Q1] },
-	[1] = { .from = &keys[Q1], .until = &keys[Q2] },
-	[2] = { .from = &keys[Q2], .until = &keys[Q3] },
-	[3] = { .from = &keys[Q3], .until = &keys[Q4] }
-};
-
-static const struct KeyInterval total_interval = {
-	.from  = &keys[Q0],
-	.until = &keys[Q4]
-};
 
 
 static inline void
@@ -84,7 +19,7 @@ setup(void)
 
 	shuffle_keys();
 
-	if (red_black_lhmap_init(&lhmap) < 0)
+	if (!red_black_lhmap_init(&lhmap))
 		SYS_FAILURE("lhmap_init",
 			    "OUT OF MEMORY");
 
@@ -293,8 +228,8 @@ test_iterator(void *arg)
 		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
 
 	/* test iterator */
-	if (red_black_lhmap_literator_init(&iterator,
-					   &lhmap) != 0)
+	if (!red_black_lhmap_literator_init(&iterator,
+					   &lhmap))
 				SYS_FAILURE("lhmap_literator_init",
 					    "LOCK FAILURE");
 
@@ -480,45 +415,13 @@ test_single_thread_operations(void)
 
 	(void) test_delete((void *) &total_interval);
 
-	/* test_count(0); */
+	test_count(0);
 
 	teardown();
 
 	RETURN("test_single_thread_operations");
 }
 
-#include <unistd.h>
-static inline void
-multi_thread_test(const ThreadRoutine test)
-{
-	int i;
-	Thread threads[THREADS_COUNT];
-
-	ENTER("multi_thread_test");
-
-	i = 0;
-
-	do {
-		if (!SPAWN_THREAD(threads[i],
-				  test,
-				  (void *) &intervals[i]))
-			EXIT_ON_SYS_FAILURE("SPAWN_THREAD failure");
-
-
-		++i;
-	} while (i < THREADS_COUNT);
-
-	i = 0;
-
-	do {
-		if (!WAIT_THREAD(threads[i]))
-			EXIT_ON_SYS_FAILURE("WAIT_THREAD failure");
-
-		++i;
-	} while (i < THREADS_COUNT);
-
-	RETURN("multi_thread_test");
-}
 
 
 static inline void

@@ -16,7 +16,6 @@ struct _RedBlackTree {
 	RedBlackComparator comparator;
 	struct RedBlackNodeFactory node_factory;
 };
-
 typedef struct _RedBlackTree RedBlackTree;
 
 typedef struct RedBlackIterator RedBlackTreeIterator;
@@ -62,19 +61,17 @@ unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_iterator_init_asc(RedBlackTreeIterator *const restrict iter,
+red_black_tree_asc_iterator_init(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree);
-
 void
-red_black_tree_iterator_init_desc(RedBlackTreeIterator *const restrict iter,
-				  const RedBlackTree *const restrict tree);
-
-void
-red_black_tree_iterator_set_asc(RedBlackTreeIterator *const restrict iter,
+red_black_tree_asc_iterator_set(RedBlackTreeIterator *const restrict iter,
 				const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_iterator_set_desc(RedBlackTreeIterator *const restrict iter,
+red_black_tree_desc_iterator_init(RedBlackTreeIterator *const restrict iter,
+				  const RedBlackTree *const restrict tree);
+void
+red_black_tree_desc_iterator_set(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree);
 
 bool

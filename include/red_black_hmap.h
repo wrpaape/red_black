@@ -31,7 +31,7 @@ typedef struct _RedBlackHMapIterator RedBlackHMapIterator;
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
-int
+bool
 red_black_hmap_init(RedBlackHMap *const restrict map);
 
 void

@@ -30,7 +30,7 @@ main(int argc,
 			EXIT_ON_FAILURE("insertion failure -- OUT OF MEMORY");
 
 	/* initialize ascending iterator */
-	red_black_tree_iterator_init_asc(&iterator,
+	red_black_tree_asc_iterator_init(&iterator,
 					 &tree);
 
 	/* print unique arguments in ascending order */

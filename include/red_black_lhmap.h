@@ -39,16 +39,16 @@ typedef struct _RedBlackLHMapLIterator RedBlackLHMapLIterator;
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
-int
+bool
 red_black_lhmap_init(RedBlackLHMap *const restrict map);
 
 void
 red_black_lhmap_destroy(RedBlackLHMap *const restrict map);
 
-int
+bool
 red_black_lhmap_lock(RedBlackLHMap *const restrict map);
 
-int
+bool
 red_black_lhmap_unlock(RedBlackLHMap *const restrict map);
 
 int
@@ -134,10 +134,10 @@ int
 red_black_lhmap_literator_init(RedBlackLHMapLIterator *const restrict iter,
 			       RedBlackLHMap *const restrict map);
 
-int
+bool
 red_black_lhmap_literator_unlock(RedBlackLHMapLIterator *const restrict iter);
 
-int
+bool
 red_black_lhmap_literator_lock(RedBlackLHMapLIterator *const restrict iter);
 
 int

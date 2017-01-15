@@ -159,8 +159,7 @@ test_iterator(void)
 	ENTER("test_iterator");
 
 	/* test ascending iterator */
-
-	red_black_tree_iterator_init_asc(&iterator,
+	red_black_tree_asc_iterator_init(&iterator,
 					 &tree);
 
 	last_key = -1;
@@ -185,8 +184,7 @@ test_iterator(void)
 			     "ASCENDING ITERATOR REPEATED ENTRIES");
 
 	/* test descending iterator */
-
-	red_black_tree_iterator_init_desc(&iterator,
+	red_black_tree_desc_iterator_init(&iterator,
 					  &tree);
 
 	last_key = KEYS_COUNT + 1;
