@@ -199,6 +199,18 @@ red_black_lhmap_destroy(RedBlackLHMap *const restrict map)
 	RED_BLACK_FREE(buckets);
 }
 
+int
+red_black_lhmap_lock(RedBlackLHMap *const restrict map)
+{
+	return RBL_LOCK_WRITE(&map->lock);
+}
+
+int
+red_black_lhmap_unlock(RedBlackLHMap *const restrict map)
+{
+	return RBL_UNLOCK_WRITE(&map->lock);
+}
+
 
 int
 red_black_lhmap_insert(RedBlackLHMap *const restrict map,
@@ -296,8 +308,6 @@ red_black_lhmap_insert_u(RedBlackLHMap *const restrict map,
 	/* fetch bucket */
 	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
 
-	bucket_lock = &bucket->lock;
-
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	/* IF 0 -> 1st entry, insert hkey into bucket tree
@@ -312,7 +322,6 @@ red_black_lhmap_insert_u(RedBlackLHMap *const restrict map,
 		return -1; /* return early to avoid decrementing count */
 	else
 		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0 */
-
 
 	map->count.entries += status; /* add 1 or 0 */
 
@@ -409,6 +418,60 @@ red_black_lhmap_update(RedBlackLHMap *const restrict map,
 	return status;
 }
 
+int
+red_black_lhmap_update_u(RedBlackLHMap *const restrict map,
+			 const void *const key,
+			 const size_t length,
+			 void **const restrict old_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHKey hkey;
+	struct RedBlackHKey *restrict old_hkey_ptr;
+	struct RedBlackLHBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	/* IF 0 -> 1st entry, insert/swap hkey into bucket tree
+	 * ELSE -> jumped, fetch jump status */
+	if (status == 0)
+		status = red_black_update(&bucket->root,
+					  &red_black_hkey_comparator,
+					  &bucket->node_factory,
+					  &jump_buffer,
+					  (const void *) &hkey,
+					  (void **) &old_hkey_ptr); /* 1, 0 */
+	else if (status == RED_BLACK_JUMP_3_ERROR)
+		return -1; /* return early to avoid extra conditional */
+	else
+		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0 */
+
+
+	if (status == 0) {
+		/* old_hkey_ptr points to old hkey, retrieve key */
+		*old_ptr = (void *) old_hkey_ptr->key;
+
+	} else {
+		/* successfully inserted hkey, increment count.entries */
+		++(map->count.entries);
+
+		/* expand if too many collisions */
+		if (map->count.entries > map->count.max_capacity)
+			status = rbhm_expand(map); /* 1, -1 */
+
+	}
+
+	return status;
+}
+
 
 int
 red_black_lhmap_delete(RedBlackLHMap *const restrict map,
@@ -424,8 +487,8 @@ red_black_lhmap_delete(RedBlackLHMap *const restrict map,
 
 	/* initialize hash key */
 	red_black_hkey_init(&hkey,
-				key,
-				length);
+			    key,
+			    length);
 
 	/* obtain a SHARED lock on map */
 	map_lock = &map->lock;
@@ -484,6 +547,41 @@ red_black_lhmap_delete(RedBlackLHMap *const restrict map,
 	return status;
 }
 
+int
+red_black_lhmap_delete_u(RedBlackLHMap *const restrict map,
+			 const void *const key,
+			 const size_t length)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHKey hkey;
+	struct RedBlackLHBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	/* IF 0 -> 1st entry, delete hkey from bucket tree
+	 * ELSE -> jumped, fetch jump status */
+	status = (status == 0)
+	       ?  red_black_delete(&bucket->root,
+				   &red_black_hkey_comparator,
+				   &bucket->node_factory,
+				   &jump_buffer,
+				   (const void *) &hkey) /* 1, 0 */
+	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+
+	map->count.entries -= status; /* decrement 1 or 0 */
+
+	return status;
+}
+
 
 int
 red_black_lhmap_remove(RedBlackLHMap *const restrict map,
@@ -501,8 +599,8 @@ red_black_lhmap_remove(RedBlackLHMap *const restrict map,
 
 	/* initialize hash key */
 	red_black_hkey_init(&hkey,
-				key,
-				length);
+			    key,
+			    length);
 
 	/* obtain a SHARED lock on map */
 	map_lock = &map->lock;
@@ -566,6 +664,47 @@ red_black_lhmap_remove(RedBlackLHMap *const restrict map,
 	return status;
 }
 
+int
+red_black_lhmap_remove_u(RedBlackLHMap *const restrict map,
+			 const void *const key,
+			 const size_t length,
+			 void **const restrict key_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHKey hkey;
+	struct RedBlackHKey *restrict hkey_ptr;
+	struct RedBlackLHBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	/* IF 0 -> 1st entry, remove hkey from bucket tree
+	 * ELSE -> jumped, fetch jump status */
+	status = (status == 0)
+	       ?  red_black_remove(&bucket->root,
+				   &red_black_hkey_comparator,
+				   &bucket->node_factory,
+				   &jump_buffer,
+				   (const void *) &hkey,
+				   (void **) &hkey_ptr) /* 1, 0 */
+	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+
+	if (status == 0) /* hkey_ptr points to old hkey, retrieve key */
+		*key_ptr = (void *) hkey_ptr->key;
+	else /* successfully removed hkey, decrement count.entries */
+		--(map->count.entries);
+
+	return status;
+}
+
 
 int
 red_black_lhmap_find(RedBlackLHMap *const restrict map,
@@ -580,8 +719,8 @@ red_black_lhmap_find(RedBlackLHMap *const restrict map,
 
 	/* initialize hash key */
 	red_black_hkey_init(&hkey,
-				key,
-				length);
+			    key,
+			    length);
 
 	/* obtain a SHARED lock on map */
 	map_lock = &map->lock;
@@ -589,7 +728,6 @@ red_black_lhmap_find(RedBlackLHMap *const restrict map,
 	if (RBL_LOCK_READ(map_lock) != 0)
 		return -2; /* lock failure */
 
-	/* printf("count_m1: %u\n", map->count.buckets_m1); */
 	/* fetch bucket */
 	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
 
@@ -619,6 +757,28 @@ red_black_lhmap_find(RedBlackLHMap *const restrict map,
 	return status; /* return found status */
 }
 
+bool
+red_black_lhmap_find_u(RedBlackLHMap *const restrict map,
+		       const void *const key,
+		       const size_t length)
+{
+	struct RedBlackHKey hkey;
+	struct RedBlackLHBucket *restrict bucket;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	/* perform binary search on bucket's tree */
+	return red_black_find(bucket->root,
+			      &red_black_hkey_comparator,
+			      (const void *) &hkey); /* true, false */
+}
+
 
 int
 red_black_lhmap_fetch(RedBlackLHMap *const restrict map,
@@ -635,8 +795,8 @@ red_black_lhmap_fetch(RedBlackLHMap *const restrict map,
 
 	/* initialize hash key */
 	red_black_hkey_init(&hkey,
-				key,
-				length);
+			    key,
+			    length);
 
 	/* obtain a SHARED lock on map */
 	map_lock = &map->lock;
@@ -677,12 +837,43 @@ red_black_lhmap_fetch(RedBlackLHMap *const restrict map,
 	return status; /* return found status */
 }
 
+bool
+red_black_lhmap_fetch_u(RedBlackLHMap *const restrict map,
+			const void *const key,
+			const size_t length,
+			void **const restrict key_ptr)
+{
+	struct RedBlackHKey hkey;
+	struct RedBlackHKey *restrict hkey_ptr;
+	struct RedBlackLHBucket *restrict bucket;
+	bool status;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	/* perform binary search on bucket's tree */
+	status = red_black_fetch(bucket->root,
+				 &red_black_hkey_comparator,
+				 (const void *) &hkey,
+				 (void **) &hkey_ptr); /* true, false */
+
+	if (status) /* retrieve key from hkey_ptr */
+		*key_ptr = (void *) hkey_ptr->key;
+
+	return status; /* return found status */
+}
+
 
 int
 red_black_lhmap_count(RedBlackLHMap *const restrict map)
 {
 	RedBlackLock *restrict map_lock;
-	int count;
+	unsigned int count;
 
 	/* obtain a SHARED lock on map */
 	map_lock = &map->lock;
@@ -690,13 +881,19 @@ red_black_lhmap_count(RedBlackLHMap *const restrict map)
 	if (RBL_LOCK_READ(map_lock) != 0)
 		return -2; /* lock failure */
 
-	count = (int) map->count.entries;
+	count = map->count.entries;
 
 	/* release SHARED lock on map */
 	if (RBL_UNLOCK_READ(map_lock) != 0)
 		return -2; /* lock failure */
 
-	return count;
+	return (int) count;
+}
+
+unsigned int
+red_black_lhmap_count_u(RedBlackLHMap *const restrict map)
+{
+	return map->count.entries;
 }
 
 
@@ -760,11 +957,8 @@ red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 
 	/* if current bucket has remaining keys, return with next key, length */
 	if (red_black_iterator_next(bucket_iter,
-				    (void **) &hkey_ptr)) {
-		*key_ptr    = (void *) hkey_ptr->key;
-		*length_ptr = hkey_ptr->length;
-		return 1;
-	}
+				    (void **) &hkey_ptr))
+		goto FOUND_NEXT;
 
 	bucket      = iter->bucket;
 	last_bucket = iter->last_bucket;
@@ -778,7 +972,7 @@ red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 			return -2;
 		}
 
-		if (bucket >= last_bucket) {
+		if (bucket == last_bucket) {
 			/* all buckets traversed, release SHARED lock on map */
 			if (RBL_UNLOCK_READ(iter->map_lock) != 0)
 				return -2;
@@ -796,7 +990,7 @@ red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 			return -2;
 		}
 
-		/* re-initialize bucket iterator */
+		/* reset bucket iterator */
 		red_black_iterator_set_asc(bucket_iter,
 					   bucket->root);
 
@@ -804,7 +998,7 @@ red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 		if (red_black_iterator_next(bucket_iter,
 					    (void **) &hkey_ptr)) {
 			iter->bucket = bucket; /* update bucket */
-
+FOUND_NEXT:
 			*key_ptr    = (void *) hkey_ptr->key;
 			*length_ptr = hkey_ptr->length;
 			return 1;
@@ -812,6 +1006,46 @@ red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 	}
 }
 
+bool
+red_black_lhmap_literator_next_u(RedBlackLHMapLIterator *const restrict iter,
+				 void **const restrict key_ptr,
+				 size_t *const restrict length_ptr)
+{
+	struct RedBlackIterator *restrict bucket_iter;
+	struct RedBlackLHBucket *restrict bucket;
+	struct RedBlackLHBucket *restrict last_bucket;
+	struct RedBlackHKey *restrict hkey_ptr;
+
+	bucket_iter = &iter->bucket_iter;
+
+	/* if current bucket has remaining keys, return with next key, length */
+	if (red_black_iterator_next(bucket_iter,
+				    (void **) &hkey_ptr))
+		goto FOUND_NEXT;
+
+	bucket      = iter->bucket;
+	last_bucket = iter->last_bucket;
+
+	while (bucket < last_bucket) {
+		++bucket; /* advance to next bucket */
+
+		/* reset bucket iterator */
+		red_black_iterator_set_asc(bucket_iter,
+					   bucket->root);
+
+		/* if bucket is non-empty, return with first key, length */
+		if (red_black_iterator_next(bucket_iter,
+					    (void **) &hkey_ptr)) {
+			iter->bucket = bucket; /* update bucket */
+FOUND_NEXT:
+			*key_ptr    = (void *) hkey_ptr->key;
+			*length_ptr = hkey_ptr->length;
+			return true;
+		}
+	}
+
+	return false; /* all buckets traversed, no keys left */
+}
 
 int
 red_black_lhmap_verify(RedBlackLHMap *const restrict map)
@@ -879,4 +1113,37 @@ red_black_lhmap_verify(RedBlackLHMap *const restrict map)
 		return -2; /* lock failure */
 
 	return status; /* return valid/invalid (1/0) */
+}
+
+bool
+red_black_lhmap_verify_u(RedBlackLHMap *const restrict map)
+{
+	struct RedBlackLHBucket *restrict bucket;
+	struct RedBlackLHBucket *restrict last_bucket;
+	bool status;
+	RedBlackJumpBuffer jump_buffer;
+
+	bucket      = map->buckets;
+	last_bucket = bucket + map->count.buckets_m1;
+
+	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
+
+	/* IF 0 -> first entry, verify buckets while traversing */
+	/* ELSE -> jumped invalid, return */
+	if (status) {
+		while (1) {
+			status = red_black_verify(bucket->root,
+						  &red_black_hkey_comparator,
+						  &jump_buffer);
+
+			if (!status)
+				break; /* invalid bucket */
+
+			++bucket;
+			if (bucket > last_bucket)
+				break; /* finished traversal */
+		}
+	}
+
+	return status; /* return valid/invalid (true/false) */
 }

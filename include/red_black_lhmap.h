@@ -44,9 +44,13 @@ typedef struct _RedBlackLHMapIterator RedBlackLHMapIterator;
  * ────────────────────────────────────────────────────────────────────────── */
 int
 red_black_lhmap_init(RedBlackLHMap *const restrict map);
-
 void
 red_black_lhmap_destroy(RedBlackLHMap *const restrict map);
+
+int
+red_black_lhmap_lock(RedBlackLHMap *const restrict map);
+int
+red_black_lhmap_unlock(RedBlackLHMap *const restrict map);
 
 int
 red_black_lhmap_insert(RedBlackLHMap *const restrict map,
@@ -62,31 +66,56 @@ red_black_lhmap_update(RedBlackLHMap *const restrict map,
 		       const void *const key,
 		       const size_t length,
 		       void **const restrict old_ptr);
+int
+red_black_lhmap_update_u(RedBlackLHMap *const restrict map,
+			 const void *const key,
+			 const size_t length,
+			 void **const restrict old_ptr);
 
 int
 red_black_lhmap_delete(RedBlackLHMap *const restrict map,
 		       const void *const key,
 		       const size_t length);
+int
+red_black_lhmap_delete_u(RedBlackLHMap *const restrict map,
+			 const void *const key,
+			 const size_t length);
 
 int
 red_black_lhmap_remove(RedBlackLHMap *const restrict map,
 		       const void *const key,
 		       const size_t length,
 		       void **const restrict key_ptr);
+int
+red_black_lhmap_remove_u(RedBlackLHMap *const restrict map,
+			 const void *const key,
+			 const size_t length,
+			 void **const restrict key_ptr);
 
 int
 red_black_lhmap_find(RedBlackLHMap *const restrict map,
 		     const void *const key,
 		     const size_t length);
+bool
+red_black_lhmap_find_u(RedBlackLHMap *const restrict map,
+		       const void *const key,
+		       const size_t length);
 
 int
 red_black_lhmap_fetch(RedBlackLHMap *const restrict map,
 		      const void *const key,
 		      const size_t length,
 		      void **const restrict key_ptr);
+bool
+red_black_lhmap_fetch_u(RedBlackLHMap *const restrict map,
+			const void *const key,
+			const size_t length,
+			void **const restrict key_ptr);
 
 int
 red_black_lhmap_count(RedBlackLHMap *const restrict map);
+unsigned int
+red_black_lhmap_count_u(RedBlackLHMap *const restrict map);
 
 int
 red_black_lhmap_literator_init(RedBlackLHMapLIterator *const restrict iter,
@@ -99,7 +128,15 @@ red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 			       void **const restrict key_ptr,
 			       size_t *const restrict length_ptr);
 
+bool
+red_black_lhmap_literator_next_u(RedBlackLHMapLIterator *const restrict iter,
+				 void **const restrict key_ptr,
+				 size_t *const restrict length_ptr);
+
 int
 red_black_lhmap_verify(RedBlackLHMap *const restrict map);
+
+bool
+red_black_lhmap_verify_u(RedBlackLHMap *const restrict map);
 
 #endif /* ifndef RED_BLACK_LHMAP_H_ */
