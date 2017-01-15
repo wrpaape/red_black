@@ -8,6 +8,7 @@
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
+/* must be thread-safe, return NULL on allocation failure */
 #define RED_BLACK_MALLOC(SIZE)		malloc(SIZE)
 #define RED_BLACK_REALLOC(PTR, SIZE)	realloc(PTR, SIZE)
 #define RED_BLACK_FREE(PTR)		free(PTR)

@@ -61,8 +61,8 @@ rbhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		/* need to completely retouch all realloc'd memory for OSX */
 		RBL_INIT(&bucket->lock);
 #endif /* ifdef OSX */
-		node         = bucket->root;
-		bucket->root = NULL; /* remove tree */
+		node         = bucket->root; /* remove tree */
+		bucket->root = NULL;
 
 		/* gather tree nodes into list (node->left->...->NULL) */
 		end_ptr = red_black_concat(node,
@@ -214,8 +214,8 @@ red_black_lhmap_insert(RedBlackLHMap *const restrict map,
 
 	/* initialize hash key */
 	red_black_hkey_init(&hkey,
-				key,
-				length);
+			    key,
+			    length);
 
 	/* obtain a SHARED lock on map */
 	map_lock = &map->lock;
@@ -278,6 +278,51 @@ red_black_lhmap_insert(RedBlackLHMap *const restrict map,
 	return status;
 }
 
+int
+red_black_lhmap_insert_u(RedBlackLHMap *const restrict map,
+			 const void *const key,
+			 const size_t length)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHKey hkey;
+	struct RedBlackLHBucket *restrict bucket;
+	int status;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	bucket_lock = &bucket->lock;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	/* IF 0 -> 1st entry, insert hkey into bucket tree
+	 * ELSE -> jumped, fetch jump status */
+	if (status == 0)
+		status = red_black_insert(&bucket->root,
+					  &red_black_hkey_comparator,
+					  &bucket->node_factory,
+					  &jump_buffer,
+					  (const void *) &hkey); /* 1, 0 */
+	else if (status == RED_BLACK_JUMP_3_ERROR)
+		return -1; /* return early to avoid decrementing count */
+	else
+		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0 */
+
+
+	map->count.entries += status; /* add 1 or 0 */
+
+	/* expand if too many collisions */
+	if (map->count.entries > map->count.max_capacity)
+		status = rbhm_expand(map); /* 1, -1 */
+
+	return status; /* 1, 0, -1 */
+}
+
 
 int
 red_black_lhmap_update(RedBlackLHMap *const restrict map,
@@ -295,8 +340,8 @@ red_black_lhmap_update(RedBlackLHMap *const restrict map,
 
 	/* initialize hash key */
 	red_black_hkey_init(&hkey,
-				key,
-				length);
+			    key,
+			    length);
 
 	/* obtain a SHARED lock on map */
 	map_lock = &map->lock;
