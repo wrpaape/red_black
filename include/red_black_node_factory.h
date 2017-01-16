@@ -39,13 +39,17 @@ struct RedBlackNodeFactory {
 };
 
 
+/* global variabless
+ * ────────────────────────────────────────────────────────────────────────── */
+extern const struct RedBlackNodeFactoryBlueprint node_factory_blueprint;
+extern const struct RedBlackNodeFactoryBlueprint hnode_factory_blueprint;
+
+
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-rbnf_node_factory_init(struct RedBlackNodeFactory *const restrict factory);
-
-void
-rbnf_hnode_factory_init(struct RedBlackNodeFactory *const restrict factory);
+rbnf_init(struct RedBlackNodeFactory *const restrict factory,
+	  const struct RedBlackNodeFactoryBlueprint *const restrict bp);
 
 void
 rbnf_reset(struct RedBlackNodeFactory *const restrict factory);

@@ -19,7 +19,8 @@ rblhb_init(struct RedBlackLHBucket *const restrict bucket)
 
 	bucket->root = NULL;
 
-	rbnf_hnode_factory_init(&bucket->node_factory);
+	rbnf_init(&bucket->node_factory,
+		  &hnode_factory_blueprint);
 }
 
 

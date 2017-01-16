@@ -43,13 +43,13 @@ rbnf_init_hnode(struct RedBlackNode *const restrict node,
 
 /* global variabless
  * ────────────────────────────────────────────────────────────────────────── */
-static const struct RedBlackNodeFactoryBlueprint node_factory_blueprint = {
+const struct RedBlackNodeFactoryBlueprint node_factory_blueprint = {
 	.size_node   = sizeof(struct RedBlackNode),
 	.initializer = &rbnf_init_node,
 	.init_expand = sizeof(struct RedBlackNode) * RBNF_INIT_EXPAND_COUNT
 };
 
-static const struct RedBlackNodeFactoryBlueprint hnode_factory_blueprint = {
+const struct RedBlackNodeFactoryBlueprint hnode_factory_blueprint = {
 	.size_node   = sizeof(struct RedBlackHNode),
 	.initializer = &rbnf_init_hnode,
 	.init_expand = sizeof(struct RedBlackHNode) * RBNF_INIT_EXPAND_COUNT
@@ -66,7 +66,7 @@ rbnfb_init(struct RedBlackNodeFactoryBuffer *const restrict buffer,
 	buffer->blocks    = NULL;
 }
 
-static inline void
+void
 rbnf_init(struct RedBlackNodeFactory *const restrict factory,
 	  const struct RedBlackNodeFactoryBlueprint *const restrict bp)
 {
@@ -77,20 +77,12 @@ rbnf_init(struct RedBlackNodeFactory *const restrict factory,
 		   bp->init_expand);
 }
 
-void
-rbnf_node_factory_init(struct RedBlackNodeFactory *const restrict factory)
-{
-	rbnf_init(factory,
-		  &node_factory_blueprint);
-}
-
-void
-rbnf_hnode_factory_init(struct RedBlackNodeFactory *const restrict factory)
-{
-	rbnf_init(factory,
-		  &hnode_factory_blueprint);
-}
-
+/* void * */
+/* rbnf_init_wbuf(struct RedBlackNodeFactory *const restrict factory, */
+/* 	       const struct RedBlackNodeFactoryBlueprint *const restrict bp, */
+/* 	       const size_t buffer_size) */
+/* { */
+/* } */
 
 void
 rbnf_reset(struct RedBlackNodeFactory *const restrict factory)
@@ -114,9 +106,8 @@ rbnfb_allocate(struct RedBlackNodeFactoryBuffer *const restrict buffer,
 		buffer->cursor += size_node;
 
 	} else {
-		/* current buffer completely filledd, allocate new node buffer */
-		allocate_size = sizeof(struct RedBlackNodeFactoryBufferBlock)
-			      + buffer->expand;
+		/* current buffer completely filled, allocate new node buffer */
+		allocate_size = sizeof(*block) + buffer->expand;
 
 		buffer->expand *= 2;
 
