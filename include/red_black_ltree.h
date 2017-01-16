@@ -27,7 +27,7 @@ typedef struct _RedBlackLTreeLIterator RedBlackLTreeLIterator;
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_tree_init(RedBlackTree *const restrict tree,
-		    const RedBlackComparator comparator);
+red_black_ltree_init(RedBlackLTree *const restrict tree,
+		     const RedBlackComparator comparator);
 
 #endif /* ifndef RED_BLACK_LTREE_H_ */

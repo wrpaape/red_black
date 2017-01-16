@@ -1,13 +1,14 @@
-#include "red_black_tree.h"	/* types */
-#include "red_black_insert.h"	/* red_black_insert */
-#include "red_black_update.h"	/* red_black_update */
-#include "red_black_delete.h"	/* red_black_delete */
-#include "red_black_remove.h"	/* red_black_remove */
-#include "red_black_find.h"	/* red_black_find */
-#include "red_black_fetch.h"	/* red_black_fetch */
-#include "red_black_count.h"	/* red_black_count */
-#include "red_black_print.h"	/* red_black_print */
-#include "red_black_verify.h"	/* red_black_verify */
+#include "red_black_tree.h"   /* types */
+#include "red_black_insert.h" /* red_black_insert */
+#include "red_black_update.h" /* red_black_update */
+#include "red_black_delete.h" /* red_black_delete */
+#include "red_black_remove.h" /* red_black_remove */
+#include "red_black_find.h"   /* red_black_find */
+#include "red_black_fetch.h"  /* red_black_fetch */
+#include "red_black_count.h"  /* red_black_count */
+#include "red_black_print.h"  /* red_black_print */
+#include "red_black_verify.h" /* red_black_verify */
+#include "red_black_malloc."  /* RED_BLACK_MALLOC */
 
 
 void
@@ -18,6 +19,42 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 	tree->comparator = comparator;
 
 	rbnf_node_factory_init(&tree->node_factory);
+}
+
+bool
+red_black_tree_clone(RedBlackTree *const restrict dst_tree,
+		     RedBlackTree *const restrict src_tree)
+{
+	return rb_tree_clone(dst_tree,
+			     src_tree,
+			     red_black_tree_count(src_tree));
+}
+
+
+bool
+rb_tree_clone(RedBlackTree *const restrict dst_tree,
+	      RedBlackTree *const restrict src_tree,
+	      const unsigned int count)
+{
+	struct RedBlackNode *restrict *restrict root_ptr;
+	bool status;
+
+	root_ptr = &dst_tree->node;
+
+	dst_tree->comparator = src_tree->comparator;
+
+	status = (count == 0);
+
+	if (status) {
+		/* finish empty initialization */
+		*root_ptr = NULL;
+		rbnf_node_factory_init(&tree->node_factory);
+
+	} else {
+		*root_ptr = RED_BLACK_MALLOC(sizeof(**root_ptr) * count);
+	}
+
+	return status;
 }
 
 void
