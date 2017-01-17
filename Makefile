@@ -632,6 +632,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(UPDATE_HDR)				\
+		   	   $(APPEND_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
 		   	   $(FIND_HDR)					\
@@ -645,6 +646,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(ITERATOR_OBJ_GROUP)			\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(UPDATE_OBJ_GROUP)				\
+			   $(APPEND_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
 			   $(FIND_OBJ_GROUP)				\
@@ -660,6 +662,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(ITERATOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(UPDATE_PIC_OBJ_GROUP)			\
+			   $(APPEND_PIC_OBJ_GROUP)			\
 			   $(DELETE_PIC_OBJ_GROUP)			\
 			   $(REMOVE_PIC_OBJ_GROUP)			\
 			   $(FIND_PIC_OBJ_GROUP)			\

@@ -160,6 +160,25 @@ rbnfb_allocate(struct RedBlackNodeFactoryBuffer *const restrict buffer,
 }
 
 struct RedBlackNode *
+rbnf_allocate(struct RedBlackNodeFactory *const restrict factory,
+	      RedBlackJumpBuffer *const restrict jump_buffer)
+{
+	struct RedBlackNode *restrict node;
+
+	node = factory->free;
+
+	if (node == NULL)
+		node = rbnfb_allocate(&factory->buffer,
+				      factory->blueprint->size_node,
+				      jump_buffer);
+	else
+		factory->free = node->left;
+
+	return node;
+}
+
+
+struct RedBlackNode *
 rbnf_new(struct RedBlackNodeFactory *const restrict factory,
 	 RedBlackJumpBuffer *const restrict jump_buffer,
 	 const void *const key,

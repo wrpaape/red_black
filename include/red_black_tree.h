@@ -69,11 +69,21 @@ unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);
 
 bool
+red_black_tree_verify(const RedBlackTree *const restrict tree);
+
+bool
 red_black_tree_equal(const RedBlackTree *const tree1,
 		     const RedBlackTree *const tree2);
 
-bool
-red_black_tree_verify(const RedBlackTree *const restrict tree);
+int
+red_black_tree_union(RedBlackTree *const restrict union_tree,
+		     const RedBlackTree *const restrict tree1,
+		     const RedBlackTree *const restrict tree2);
+
+int
+red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
+			    const RedBlackTree *const restrict tree1,
+			    const RedBlackTree *const restrict tree2);
 
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,

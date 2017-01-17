@@ -18,8 +18,6 @@ typedef bool
  *
  * JUMPS
  *	RED_BLACK_JUMP_VALUE_3_TRUE	OK, successful insertion, tree updated
- * 	RED_BLACK_JUMP_VALUE_3_FALSE	OK, no insertion made, tree NOT updated
- *	RED_BLACK_JUMP_VALUE_3_ERROR	OUT OF MEMORY, tree NOT updated
  *
  * RETURNS
  *	true	need to correct (check if can rotate, recolor) in THIS frame

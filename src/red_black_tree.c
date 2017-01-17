@@ -1,6 +1,7 @@
 #include "red_black_tree.h"   /* types */
 #include "red_black_insert.h" /* red_black_insert */
 #include "red_black_update.h" /* red_black_update */
+#include "red_black_append.h" /* red_black_append */
 #include "red_black_delete.h" /* red_black_delete */
 #include "red_black_remove.h" /* red_black_remove */
 #include "red_black_find.h"   /* red_black_find */
@@ -182,6 +183,22 @@ red_black_tree_count(const RedBlackTree *const restrict tree)
 }
 
 bool
+red_black_tree_verify(const RedBlackTree *const restrict tree)
+{
+	bool status;
+	RedBlackJumpBuffer jump_buffer;
+
+	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
+
+	if (status)
+		status = red_black_verify(tree->root,
+					  tree->comparator,
+					  &jump_buffer);
+
+	return status;
+}
+
+bool
 red_black_tree_equal(const RedBlackTree *const tree1,
 		     const RedBlackTree *const tree2)
 {
@@ -214,21 +231,72 @@ red_black_tree_equal(const RedBlackTree *const tree1,
 
 }
 
-bool
-red_black_tree_verify(const RedBlackTree *const restrict tree)
+
+int
+red_black_tree_union(RedBlackTree *const restrict union_tree,
+		     const RedBlackTree *const restrict tree1,
+		     const RedBlackTree *const restrict tree2)
 {
-	bool status;
-	RedBlackJumpBuffer jump_buffer;
-
-	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
-
-	if (status)
-		status = red_black_verify(tree->root,
-					  tree->comparator,
-					  &jump_buffer);
-
-	return status;
+	return -1;
 }
+
+int
+red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
+			    const RedBlackTree *const restrict tree1,
+			    const RedBlackTree *const restrict tree2)
+{
+
+	struct RedBlackNode *restrict *restrict intersection_root_ptr;
+	struct RedBlackNodeFactory *restrict intersection_node_factory_ptr;
+	const struct RedBlackNode *restrict root1;
+	struct RedBlackNode *restrict node;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackIterator iter2;
+	int count;
+	void *key;
+
+	root1      = tree1->root;
+	comparator = tree1->comparator;
+
+	intersection_root_ptr         = &intersection_tree->root;
+	intersection_node_factory_ptr = &intersection_tree->node_factory;
+
+	red_black_tree_init(intersection_tree,
+			    comparator);
+
+	red_black_asc_iterator_init(&iter2,
+				    tree2->root);
+
+	count = 0;
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) == RED_BLACK_JUMP_VALUE_3_ERROR)
+		return -1; /* RED_BLACK_MALLOC failure */
+
+	while (red_black_iterator_next(&iter2,
+				       &key)) {
+
+		if (red_black_find(root1,
+				   comparator,
+				   key)) {
+
+			++count;
+
+			node = rbnf_allocate(intersection_node_factory_ptr,
+					     &jump_buffer);
+
+			node->key = key;
+
+			red_black_append(intersection_root_ptr,
+					 comparator,
+					 &jump_buffer,
+					 node);
+		}
+	}
+
+	return count;
+}
+
 
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,
