@@ -7,6 +7,7 @@
 #include "red_black_fetch.h"  /* red_black_fetch */
 #include "red_black_count.h"  /* red_black_count */
 #include "red_black_copy.h"   /* red_black_verify */
+#include "red_black_equal.h"  /* red_black_equal */
 #include "red_black_print.h"  /* red_black_print */
 #include "red_black_verify.h" /* red_black_verify */
 
@@ -180,6 +181,65 @@ red_black_tree_count(const RedBlackTree *const restrict tree)
 	return red_black_count(tree->root);
 }
 
+bool
+red_black_tree_equal(const RedBlackTree *const tree1,
+		     const RedBlackTree *const tree2)
+{
+	bool status;
+	RedBlackJumpBuffer jump_buffer;
+	RedBlackComparator comparator;
+
+	status = (tree1 == tree2);
+
+	if (!status) {
+		comparator = tree1->comparator;
+
+		status = (comparator == tree2->comparator);
+
+		if (status) {
+			status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
+
+			if (status) {
+				red_black_equal(tree1->root,
+						tree2->root,
+						comparator,
+						&jump_buffer);
+
+				return true; /* returned w/ no jump */
+			}
+		}
+	}
+
+	return status;
+
+}
+
+bool
+red_black_tree_verify(const RedBlackTree *const restrict tree)
+{
+	bool status;
+	RedBlackJumpBuffer jump_buffer;
+
+	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
+
+	if (status)
+		status = red_black_verify(tree->root,
+					  tree->comparator,
+					  &jump_buffer);
+
+	return status;
+}
+
+bool
+red_black_tree_print(const RedBlackTree *const restrict tree,
+		     const RedBlackKeySizer key_sizer,
+		     const RedBlackKeyPutter key_putter)
+{
+	return red_black_print(tree->root,
+			       key_sizer,
+			       key_putter);
+}
+
 void
 red_black_tree_asc_iterator_init(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree)
@@ -218,30 +278,4 @@ red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iter,
 {
 	return red_black_iterator_next(iter,
 				       key_ptr);
-}
-
-bool
-red_black_tree_print(const RedBlackTree *const restrict tree,
-		     const RedBlackKeySizer key_sizer,
-		     const RedBlackKeyPutter key_putter)
-{
-	return red_black_print(tree->root,
-			       key_sizer,
-			       key_putter);
-}
-
-bool
-red_black_tree_verify(const RedBlackTree *const restrict tree)
-{
-	bool status;
-	RedBlackJumpBuffer jump_buffer;
-
-	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
-
-	if (status)
-		status = red_black_verify(tree->root,
-					  tree->comparator,
-					  &jump_buffer);
-
-	return status;
 }

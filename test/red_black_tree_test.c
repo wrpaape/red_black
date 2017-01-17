@@ -117,6 +117,30 @@ test_insert(void)
 }
 
 static inline void
+test_clone(void)
+{
+	RedBlackTree new_tree;
+
+	ENTER("test_clone");
+
+	if (!red_black_tree_clone(&new_tree,
+				  &tree))
+		TEST_FAILURE("tree_clone",
+			     "OUT OF MEMORY");
+
+	if (!red_black_tree_equal(&new_tree,
+				  &tree))
+		TEST_FAILURE("tree_clone",
+			     "TREES NOT EQUAL");
+
+	TEST_PASS("clone");
+
+	red_black_tree_destroy(&new_tree);
+
+	RETURN("test_clone");
+}
+
+static inline void
 test_find(void)
 {
 	int *restrict key;
@@ -303,6 +327,8 @@ main(void)
 	test_insert();
 
 	test_count(KEYS_COUNT);
+
+	test_clone();
 
 	test_find();
 

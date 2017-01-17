@@ -543,6 +543,25 @@ TARGETS			+= $(COPY_OBJ)					\
 			   $(COPY_PIC_OBJ)
 
 
+# red_black_equal
+# ──────────────────────────────────────────────────────────────────────────────
+EQUAL_SRC		:= $(call SOURCE_PATH,red_black_equal)
+EQUAL_HDR		:= $(call HEADER_PATH,red_black_equal)
+EQUAL_OBJ		:= $(call OBJECT_PATH,red_black_equal)
+EQUAL_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_equal)
+# ─────────────── target prequisites ───────────────────────────────────────────
+EQUAL_OBJ_PREQS		:= $(EQUAL_SRC)					\
+			   $(EQUAL_HDR)					\
+			   $(NODE_HDR)					\
+			   $(HNODE_HDR)
+EQUAL_OBJ_GROUP		:= $(EQUAL_OBJ)
+EQUAL_PIC_OBJ_PREQS	:= $(EQUAL_OBJ_PREQS)
+EQUAL_PIC_OBJ_GROUP	:= $(EQUAL_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(EQUAL_OBJ)					\
+			   $(EQUAL_PIC_OBJ)
+
+
 ifneq (T,$(SYSTEM_WINDOWS))
 # red_black_lock
 # ──────────────────────────────────────────────────────────────────────────────
@@ -619,8 +638,8 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(COUNT_HDR)					\
 		   	   $(COPY_HDR)					\
-		   	   $(PRINT_HDR)					\
-		   	   $(VERIFY_HDR)
+		   	   $(VERIFY_HDR)				\
+		   	   $(PRINT_HDR)
 TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(ITERATOR_OBJ_GROUP)			\
@@ -632,8 +651,9 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(FETCH_OBJ_GROUP)				\
 			   $(COUNT_OBJ_GROUP)				\
 		   	   $(COPY_OBJ_GROUP)				\
-			   $(PRINT_OBJ_GROUP)				\
-			   $(VERIFY_OBJ_GROUP)
+			   $(EQUAL_OBJ_GROUP)				\
+			   $(VERIFY_OBJ_GROUP)				\
+			   $(PRINT_OBJ_GROUP)
 TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
 TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
@@ -646,8 +666,10 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(FETCH_PIC_OBJ_GROUP)			\
 			   $(COUNT_PIC_OBJ_GROUP)			\
 		   	   $(COPY_PIC_OBJ_GROUP)			\
-			   $(PRINT_PIC_OBJ_GROUP)			\
-			   $(VERIFY_PIC_OBJ_GROUP)
+			   $(EQUAL_PIC_OBJ_GROUP)			\
+			   $(VERIFY_PIC_OBJ_GROUP)			\
+			   $(VERIFY_PIC_OBJ_GROUP)			\
+			   $(PRINT_PIC_OBJ_GROUP)
 TREE_ST_LIB_PREQS	:= $(TREE_OBJ_GROUP)
 TREE_SH_LIB_PREQS	:= $(TREE_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
@@ -1086,6 +1108,11 @@ $(CONCAT_PIC_OBJ): $(CONCAT_PIC_OBJ_PREQS)
 $(COPY_OBJ): $(COPY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(COPY_PIC_OBJ): $(COPY_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(EQUAL_OBJ): $(EQUAL_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(EQUAL_PIC_OBJ): $(EQUAL_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(HKEY_OBJ): $(HKEY_OBJ_PREQS)
