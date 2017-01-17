@@ -76,9 +76,23 @@ red_black_tree_equal(const RedBlackTree *const tree1,
 		     const RedBlackTree *const tree2);
 
 int
+red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
+			  const RedBlackTree *const restrict src_tree);
+
+int
+red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
+			  const RedBlackTree *const restrict src_tree);
+
+int
 red_black_tree_union(RedBlackTree *const restrict union_tree,
 		     const RedBlackTree *const restrict tree1,
 		     const RedBlackTree *const restrict tree2);
+
+int
+rb_tree_union(RedBlackTree *const restrict union_tree,
+	      const RedBlackTree *const restrict tree1,
+	      const RedBlackTree *const restrict tree2,
+	      const unsigned int count1);
 
 int
 red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,

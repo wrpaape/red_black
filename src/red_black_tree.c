@@ -233,12 +233,80 @@ red_black_tree_equal(const RedBlackTree *const tree1,
 
 
 int
+red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
+			  const RedBlackTree *const restrict src_tree)
+{
+	struct RedBlackNode *restrict *restrict dst_root_ptr;
+	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackIterator iter;
+	int count;
+	int status;
+	void *key;
+
+	dst_root_ptr	     = &dst_tree->root;
+	comparator	     = dst_tree->comparator;
+	dst_node_factory_ptr = &dst_tree->node_factory;
+
+
+	red_black_asc_iterator_init(&iter,
+				    src_tree->root);
+
+	count = 0;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
+		++count; /* successful insertion */
+	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+		return -1; /* RED_BLACK_MALLOC failure */
+
+	while (red_black_iterator_next(&iter,
+				       &key))
+		count += red_black_insert(dst_root_ptr,
+					  comparator,
+					  dst_node_factory_ptr,
+					  &jump_buffer,
+					  key); /* 1, 0 */
+
+	return count;
+}
+
+
+int
+red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
+			  const RedBlackTree *const restrict src_tree)
+{
+	return -1;
+}
+
+
+int
 red_black_tree_union(RedBlackTree *const restrict union_tree,
 		     const RedBlackTree *const restrict tree1,
 		     const RedBlackTree *const restrict tree2)
 {
-	return -1;
+	return rb_tree_union(union_tree,
+			     tree1,
+			     tree2,
+			     red_black_tree_count(tree1));
 }
+
+int
+rb_tree_union(RedBlackTree *const restrict union_tree,
+	      const RedBlackTree *const restrict tree1,
+	      const RedBlackTree *const restrict tree2,
+	      const unsigned int count1)
+{
+	return rb_tree_clone(union_tree,
+			     tree1,
+			     count1)
+	     ? red_black_tree_insert_all(union_tree,
+					 tree2)
+	     : -1; /* RED_BLACK_MALLOC failure */
+}
+
 
 int
 red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
