@@ -58,31 +58,61 @@ const struct RedBlackNodeFactoryBlueprint hnode_factory_blueprint = {
 
 static inline void
 rbnfb_init(struct RedBlackNodeFactoryBuffer *const restrict buffer,
-	   const size_t init_expand)
+	   const size_t init_expand,
+	   struct RedBlackNodeFactoryBufferBlock *const restrict first_block)
+
 {
 	buffer->cursor    = NULL;
 	buffer->until     = NULL;
 	buffer->expand    = init_expand;
-	buffer->blocks    = NULL;
+	buffer->blocks    = first_block;
 }
 
-void
-rbnf_init(struct RedBlackNodeFactory *const restrict factory,
-	  const struct RedBlackNodeFactoryBlueprint *const restrict bp)
+static inline void
+rbnf_do_init(struct RedBlackNodeFactory *const restrict factory,
+	     const struct RedBlackNodeFactoryBlueprint *const restrict bp,
+	     struct RedBlackNodeFactoryBufferBlock *const restrict first_block)
 {
 	factory->free      = NULL;
 	factory->blueprint = bp;
 
 	rbnfb_init(&factory->buffer,
-		   bp->init_expand);
+		   bp->init_expand,
+		   first_block);
 }
 
-/* void * */
-/* rbnf_init_wbuf(struct RedBlackNodeFactory *const restrict factory, */
-/* 	       const struct RedBlackNodeFactoryBlueprint *const restrict bp, */
-/* 	       const size_t buffer_size) */
-/* { */
-/* } */
+
+void
+rbnf_init(struct RedBlackNodeFactory *const restrict factory,
+	  const struct RedBlackNodeFactoryBlueprint *const restrict bp)
+{
+	rbnf_do_init(factory,
+		     bp,
+		     NULL);
+}
+
+
+struct RedBlackNode *
+rbnf_init_w_nodes(struct RedBlackNodeFactory *const restrict factory,
+		  const struct RedBlackNodeFactoryBlueprint *const restrict bp,
+		  const unsigned int count_nodes)
+{
+     struct RedBlackNodeFactoryBufferBlock *restrict first_block;
+     size_t allocate_size;
+
+     allocate_size = sizeof(*first_block) + (bp->size_node * count_nodes);
+
+     first_block = RED_BLACK_MALLOC(allocate_size);
+
+     if (first_block == NULL)
+	     return NULL;
+
+     rbnf_do_init(factory,
+		  bp,
+		  first_block);
+
+     return (struct RedBlackNode *) (first_block + 1);
+}
 
 void
 rbnf_reset(struct RedBlackNodeFactory *const restrict factory)

@@ -80,7 +80,7 @@ EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
-/* defines length of array of unique integer keys to be inserted/deleted */
+/* defines length of array of unique integer keys (must be >= 1) */
 #define KEYS_COUNT 10000
 
 extern int keys[KEYS_COUNT];
@@ -89,6 +89,7 @@ extern const int *const restrict keys_until;
 /* check validity after every potential modification ->
  * O(KEYS_COUNT²), set nonzero for small (upto ~10k) KEYS_COUNT */
 #define DO_VERIFY 1
+
 
 #define STR(X)  #X
 #define XSTR(X) STR(X)
@@ -102,7 +103,7 @@ extern const int *const restrict keys_until;
 #define ST_2 "WITHOUT"
 #endif /* if DO_VERIFY */
 
-#define ST_3 " step-by-step verification O(n²)\n---\n"
+#define ST_3 " step-by-step verification (O(n²))\n---\n"
 
 #define STARTING_TESTS()						\
 WRITE_LITERAL(ST_1 ST_2 ST_3)

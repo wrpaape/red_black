@@ -51,6 +51,11 @@ void
 rbnf_init(struct RedBlackNodeFactory *const restrict factory,
 	  const struct RedBlackNodeFactoryBlueprint *const restrict bp);
 
+struct RedBlackNode *
+rbnf_init_w_nodes(struct RedBlackNodeFactory *const restrict factory,
+		  const struct RedBlackNodeFactoryBlueprint *const restrict bp,
+		  const unsigned int count_nodes);
+
 void
 rbnf_reset(struct RedBlackNodeFactory *const restrict factory);
 
