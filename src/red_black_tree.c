@@ -278,7 +278,41 @@ int
 red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 			  const RedBlackTree *const restrict src_tree)
 {
-	return -1;
+	struct RedBlackNode *restrict *restrict dst_root_ptr;
+	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackIterator iter;
+	int count;
+	int status;
+	void *key;
+
+	dst_root_ptr	     = &dst_tree->root;
+	comparator	     = dst_tree->comparator;
+	dst_node_factory_ptr = &dst_tree->node_factory;
+
+
+	red_black_asc_iterator_init(&iter,
+				    src_tree->root);
+
+	count = 0;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
+		++count; /* successful deletion */
+	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+		return -1; /* RED_BLACK_MALLOC failure */
+
+	while (red_black_iterator_next(&iter,
+				       &key))
+		count += red_black_delete(dst_root_ptr,
+					  comparator,
+					  dst_node_factory_ptr,
+					  &jump_buffer,
+					  key); /* 1, 0 */
+
+	return count;
 }
 
 
@@ -342,8 +376,7 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 		return -1; /* RED_BLACK_MALLOC failure */
 
 	while (red_black_iterator_next(&iter2,
-				       &key)) {
-
+				       &key))
 		if (red_black_find(root1,
 				   comparator,
 				   key)) {
@@ -360,7 +393,6 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 					 &jump_buffer,
 					 node);
 		}
-	}
 
 	return count;
 }
