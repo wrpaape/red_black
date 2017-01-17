@@ -13,6 +13,16 @@
 #include "red_black_verify.h" /* red_black_verify */
 
 
+/* typedefs, struct Declarations
+ * ────────────────────────────────────────────────────────────────────────── */
+typedef int
+(*RedBlackMutator)(struct RedBlackNode *restrict *const restrict tree,
+		   const RedBlackComparator comparator,
+		   struct RedBlackNodeFactory *const restrict factory,
+		   RedBlackJumpBuffer *const restrict jump_buffer,
+		   const void *const key);
+
+
 void
 red_black_tree_init(RedBlackTree *const restrict tree,
 		    const RedBlackComparator comparator)
@@ -232,9 +242,10 @@ red_black_tree_equal(const RedBlackTree *const tree1,
 }
 
 
-int
-red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
-			  const RedBlackTree *const restrict src_tree)
+static inline int
+rb_tree_mutate_all(RedBlackTree *const restrict dst_tree,
+		   const RedBlackTree *const restrict src_tree,
+		   const RedBlackMutator mutator)
 {
 	struct RedBlackNode *restrict *restrict dst_root_ptr;
 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
@@ -258,19 +269,29 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
-		++count; /* successful insertion */
+		++count; /* successful mutation */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* RED_BLACK_MALLOC failure */
 
 	while (red_black_iterator_next(&iter,
 				       &key))
-		count += red_black_insert(dst_root_ptr,
-					  comparator,
-					  dst_node_factory_ptr,
-					  &jump_buffer,
-					  key); /* 1, 0 */
+		count += mutator(dst_root_ptr,
+				 comparator,
+				 dst_node_factory_ptr,
+				 &jump_buffer,
+				 key); /* 1, 0 */
 
 	return count;
+}
+
+
+int
+red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
+			  const RedBlackTree *const restrict src_tree)
+{
+	return rb_tree_mutate_all(dst_tree,
+				  src_tree,
+				  &red_black_insert);
 }
 
 
@@ -278,41 +299,9 @@ int
 red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 			  const RedBlackTree *const restrict src_tree)
 {
-	struct RedBlackNode *restrict *restrict dst_root_ptr;
-	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
-	RedBlackComparator comparator;
-	RedBlackJumpBuffer jump_buffer;
-	struct RedBlackIterator iter;
-	int count;
-	int status;
-	void *key;
-
-	dst_root_ptr	     = &dst_tree->root;
-	comparator	     = dst_tree->comparator;
-	dst_node_factory_ptr = &dst_tree->node_factory;
-
-
-	red_black_asc_iterator_init(&iter,
-				    src_tree->root);
-
-	count = 0;
-
-	status = RED_BLACK_SET_JUMP(jump_buffer);
-
-	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
-		++count; /* successful deletion */
-	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
-		return -1; /* RED_BLACK_MALLOC failure */
-
-	while (red_black_iterator_next(&iter,
-				       &key))
-		count += red_black_delete(dst_root_ptr,
-					  comparator,
-					  dst_node_factory_ptr,
-					  &jump_buffer,
-					  key); /* 1, 0 */
-
-	return count;
+	return rb_tree_mutate_all(dst_tree,
+				  src_tree,
+				  &red_black_delete);
 }
 
 
