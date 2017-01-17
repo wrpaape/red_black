@@ -29,11 +29,11 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 
 bool
 red_black_tree_clone(RedBlackTree *const restrict dst_tree,
-		     RedBlackTree *const restrict src_tree);
+		     const RedBlackTree *const restrict src_tree);
 
 bool
 rb_tree_clone(RedBlackTree *const restrict dst_tree,
-	      RedBlackTree *const restrict src_tree,
+	      const RedBlackTree *const restrict src_tree,
 	      const unsigned int count);
 
 

@@ -524,6 +524,25 @@ TARGETS			+= $(CONCAT_OBJ)				\
 			   $(CONCAT_PIC_OBJ)
 
 
+# red_black_copy
+# ──────────────────────────────────────────────────────────────────────────────
+COPY_SRC		:= $(call SOURCE_PATH,red_black_copy)
+COPY_HDR		:= $(call HEADER_PATH,red_black_copy)
+COPY_OBJ		:= $(call OBJECT_PATH,red_black_copy)
+COPY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_copy)
+# ─────────────── target prequisites ───────────────────────────────────────────
+COPY_OBJ_PREQS		:= $(COPY_SRC)					\
+			   $(COPY_HDR)					\
+			   $(NODE_HDR)					\
+			   $(HNODE_HDR)
+COPY_OBJ_GROUP		:= $(COPY_OBJ)
+COPY_PIC_OBJ_PREQS	:= $(COPY_OBJ_PREQS)
+COPY_PIC_OBJ_GROUP	:= $(COPY_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(COPY_OBJ)					\
+			   $(COPY_PIC_OBJ)
+
+
 ifneq (T,$(SYSTEM_WINDOWS))
 # red_black_lock
 # ──────────────────────────────────────────────────────────────────────────────
@@ -599,6 +618,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(COUNT_HDR)					\
+		   	   $(COPY_HDR)					\
 		   	   $(PRINT_HDR)					\
 		   	   $(VERIFY_HDR)
 TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
@@ -611,6 +631,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(FIND_OBJ_GROUP)				\
 			   $(FETCH_OBJ_GROUP)				\
 			   $(COUNT_OBJ_GROUP)				\
+		   	   $(COPY_OBJ_GROUP)				\
 			   $(PRINT_OBJ_GROUP)				\
 			   $(VERIFY_OBJ_GROUP)
 TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
@@ -624,6 +645,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(FIND_PIC_OBJ_GROUP)			\
 			   $(FETCH_PIC_OBJ_GROUP)			\
 			   $(COUNT_PIC_OBJ_GROUP)			\
+		   	   $(COPY_PIC_OBJ_GROUP)			\
 			   $(PRINT_PIC_OBJ_GROUP)			\
 			   $(VERIFY_PIC_OBJ_GROUP)
 TREE_ST_LIB_PREQS	:= $(TREE_OBJ_GROUP)
@@ -1059,6 +1081,11 @@ $(VERIFY_PIC_OBJ): $(VERIFY_PIC_OBJ_PREQS)
 $(CONCAT_OBJ): $(CONCAT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(CONCAT_PIC_OBJ): $(CONCAT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(COPY_OBJ): $(COPY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(COPY_PIC_OBJ): $(COPY_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(HKEY_OBJ): $(HKEY_OBJ_PREQS)

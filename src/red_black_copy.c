@@ -1,5 +1,6 @@
 #include "red_black_copy.h"  /* RedBlackNode */
 #include "red_black_hnode.h" /* RedBlackHNode */
+/* #include <stddef.h>	     /1* NULL *1/ */
 
 
 struct RedBlackNode *
@@ -10,12 +11,12 @@ red_black_copy_nodes(struct RedBlackNode *restrict *const restrict dst_tree,
 	struct RedBlackNode *restrict dst_node;
 
 	if (src_node == NULL) {
-		*tree = NULL;
+		*dst_tree = NULL;
 
 	} else {
 		dst_node = buffer++;
 
-		*tree = dst_node;
+		*dst_tree = dst_node;
 
 		*dst_node = *src_node;
 
@@ -40,12 +41,14 @@ red_black_copy_hnodes(struct RedBlackNode *restrict *const restrict dst_tree,
 	struct RedBlackHNode *restrict dst_node;
 
 	if (src_node == NULL) {
-		*tree = NULL;
+		*dst_tree = NULL;
 
 	} else {
-		dst_node = ((struct RedBlackHNode *restrict) buffer)++;
+		dst_node = (struct RedBlackHNode *restrict) buffer;
 
-		*tree = dst_node;
+		buffer = (struct RedBlackNode *restrict) (dst_node + 1);
+
+		*dst_tree = (struct RedBlackNode *restrict) dst_node;
 
 		*dst_node = *((const struct RedBlackHNode *restrict) src_node);
 

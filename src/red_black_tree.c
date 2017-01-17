@@ -6,9 +6,9 @@
 #include "red_black_find.h"   /* red_black_find */
 #include "red_black_fetch.h"  /* red_black_fetch */
 #include "red_black_count.h"  /* red_black_count */
+#include "red_black_copy.h"   /* red_black_verify */
 #include "red_black_print.h"  /* red_black_print */
 #include "red_black_verify.h" /* red_black_verify */
-#include "red_black_malloc.h" /* RED_BLACK_MALLOC */
 
 
 void
@@ -24,7 +24,7 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 
 bool
 red_black_tree_clone(RedBlackTree *const restrict dst_tree,
-		     RedBlackTree *const restrict src_tree)
+		     const RedBlackTree *const restrict src_tree)
 {
 	return rb_tree_clone(dst_tree,
 			     src_tree,
@@ -34,38 +34,42 @@ red_black_tree_clone(RedBlackTree *const restrict dst_tree,
 
 bool
 rb_tree_clone(RedBlackTree *const restrict dst_tree,
-	      RedBlackTree *const restrict src_tree,
+	      const RedBlackTree *const restrict src_tree,
 	      const unsigned int count)
 {
-	/* struct RedBlackNode *restrict *restrict root_ptr; */
-	/* bool status; */
+	struct RedBlackNode *restrict buffer;
+	struct RedBlackNode *restrict *restrict root_ptr;
+	struct RedBlackNodeFactory *restrict factory_ptr;
+	bool status;
 
-	/* root_ptr = &dst_tree->node; */
+	root_ptr = &dst_tree->root;
 
-	/* dst_tree->comparator = src_tree->comparator; */
+	dst_tree->comparator = src_tree->comparator;
 
-	/* status = (count == 0); */
+	factory_ptr = &dst_tree->node_factory;
 
-	/* if (status) { */
-	/* 	/1* finish empty initialization *1/ */
-	/* 	*root_ptr = NULL; */
-	/* 	rbnf_node_factory_init(&tree->node_factory); */
+	status = (count == 0);
 
-	/* 	rbnf_init(&dst_tree->node_factory, */
-	/* 		  &node_factory_blueprint); */
+	if (status) {
+		/* finish empty initialization */
+		*root_ptr = NULL;
+		rbnf_init(factory_ptr,
+			  &node_factory_blueprint);
 
-	/* } else { */
-	/* 	*root_ptr = RED_BLACK_MALLOC(sizeof(**root_ptr) * count); */
+	} else {
+		buffer = rbnf_init_w_nodes(factory_ptr,
+					   &node_factory_blueprint,
+					   count);
 
-	/* 	status = (*root_ptr != NULL); */
+		status = (buffer != NULL);
 
-	/* 	if (status) { */
-	/* 	} */
-	/* } */
+		if (status)
+			(void) red_black_copy_nodes(root_ptr,
+						    src_tree->root,
+						    buffer);
+	}
 
-	/* return status; */
-
-	return false;
+	return status;
 }
 
 void
