@@ -128,8 +128,10 @@ test_clone(void)
 		TEST_FAILURE("tree_clone",
 			     "OUT OF MEMORY");
 
-	if (!red_black_tree_congruent(&new_tree,
-				      &tree))
+	if (!(   red_black_tree_similar(&new_tree,
+					&tree)
+	      && red_black_tree_congruent(&new_tree,
+					  &tree)))
 		TEST_FAILURE("tree_clone",
 			     "TREES NOT EQUAL");
 

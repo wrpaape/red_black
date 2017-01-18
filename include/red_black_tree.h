@@ -43,12 +43,20 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 		      const void *const key);
 
 int
+red_black_tree_append(RedBlackTree *const restrict tree,
+		      const void *const key);
+
+int
 red_black_tree_update(RedBlackTree *const restrict tree,
 		      const void *const key,
 		      void **const restrict old_ptr);
 
 int
 red_black_tree_delete(RedBlackTree *const restrict tree,
+		      const void *const key);
+
+void
+red_black_tree_detach(RedBlackTree *const restrict tree,
 		      const void *const key);
 
 int
@@ -74,7 +82,6 @@ red_black_tree_verify(const RedBlackTree *const restrict tree);
 bool
 red_black_tree_congruent(const RedBlackTree *const tree1,
 			 const RedBlackTree *const tree2);
-
 bool
 rb_tree_congruent(const RedBlackTree *const restrict tree1,
 		  const RedBlackTree *const restrict tree2);
@@ -82,7 +89,6 @@ rb_tree_congruent(const RedBlackTree *const restrict tree1,
 bool
 red_black_tree_similar(const RedBlackTree *const tree1,
 		       const RedBlackTree *const tree2);
-
 bool
 rb_tree_similar(const RedBlackTree *const restrict tree1,
 		const RedBlackTree *const restrict tree2);

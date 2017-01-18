@@ -114,6 +114,39 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 }
 
 int
+red_black_tree_append(RedBlackTree *const restrict tree,
+		      const void *const key)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackNodeFactory *restrict node_factory_ptr;
+	struct RedBlackNode *restrict *restrict root_ptr;
+	struct RedBlackNode *restrict node;
+	RedBlackComparator comparator;
+	int status;
+
+	root_ptr	 = &tree->root;
+	comparator       = tree->comparator;
+	node_factory_ptr = &tree->node_factory;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	if (status != 0)
+		return RED_BLACK_JUMP_3_STATUS(status); /* 1, -1 */
+
+	node = rbnf_allocate(node_factory_ptr,
+			     &jump_buffer);
+
+	node->key = key;
+
+	red_black_append(root_ptr,
+			 comparator,
+			 &jump_buffer,
+			 node);
+
+	return 1; /* successful append */
+}
+
+int
 red_black_tree_update(RedBlackTree *const restrict tree,
 		      const void *const key,
 		      void **const restrict old_ptr)
@@ -306,7 +339,6 @@ rb_tree_similar(const RedBlackTree *const restrict tree1,
 
 		if (!status1)
 			return true;
-
 
 		if (comparator(key1,
 			       key2) != 0)
