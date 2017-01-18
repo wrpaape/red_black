@@ -72,8 +72,20 @@ bool
 red_black_tree_verify(const RedBlackTree *const restrict tree);
 
 bool
-red_black_tree_equal(const RedBlackTree *const tree1,
-		     const RedBlackTree *const tree2);
+red_black_tree_congruent(const RedBlackTree *const tree1,
+			 const RedBlackTree *const tree2);
+
+bool
+rb_tree_congruent(const RedBlackTree *const restrict tree1,
+		  const RedBlackTree *const restrict tree2);
+
+bool
+red_black_tree_similar(const RedBlackTree *const tree1,
+		       const RedBlackTree *const tree2);
+
+bool
+rb_tree_similar(const RedBlackTree *const restrict tree1,
+		const RedBlackTree *const restrict tree2);
 
 int
 red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,

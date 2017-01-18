@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_EQUAL_H_
-#define RED_BLACK_EQUAL_H_
+#ifndef RED_BLACK_CONGRUENT_H_
+#define RED_BLACK_CONGRUENT_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -11,9 +11,9 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_equal(const struct RedBlackNode *const restrict node1,
-		const struct RedBlackNode *const restrict node2,
-		const RedBlackComparator comparator,
-		RedBlackJumpBuffer *const restrict jump_buffer);
+red_black_congruent(const struct RedBlackNode *const restrict node1,
+		    const struct RedBlackNode *const restrict node2,
+		    const RedBlackComparator comparator,
+		    RedBlackJumpBuffer *const restrict jump_buffer);
 
-#endif /* ifndef RED_BLACK_EQUAL_H_ */
+#endif /* ifndef RED_BLACK_CONGRUENT_H_ */

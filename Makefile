@@ -543,23 +543,23 @@ TARGETS			+= $(COPY_OBJ)					\
 			   $(COPY_PIC_OBJ)
 
 
-# red_black_equal
+# red_black_congruent
 # ──────────────────────────────────────────────────────────────────────────────
-EQUAL_SRC		:= $(call SOURCE_PATH,red_black_equal)
-EQUAL_HDR		:= $(call HEADER_PATH,red_black_equal)
-EQUAL_OBJ		:= $(call OBJECT_PATH,red_black_equal)
-EQUAL_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_equal)
+CONGRUENT_SRC		:= $(call SOURCE_PATH,red_black_congruent)
+CONGRUENT_HDR		:= $(call HEADER_PATH,red_black_congruent)
+CONGRUENT_OBJ		:= $(call OBJECT_PATH,red_black_congruent)
+CONGRUENT_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_congruent)
 # ─────────────── target prequisites ───────────────────────────────────────────
-EQUAL_OBJ_PREQS		:= $(EQUAL_SRC)					\
-			   $(EQUAL_HDR)					\
+CONGRUENT_OBJ_PREQS	:= $(CONGRUENT_SRC)				\
+			   $(CONGRUENT_HDR)				\
 			   $(NODE_HDR)					\
 			   $(HNODE_HDR)
-EQUAL_OBJ_GROUP		:= $(EQUAL_OBJ)
-EQUAL_PIC_OBJ_PREQS	:= $(EQUAL_OBJ_PREQS)
-EQUAL_PIC_OBJ_GROUP	:= $(EQUAL_PIC_OBJ)
+CONGRUENT_OBJ_GROUP	:= $(CONGRUENT_OBJ)
+CONGRUENT_PIC_OBJ_PREQS	:= $(CONGRUENT_OBJ_PREQS)
+CONGRUENT_PIC_OBJ_GROUP	:= $(CONGRUENT_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(EQUAL_OBJ)					\
-			   $(EQUAL_PIC_OBJ)
+TARGETS			+= $(CONGRUENT_OBJ)				\
+			   $(CONGRUENT_PIC_OBJ)
 
 
 ifneq (T,$(SYSTEM_WINDOWS))
@@ -653,7 +653,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(FETCH_OBJ_GROUP)				\
 			   $(COUNT_OBJ_GROUP)				\
 		   	   $(COPY_OBJ_GROUP)				\
-			   $(EQUAL_OBJ_GROUP)				\
+			   $(CONGRUENT_OBJ_GROUP)			\
 			   $(VERIFY_OBJ_GROUP)				\
 			   $(PRINT_OBJ_GROUP)
 TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
@@ -669,7 +669,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(FETCH_PIC_OBJ_GROUP)			\
 			   $(COUNT_PIC_OBJ_GROUP)			\
 		   	   $(COPY_PIC_OBJ_GROUP)			\
-			   $(EQUAL_PIC_OBJ_GROUP)			\
+			   $(CONGRUENT_PIC_OBJ_GROUP)			\
 			   $(VERIFY_PIC_OBJ_GROUP)			\
 			   $(VERIFY_PIC_OBJ_GROUP)			\
 			   $(PRINT_PIC_OBJ_GROUP)
@@ -1113,9 +1113,9 @@ $(COPY_OBJ): $(COPY_OBJ_PREQS)
 $(COPY_PIC_OBJ): $(COPY_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(EQUAL_OBJ): $(EQUAL_OBJ_PREQS)
+$(CONGRUENT_OBJ): $(CONGRUENT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(EQUAL_PIC_OBJ): $(EQUAL_PIC_OBJ_PREQS)
+$(CONGRUENT_PIC_OBJ): $(CONGRUENT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(HKEY_OBJ): $(HKEY_OBJ_PREQS)

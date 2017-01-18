@@ -1,16 +1,16 @@
-#include "red_black_tree.h"   /* types */
-#include "red_black_insert.h" /* red_black_insert */
-#include "red_black_update.h" /* red_black_update */
-#include "red_black_append.h" /* red_black_append */
-#include "red_black_delete.h" /* red_black_delete */
-#include "red_black_remove.h" /* red_black_remove */
-#include "red_black_find.h"   /* red_black_find */
-#include "red_black_fetch.h"  /* red_black_fetch */
-#include "red_black_count.h"  /* red_black_count */
-#include "red_black_copy.h"   /* red_black_verify */
-#include "red_black_equal.h"  /* red_black_equal */
-#include "red_black_print.h"  /* red_black_print */
-#include "red_black_verify.h" /* red_black_verify */
+#include "red_black_tree.h"	 /* types */
+#include "red_black_insert.h"	 /* red_black_insert */
+#include "red_black_update.h"	 /* red_black_update */
+#include "red_black_append.h"	 /* red_black_append */
+#include "red_black_delete.h"	 /* red_black_delete */
+#include "red_black_remove.h"	 /* red_black_remove */
+#include "red_black_find.h"	 /* red_black_find */
+#include "red_black_fetch.h"	 /* red_black_fetch */
+#include "red_black_count.h"	 /* red_black_count */
+#include "red_black_copy.h"	 /* red_black_verify */
+#include "red_black_congruent.h" /* red_black_congruent */
+#include "red_black_print.h"	 /* red_black_print */
+#include "red_black_verify.h"	 /* red_black_verify */
 
 
 /* typedefs, struct Declarations
@@ -21,6 +21,11 @@ typedef int
 		   struct RedBlackNodeFactory *const restrict factory,
 		   RedBlackJumpBuffer *const restrict jump_buffer,
 		   const void *const key);
+
+typedef bool
+(*RedBlackTreeComparator)(const RedBlackTree *const restrict tree1,
+			  const RedBlackTree *const restrict tree2);
+
 
 
 void
@@ -186,11 +191,13 @@ red_black_tree_fetch(const RedBlackTree *const restrict tree,
 			       key_ptr);
 }
 
+
 unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree)
 {
 	return red_black_count(tree->root);
 }
+
 
 bool
 red_black_tree_verify(const RedBlackTree *const restrict tree)
@@ -208,37 +215,103 @@ red_black_tree_verify(const RedBlackTree *const restrict tree)
 	return status;
 }
 
-bool
-red_black_tree_equal(const RedBlackTree *const tree1,
-		     const RedBlackTree *const tree2)
+
+static inline bool
+rb_tree_compare(const RedBlackTree *const tree1,
+		const RedBlackTree *const tree2,
+		const RedBlackTreeComparator tree_comparator)
 {
 	bool status;
-	RedBlackJumpBuffer jump_buffer;
-	RedBlackComparator comparator;
-
 	status = (tree1 == tree2);
 
 	if (!status) {
-		comparator = tree1->comparator;
+		status = (tree1->comparator == tree2->comparator);
 
-		status = (comparator == tree2->comparator);
-
-		if (status) {
-			status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
-
-			if (status) {
-				red_black_equal(tree1->root,
-						tree2->root,
-						comparator,
-						&jump_buffer);
-
-				return true; /* returned w/ no jump */
-			}
-		}
+		if (status)
+			return tree_comparator(tree1,
+					       tree2);
 	}
 
 	return status;
+}
 
+
+bool
+red_black_tree_congruent(const RedBlackTree *const tree1,
+			 const RedBlackTree *const tree2)
+{
+	return rb_tree_compare(tree1,
+			       tree2,
+			       &rb_tree_congruent);
+}
+
+bool
+rb_tree_congruent(const RedBlackTree *const restrict tree1,
+		  const RedBlackTree *const restrict tree2)
+{
+	bool status;
+	RedBlackJumpBuffer jump_buffer;
+
+	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
+
+	if (status)
+		red_black_congruent(tree1->root,
+				    tree2->root,
+				    tree1->comparator,
+				    &jump_buffer);
+		/* if returned w/o jump, status is true */
+
+	return status;
+}
+
+
+bool
+red_black_tree_similar(const RedBlackTree *const tree1,
+		       const RedBlackTree *const tree2)
+{
+	return rb_tree_compare(tree1,
+			       tree2,
+			       &rb_tree_similar);
+}
+
+bool
+rb_tree_similar(const RedBlackTree *const restrict tree1,
+		const RedBlackTree *const restrict tree2)
+{
+	bool status1;
+	bool status2;
+	struct RedBlackIterator iter1;
+	struct RedBlackIterator iter2;
+	RedBlackComparator comparator;
+	void *key1;
+	void *key2;
+
+	red_black_asc_iterator_init(&iter1,
+				    tree1->root);
+
+	comparator = tree1->comparator;
+
+	red_black_asc_iterator_init(&iter2,
+				    tree2->root);
+
+	while (1) {
+		status1 = red_black_iterator_next(&iter1,
+						  &key1);
+
+		status2 = red_black_iterator_next(&iter2,
+						  &key2);
+
+		if (status1 != status2)
+			return false;
+
+		if (!status1)
+			return true;
+
+
+		if (comparator(key1,
+			       key2) != 0)
+			return false;
+	}
 }
 
 
