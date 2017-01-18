@@ -70,8 +70,8 @@ typedef void
 /* remove state machine functions
  *
  * JUMPS
- *	RED_BLACK_JUMP_VALUE_3_TRUE	OK, successful deletion, tree updated
- * 	RED_BLACK_JUMP_VALUE_3_FALSE	OK, no deletion made, tree NOT updated
+ *	RED_BLACK_JUMP_VALUE_2_TRUE	OK, successful deletion, tree updated
+ * 	RED_BLACK_JUMP_VALUE_2_FALSE	OK, no deletion made, tree NOT updated
  *
  * RETURNS
  *	need to restore (check if can rotate, recolor) in THIS frame

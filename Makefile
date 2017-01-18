@@ -410,6 +410,30 @@ TARGETS			+= $(REMOVE_OBJ)				\
 			   $(REMOVE_PIC_OBJ)
 
 
+# red_black_detach
+# ──────────────────────────────────────────────────────────────────────────────
+DETACH_SRC		:= $(call SOURCE_PATH,red_black_detach)
+DETACH_HDR		:= $(call HEADER_PATH,red_black_detach)
+DETACH_OBJ		:= $(call OBJECT_PATH,red_black_detach)
+DETACH_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_detach)
+# ─────────────── target prequisites ───────────────────────────────────────────
+DETACH_OBJ_PREQS	:= $(DETACH_SRC)				\
+			   $(DETACH_HDR)				\
+			   $(COMPARATOR_HDR)				\
+			   $(NODE_FACTORY_HDR)				\
+			   $(RESTORE_HDR)
+DETACH_OBJ_GROUP	:= $(DETACH_OBJ)				\
+			   $(NODE_FACTORY_OBJ_GROUP)			\
+			   $(RESTORE_OBJ_GROUP)
+DETACH_PIC_OBJ_PREQS	:= $(DETACH_OBJ_PREQS)
+DETACH_PIC_OBJ_GROUP	:= $(DETACH_PIC_OBJ)				\
+			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(RESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(DETACH_OBJ)				\
+			   $(DETACH_PIC_OBJ)
+
+
 # red_black_find
 # ──────────────────────────────────────────────────────────────────────────────
 FIND_SRC		:= $(call SOURCE_PATH,red_black_find)
@@ -635,6 +659,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(ATTACH_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
+		   	   $(DETACH_HDR)				\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(COUNT_HDR)					\
@@ -649,6 +674,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(ATTACH_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
+		   	   $(DETACH_OBJ_GROUP)				\
 			   $(FIND_OBJ_GROUP)				\
 			   $(FETCH_OBJ_GROUP)				\
 			   $(COUNT_OBJ_GROUP)				\
@@ -665,6 +691,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(ATTACH_PIC_OBJ_GROUP)			\
 			   $(DELETE_PIC_OBJ_GROUP)			\
 			   $(REMOVE_PIC_OBJ_GROUP)			\
+		   	   $(DETACH_PIC_OBJ_GROUP)			\
 			   $(FIND_PIC_OBJ_GROUP)			\
 			   $(FETCH_PIC_OBJ_GROUP)			\
 			   $(COUNT_PIC_OBJ_GROUP)			\
@@ -703,6 +730,7 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 		   	   $(UPDATE_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
+		   	   $(DETACH_HDR)				\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(VERIFY_HDR)				\
@@ -719,6 +747,7 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 		   	   $(UPDATE_OBJ_GROUP)				\
 		   	   $(DELETE_OBJ_GROUP)				\
 		   	   $(REMOVE_OBJ_GROUP)				\
+		   	   $(DETACH_OBJ_GROUP)				\
 		   	   $(FIND_OBJ_GROUP)				\
 		   	   $(FETCH_OBJ_GROUP)				\
 		   	   $(VERIFY_OBJ_GROUP)				\
@@ -735,6 +764,7 @@ LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 		   	   $(UPDATE_PIC_OBJ_GROUP)			\
 		   	   $(DELETE_PIC_OBJ_GROUP)			\
 		   	   $(REMOVE_PIC_OBJ_GROUP)			\
+		   	   $(DETACH_PIC_OBJ_GROUP)			\
 		   	   $(FIND_PIC_OBJ_GROUP)			\
 		   	   $(FETCH_PIC_OBJ_GROUP)			\
 		   	   $(VERIFY_PIC_OBJ_GROUP)			\
@@ -828,23 +858,21 @@ TARGETS			+= $(CONCAT_TEST_OBJ)				\
 			   $(CONCAT_TEST_BIN)
 
 
-# red_black_attach_test
+# red_black_tree_mini_test
 # ──────────────────────────────────────────────────────────────────────────────
-ATTACH_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_attach_test)
-ATTACH_TEST_OBJ		:= $(call OBJECT_PATH,red_black_attach_test)
-ATTACH_TEST_BIN		:= $(call BINARY_PATH,red_black_attach_test)
+TREE_MINI_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_mini_test)
+TREE_MINI_TEST_OBJ		:= $(call OBJECT_PATH,red_black_tree_mini_test)
+TREE_MINI_TEST_BIN		:= $(call BINARY_PATH,red_black_tree_mini_test)
 # ─────────────── target prequisites ───────────────────────────────────────────
-ATTACH_TEST_OBJ_PREQS	:= $(ATTACH_TEST_SRC)				\
-			   $(TREE_HDR)					\
-			   $(INT_KEY_HDR)				\
-			   $(ATTACH_HDR)
-ATTACH_TEST_BIN_PREQS	:= $(ATTACH_TEST_OBJ)				\
-			   $(ATTACH_OBJ_GROUP)				\
-			   $(INT_KEY_OBJ_GROUP)				\
-			   $(TREE_SH_LIB)
+TREE_MINI_TEST_OBJ_PREQS	:= $(TREE_MINI_TEST_SRC)		\
+			   	    $(TREE_HDR)				\
+			   	    $(INT_KEY_HDR)
+TREE_MINI_TEST_BIN_PREQS	:= $(TREE_MINI_TEST_OBJ)		\
+			   	    $(INT_KEY_OBJ_GROUP)		\
+			   	    $(TREE_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(ATTACH_TEST_OBJ)				\
-			   $(ATTACH_TEST_BIN)
+TARGETS				+= $(TREE_MINI_TEST_OBJ)		\
+			   	   $(TREE_MINI_TEST_BIN)
 
 
 
@@ -995,9 +1023,9 @@ $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)
 $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
-$(ATTACH_TEST_BIN): $(ATTACH_TEST_BIN_PREQS)
+$(TREE_MINI_TEST_BIN): $(TREE_MINI_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(ATTACH_TEST_OBJ): $(ATTACH_TEST_OBJ_PREQS)
+$(TREE_MINI_TEST_OBJ): $(TREE_MINI_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(MT_TEST_OBJ): $(MT_TEST_OBJ_PREQS)
@@ -1071,6 +1099,11 @@ $(DELETE_PIC_OBJ): $(DELETE_PIC_OBJ_PREQS)
 $(REMOVE_OBJ): $(REMOVE_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(REMOVE_PIC_OBJ): $(REMOVE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(DETACH_OBJ): $(DETACH_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(DETACH_PIC_OBJ): $(DETACH_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(RESTORE_OBJ): $(RESTORE_OBJ_PREQS)

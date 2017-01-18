@@ -4,6 +4,7 @@
 #include "red_black_attach.h"	 /* red_black_append */
 #include "red_black_delete.h"	 /* red_black_delete */
 #include "red_black_remove.h"	 /* red_black_remove */
+#include "red_black_detach.h"	 /* red_black_detach */
 #include "red_black_find.h"	 /* red_black_find */
 #include "red_black_fetch.h"	 /* red_black_fetch */
 #include "red_black_count.h"	 /* red_black_count */
@@ -113,6 +114,26 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
 
+int
+red_black_tree_update(RedBlackTree *const restrict tree,
+		      const void *const key,
+		      void **const restrict old_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_update(&tree->root,
+				tree->comparator,
+				&tree->node_factory,
+				&jump_buffer,
+				key,
+				old_ptr) /* 1, 0 */
+	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
+}
+
 bool
 red_black_tree_attach(RedBlackTree *const restrict tree,
 		      const void *const key)
@@ -147,26 +168,6 @@ red_black_tree_attach(RedBlackTree *const restrict tree,
 }
 
 int
-red_black_tree_update(RedBlackTree *const restrict tree,
-		      const void *const key,
-		      void **const restrict old_ptr)
-{
-	RedBlackJumpBuffer jump_buffer;
-	int status;
-
-	status = RED_BLACK_SET_JUMP(jump_buffer);
-
-	return (status == 0)
-	     ? red_black_update(&tree->root,
-				tree->comparator,
-				&tree->node_factory,
-				&jump_buffer,
-				key,
-				old_ptr) /* 1, 0 */
-	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
-}
-
-int
 red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key)
 {
@@ -182,13 +183,6 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 				&jump_buffer,
 				key) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
-}
-
-void
-red_black_tree_detach(RedBlackTree *const restrict tree,
-		      const void *const key)
-{
-	/* TODO */
 }
 
 int
@@ -209,6 +203,20 @@ red_black_tree_remove(RedBlackTree *const restrict tree,
 				key,
 				key_ptr) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+}
+
+void
+red_black_tree_detach(RedBlackTree *const restrict tree,
+		      const void *const key)
+{
+	RedBlackJumpBuffer jump_buffer;
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
+		red_black_detach(&tree->root,
+				 tree->comparator,
+				 &tree->node_factory,
+				 &jump_buffer,
+				 key);
 }
 
 bool
@@ -437,8 +445,8 @@ rb_tree_union(RedBlackTree *const restrict union_tree,
 	return rb_tree_clone(union_tree,
 			     tree1,
 			     count1)
-	     ? red_black_tree_insert_all(union_tree,
-					 tree2)
+	     ? (count1 + red_black_tree_insert_all(union_tree,
+						   tree2))
 	     : -1; /* RED_BLACK_MALLOC failure */
 }
 
