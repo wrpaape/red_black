@@ -42,8 +42,8 @@ int
 red_black_tree_insert(RedBlackTree *const restrict tree,
 		      const void *const key);
 
-int
-red_black_tree_append(RedBlackTree *const restrict tree,
+bool
+red_black_tree_attach(RedBlackTree *const restrict tree,
 		      const void *const key);
 
 int

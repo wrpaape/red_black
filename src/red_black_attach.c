@@ -1,4 +1,4 @@
-#include "red_black_append.h"  /* Node, Comparator, Allocator, JumpBuffer */
+#include "red_black_attach.h"  /* Node, Comparator, Allocator, JumpBuffer */
 #include "red_black_correct.h" /* post-insertion correction functions */
 #include <stddef.h>	       /* NULL */
 
@@ -6,7 +6,7 @@
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef bool
-(*RedBlackAppendNode)(struct RedBlackNode *restrict *const restrict tree,
+(*RedBlackAttachNode)(struct RedBlackNode *restrict *const restrict tree,
 		      struct RedBlackNode *const restrict grandparent,
 		      struct RedBlackNode *const restrict parent,
 		      const RedBlackComparator comparator,
@@ -14,7 +14,7 @@ typedef bool
 		      struct RedBlackNode *const restrict node);
 
 
-/* append state machine functions
+/* attach state machine functions
  *
  * JUMPS
  *	RED_BLACK_JUMP_VALUE_3_TRUE	OK, successful insertion, tree updated
@@ -24,28 +24,28 @@ typedef bool
  *	false	need to recolor parent in THIS frame, correct in PREV frame
  * ────────────────────────────────────────────────────────────────────────── */
 static bool
-rb_append_ll(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     struct RedBlackNode *const restrict node);
 static bool
-rb_append_lr(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     struct RedBlackNode *const restrict node);
 static bool
-rb_append_rr(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     RedBlackJumpBuffer *const restrict jump_buffer,
 	     struct RedBlackNode *const restrict node);
 static bool
-rb_append_rl(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -54,13 +54,13 @@ rb_append_rl(struct RedBlackNode *restrict *const restrict tree,
 
 
 void
-red_black_append(struct RedBlackNode *restrict *const restrict tree,
+red_black_attach(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 struct RedBlackNode *const restrict node)
 {
 	struct RedBlackNode *restrict parent;
-	RedBlackAppendNode next_append;
+	RedBlackAttachNode next_attach;
 
 	struct RedBlackNode *const restrict grandparent = *tree;
 
@@ -78,15 +78,15 @@ red_black_append(struct RedBlackNode *restrict *const restrict tree,
 			parent = grandparent->left;
 
 			if (parent == NULL) {
-				grandparent->left = node; /* append RED leaf */
+				grandparent->left = node; /* attach RED leaf */
 
 			} else {
-				next_append = (comparator(key,
+				next_attach = (comparator(key,
 							  parent->key) < 0)
-					    ? &rb_append_ll
-					    : &rb_append_lr;
+					    ? &rb_attach_ll
+					    : &rb_attach_lr;
 
-				(void) next_append(tree,
+				(void) next_attach(tree,
 						   grandparent,
 						   parent,
 						   comparator,
@@ -98,15 +98,15 @@ red_black_append(struct RedBlackNode *restrict *const restrict tree,
 			parent = grandparent->right;
 
 			if (parent == NULL) {
-				grandparent->right = node; /* append RED leaf */
+				grandparent->right = node; /* attach RED leaf */
 
 			} else {
-				next_append = (comparator(key,
+				next_attach = (comparator(key,
 							  parent->key) < 0)
-					    ? &rb_append_rl
-					    : &rb_append_rr;
+					    ? &rb_attach_rl
+					    : &rb_attach_rr;
 
-				(void) next_append(tree,
+				(void) next_attach(tree,
 						   grandparent,
 						   parent,
 						   comparator,
@@ -123,7 +123,7 @@ red_black_append(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_append_ll(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -132,14 +132,14 @@ rb_append_ll(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	struct RedBlackNode *restrict next;
-	RedBlackAppendNode next_append;
+	RedBlackAttachNode next_attach;
 
 	next = parent->left;
 
 	status = (next == NULL);
 
 	if (status) {
-		parent->left = node; /* append RED leaf */
+		parent->left = node; /* attach RED leaf */
 
 		/* need to correct */
 		red_black_correct_ll_bot(tree,
@@ -148,12 +148,12 @@ rb_append_ll(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_append = (comparator(node->key,
+		next_attach = (comparator(node->key,
 					  next->key) < 0)
-			    ? &rb_append_ll
-			    : &rb_append_lr;
+			    ? &rb_attach_ll
+			    : &rb_attach_lr;
 
-		status = next_append(&grandparent->left,
+		status = next_attach(&grandparent->left,
 				     parent,
 				     next,
 				     comparator,
@@ -176,7 +176,7 @@ rb_append_ll(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_append_lr(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -185,14 +185,14 @@ rb_append_lr(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	struct RedBlackNode *restrict next;
-	RedBlackAppendNode next_append;
+	RedBlackAttachNode next_attach;
 
 	next = parent->right;
 
 	status = (next == NULL);
 
 	if (status) {
-		parent->right = node; /* append RED leaf */
+		parent->right = node; /* attach RED leaf */
 
 		/* need to correct */
 		red_black_correct_lr_bot(tree,
@@ -202,12 +202,12 @@ rb_append_lr(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_append = (comparator(node->key,
+		next_attach = (comparator(node->key,
 					  next->key) < 0)
-			    ? &rb_append_rl
-			    : &rb_append_rr;
+			    ? &rb_attach_rl
+			    : &rb_attach_rr;
 
-		status = next_append(&grandparent->left,
+		status = next_attach(&grandparent->left,
 				     parent,
 				     next,
 				     comparator,
@@ -231,7 +231,7 @@ rb_append_lr(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_append_rr(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -240,14 +240,14 @@ rb_append_rr(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	struct RedBlackNode *restrict next;
-	RedBlackAppendNode next_append;
+	RedBlackAttachNode next_attach;
 
 	next = parent->right;
 
 	status = (next == NULL);
 
 	if (status) {
-		parent->right = node; /* append RED leaf */
+		parent->right = node; /* attach RED leaf */
 
 		/* need to correct */
 		red_black_correct_rr_bot(tree,
@@ -256,12 +256,12 @@ rb_append_rr(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_append = (comparator(node->key,
+		next_attach = (comparator(node->key,
 					  next->key) < 0)
-			    ? &rb_append_rl
-			    : &rb_append_rr;
+			    ? &rb_attach_rl
+			    : &rb_attach_rr;
 
-		status = next_append(&grandparent->right,
+		status = next_attach(&grandparent->right,
 				     parent,
 				     next,
 				     comparator,
@@ -284,7 +284,7 @@ rb_append_rr(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_append_rl(struct RedBlackNode *restrict *const restrict tree,
+rb_attach_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -293,14 +293,14 @@ rb_append_rl(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	struct RedBlackNode *restrict next;
-	RedBlackAppendNode next_append;
+	RedBlackAttachNode next_attach;
 
 	next = parent->left;
 
 	status = (next == NULL);
 
 	if (status) {
-		parent->left = node; /* append RED leaf */
+		parent->left = node; /* attach RED leaf */
 
 		/* need to correct */
 		red_black_correct_rl_bot(tree,
@@ -310,12 +310,12 @@ rb_append_rl(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_append = (comparator(node->key,
+		next_attach = (comparator(node->key,
 					  next->key) < 0)
-			    ? &rb_append_ll
-			    : &rb_append_lr;
+			    ? &rb_attach_ll
+			    : &rb_attach_lr;
 
-		status = next_append(&grandparent->right,
+		status = next_attach(&grandparent->right,
 				     parent,
 				     next,
 				     comparator,

@@ -319,27 +319,27 @@ TARGETS			+= $(UPDATE_OBJ)				\
 			   $(UPDATE_PIC_OBJ)
 
 
-# red_black_append
+# red_black_attach
 # ──────────────────────────────────────────────────────────────────────────────
-APPEND_SRC		:= $(call SOURCE_PATH,red_black_append)
-APPEND_HDR		:= $(call HEADER_PATH,red_black_append)
-APPEND_OBJ		:= $(call OBJECT_PATH,red_black_append)
-APPEND_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_append)
+ATTACH_SRC		:= $(call SOURCE_PATH,red_black_attach)
+ATTACH_HDR		:= $(call HEADER_PATH,red_black_attach)
+ATTACH_OBJ		:= $(call OBJECT_PATH,red_black_attach)
+ATTACH_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_attach)
 # ─────────────── target prequisites ───────────────────────────────────────────
-APPEND_OBJ_PREQS	:= $(APPEND_SRC)				\
-			   $(APPEND_HDR)				\
+ATTACH_OBJ_PREQS	:= $(ATTACH_SRC)				\
+			   $(ATTACH_HDR)				\
 			   $(NODE_HDR)					\
 			   $(COMPARATOR_HDR)				\
 			   $(JUMP_HDR)					\
 			   $(CORRECT_HDR)
-APPEND_OBJ_GROUP	:= $(APPEND_OBJ)				\
+ATTACH_OBJ_GROUP	:= $(ATTACH_OBJ)				\
 			   $(CORRECT_OBJ_GROUP)
-APPEND_PIC_OBJ_PREQS	:= $(APPEND_OBJ_PREQS)
-APPEND_PIC_OBJ_GROUP	:= $(APPEND_PIC_OBJ)				\
+ATTACH_PIC_OBJ_PREQS	:= $(ATTACH_OBJ_PREQS)
+ATTACH_PIC_OBJ_GROUP	:= $(ATTACH_PIC_OBJ)				\
 			   $(CORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(APPEND_OBJ)				\
-			   $(APPEND_PIC_OBJ)
+TARGETS			+= $(ATTACH_OBJ)				\
+			   $(ATTACH_PIC_OBJ)
 
 
 # red_black_restore
@@ -632,7 +632,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(UPDATE_HDR)				\
-		   	   $(APPEND_HDR)				\
+		   	   $(ATTACH_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
 		   	   $(FIND_HDR)					\
@@ -646,7 +646,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(ITERATOR_OBJ_GROUP)			\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(UPDATE_OBJ_GROUP)				\
-			   $(APPEND_OBJ_GROUP)				\
+			   $(ATTACH_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
 			   $(FIND_OBJ_GROUP)				\
@@ -662,7 +662,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(ITERATOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(UPDATE_PIC_OBJ_GROUP)			\
-			   $(APPEND_PIC_OBJ_GROUP)			\
+			   $(ATTACH_PIC_OBJ_GROUP)			\
 			   $(DELETE_PIC_OBJ_GROUP)			\
 			   $(REMOVE_PIC_OBJ_GROUP)			\
 			   $(FIND_PIC_OBJ_GROUP)			\
@@ -707,7 +707,7 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(VERIFY_HDR)				\
 		   	   $(CONCAT_HDR)				\
-		   	   $(APPEND_HDR)				\
+		   	   $(ATTACH_HDR)				\
 			   $(MALLOC_HDR)
 LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 			   $(LOCK_OBJ_GROUP)				\
@@ -723,7 +723,7 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 		   	   $(FETCH_OBJ_GROUP)				\
 		   	   $(VERIFY_OBJ_GROUP)				\
 		   	   $(CONCAT_OBJ_GROUP)				\
-		   	   $(APPEND_OBJ_GROUP)
+		   	   $(ATTACH_OBJ_GROUP)
 LHMAP_PIC_OBJ_PREQS	:= $(LHMAP_OBJ_PREQS)
 LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 			   $(LOCK_PIC_OBJ_GROUP)			\
@@ -739,7 +739,7 @@ LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 		   	   $(FETCH_PIC_OBJ_GROUP)			\
 		   	   $(VERIFY_PIC_OBJ_GROUP)			\
 		   	   $(CONCAT_PIC_OBJ_GROUP)			\
-		   	   $(APPEND_PIC_OBJ_GROUP)
+		   	   $(ATTACH_PIC_OBJ_GROUP)
 LHMAP_ST_LIB_PREQS	:= $(LHMAP_OBJ_GROUP)
 LHMAP_SH_LIB_PREQS	:= $(LHMAP_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
@@ -828,23 +828,23 @@ TARGETS			+= $(CONCAT_TEST_OBJ)				\
 			   $(CONCAT_TEST_BIN)
 
 
-# red_black_append_test
+# red_black_attach_test
 # ──────────────────────────────────────────────────────────────────────────────
-APPEND_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_append_test)
-APPEND_TEST_OBJ		:= $(call OBJECT_PATH,red_black_append_test)
-APPEND_TEST_BIN		:= $(call BINARY_PATH,red_black_append_test)
+ATTACH_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_attach_test)
+ATTACH_TEST_OBJ		:= $(call OBJECT_PATH,red_black_attach_test)
+ATTACH_TEST_BIN		:= $(call BINARY_PATH,red_black_attach_test)
 # ─────────────── target prequisites ───────────────────────────────────────────
-APPEND_TEST_OBJ_PREQS	:= $(APPEND_TEST_SRC)				\
+ATTACH_TEST_OBJ_PREQS	:= $(ATTACH_TEST_SRC)				\
 			   $(TREE_HDR)					\
 			   $(INT_KEY_HDR)				\
-			   $(APPEND_HDR)
-APPEND_TEST_BIN_PREQS	:= $(APPEND_TEST_OBJ)				\
-			   $(APPEND_OBJ_GROUP)				\
+			   $(ATTACH_HDR)
+ATTACH_TEST_BIN_PREQS	:= $(ATTACH_TEST_OBJ)				\
+			   $(ATTACH_OBJ_GROUP)				\
 			   $(INT_KEY_OBJ_GROUP)				\
 			   $(TREE_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(APPEND_TEST_OBJ)				\
-			   $(APPEND_TEST_BIN)
+TARGETS			+= $(ATTACH_TEST_OBJ)				\
+			   $(ATTACH_TEST_BIN)
 
 
 
@@ -995,9 +995,9 @@ $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)
 $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
-$(APPEND_TEST_BIN): $(APPEND_TEST_BIN_PREQS)
+$(ATTACH_TEST_BIN): $(ATTACH_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(APPEND_TEST_OBJ): $(APPEND_TEST_OBJ_PREQS)
+$(ATTACH_TEST_OBJ): $(ATTACH_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(MT_TEST_OBJ): $(MT_TEST_OBJ_PREQS)
@@ -1053,9 +1053,9 @@ $(UPDATE_OBJ): $(UPDATE_OBJ_PREQS)
 $(UPDATE_PIC_OBJ): $(UPDATE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(APPEND_OBJ): $(APPEND_OBJ_PREQS)
+$(ATTACH_OBJ): $(ATTACH_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(APPEND_PIC_OBJ): $(APPEND_PIC_OBJ_PREQS)
+$(ATTACH_PIC_OBJ): $(ATTACH_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(CORRECT_OBJ): $(CORRECT_OBJ_PREQS)

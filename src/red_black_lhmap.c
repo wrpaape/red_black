@@ -8,7 +8,7 @@
 #include "red_black_fetch.h"  /* red_black_fetch */
 #include "red_black_verify.h" /* red_black_verify */
 #include "red_black_concat.h" /* red_black_concat */
-#include "red_black_append.h" /* red_black_append */
+#include "red_black_attach.h" /* red_black_attach */
 #include "red_black_malloc.h" /* RED_BLACK_MALLOC|REALLOC|FREE */
 
 
@@ -86,7 +86,7 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		goto NEXT_NODE;
 
 	while (1) {
-		next = head->left; /* must fetch next before NULLed in append */
+		next = head->left; /* must fetch next before NULLed in attach */
 
 		/* fetch hash key hash */
 		hash = ((struct RedBlackHNode *) head)->hkey.hash;
@@ -94,8 +94,8 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		/* fetch new bucket */
 		bucket = &buckets[hash & new_count_m1];
 
-		/* append to bucket tree, may jump */
-		red_black_append(&bucket->root,
+		/* attach to bucket tree, may jump */
+		red_black_attach(&bucket->root,
 				 &red_black_hkey_comparator,
 				 &jump_buffer,
 				 head);

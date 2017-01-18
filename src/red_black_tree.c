@@ -1,7 +1,7 @@
 #include "red_black_tree.h"	 /* types */
 #include "red_black_insert.h"	 /* red_black_insert */
 #include "red_black_update.h"	 /* red_black_update */
-#include "red_black_append.h"	 /* red_black_append */
+#include "red_black_attach.h"	 /* red_black_append */
 #include "red_black_delete.h"	 /* red_black_delete */
 #include "red_black_remove.h"	 /* red_black_remove */
 #include "red_black_find.h"	 /* red_black_find */
@@ -113,8 +113,8 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
 
-int
-red_black_tree_append(RedBlackTree *const restrict tree,
+bool
+red_black_tree_attach(RedBlackTree *const restrict tree,
 		      const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
@@ -131,19 +131,19 @@ red_black_tree_append(RedBlackTree *const restrict tree,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	if (status != 0)
-		return RED_BLACK_JUMP_3_STATUS(status); /* 1, -1 */
+		return status != RED_BLACK_JUMP_VALUE_3_ERROR;
 
 	node = rbnf_allocate(node_factory_ptr,
 			     &jump_buffer);
 
 	node->key = key;
 
-	red_black_append(root_ptr,
+	red_black_attach(root_ptr,
 			 comparator,
 			 &jump_buffer,
 			 node);
 
-	return 1; /* successful append */
+	return true; /* successful attach */
 }
 
 int
@@ -182,6 +182,13 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 				&jump_buffer,
 				key) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+}
+
+void
+red_black_tree_detach(RedBlackTree *const restrict tree,
+		      const void *const key)
+{
+	/* TODO */
 }
 
 int
@@ -482,7 +489,7 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 
 			node->key = key;
 
-			red_black_append(intersection_root_ptr,
+			red_black_attach(intersection_root_ptr,
 					 comparator,
 					 &jump_buffer,
 					 node);

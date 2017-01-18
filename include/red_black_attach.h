@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_APPEND_H_
-#define RED_BLACK_APPEND_H_
+#ifndef RED_BLACK_ATTACH_H_
+#define RED_BLACK_ATTACH_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -11,7 +11,7 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_append(struct RedBlackNode *restrict *const restrict tree,
+red_black_attach(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 struct RedBlackNode *const restrict node);
@@ -19,4 +19,4 @@ red_black_append(struct RedBlackNode *restrict *const restrict tree,
 /* may jump or return after successful insertion
  * ────────────────────────────────────────────────────────────────────────── */
 
-#endif /* ifndef RED_BLACK_APPEND_H_ */
+#endif /* ifndef RED_BLACK_ATTACH_H_ */
