@@ -146,16 +146,13 @@ red_black_tree_print(const RedBlackTree *const restrict tree,
 void
 red_black_tree_asc_iterator_init(RedBlackTreeIterator *const restrict iter,
 				 const RedBlackTree *const restrict tree);
-void
-red_black_tree_asc_iterator_set(RedBlackTreeIterator *const restrict iter,
-				const RedBlackTree *const restrict tree);
 
 void
 red_black_tree_desc_iterator_init(RedBlackTreeIterator *const restrict iter,
 				  const RedBlackTree *const restrict tree);
 void
-red_black_tree_desc_iterator_set(RedBlackTreeIterator *const restrict iter,
-				 const RedBlackTree *const restrict tree);
+red_black_tree_iterator_reset(RedBlackTreeIterator *const restrict iter,
+			      const RedBlackTree *const restrict tree);
 
 bool
 red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iter,

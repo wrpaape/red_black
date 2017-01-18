@@ -27,9 +27,9 @@ typedef void
 				  const bool is_red);
 
 struct RedBlackNodeFactoryBlueprint {
-	RedBlackNodeFactoryInitializer initializer;
-	size_t size_node;
-	size_t init_expand;
+	const RedBlackNodeFactoryInitializer initializer;
+	const size_t size_node;
+	const size_t init_expand;
 };
 
 struct RedBlackNodeFactory {

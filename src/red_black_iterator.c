@@ -1,10 +1,12 @@
-#include "red_black_iterator.h" /* RedBlackIterator, RedBlackIteratorUpdater */
+#include "red_black_iterator.h" /* RedBlackIterator, RedBlackIteratorSeeker */
 #include <stddef.h>             /* NULL */
 
+/* TODO: rename iter -> enumator, store init function,
+ * have blueprint for ascending/descending iter */
 
-/* fetch functions
+/* updaters
  * ────────────────────────────────────────────────────────────────────────── */
-const struct RedBlackNode *restrict *restrict
+static const struct RedBlackNode *restrict *restrict
 rbi_update_asc(const struct RedBlackNode *restrict *restrict cursor,
 	       const struct RedBlackNode *restrict node)
 {
@@ -26,7 +28,7 @@ rbi_update_asc(const struct RedBlackNode *restrict *restrict cursor,
 	}
 }
 
-const struct RedBlackNode *restrict *restrict
+static const struct RedBlackNode *restrict *restrict
 rbi_update_desc(const struct RedBlackNode *restrict *restrict cursor,
 		const struct RedBlackNode *restrict node)
 {
@@ -48,10 +50,11 @@ rbi_update_desc(const struct RedBlackNode *restrict *restrict cursor,
 	}
 }
 
-
-static inline const struct RedBlackNode *restrict *restrict
-rbi_init_asc_cursor(const struct RedBlackNode *restrict *restrict cursor,
-		    const struct RedBlackNode *restrict node)
+/* initializers
+ * ────────────────────────────────────────────────────────────────────────── */
+static const struct RedBlackNode *restrict *restrict
+rbi_reset_asc(const struct RedBlackNode *restrict *restrict cursor,
+	      const struct RedBlackNode *restrict node)
 {
 	/* set cursor to min node, keep track of stack */
 	while (node != NULL) {
@@ -64,34 +67,10 @@ rbi_init_asc_cursor(const struct RedBlackNode *restrict *restrict cursor,
 	return cursor;
 }
 
-void
-red_black_asc_iterator_init(struct RedBlackIterator *const restrict iterator,
-			    const struct RedBlackNode *restrict node)
-{
-	const struct RedBlackNode *restrict *restrict cursor;
 
-	cursor = &iterator->stack[0];
-
-	*cursor = NULL; /* mark top of stack */
-
-	iterator->cursor = rbi_init_asc_cursor(cursor,
-					       node);
-
-	iterator->update = &rbi_update_asc;
-}
-
-void
-red_black_asc_iterator_set(struct RedBlackIterator *const restrict iterator,
-			   const struct RedBlackNode *restrict node)
-{
-	iterator->cursor = rbi_init_asc_cursor(&iterator->stack[0],
-					       node);
-}
-
-
-static inline const struct RedBlackNode *restrict *restrict
-rbi_init_desc_cursor(const struct RedBlackNode *restrict *restrict cursor,
-		     const struct RedBlackNode *restrict node)
+static const struct RedBlackNode *restrict *restrict
+rbi_reset_desc(const struct RedBlackNode *restrict *restrict cursor,
+	       const struct RedBlackNode *restrict node)
 {
 	/* set cursor to max node, keep track of stack */
 	while (node != NULL) {
@@ -104,42 +83,78 @@ rbi_init_desc_cursor(const struct RedBlackNode *restrict *restrict cursor,
 	return cursor;
 }
 
-void
-red_black_desc_iterator_init(struct RedBlackIterator *const restrict iterator,
-			     const struct RedBlackNode *restrict node)
+
+/* global variables
+ * ────────────────────────────────────────────────────────────────────────── */
+static const struct RedBlackIteratorBlueprint asc_iterator_blueprint = {
+	.updater  = rbi_update_asc,
+	.resetter = rbi_reset_asc
+};
+
+static const struct RedBlackIteratorBlueprint desc_iterator_blueprint = {
+	.updater  = rbi_update_desc,
+	.resetter = rbi_reset_desc
+};
+
+static inline void
+rb_iterator_init(struct RedBlackIterator *const restrict iter,
+		 const struct RedBlackNode *restrict root,
+		 const struct RedBlackIteratorBlueprint *const restrict bp)
+
 {
 	const struct RedBlackNode *restrict *restrict cursor;
 
-	cursor = &iterator->stack[0];
+	iter->blueprint = bp;
+
+	cursor = &iter->stack[0];
 
 	*cursor = NULL; /* mark top of stack */
 
-	iterator->cursor = rbi_init_desc_cursor(cursor,
-						node);
-
-	iterator->update = &rbi_update_desc;
+	iter->cursor = bp->resetter(cursor,
+				    root);
 }
 
+
 void
-red_black_desc_iterator_set(struct RedBlackIterator *const restrict iterator,
-			    const struct RedBlackNode *restrict node)
+red_black_asc_iterator_init(struct RedBlackIterator *const restrict iter,
+			    const struct RedBlackNode *restrict root)
 {
-	iterator->cursor = rbi_init_desc_cursor(&iterator->stack[0],
-						node);
+	rb_iterator_init(iter,
+			 root,
+			 &asc_iterator_blueprint);
+}
+
+
+void
+red_black_desc_iterator_init(struct RedBlackIterator *const restrict iter,
+			     const struct RedBlackNode *restrict root)
+{
+	rb_iterator_init(iter,
+			 root,
+			 &desc_iterator_blueprint);
+}
+
+
+void
+red_black_iterator_reset(struct RedBlackIterator *const restrict iter,
+			 const struct RedBlackNode *restrict root)
+{
+	iter->cursor = iter->blueprint->resetter(&iter->stack[0],
+						 root);
 }
 
 
 bool
-red_black_iterator_next(struct RedBlackIterator *const restrict iterator,
+red_black_iterator_next(struct RedBlackIterator *const restrict iter,
 			void **const restrict key_ptr)
 {
-	const struct RedBlackNode *const restrict node = *(iterator->cursor);
+	const struct RedBlackNode *const restrict node = *(iter->cursor);
 
 	const bool has_next = (node != NULL);
 
 	if (has_next) {
-		iterator->cursor = iterator->update(iterator->cursor,
-						    node);
+		iter->cursor = iter->blueprint->updater(iter->cursor,
+							node);
 
 		*key_ptr = (void *) node->key;
 	}

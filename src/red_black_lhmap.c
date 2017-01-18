@@ -1042,8 +1042,8 @@ red_black_lhmap_iterator_next(RedBlackLHMapIterator *const restrict iter,
 		++bucket; /* advance to next bucket */
 
 		/* reset bucket iterator */
-		red_black_asc_iterator_set(bucket_iter,
-					   bucket->root);
+		red_black_iterator_reset(bucket_iter,
+					 bucket->root);
 
 		/* if bucket is non-empty, return with first key, length */
 		if (red_black_iterator_next(bucket_iter,
@@ -1190,8 +1190,8 @@ red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
 		}
 
 		/* reset bucket iterator */
-		red_black_asc_iterator_set(bucket_iter,
-					   bucket->root);
+		red_black_iterator_reset(bucket_iter,
+					 bucket->root);
 
 		/* if bucket is non-empty, return with first key, length */
 		if (red_black_iterator_next(bucket_iter,
