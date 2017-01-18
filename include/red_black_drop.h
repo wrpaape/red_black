@@ -1,22 +1,22 @@
-#ifndef RED_BLACK_ATTACH_H_
-#define RED_BLACK_ATTACH_H_
+#ifndef RED_BLACK_DROP_H_
+#define RED_BLACK_DROP_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node.h"	  /* struct RedblackNode */
-#include "red_black_comparator.h" /* Comparator */
-#include "red_black_jump.h"       /* JumpBuffer */
+#include "red_black_comparator.h"   /* Comparator */
+#include "red_black_node_factory.h" /* Node, NodeFactory, and JumpBuffer */
 
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_attach(struct RedBlackNode *restrict *const restrict tree,
-		 const RedBlackComparator comparator,
-		 RedBlackJumpBuffer *const restrict jump_buffer,
-		 struct RedBlackNode *const restrict node);
+red_black_drop(struct RedBlackNode *restrict *const restrict tree,
+	       const RedBlackComparator comparator,
+	       struct RedBlackNodeFactory *const restrict factory,
+	       RedBlackJumpBuffer *const restrict jump_buffer,
+	       const void *const key);
 
-/* may jump or return after successful insertion
+/* may jump or return after successful deletion
  * ────────────────────────────────────────────────────────────────────────── */
 
-#endif /* ifndef RED_BLACK_ATTACH_H_ */
+#endif /* ifndef RED_BLACK_DROP_H_ */

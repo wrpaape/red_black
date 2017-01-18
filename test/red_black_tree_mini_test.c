@@ -38,8 +38,8 @@ main(void)
 			    &int_key_comparator);
 
 	for (i = 0; i < KEY_COUNT; ++i) {
-		if (!red_black_tree_attach(&tree,
-					   (const void *) (intptr_t) keys[i]))
+		if (!red_black_tree_put_new(&tree,
+					    (const void *) (intptr_t) keys[i]))
 			TEST_FAILURE("OUT OF MEMORY");
 
 		if (!red_black_tree_verify(&tree))
@@ -74,8 +74,8 @@ main(void)
 
 
 	for (i = 0; i < KEY_COUNT; ++i) {
-		red_black_tree_detach(&tree,
-				      (const void *) (intptr_t) keys[i]);
+		red_black_tree_drop(&tree,
+				    (const void *) (intptr_t) keys[i]);
 
 		if (!red_black_tree_verify(&tree))
 			TEST_FAILURE("INVALID TREE");

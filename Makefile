@@ -319,27 +319,27 @@ TARGETS			+= $(UPDATE_OBJ)				\
 			   $(UPDATE_PIC_OBJ)
 
 
-# red_black_attach
+# red_black_put_new
 # ──────────────────────────────────────────────────────────────────────────────
-ATTACH_SRC		:= $(call SOURCE_PATH,red_black_attach)
-ATTACH_HDR		:= $(call HEADER_PATH,red_black_attach)
-ATTACH_OBJ		:= $(call OBJECT_PATH,red_black_attach)
-ATTACH_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_attach)
+PUT_NEW_SRC		:= $(call SOURCE_PATH,red_black_put_new)
+PUT_NEW_HDR		:= $(call HEADER_PATH,red_black_put_new)
+PUT_NEW_OBJ		:= $(call OBJECT_PATH,red_black_put_new)
+PUT_NEW_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_put_new)
 # ─────────────── target prequisites ───────────────────────────────────────────
-ATTACH_OBJ_PREQS	:= $(ATTACH_SRC)				\
-			   $(ATTACH_HDR)				\
+PUT_NEW_OBJ_PREQS	:= $(PUT_NEW_SRC)				\
+			   $(PUT_NEW_HDR)				\
 			   $(NODE_HDR)					\
 			   $(COMPARATOR_HDR)				\
 			   $(JUMP_HDR)					\
 			   $(CORRECT_HDR)
-ATTACH_OBJ_GROUP	:= $(ATTACH_OBJ)				\
+PUT_NEW_OBJ_GROUP	:= $(PUT_NEW_OBJ)				\
 			   $(CORRECT_OBJ_GROUP)
-ATTACH_PIC_OBJ_PREQS	:= $(ATTACH_OBJ_PREQS)
-ATTACH_PIC_OBJ_GROUP	:= $(ATTACH_PIC_OBJ)				\
+PUT_NEW_PIC_OBJ_PREQS	:= $(PUT_NEW_OBJ_PREQS)
+PUT_NEW_PIC_OBJ_GROUP	:= $(PUT_NEW_PIC_OBJ)				\
 			   $(CORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(ATTACH_OBJ)				\
-			   $(ATTACH_PIC_OBJ)
+TARGETS			+= $(PUT_NEW_OBJ)				\
+			   $(PUT_NEW_PIC_OBJ)
 
 
 # red_black_restore
@@ -410,28 +410,52 @@ TARGETS			+= $(REMOVE_OBJ)				\
 			   $(REMOVE_PIC_OBJ)
 
 
-# red_black_detach
+# red_black_drop
 # ──────────────────────────────────────────────────────────────────────────────
-DETACH_SRC		:= $(call SOURCE_PATH,red_black_detach)
-DETACH_HDR		:= $(call HEADER_PATH,red_black_detach)
-DETACH_OBJ		:= $(call OBJECT_PATH,red_black_detach)
-DETACH_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_detach)
+DROP_SRC		:= $(call SOURCE_PATH,red_black_drop)
+DROP_HDR		:= $(call HEADER_PATH,red_black_drop)
+DROP_OBJ		:= $(call OBJECT_PATH,red_black_drop)
+DROP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_drop)
 # ─────────────── target prequisites ───────────────────────────────────────────
-DETACH_OBJ_PREQS	:= $(DETACH_SRC)				\
-			   $(DETACH_HDR)				\
+DROP_OBJ_PREQS		:= $(DROP_SRC)					\
+			   $(DROP_HDR)					\
 			   $(COMPARATOR_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
 			   $(RESTORE_HDR)
-DETACH_OBJ_GROUP	:= $(DETACH_OBJ)				\
+DROP_OBJ_GROUP		:= $(DROP_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)
-DETACH_PIC_OBJ_PREQS	:= $(DETACH_OBJ_PREQS)
-DETACH_PIC_OBJ_GROUP	:= $(DETACH_PIC_OBJ)				\
+DROP_PIC_OBJ_PREQS	:= $(DROP_OBJ_PREQS)
+DROP_PIC_OBJ_GROUP	:= $(DROP_PIC_OBJ)				\
 			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
 			   $(RESTORE_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(DETACH_OBJ)				\
-			   $(DETACH_PIC_OBJ)
+TARGETS			+= $(DROP_OBJ)					\
+			   $(DROP_PIC_OBJ)
+
+
+# red_black_pluck
+# ──────────────────────────────────────────────────────────────────────────────
+PLUCK_SRC		:= $(call SOURCE_PATH,red_black_pluck)
+PLUCK_HDR		:= $(call HEADER_PATH,red_black_pluck)
+PLUCK_OBJ		:= $(call OBJECT_PATH,red_black_pluck)
+PLUCK_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_pluck)
+# ─────────────── target prequisites ───────────────────────────────────────────
+PLUCK_OBJ_PREQS		:= $(PLUCK_SRC)					\
+			   $(PLUCK_HDR)					\
+			   $(COMPARATOR_HDR)				\
+			   $(NODE_FACTORY_HDR)				\
+			   $(RESTORE_HDR)
+PLUCK_OBJ_GROUP		:= $(PLUCK_OBJ)					\
+			   $(NODE_FACTORY_OBJ_GROUP)			\
+			   $(RESTORE_OBJ_GROUP)
+PLUCK_PIC_OBJ_PREQS	:= $(PLUCK_OBJ_PREQS)
+PLUCK_PIC_OBJ_GROUP	:= $(PLUCK_PIC_OBJ)				\
+			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(RESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(PLUCK_OBJ)					\
+			   $(PLUCK_PIC_OBJ)
 
 
 # red_black_find
@@ -470,6 +494,82 @@ FETCH_PIC_OBJ_GROUP	:= $(FETCH_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(FETCH_OBJ)					\
 			   $(FETCH_PIC_OBJ)
+
+
+# red_black_replace
+# ──────────────────────────────────────────────────────────────────────────────
+REPLACE_SRC		:= $(call SOURCE_PATH,red_black_replace)
+REPLACE_HDR		:= $(call HEADER_PATH,red_black_replace)
+REPLACE_OBJ		:= $(call OBJECT_PATH,red_black_replace)
+REPLACE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_replace)
+# ─────────────── target prequisites ───────────────────────────────────────────
+REPLACE_OBJ_PREQS	:= $(REPLACE_SRC)				\
+			   $(REPLACE_HDR)				\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+REPLACE_OBJ_GROUP	:= $(REPLACE_OBJ)
+REPLACE_PIC_OBJ_PREQS	:= $(REPLACE_OBJ_PREQS)
+REPLACE_PIC_OBJ_GROUP	:= $(REPLACE_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(REPLACE_OBJ)				\
+			   $(REPLACE_PIC_OBJ)
+
+
+# red_black_get
+# ──────────────────────────────────────────────────────────────────────────────
+GET_SRC			:= $(call SOURCE_PATH,red_black_get)
+GET_HDR			:= $(call HEADER_PATH,red_black_get)
+GET_OBJ			:= $(call OBJECT_PATH,red_black_get)
+GET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_get)
+# ─────────────── target prequisites ───────────────────────────────────────────
+GET_OBJ_PREQS		:= $(GET_SRC)					\
+			   $(GET_HDR)					\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+GET_OBJ_GROUP		:= $(GET_OBJ)
+GET_PIC_OBJ_PREQS	:= $(GET_OBJ_PREQS)
+GET_PIC_OBJ_GROUP	:= $(GET_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(GET_OBJ)					\
+			   $(GET_PIC_OBJ)
+
+
+# red_black_set
+# ──────────────────────────────────────────────────────────────────────────────
+SET_SRC			:= $(call SOURCE_PATH,red_black_set)
+SET_HDR			:= $(call HEADER_PATH,red_black_set)
+SET_OBJ			:= $(call OBJECT_PATH,red_black_set)
+SET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_set)
+# ─────────────── tarset prequisites ───────────────────────────────────────────
+SET_OBJ_PREQS		:= $(SET_SRC)					\
+			   $(SET_HDR)					\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+SET_OBJ_GROUP		:= $(SET_OBJ)
+SET_PIC_OBJ_PREQS	:= $(SET_OBJ_PREQS)
+SET_PIC_OBJ_GROUP	:= $(SET_PIC_OBJ)
+# ─────────────── tarsets ──────────────────────────────────────────────────────
+TARGETS			+= $(SET_OBJ)					\
+			   $(SET_PIC_OBJ)
+
+
+# red_black_swap
+# ──────────────────────────────────────────────────────────────────────────────
+SWAP_SRC		:= $(call SOURCE_PATH,red_black_swap)
+SWAP_HDR		:= $(call HEADER_PATH,red_black_swap)
+SWAP_OBJ		:= $(call OBJECT_PATH,red_black_swap)
+SWAP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_swap)
+# ─────────────── tarswap prequisites ───────────────────────────────────────────
+SWAP_OBJ_PREQS		:= $(SWAP_SRC)					\
+			   $(SWAP_HDR)					\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+SWAP_OBJ_GROUP		:= $(SWAP_OBJ)
+SWAP_PIC_OBJ_PREQS	:= $(SWAP_OBJ_PREQS)
+SWAP_PIC_OBJ_GROUP	:= $(SWAP_PIC_OBJ)
+# ─────────────── tarswaps ──────────────────────────────────────────────────────
+TARGETS			+= $(SWAP_OBJ)					\
+			   $(SWAP_PIC_OBJ)
 
 
 # red_black_count
@@ -656,12 +756,17 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(UPDATE_HDR)				\
-		   	   $(ATTACH_HDR)				\
+		   	   $(PUT_NEW_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
-		   	   $(DETACH_HDR)				\
+		   	   $(DROP_HDR)					\
+		   	   $(PLUCK_HDR)					\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
+		   	   $(REPLACE_HDR)				\
+		   	   $(GET_HDR)					\
+		   	   $(SET_HDR)					\
+		   	   $(SWAP_HDR)					\
 		   	   $(COUNT_HDR)					\
 		   	   $(COPY_HDR)					\
 		   	   $(VERIFY_HDR)				\
@@ -671,12 +776,17 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(ITERATOR_OBJ_GROUP)			\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(UPDATE_OBJ_GROUP)				\
-			   $(ATTACH_OBJ_GROUP)				\
+			   $(PUT_NEW_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
-		   	   $(DETACH_OBJ_GROUP)				\
+		   	   $(DROP_OBJ_GROUP)				\
+		   	   $(PLUCK_OBJ_GROUP)				\
 			   $(FIND_OBJ_GROUP)				\
 			   $(FETCH_OBJ_GROUP)				\
+			   $(REPLACE_OBJ_GROUP)				\
+			   $(GET_OBJ_GROUP)				\
+			   $(SET_OBJ_GROUP)				\
+			   $(SWAP_OBJ_GROUP)				\
 			   $(COUNT_OBJ_GROUP)				\
 		   	   $(COPY_OBJ_GROUP)				\
 			   $(CONGRUENT_OBJ_GROUP)			\
@@ -688,12 +798,17 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(ITERATOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(UPDATE_PIC_OBJ_GROUP)			\
-			   $(ATTACH_PIC_OBJ_GROUP)			\
+			   $(PUT_NEW_PIC_OBJ_GROUP)			\
 			   $(DELETE_PIC_OBJ_GROUP)			\
 			   $(REMOVE_PIC_OBJ_GROUP)			\
-		   	   $(DETACH_PIC_OBJ_GROUP)			\
+		   	   $(DROP_PIC_OBJ_GROUP)			\
+		   	   $(PLUCK_PIC_OBJ_GROUP)			\
 			   $(FIND_PIC_OBJ_GROUP)			\
 			   $(FETCH_PIC_OBJ_GROUP)			\
+			   $(REPLACE_PIC_OBJ_GROUP)			\
+			   $(GET_PIC_OBJ_GROUP)				\
+			   $(SET_PIC_OBJ_GROUP)				\
+			   $(SWAP_PIC_OBJ_GROUP)			\
 			   $(COUNT_PIC_OBJ_GROUP)			\
 		   	   $(COPY_PIC_OBJ_GROUP)			\
 			   $(CONGRUENT_PIC_OBJ_GROUP)			\
@@ -730,12 +845,12 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 		   	   $(UPDATE_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
-		   	   $(DETACH_HDR)				\
+		   	   $(DROP_HDR)					\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(VERIFY_HDR)				\
 		   	   $(CONCAT_HDR)				\
-		   	   $(ATTACH_HDR)				\
+		   	   $(PUT_NEW_HDR)				\
 			   $(MALLOC_HDR)
 LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 			   $(LOCK_OBJ_GROUP)				\
@@ -747,12 +862,12 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 		   	   $(UPDATE_OBJ_GROUP)				\
 		   	   $(DELETE_OBJ_GROUP)				\
 		   	   $(REMOVE_OBJ_GROUP)				\
-		   	   $(DETACH_OBJ_GROUP)				\
+		   	   $(DROP_OBJ_GROUP)				\
 		   	   $(FIND_OBJ_GROUP)				\
 		   	   $(FETCH_OBJ_GROUP)				\
 		   	   $(VERIFY_OBJ_GROUP)				\
 		   	   $(CONCAT_OBJ_GROUP)				\
-		   	   $(ATTACH_OBJ_GROUP)
+		   	   $(PUT_NEW_OBJ_GROUP)
 LHMAP_PIC_OBJ_PREQS	:= $(LHMAP_OBJ_PREQS)
 LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 			   $(LOCK_PIC_OBJ_GROUP)			\
@@ -764,12 +879,12 @@ LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 		   	   $(UPDATE_PIC_OBJ_GROUP)			\
 		   	   $(DELETE_PIC_OBJ_GROUP)			\
 		   	   $(REMOVE_PIC_OBJ_GROUP)			\
-		   	   $(DETACH_PIC_OBJ_GROUP)			\
+		   	   $(DROP_PIC_OBJ_GROUP)			\
 		   	   $(FIND_PIC_OBJ_GROUP)			\
 		   	   $(FETCH_PIC_OBJ_GROUP)			\
 		   	   $(VERIFY_PIC_OBJ_GROUP)			\
 		   	   $(CONCAT_PIC_OBJ_GROUP)			\
-		   	   $(ATTACH_PIC_OBJ_GROUP)
+		   	   $(PUT_NEW_PIC_OBJ_GROUP)
 LHMAP_ST_LIB_PREQS	:= $(LHMAP_OBJ_GROUP)
 LHMAP_SH_LIB_PREQS	:= $(LHMAP_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
@@ -1081,9 +1196,9 @@ $(UPDATE_OBJ): $(UPDATE_OBJ_PREQS)
 $(UPDATE_PIC_OBJ): $(UPDATE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(ATTACH_OBJ): $(ATTACH_OBJ_PREQS)
+$(PUT_NEW_OBJ): $(PUT_NEW_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(ATTACH_PIC_OBJ): $(ATTACH_PIC_OBJ_PREQS)
+$(PUT_NEW_PIC_OBJ): $(PUT_NEW_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(CORRECT_OBJ): $(CORRECT_OBJ_PREQS)
@@ -1101,9 +1216,14 @@ $(REMOVE_OBJ): $(REMOVE_OBJ_PREQS)
 $(REMOVE_PIC_OBJ): $(REMOVE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(DETACH_OBJ): $(DETACH_OBJ_PREQS)
+$(DROP_OBJ): $(DROP_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(DETACH_PIC_OBJ): $(DETACH_PIC_OBJ_PREQS)
+$(DROP_PIC_OBJ): $(DROP_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(PLUCK_OBJ): $(PLUCK_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(PLUCK_PIC_OBJ): $(PLUCK_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(RESTORE_OBJ): $(RESTORE_OBJ_PREQS)
@@ -1119,6 +1239,26 @@ $(FIND_PIC_OBJ): $(FIND_PIC_OBJ_PREQS)
 $(FETCH_OBJ): $(FETCH_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(FETCH_PIC_OBJ): $(FETCH_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(REPLACE_OBJ): $(REPLACE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(REPLACE_PIC_OBJ): $(REPLACE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(GET_OBJ): $(GET_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(GET_PIC_OBJ): $(GET_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(SET_OBJ): $(SET_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(SET_PIC_OBJ): $(SET_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(SWAP_OBJ): $(SWAP_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(SWAP_PIC_OBJ): $(SWAP_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(COUNT_OBJ): $(COUNT_OBJ_PREQS)

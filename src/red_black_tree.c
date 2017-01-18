@@ -1,12 +1,17 @@
 #include "red_black_tree.h"	 /* types */
 #include "red_black_insert.h"	 /* red_black_insert */
 #include "red_black_update.h"	 /* red_black_update */
-#include "red_black_attach.h"	 /* red_black_append */
+#include "red_black_put_new.h"	 /* red_black_put_new */
 #include "red_black_delete.h"	 /* red_black_delete */
 #include "red_black_remove.h"	 /* red_black_remove */
-#include "red_black_detach.h"	 /* red_black_detach */
+#include "red_black_drop.h"	 /* red_black_drop */
+#include "red_black_pluck.h"	 /* red_black_pluck */
 #include "red_black_find.h"	 /* red_black_find */
 #include "red_black_fetch.h"	 /* red_black_fetch */
+#include "red_black_replace.h"	 /* red_black_replace */
+#include "red_black_get.h"	 /* red_black_get */
+#include "red_black_set.h"	 /* red_black_set */
+#include "red_black_swap.h"	 /* red_black_swap */
 #include "red_black_count.h"	 /* red_black_count */
 #include "red_black_copy.h"	 /* red_black_verify */
 #include "red_black_congruent.h" /* red_black_congruent */
@@ -135,8 +140,8 @@ red_black_tree_update(RedBlackTree *const restrict tree,
 }
 
 bool
-red_black_tree_attach(RedBlackTree *const restrict tree,
-		      const void *const key)
+red_black_tree_put_new(RedBlackTree *const restrict tree,
+		       const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackNodeFactory *restrict node_factory_ptr;
@@ -159,10 +164,10 @@ red_black_tree_attach(RedBlackTree *const restrict tree,
 
 	node->key = key;
 
-	red_black_attach(root_ptr,
-			 comparator,
-			 &jump_buffer,
-			 node);
+	red_black_put_new(root_ptr,
+			  comparator,
+			  &jump_buffer,
+			  node);
 
 	return true; /* successful attach */
 }
@@ -188,7 +193,7 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 int
 red_black_tree_remove(RedBlackTree *const restrict tree,
 		      const void *const key,
-		      void **const restrict key_ptr)
+		      void **const restrict remove_ptr)
 {
 	RedBlackJumpBuffer jump_buffer;
 	int status;
@@ -201,23 +206,42 @@ red_black_tree_remove(RedBlackTree *const restrict tree,
 				&tree->node_factory,
 				&jump_buffer,
 				key,
-				key_ptr) /* 1, 0 */
+				remove_ptr) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 }
 
 void
-red_black_tree_detach(RedBlackTree *const restrict tree,
-		      const void *const key)
+red_black_tree_drop(RedBlackTree *const restrict tree,
+		    const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
-		red_black_detach(&tree->root,
-				 tree->comparator,
-				 &tree->node_factory,
-				 &jump_buffer,
-				 key);
+		red_black_drop(&tree->root,
+			       tree->comparator,
+			       &tree->node_factory,
+			       &jump_buffer,
+			       key);
 }
+
+void *
+red_black_tree_pluck(RedBlackTree *const restrict tree,
+		     const void *const key)
+{
+	RedBlackJumpBuffer jump_buffer;
+	void *plucked_key;
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
+		red_black_pluck(&tree->root,
+				tree->comparator,
+				&tree->node_factory,
+				&jump_buffer,
+				key,
+				&plucked_key);
+
+	return plucked_key;
+}
+
 
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,
@@ -228,15 +252,58 @@ red_black_tree_find(const RedBlackTree *const restrict tree,
 			      key);
 }
 
+
 bool
 red_black_tree_fetch(const RedBlackTree *const restrict tree,
 		     const void *const key,
-		     void **const restrict key_ptr)
+		     void **const restrict fetch_ptr)
 {
 	return red_black_fetch(tree->root,
 			       tree->comparator,
 			       key,
-			       key_ptr);
+			       fetch_ptr);
+}
+
+
+bool
+red_black_tree_replace(const RedBlackTree *const restrict tree,
+		       const void *const key,
+		       void **const restrict old_ptr)
+{
+	return red_black_replace(tree->root,
+				 tree->comparator,
+				 key,
+				 old_ptr);
+}
+
+
+void *
+red_black_tree_get(const RedBlackTree *const restrict tree,
+		   const void *const key)
+{
+	return red_black_get(tree->root,
+			     tree->comparator,
+			     key);
+}
+
+
+void
+red_black_tree_set(const RedBlackTree *const restrict tree,
+		   const void *const key)
+{
+	red_black_set(tree->root,
+		      tree->comparator,
+		      key);
+}
+
+
+void *
+red_black_tree_swap(const RedBlackTree *const restrict tree,
+		    const void *const key)
+{
+	return red_black_swap(tree->root,
+			      tree->comparator,
+			      key);
 }
 
 
@@ -497,10 +564,10 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 
 			node->key = key;
 
-			red_black_attach(intersection_root_ptr,
-					 comparator,
-					 &jump_buffer,
-					 node);
+			red_black_put_new(intersection_root_ptr,
+					  comparator,
+					  &jump_buffer,
+					  node);
 		}
 
 	return count;

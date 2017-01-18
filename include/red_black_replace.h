@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_FETCH_H_
-#define RED_BLACK_FETCH_H_
+#ifndef RED_BLACK_REPLACE_H_
+#define RED_BLACK_REPLACE_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -10,9 +10,9 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 bool
-red_black_fetch(const struct RedBlackNode *restrict node,
-		const RedBlackComparator comparator,
-		const void *const key,
-		void **const restrict fetch_ptr);
+red_black_replace(struct RedBlackNode *restrict node,
+		  const RedBlackComparator comparator,
+		  const void *const key,
+		  void **const restrict old_ptr);
 
-#endif /* ifndef RED_BLACK_FETCH_H_ */
+#endif /* ifndef RED_BLACK_REPLACE_H_ */

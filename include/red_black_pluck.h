@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_DETACH_H_
-#define RED_BLACK_DETACH_H_
+#ifndef RED_BLACK_PLUCK_H_
+#define RED_BLACK_PLUCK_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -10,13 +10,14 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_detach(struct RedBlackNode *restrict *const restrict tree,
-		 const RedBlackComparator comparator,
-		 struct RedBlackNodeFactory *const restrict factory,
-		 RedBlackJumpBuffer *const restrict jump_buffer,
-		 const void *const key);
+red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
+		const RedBlackComparator comparator,
+		struct RedBlackNodeFactory *const restrict factory,
+		RedBlackJumpBuffer *const restrict jump_buffer,
+		const void *const key,
+		void **const restrict pluck_ptr);
 
 /* may jump or return after successful deletion
  * ────────────────────────────────────────────────────────────────────────── */
 
-#endif /* ifndef RED_BLACK_DETACH_H_ */
+#endif /* ifndef RED_BLACK_PLUCK_H_ */

@@ -1,15 +1,15 @@
-#include "red_black_lhmap.h"  /* LHMap types */
-#include "red_black_hnode.h"  /* HNode|Key, initializer, comparator */
-#include "red_black_insert.h" /* red_black_insert */
-#include "red_black_update.h" /* red_black_update */
-#include "red_black_delete.h" /* red_black_delete */
-#include "red_black_remove.h" /* red_black_remove */
-#include "red_black_find.h"   /* red_black_find */
-#include "red_black_fetch.h"  /* red_black_fetch */
-#include "red_black_verify.h" /* red_black_verify */
-#include "red_black_concat.h" /* red_black_concat */
-#include "red_black_attach.h" /* red_black_attach */
-#include "red_black_malloc.h" /* RED_BLACK_MALLOC|REALLOC|FREE */
+#include "red_black_lhmap.h"   /* LHMap types */
+#include "red_black_hnode.h"   /* HNode|Key, initializer, comparator */
+#include "red_black_insert.h"  /* red_black_insert */
+#include "red_black_update.h"  /* red_black_update */
+#include "red_black_delete.h"  /* red_black_delete */
+#include "red_black_remove.h"  /* red_black_remove */
+#include "red_black_find.h"    /* red_black_find */
+#include "red_black_fetch.h"   /* red_black_fetch */
+#include "red_black_verify.h"  /* red_black_verify */
+#include "red_black_concat.h"  /* red_black_concat */
+#include "red_black_put_new.h" /* red_black_put_new */
+#include "red_black_malloc.h"  /* RED_BLACK_MALLOC|REALLOC|FREE */
 
 
 static inline void
@@ -86,7 +86,7 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		goto NEXT_NODE;
 
 	while (1) {
-		next = head->left; /* must fetch next before NULLed in attach */
+		next = head->left; /* must fetch next before NULLed in put_new */
 
 		/* fetch hash key hash */
 		hash = ((struct RedBlackHNode *) head)->hkey.hash;
@@ -94,11 +94,11 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		/* fetch new bucket */
 		bucket = &buckets[hash & new_count_m1];
 
-		/* attach to bucket tree, may jump */
-		red_black_attach(&bucket->root,
-				 &red_black_hkey_comparator,
-				 &jump_buffer,
-				 head);
+		/* append to bucket tree, may jump */
+		red_black_put_new(&bucket->root,
+				  &red_black_hkey_comparator,
+				  &jump_buffer,
+				  head);
 
 NEXT_NODE:
 		if (next == NULL)

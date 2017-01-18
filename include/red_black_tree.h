@@ -48,8 +48,8 @@ red_black_tree_update(RedBlackTree *const restrict tree,
 		      void **const restrict old_ptr);
 
 bool
-red_black_tree_attach(RedBlackTree *const restrict tree,
-		      const void *const key);
+red_black_tree_put_new(RedBlackTree *const restrict tree,
+		       const void *const key);
 
 int
 red_black_tree_delete(RedBlackTree *const restrict tree,
@@ -58,11 +58,15 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 int
 red_black_tree_remove(RedBlackTree *const restrict tree,
 		      const void *const key,
-		      void **const restrict key_ptr);
+		      void **const restrict remove_ptr);
 
 void
-red_black_tree_detach(RedBlackTree *const restrict tree,
-		      const void *const key);
+red_black_tree_drop(RedBlackTree *const restrict tree,
+		    const void *const key);
+
+void *
+red_black_tree_pluck(RedBlackTree *const restrict tree,
+		     const void *const key);
 
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,
@@ -72,6 +76,23 @@ bool
 red_black_tree_fetch(const RedBlackTree *const restrict tree,
 		     const void *const key,
 		     void **const restrict fetch_ptr);
+
+bool
+red_black_tree_replace(const RedBlackTree *const restrict tree,
+		       const void *const key,
+		       void **const restrict old_ptr);
+
+void *
+red_black_tree_get(const RedBlackTree *const restrict tree,
+		   const void *const key);
+
+void
+red_black_tree_set(const RedBlackTree *const restrict tree,
+		   const void *const key);
+
+void *
+red_black_tree_swap(const RedBlackTree *const restrict tree,
+		    const void *const key);
 
 unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);

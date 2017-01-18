@@ -1,18 +1,17 @@
-#ifndef RED_BLACK_FETCH_H_
-#define RED_BLACK_FETCH_H_
+#ifndef RED_BLACK_SET_H_
+#define RED_BLACK_SET_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node.h"	  /* Node, bool */
+#include "red_black_node.h"	  /* Node */
 #include "red_black_comparator.h" /* Comparator */
 
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
-bool
-red_black_fetch(const struct RedBlackNode *restrict node,
-		const RedBlackComparator comparator,
-		const void *const key,
-		void **const restrict fetch_ptr);
+void
+red_black_set(struct RedBlackNode *restrict node,
+	      const RedBlackComparator comparator,
+	      const void *const key);
 
-#endif /* ifndef RED_BLACK_FETCH_H_ */
+#endif /* ifndef RED_BLACK_SET_H_ */

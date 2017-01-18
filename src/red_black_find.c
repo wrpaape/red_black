@@ -1,5 +1,5 @@
-#include "red_black_find.h"
-#include <stddef.h>	/* NULL */
+#include "red_black_find.h" /* Node, Comparator */
+#include <stddef.h>	    /* NULL */
 
 
 bool

@@ -7,16 +7,16 @@ rb_remove_node(struct RedBlackNode *restrict *const restrict tree,
 	       struct RedBlackNode *const restrict node,
 	       struct RedBlackNodeFactory *const restrict factory,
 	       RedBlackJumpBuffer *const restrict jump_buffer,
-	       void **const restrict key_ptr)
+	       void **const restrict remove_ptr)
 {
 	bool is_red;
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
 
-	*key_ptr = (void *) node->key;
-	is_red   = node->is_red;
-	lchild   = node->left;
-	rchild   = node->right;
+	*remove_ptr = (void *) node->key;
+	is_red	    = node->is_red;
+	lchild	    = node->left;
+	rchild	    = node->right;
 
 	/* free node */
 	rbnf_free(factory,
@@ -38,14 +38,14 @@ static inline void
 rb_remove_root(struct RedBlackNode *restrict *const restrict tree,
 	       struct RedBlackNode *const restrict root,
 	       struct RedBlackNodeFactory *const restrict factory,
-	       void **const restrict key_ptr)
+	       void **const restrict remove_ptr)
 {
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
 
-	*key_ptr = (void *) root->key;
-	lchild   = root->left;
-	rchild   = root->right;
+	*remove_ptr = (void *) root->key;
+	lchild	    = root->left;
+	rchild	    = root->right;
 
 	/* free node */
 	rbnf_free(factory,
@@ -65,7 +65,7 @@ typedef void
 		      struct RedBlackNodeFactory *const restrict factory,
 		      RedBlackJumpBuffer *const restrict jump_buffer,
 		      const void *const key,
-		      void **const restrict key_ptr);
+		      void **const restrict remove_ptr);
 
 /* remove state machine functions
  *
@@ -84,7 +84,7 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key,
-	    void **const restrict key_ptr);
+	    void **const restrict remove_ptr);
 static void
 rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
@@ -93,7 +93,7 @@ rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key,
-	    void **const restrict key_ptr);
+	    void **const restrict remove_ptr);
 
 static void
 rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
@@ -103,7 +103,7 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key,
-	    void **const restrict key_ptr)
+	    void **const restrict remove_ptr)
 {
 	RedBlackRemoveNode next_remove;
 	struct RedBlackNode *restrict next_node;
@@ -121,7 +121,7 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 			       lnode,
 			       factory,
 			       jump_buffer,
-			       key_ptr);
+			       remove_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_l_bot(tree,
@@ -145,7 +145,7 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 			    factory,
 			    jump_buffer,
 			    key,
-			    key_ptr);
+			    remove_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_l_mid(tree,
@@ -163,7 +163,7 @@ rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key,
-	    void **const restrict key_ptr)
+	    void **const restrict remove_ptr)
 {
 	RedBlackRemoveNode next_remove;
 	struct RedBlackNode *restrict next_node;
@@ -181,7 +181,7 @@ rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 			       rnode,
 			       factory,
 			       jump_buffer,
-			       key_ptr);
+			       remove_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_r_bot(tree,
@@ -205,7 +205,7 @@ rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 			    factory,
 			    jump_buffer,
 			    key,
-			    key_ptr);
+			    remove_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_r_mid(tree,
@@ -223,7 +223,7 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 		 struct RedBlackNodeFactory *const restrict factory,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 const void *const key,
-		 void **const restrict key_ptr)
+		 void **const restrict remove_ptr)
 {
 	int status;
 	RedBlackRemoveNode next_remove;
@@ -243,7 +243,7 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 			rb_remove_root(tree,
 				       node,
 				       factory,
-				       key_ptr);
+				       remove_ptr);
 
 		} else {
 			if (compare < 0) {
@@ -262,7 +262,7 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 				    factory,
 				    jump_buffer,
 				    key,
-				    key_ptr);
+				    remove_ptr);
 
 			return 1; /* updated */
 		}
