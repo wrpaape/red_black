@@ -56,7 +56,6 @@ rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
 typedef void
 (*RedBlackDeleteNode)(struct RedBlackNode *restrict *const restrict tree,
 		      struct RedBlackNode *const restrict parent,
-		      struct RedBlackNode *const restrict node,
 		      const RedBlackComparator comparator,
 		      struct RedBlackNodeFactory *const restrict factory,
 		      RedBlackJumpBuffer *const restrict jump_buffer,
@@ -74,7 +73,6 @@ typedef void
 static void
 rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
-	    struct RedBlackNode *const restrict lnode,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
@@ -82,7 +80,6 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
-	    struct RedBlackNode *const restrict rnode,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
@@ -91,14 +88,15 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
-	    struct RedBlackNode *const restrict lnode,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key)
 {
 	RedBlackDeleteNode next_delete;
-	struct RedBlackNode *restrict next_node;
+	struct RedBlackNode *restrict lnode;
+
+	lnode = parent->left;
 
 	if (lnode == NULL)
 		RED_BLACK_JUMP_2_FALSE(jump_buffer); /* done, no update */
@@ -120,18 +118,12 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		if (compare < 0) {
-			next_delete = &rb_delete_l;
-			next_node   = lnode->left;
-
-		} else {
-			next_delete = &rb_delete_r;
-			next_node   = lnode->right;
-		}
+		next_delete = (compare < 0)
+			    ? &rb_delete_l
+			    : &rb_delete_r;
 
 		next_delete(subtree,
 			    lnode,
-			    next_node,
 			    comparator,
 			    factory,
 			    jump_buffer,
@@ -148,14 +140,15 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
-	    struct RedBlackNode *const restrict rnode,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
 	    RedBlackJumpBuffer *const restrict jump_buffer,
 	    const void *const key)
 {
 	RedBlackDeleteNode next_delete;
-	struct RedBlackNode *restrict next_node;
+	struct RedBlackNode *restrict rnode;
+
+	rnode = parent->right;
 
 	if (rnode == NULL)
 		RED_BLACK_JUMP_2_FALSE(jump_buffer); /* done, no update */
@@ -177,18 +170,12 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		if (compare < 0) {
-			next_delete = &rb_delete_l;
-			next_node   = rnode->left;
-
-		} else {
-			next_delete = &rb_delete_r;
-			next_node   = rnode->right;
-		}
+		next_delete = (compare < 0)
+			    ? &rb_delete_l
+			    : &rb_delete_r;
 
 		next_delete(subtree,
 			    rnode,
-			    next_node,
 			    comparator,
 			    factory,
 			    jump_buffer,
@@ -213,7 +200,6 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 {
 	int status;
 	RedBlackDeleteNode next_delete;
-	struct RedBlackNode *restrict next_node;
 
 	struct RedBlackNode *const restrict node = *tree;
 
@@ -231,18 +217,12 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 				       factory);
 
 		} else {
-			if (compare < 0) {
-				next_delete = &rb_delete_l;
-				next_node   = node->left;
-
-			} else {
-				next_delete = &rb_delete_r;
-				next_node   = node->right;
-			}
+			next_delete = (compare < 0)
+				    ? &rb_delete_l
+				    : &rb_delete_r;
 
 			next_delete(tree,
 				    node,
-				    next_node,
 				    comparator,
 				    factory,
 				    jump_buffer,
