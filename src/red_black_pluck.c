@@ -60,7 +60,6 @@ rb_pluck_root(struct RedBlackNode *restrict *const restrict tree,
 typedef void
 (*RedBlackPluckNode)(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNode *const restrict parent,
-		     struct RedBlackNode *const restrict node,
 		     const RedBlackComparator comparator,
 		     struct RedBlackNodeFactory *const restrict factory,
 		     RedBlackJumpBuffer *const restrict jump_buffer,
@@ -79,7 +78,6 @@ typedef void
 static void
 rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
-	   struct RedBlackNode *const restrict lnode,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer *const restrict jump_buffer,
@@ -88,7 +86,6 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
-	   struct RedBlackNode *const restrict rnode,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer *const restrict jump_buffer,
@@ -98,7 +95,6 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
-	   struct RedBlackNode *const restrict lnode,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer *const restrict jump_buffer,
@@ -106,9 +102,9 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 	   void **const restrict pluck_ptr)
 {
 	RedBlackPluckNode next_pluck;
-	struct RedBlackNode *restrict next_node;
 
 	struct RedBlackNode *restrict *const restrict subtree = &parent->left;
+	struct RedBlackNode *const restrict lnode	      = *subtree;
 
 	const int compare = comparator(key,
 				       lnode->key);
@@ -126,18 +122,12 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		if (compare < 0) {
-			next_pluck = &rb_pluck_l;
-			next_node   = lnode->left;
-
-		} else {
-			next_pluck = &rb_pluck_r;
-			next_node   = lnode->right;
-		}
+		next_pluck = (compare < 0)
+			   ? &rb_pluck_l
+			   : &rb_pluck_r;
 
 		next_pluck(subtree,
 			   lnode,
-			   next_node,
 			   comparator,
 			   factory,
 			   jump_buffer,
@@ -155,7 +145,6 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
-	   struct RedBlackNode *const restrict rnode,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer *const restrict jump_buffer,
@@ -163,9 +152,9 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 	   void **const restrict pluck_ptr)
 {
 	RedBlackPluckNode next_pluck;
-	struct RedBlackNode *restrict next_node;
 
 	struct RedBlackNode *restrict *const restrict subtree = &parent->right;
+	struct RedBlackNode *const restrict rnode	      = *subtree;
 
 	const int compare = comparator(key,
 				       rnode->key);
@@ -183,18 +172,12 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		if (compare < 0) {
-			next_pluck = &rb_pluck_l;
-			next_node   = rnode->left;
-
-		} else {
-			next_pluck = &rb_pluck_r;
-			next_node   = rnode->right;
-		}
+		next_pluck = (compare < 0)
+			   ? &rb_pluck_l
+			   : &rb_pluck_r;
 
 		next_pluck(subtree,
 			   rnode,
-			   next_node,
 			   comparator,
 			   factory,
 			   jump_buffer,
@@ -220,7 +203,6 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 		void **const restrict pluck_ptr)
 {
 	RedBlackPluckNode next_pluck;
-	struct RedBlackNode *restrict next_node;
 
 	struct RedBlackNode *const restrict node = *tree;
 
@@ -234,18 +216,12 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 			      pluck_ptr);
 
 	} else {
-		if (compare < 0) {
-			next_pluck = &rb_pluck_l;
-			next_node   = node->left;
-
-		} else {
-			next_pluck = &rb_pluck_r;
-			next_node   = node->right;
-		}
+		next_pluck = (compare < 0)
+			   ? &rb_pluck_l
+			   : &rb_pluck_r;
 
 		next_pluck(tree,
 			   node,
-			   next_node,
 			   comparator,
 			   factory,
 			   jump_buffer,

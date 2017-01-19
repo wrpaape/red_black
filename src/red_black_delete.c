@@ -94,9 +94,8 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    const void *const key)
 {
 	RedBlackDeleteNode next_delete;
-	struct RedBlackNode *restrict lnode;
 
-	lnode = parent->left;
+	struct RedBlackNode *const restrict lnode = parent->left;
 
 	if (lnode == NULL)
 		RED_BLACK_JUMP_2_FALSE(jump_buffer); /* done, no update */
@@ -146,9 +145,8 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    const void *const key)
 {
 	RedBlackDeleteNode next_delete;
-	struct RedBlackNode *restrict rnode;
 
-	rnode = parent->right;
+	struct RedBlackNode *const restrict rnode = parent->right;
 
 	if (rnode == NULL)
 		RED_BLACK_JUMP_2_FALSE(jump_buffer); /* done, no update */

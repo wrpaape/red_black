@@ -56,7 +56,6 @@ rb_drop_root(struct RedBlackNode *restrict *const restrict tree,
 typedef void
 (*RedBlackDropNode)(struct RedBlackNode *restrict *const restrict tree,
 		    struct RedBlackNode *const restrict parent,
-		    struct RedBlackNode *const restrict node,
 		    const RedBlackComparator comparator,
 		    struct RedBlackNodeFactory *const restrict factory,
 		    RedBlackJumpBuffer *const restrict jump_buffer,
@@ -74,7 +73,6 @@ typedef void
 static void
 rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
-	  struct RedBlackNode *const restrict lnode,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
 	  RedBlackJumpBuffer *const restrict jump_buffer,
@@ -82,7 +80,6 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
-	  struct RedBlackNode *const restrict rnode,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
 	  RedBlackJumpBuffer *const restrict jump_buffer,
@@ -91,16 +88,15 @@ rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
-	  struct RedBlackNode *const restrict lnode,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
 	  RedBlackJumpBuffer *const restrict jump_buffer,
 	  const void *const key)
 {
 	RedBlackDropNode next_drop;
-	struct RedBlackNode *restrict next_node;
 
 	struct RedBlackNode *restrict *const restrict subtree = &parent->left;
+	struct RedBlackNode *const restrict lnode	      = *subtree;
 
 	const int compare = comparator(key,
 				       lnode->key);
@@ -117,18 +113,12 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		if (compare < 0) {
-			next_drop = &rb_drop_l;
-			next_node   = lnode->left;
-
-		} else {
-			next_drop = &rb_drop_r;
-			next_node   = lnode->right;
-		}
+		next_drop = (compare < 0)
+			  ? &rb_drop_l
+			  : &rb_drop_r;
 
 		next_drop(subtree,
 			  lnode,
-			  next_node,
 			  comparator,
 			  factory,
 			  jump_buffer,
@@ -145,16 +135,15 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 static void
 rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
-	  struct RedBlackNode *const restrict rnode,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
 	  RedBlackJumpBuffer *const restrict jump_buffer,
 	  const void *const key)
 {
 	RedBlackDropNode next_drop;
-	struct RedBlackNode *restrict next_node;
 
 	struct RedBlackNode *restrict *const restrict subtree = &parent->right;
+	struct RedBlackNode *const restrict rnode	      = *subtree;
 
 	const int compare = comparator(key,
 				       rnode->key);
@@ -171,18 +160,12 @@ rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		if (compare < 0) {
-			next_drop = &rb_drop_l;
-			next_node   = rnode->left;
-
-		} else {
-			next_drop = &rb_drop_r;
-			next_node   = rnode->right;
-		}
+		next_drop = (compare < 0)
+			  ? &rb_drop_l
+			  : &rb_drop_r;
 
 		next_drop(subtree,
 			  rnode,
-			  next_node,
 			  comparator,
 			  factory,
 			  jump_buffer,
@@ -206,8 +189,6 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 	       const void *const key)
 {
 	RedBlackDropNode next_drop;
-	struct RedBlackNode *restrict next_node;
-
 	struct RedBlackNode *const restrict node = *tree;
 
 	const int compare = comparator(key,
@@ -219,18 +200,12 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 			     factory);
 
 	} else {
-		if (compare < 0) {
-			next_drop = &rb_drop_l;
-			next_node   = node->left;
-
-		} else {
-			next_drop = &rb_drop_r;
-			next_node   = node->right;
-		}
+		next_drop = (compare < 0)
+			  ? &rb_drop_l
+			  : &rb_drop_r;
 
 		next_drop(tree,
 			  node,
-			  next_node,
 			  comparator,
 			  factory,
 			  jump_buffer,
