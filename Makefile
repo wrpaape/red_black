@@ -375,7 +375,8 @@ DELETE_OBJ_PREQS	:= $(DELETE_SRC)				\
 			   $(DELETE_HDR)				\
 			   $(COMPARATOR_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
-			   $(RESTORE_HDR)
+			   $(RESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
 DELETE_OBJ_GROUP	:= $(DELETE_OBJ)				\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)

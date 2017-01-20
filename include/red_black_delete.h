@@ -16,6 +16,16 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 RedBlackJumpBuffer *const restrict jump_buffer,
 		 const void *const key);
 
+int
+red_black_delete_min(struct RedBlackNode *restrict *const restrict tree,
+		     struct RedBlackNodeFactory *const restrict factory,
+		     RedBlackJumpBuffer *const restrict jump_buffer);
+
+int
+red_black_delete_max(struct RedBlackNode *restrict *const restrict tree,
+		     struct RedBlackNodeFactory *const restrict factory,
+		     RedBlackJumpBuffer *const restrict jump_buffer);
+
 /* may jump w/ a RED_BLACK_JUMP_VALUE_2 value of
  *
  *	RED_BLACK_JUMP_VALUE_2_TRUE	OK, successful deletion, tree updated
