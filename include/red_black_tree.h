@@ -54,10 +54,10 @@ red_black_tree_put_new(RedBlackTree *const restrict tree,
 int
 red_black_tree_delete(RedBlackTree *const restrict tree,
 		      const void *const key);
-int
-red_black_tree_delete_min(RedBlackTree *const restrict tree);
-int
-red_black_tree_delete_max(RedBlackTree *const restrict tree);
+/* int */
+/* red_black_tree_delete_min(RedBlackTree *const restrict tree); */
+/* int */
+/* red_black_tree_delete_max(RedBlackTree *const restrict tree); */
 
 int
 red_black_tree_remove(RedBlackTree *const restrict tree,

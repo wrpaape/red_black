@@ -190,35 +190,35 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 }
 
-int
-red_black_tree_delete_min(RedBlackTree *const restrict tree)
-{
-	RedBlackJumpBuffer jump_buffer;
-	int status;
+/* int */
+/* red_black_tree_delete_min(RedBlackTree *const restrict tree) */
+/* { */
+/* 	RedBlackJumpBuffer jump_buffer; */
+/* 	int status; */
 
-	status = RED_BLACK_SET_JUMP(jump_buffer);
+/* 	status = RED_BLACK_SET_JUMP(jump_buffer); */
 
-	return (status == 0)
-	     ? red_black_delete_min(&tree->root,
-				    &tree->node_factory,
-				    &jump_buffer) /* 1, 0 */
-	     : 1; /* will only jump if deleted */
-}
+/* 	return (status == 0) */
+/* 	     ? red_black_delete_min(&tree->root, */
+/* 				    &tree->node_factory, */
+/* 				    &jump_buffer) /1* 1, 0 *1/ */
+/* 	     : 1; /1* will only jump if deleted *1/ */
+/* } */
 
-int
-red_black_tree_delete_max(RedBlackTree *const restrict tree)
-{
-	RedBlackJumpBuffer jump_buffer;
-	int status;
+/* int */
+/* red_black_tree_delete_max(RedBlackTree *const restrict tree) */
+/* { */
+/* 	RedBlackJumpBuffer jump_buffer; */
+/* 	int status; */
 
-	status = RED_BLACK_SET_JUMP(jump_buffer);
+/* 	status = RED_BLACK_SET_JUMP(jump_buffer); */
 
-	return (status == 0)
-	     ? red_black_delete_max(&tree->root,
-				    &tree->node_factory,
-				    &jump_buffer) /* 1, 0 */
-	     : 1; /* will only jump if deleted */
-}
+/* 	return (status == 0) */
+/* 	     ? red_black_delete_max(&tree->root, */
+/* 				    &tree->node_factory, */
+/* 				    &jump_buffer) /1* 1, 0 *1/ */
+/* 	     : 1; /1* will only jump if deleted *1/ */
+/* } */
 
 
 int

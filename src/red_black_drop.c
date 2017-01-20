@@ -2,55 +2,6 @@
 #include "red_black_restore.h" /* restore API */
 
 
-static inline void
-rb_drop_node(struct RedBlackNode *restrict *const restrict tree,
-	     struct RedBlackNode *const restrict node,
-	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer)
-{
-	bool is_red;
-	struct RedBlackNode *restrict lchild;
-	struct RedBlackNode *restrict rchild;
-
-	is_red = node->is_red;
-	lchild = node->left;
-	rchild = node->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  node);
-
-	if (is_red)
-		red_black_restore_red(tree, /* always restorable if node is RED */
-				      lchild,
-				      rchild);
-	else if (!red_black_restore_black(tree,
-					  lchild,
-					  rchild))
-		return; /* need to restore */
-
-	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
-}
-
-static inline void
-rb_drop_root(struct RedBlackNode *restrict *const restrict tree,
-	     struct RedBlackNode *const restrict root,
-	     struct RedBlackNodeFactory *const restrict factory)
-{
-	struct RedBlackNode *restrict lchild;
-	struct RedBlackNode *restrict rchild;
-
-	lchild = root->left;
-	rchild = root->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	(void) red_black_restore_black(tree,
-				       lchild,
-				       rchild);
-}
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef void
@@ -102,10 +53,10 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 				       lnode->key);
 
 	if (compare == 0) {
-		rb_drop_node(subtree,
-			     lnode,
-			     factory,
-			     jump_buffer);
+		red_black_restore_node(subtree,
+				       lnode,
+				       factory,
+				       jump_buffer);
 
 		/* if returned, need to restore */
 		red_black_restore_l_bot(tree,
@@ -149,10 +100,10 @@ rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 				       rnode->key);
 
 	if (compare == 0) {
-		rb_drop_node(subtree,
-			     rnode,
-			     factory,
-			     jump_buffer);
+		red_black_restore_node(subtree,
+				       rnode,
+				       factory,
+				       jump_buffer);
 
 		/* if returned, need to restore */
 		red_black_restore_r_bot(tree,
@@ -195,9 +146,9 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 				       root->key);
 
 	if (compare == 0) {
-		rb_drop_root(tree,
-			     root,
-			     factory);
+		red_black_restore_root(tree,
+				       root,
+				       factory);
 
 	} else {
 		next_drop = (compare < 0)

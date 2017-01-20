@@ -2,59 +2,6 @@
 #include "red_black_restore.h" /* restore API */
 
 
-static inline void
-rb_pluck_node(struct RedBlackNode *restrict *const restrict tree,
-	      struct RedBlackNode *const restrict node,
-	      struct RedBlackNodeFactory *const restrict factory,
-	      RedBlackJumpBuffer *const restrict jump_buffer,
-	      void **const restrict pluck_ptr)
-{
-	bool is_red;
-	struct RedBlackNode *restrict lchild;
-	struct RedBlackNode *restrict rchild;
-
-	*pluck_ptr = (void *) node->key;
-	is_red	   = node->is_red;
-	lchild	   = node->left;
-	rchild	   = node->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  node);
-
-	if (is_red)
-		red_black_restore_red(tree, /* always restorable if node is RED */
-				      lchild,
-				      rchild);
-	else if (!red_black_restore_black(tree,
-					  lchild,
-					  rchild))
-		return; /* need to restore */
-
-	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
-}
-
-static inline void
-rb_pluck_root(struct RedBlackNode *restrict *const restrict tree,
-	      struct RedBlackNode *const restrict root,
-	      struct RedBlackNodeFactory *const restrict factory,
-	      void **const restrict pluck_ptr)
-{
-	struct RedBlackNode *restrict lchild;
-	struct RedBlackNode *restrict rchild;
-
-	*pluck_ptr = (void *) root->key;
-	lchild	   = root->left;
-	rchild	   = root->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	(void) red_black_restore_black(tree,
-				       lchild,
-				       rchild);
-}
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef void
@@ -110,11 +57,12 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 				       lnode->key);
 
 	if (compare == 0) {
-		rb_pluck_node(subtree,
-			      lnode,
-			      factory,
-			      jump_buffer,
-			      pluck_ptr);
+		*pluck_ptr = (void *) lnode->key;
+
+		red_black_restore_node(subtree,
+				       lnode,
+				       factory,
+				       jump_buffer);
 
 		/* if returned, need to restore */
 		red_black_restore_l_bot(tree,
@@ -160,11 +108,12 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 				       rnode->key);
 
 	if (compare == 0) {
-		rb_pluck_node(subtree,
-			      rnode,
-			      factory,
-			      jump_buffer,
-			      pluck_ptr);
+		*pluck_ptr = (void *) rnode->key;
+
+		red_black_restore_node(subtree,
+				       rnode,
+				       factory,
+				       jump_buffer);
 
 		/* if returned, need to restore */
 		red_black_restore_r_bot(tree,
@@ -210,10 +159,11 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 				       root->key);
 
 	if (compare == 0) {
-		rb_pluck_root(tree,
-			      root,
-			      factory,
-			      pluck_ptr);
+		*pluck_ptr = (void *) root->key;
+
+		red_black_restore_root(tree,
+				       root,
+				       factory);
 
 	} else {
 		next_pluck = (compare < 0)

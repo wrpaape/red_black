@@ -3,22 +3,40 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node.h" /* RedBlackNode, bool */
-#include "red_black_jump.h" /* JumpBuffer */
+#include "red_black_node_factory.h" /* Node, NodeFactory, and JumpBuffer */
+#include "red_black_jump.h"	    /* JumpBuffer */
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
-/* immediate restore of red node deletion/removal: always succeeds */
+/* initial restore points */
 void
-red_black_restore_red(struct RedBlackNode *restrict *const restrict tree,
-		      struct RedBlackNode *const restrict lchild,
-		      struct RedBlackNode *restrict rchild);
+red_black_restore_root(struct RedBlackNode *restrict *const restrict tree,
+		       struct RedBlackNode *const restrict root,
+		       struct RedBlackNodeFactory *const restrict factory);
+void
+red_black_restore_min_root(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict root,
+			   struct RedBlackNodeFactory *const restrict factory);
+void
+red_black_restore_max_root(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict root,
+			   struct RedBlackNodeFactory *const restrict factory);
 
-/* immediate restore of black node deletion/removal: true/false success/fail */
-bool
-red_black_restore_black(struct RedBlackNode *restrict *const restrict tree,
-			struct RedBlackNode *const restrict lchild,
-			struct RedBlackNode *restrict rchild);
+void
+red_black_restore_node(struct RedBlackNode *restrict *const restrict tree,
+		       struct RedBlackNode *const restrict node,
+		       struct RedBlackNodeFactory *const restrict factory,
+		       RedBlackJumpBuffer *const restrict jump_buffer);
+void
+red_black_restore_min_node(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict node,
+			   struct RedBlackNodeFactory *const restrict factory,
+			   RedBlackJumpBuffer *const restrict jump_buffer);
+void
+red_black_restore_max_node(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict node,
+			   struct RedBlackNodeFactory *const restrict factory,
+			   RedBlackJumpBuffer *const restrict jump_buffer);
 
 void
 red_black_restore_l_bot(struct RedBlackNode *restrict *const restrict tree,

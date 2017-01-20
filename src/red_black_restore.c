@@ -599,10 +599,10 @@ rb_restore_red_ltree(struct RedBlackNode *restrict *const restrict tree,
 
 
 
-bool
-red_black_restore_black(struct RedBlackNode *restrict *const restrict tree,
-			struct RedBlackNode *const restrict lchild,
-			struct RedBlackNode *restrict rchild)
+static inline bool
+rb_restore_black(struct RedBlackNode *restrict *const restrict tree,
+		 struct RedBlackNode *const restrict lchild,
+		 struct RedBlackNode *restrict rchild)
 {
 	struct RedBlackNode *restrict replacement_parent;
 	struct RedBlackNode *restrict replacement_child;
@@ -691,9 +691,9 @@ red_black_restore_black(struct RedBlackNode *restrict *const restrict tree,
 }
 
 void
-red_black_restore_red(struct RedBlackNode *restrict *const restrict tree,
-		      struct RedBlackNode *const restrict lchild,
-		      struct RedBlackNode *restrict rchild)
+rb_restore_red(struct RedBlackNode *restrict *const restrict tree,
+	       struct RedBlackNode *const restrict lchild,
+	       struct RedBlackNode *restrict rchild)
 {
 	struct RedBlackNode *restrict replacement_parent;
 	struct RedBlackNode *restrict replacement_child;
@@ -762,6 +762,158 @@ red_black_restore_red(struct RedBlackNode *restrict *const restrict tree,
 				     replacement);
 	}
 }
+
+
+
+/* initial restore points
+ *
+ * free node then attempt to restore
+ * ────────────────────────────────────────────────────────────────────────── */
+void
+red_black_restore_root(struct RedBlackNode *restrict *const restrict tree,
+		       struct RedBlackNode *const restrict root,
+		       struct RedBlackNodeFactory *const restrict factory)
+{
+	struct RedBlackNode *restrict lchild;
+	struct RedBlackNode *restrict rchild;
+
+	lchild = root->left;
+	rchild = root->right;
+
+	/* free node */
+	rbnf_free(factory,
+		  root);
+
+	(void) rb_restore_black(tree,
+				lchild,
+				rchild);
+}
+
+void
+red_black_restore_min_root(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict root,
+			   struct RedBlackNodeFactory *const restrict factory)
+{
+	struct RedBlackNode *restrict rchild;
+
+	rchild = root->right;
+
+	/* free node */
+	rbnf_free(factory,
+		  root);
+
+	*tree = rchild;
+
+	if (rchild != NULL)
+		rchild->is_red = false; /* RED leaf -> restore */
+}
+
+void
+red_black_restore_max_root(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict root,
+			   struct RedBlackNodeFactory *const restrict factory)
+{
+	struct RedBlackNode *restrict lchild;
+
+	lchild = root->left;
+
+	/* free node */
+	rbnf_free(factory,
+		  root);
+
+	*tree = lchild;
+
+	if (lchild != NULL)
+		lchild->is_red = false; /* RED leaf -> restore */
+}
+
+
+void
+red_black_restore_node(struct RedBlackNode *restrict *const restrict tree,
+		       struct RedBlackNode *const restrict node,
+		       struct RedBlackNodeFactory *const restrict factory,
+		       RedBlackJumpBuffer *const restrict jump_buffer)
+{
+	bool is_red;
+	struct RedBlackNode *restrict lchild;
+	struct RedBlackNode *restrict rchild;
+
+	is_red = node->is_red;
+	lchild = node->left;
+	rchild = node->right;
+
+	/* free node */
+	rbnf_free(factory,
+		  node);
+
+	if (is_red)
+		rb_restore_red(tree, /* always restorable if node is RED */
+			       lchild,
+			       rchild);
+	else if (!rb_restore_black(tree,
+				   lchild,
+				   rchild))
+		return; /* need to restore */
+
+	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
+}
+
+void
+red_black_restore_min_node(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict node,
+			   struct RedBlackNodeFactory *const restrict factory,
+			   RedBlackJumpBuffer *const restrict jump_buffer)
+{
+	bool is_red;
+	struct RedBlackNode *restrict rchild;
+
+	is_red = node->is_red;
+	rchild = node->right;
+
+	/* free node */
+	rbnf_free(factory,
+		  node);
+
+	*tree = rchild;
+
+	if (!is_red) {
+		if (rchild == NULL)
+			return; /* still need to restore */
+
+		rchild->is_red = false; /* RED leaf -> restore */
+	}
+
+	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
+}
+
+void
+red_black_restore_max_node(struct RedBlackNode *restrict *const restrict tree,
+			   struct RedBlackNode *const restrict node,
+			   struct RedBlackNodeFactory *const restrict factory,
+			   RedBlackJumpBuffer *const restrict jump_buffer)
+{
+	bool is_red;
+	struct RedBlackNode *restrict lchild;
+
+	is_red = node->is_red;
+	lchild = node->left;
+
+	/* free node */
+	rbnf_free(factory,
+		  node);
+
+	*tree = lchild;
+
+	if (!is_red) {
+		if (lchild == NULL)
+			return; /* still need to restore */
+
+		lchild->is_red = false; /* RED leaf -> restore */
+	}
+
+	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
+}
+
 
 
 /* corrections made while unwinding the call stack

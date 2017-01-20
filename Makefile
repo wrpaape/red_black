@@ -351,12 +351,14 @@ RESTORE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_restore)
 # ─────────────── target prequisites ───────────────────────────────────────────
 RESTORE_OBJ_PREQS	:= $(RESTORE_SRC)				\
 			   $(RESTORE_HDR)				\
-			   $(NODE_HDR)					\
+			   $(NODE_FACTORY_HDR)				\
 			   $(JUMP_HDR)					\
 			   $(STACK_COUNT_HDR)
-RESTORE_OBJ_GROUP	:= $(RESTORE_OBJ)
+RESTORE_OBJ_GROUP	:= $(RESTORE_OBJ)				\
+			   $(NODE_FACTORY_OBJ_GROUP)
 RESTORE_PIC_OBJ_PREQS	:= $(RESTORE_OBJ_PREQS)
-RESTORE_PIC_OBJ_GROUP	:= $(RESTORE_PIC_OBJ)
+RESTORE_PIC_OBJ_GROUP	:= $(RESTORE_PIC_OBJ)				\
+			   $(NODE_FACTORY_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(RESTORE_OBJ)				\
 			   $(RESTORE_PIC_OBJ)

@@ -3,151 +3,6 @@
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 
 
-static inline void
-rb_delete_node(struct RedBlackNode *restrict *const restrict tree,
-	       struct RedBlackNode *const restrict node,
-	       struct RedBlackNodeFactory *const restrict factory,
-	       RedBlackJumpBuffer *const restrict jump_buffer)
-{
-	bool is_red;
-	struct RedBlackNode *restrict lchild;
-	struct RedBlackNode *restrict rchild;
-
-	is_red = node->is_red;
-	lchild = node->left;
-	rchild = node->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  node);
-
-	if (is_red)
-		red_black_restore_red(tree, /* always restorable if node is RED */
-				      lchild,
-				      rchild);
-	else if (!red_black_restore_black(tree,
-					  lchild,
-					  rchild))
-		return; /* need to restore */
-
-	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
-}
-
-static inline void
-rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
-	       struct RedBlackNode *const restrict root,
-	       struct RedBlackNodeFactory *const restrict factory)
-{
-	struct RedBlackNode *restrict lchild;
-	struct RedBlackNode *restrict rchild;
-
-	lchild = root->left;
-	rchild = root->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	(void) red_black_restore_black(tree,
-				       lchild,
-				       rchild);
-}
-
-static inline void
-rb_delete_min_node(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNode *const restrict node,
-		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer)
-{
-	bool is_red;
-	struct RedBlackNode *restrict rchild;
-
-	is_red = node->is_red;
-	rchild = node->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  node);
-
-	*tree = rchild;
-
-	if (!is_red) {
-		if (rchild == NULL)
-			return; /* still need to restore */
-
-		rchild->is_red = false; /* RED leaf -> restore */
-	}
-
-	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
-}
-
-static inline void
-rb_delete_max_node(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNode *const restrict node,
-		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer)
-{
-	bool is_red;
-	struct RedBlackNode *restrict lchild;
-
-	is_red = node->is_red;
-	lchild = node->left;
-
-	/* free node */
-	rbnf_free(factory,
-		  node);
-
-	*tree = lchild;
-
-	if (!is_red) {
-		if (lchild == NULL)
-			return; /* still need to restore */
-
-		lchild->is_red = false; /* RED leaf -> restore */
-	}
-
-	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
-}
-
-static inline void
-rb_delete_min_root(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNode *const restrict root,
-		   struct RedBlackNodeFactory *const restrict factory)
-{
-	struct RedBlackNode *restrict rchild;
-
-	rchild = root->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	*tree = rchild;
-
-	if (rchild != NULL)
-		rchild->is_red = false; /* RED leaf -> restore */
-}
-
-static inline void
-rb_delete_max_root(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNode *const restrict root,
-		   struct RedBlackNodeFactory *const restrict factory)
-{
-	struct RedBlackNode *restrict lchild;
-
-	lchild = root->left;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	*tree = lchild;
-
-	if (lchild != NULL)
-		lchild->is_red = false; /* RED leaf -> restore */
-}
-
-
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef void
@@ -203,10 +58,10 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 				       lnode->key);
 
 	if (compare == 0) {
-		rb_delete_node(subtree,
-			       lnode,
-			       factory,
-			       jump_buffer);
+		red_black_restore_node(subtree,
+				       lnode,
+				       factory,
+				       jump_buffer);
 
 		/* if returned, need to restore */
 		red_black_restore_l_bot(tree,
@@ -254,10 +109,10 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 				       rnode->key);
 
 	if (compare == 0) {
-		rb_delete_node(subtree,
-			       rnode,
-			       factory,
-			       jump_buffer);
+		red_black_restore_node(subtree,
+				       rnode,
+				       factory,
+				       jump_buffer);
 
 		/* if returned, need to restore */
 		red_black_restore_r_bot(tree,
@@ -307,9 +162,9 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		status = (compare == 0);
 
 		if (status) {
-			rb_delete_root(tree,
-				       root,
-				       factory);
+			red_black_restore_root(tree,
+					       root,
+					       factory);
 
 		} else {
 			next_delete = (compare < 0)
@@ -336,57 +191,57 @@ red_black_delete_min(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNodeFactory *const restrict factory,
 		     RedBlackJumpBuffer *const restrict jump_buffer)
 {
-	struct RedBlackNode *restrict node;
-	struct RedBlackNode *restrict next;
-	struct RedBlackNode *restrict parent;
-	struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
-	struct RedBlackNode *restrict *restrict cursor;
+	/* struct RedBlackNode *restrict node; */
+	/* struct RedBlackNode *restrict next; */
+	/* struct RedBlackNode *restrict parent; */
+	/* struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT]; */
+	/* struct RedBlackNode *restrict *restrict cursor; */
 
-	struct RedBlackNode *const restrict root = *tree;
+	/* struct RedBlackNode *const restrict root = *tree; */
 
-	if (root == NULL)
-		return 0;
+	/* if (root == NULL) */
+	/* 	return 0; */
 
-	node = root->left;
+	/* node = root->left; */
 
-	if (node == NULL) {
-		rb_delete_min_root(tree,
-				   root,
-				   factory);
-		return 1;
-	}
+	/* if (node == NULL) { */
+	/* 	red_black_restore_min_root(tree, */
+	/* 				   root, */
+	/* 				   factory); */
+	/* 	return 1; */
+	/* } */
 
-	cursor  = &stack[0];
-	*cursor = root;
+	/* cursor  = &stack[0]; */
+	/* *cursor = root; */
 
-	while (1) {
-		next = node->left;
+	/* while (1) { */
+	/* 	next = node->left; */
 
-		if (next == NULL)
-			break;
+	/* 	if (next == NULL) */
+	/* 		break; */
 
-		++cursor;
-		*cursor = node;
+	/* 	++cursor; */
+	/* 	*cursor = node; */
 
-		node = next;
-	}
+	/* 	node = next; */
+	/* } */
 
-	parent = *cursor;
+	/* parent = *cursor; */
 
-	rb_delete_min_node(&parent->left,
-			   node,
-			   jump_buffer);
-
-
-	/* if returned, need to restore */
-	red_black_restore_l_bot(tree,
-				parent,
-				jump_buffer);
-
-	while (1) {
+	/* red_black_restore_min_node(&parent->left, */
+	/* 			   node, */
+	/* 			   jump_buffer); */
 
 
-	}
+	/* /1* if returned, need to restore *1/ */
+	/* red_black_restore_l_bot(tree, */
+	/* 			parent, */
+	/* 			jump_buffer); */
+
+	/* while (1) { */
+
+
+	/* } */
 
 
 	return 1;
