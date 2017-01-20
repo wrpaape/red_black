@@ -191,6 +191,37 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 }
 
 int
+red_black_tree_delete_min(RedBlackTree *const restrict tree)
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_delete_min(&tree->root,
+				    &tree->node_factory,
+				    &jump_buffer) /* 1, 0 */
+	     : 1; /* will only jump if deleted */
+}
+
+int
+red_black_tree_delete_max(RedBlackTree *const restrict tree)
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_delete_max(&tree->root,
+				    &tree->node_factory,
+				    &jump_buffer) /* 1, 0 */
+	     : 1; /* will only jump if deleted */
+}
+
+
+int
 red_black_tree_remove(RedBlackTree *const restrict tree,
 		      const void *const key,
 		      void **const restrict remove_ptr)

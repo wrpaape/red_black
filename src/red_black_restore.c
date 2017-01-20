@@ -598,6 +598,7 @@ rb_restore_red_ltree(struct RedBlackNode *restrict *const restrict tree,
 }
 
 
+
 bool
 red_black_restore_black(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict lchild,

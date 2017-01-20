@@ -204,14 +204,14 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 {
 	RedBlackPluckNode next_pluck;
 
-	struct RedBlackNode *const restrict node = *tree;
+	struct RedBlackNode *const restrict root = *tree;
 
 	const int compare = comparator(key,
-				       node->key);
+				       root->key);
 
 	if (compare == 0) {
 		rb_pluck_root(tree,
-			      node,
+			      root,
 			      factory,
 			      pluck_ptr);
 
@@ -221,7 +221,7 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 			   : &rb_pluck_r;
 
 		next_pluck(tree,
-			   node,
+			   root,
 			   comparator,
 			   factory,
 			   jump_buffer,

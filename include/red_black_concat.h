@@ -12,7 +12,7 @@
  * if not NULL, concats 'node' with input 'end_ptr' returns a pointer to the
  * last 'left' link */
 struct RedBlackNode *restrict *restrict
-red_black_concat(struct RedBlackNode *restrict node,
+red_black_concat(struct RedBlackNode *const restrict node,
 		 struct RedBlackNode *restrict *restrict end_ptr);
 
 #endif /* ifndef RED_BLACK_CONCAT_H_ */

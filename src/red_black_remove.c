@@ -213,19 +213,19 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 	int status;
 	RedBlackRemoveNode next_remove;
 
-	struct RedBlackNode *const restrict node = *tree;
+	struct RedBlackNode *const restrict root = *tree;
 
-	status = (node != NULL);
+	status = (root != NULL);
 
 	if (status) {
 		const int compare = comparator(key,
-					       node->key);
+					       root->key);
 
 		status = (compare == 0);
 
 		if (status) {
 			rb_remove_root(tree,
-				       node,
+				       root,
 				       factory,
 				       remove_ptr);
 
@@ -235,7 +235,7 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 				    : &rb_remove_r;
 
 			next_remove(tree,
-				    node,
+				    root,
 				    comparator,
 				    factory,
 				    jump_buffer,

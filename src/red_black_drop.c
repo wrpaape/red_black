@@ -189,14 +189,14 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 	       const void *const key)
 {
 	RedBlackDropNode next_drop;
-	struct RedBlackNode *const restrict node = *tree;
+	struct RedBlackNode *const restrict root = *tree;
 
 	const int compare = comparator(key,
-				       node->key);
+				       root->key);
 
 	if (compare == 0) {
 		rb_drop_root(tree,
-			     node,
+			     root,
 			     factory);
 
 	} else {
@@ -205,7 +205,7 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 			  : &rb_drop_r;
 
 		next_drop(tree,
-			  node,
+			  root,
 			  comparator,
 			  factory,
 			  jump_buffer,
