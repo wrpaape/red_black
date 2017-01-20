@@ -264,6 +264,22 @@ red_black_tree_fetch(const RedBlackTree *const restrict tree,
 			       fetch_ptr);
 }
 
+bool
+red_black_tree_fetch_min(const RedBlackTree *const restrict tree,
+			 void **const restrict fetch_ptr)
+{
+	return red_black_fetch_min(tree->root,
+				   fetch_ptr);
+}
+
+bool
+red_black_tree_fetch_max(const RedBlackTree *const restrict tree,
+			 void **const restrict fetch_ptr)
+{
+	return red_black_fetch_max(tree->root,
+				   fetch_ptr);
+}
+
 
 bool
 red_black_tree_replace(const RedBlackTree *const restrict tree,
@@ -276,6 +292,26 @@ red_black_tree_replace(const RedBlackTree *const restrict tree,
 				 old_ptr);
 }
 
+bool
+red_black_tree_replace_min(const RedBlackTree *const restrict tree,
+			   const void *const key,
+			   void **const restrict old_ptr)
+{
+	return red_black_replace_min(tree->root,
+				     key,
+				     old_ptr);
+}
+
+bool
+red_black_tree_replace_max(const RedBlackTree *const restrict tree,
+			   const void *const key,
+			   void **const restrict old_ptr)
+{
+	return red_black_replace_max(tree->root,
+				     key,
+				     old_ptr);
+}
+
 
 void *
 red_black_tree_get(const RedBlackTree *const restrict tree,
@@ -284,6 +320,18 @@ red_black_tree_get(const RedBlackTree *const restrict tree,
 	return red_black_get(tree->root,
 			     tree->comparator,
 			     key);
+}
+
+void *
+red_black_tree_get_min(const RedBlackTree *const restrict tree)
+{
+	return red_black_get_min(tree->root);
+}
+
+void *
+red_black_tree_get_max(const RedBlackTree *const restrict tree)
+{
+	return red_black_get_max(tree->root);
 }
 
 
@@ -296,6 +344,21 @@ red_black_tree_set(const RedBlackTree *const restrict tree,
 		      key);
 }
 
+void
+red_black_tree_set_min(const RedBlackTree *const restrict tree,
+		       const void *const key)
+{
+	red_black_set_min(tree->root,
+			  key);
+}
+void
+red_black_tree_set_max(const RedBlackTree *const restrict tree,
+		       const void *const key)
+{
+	red_black_set_max(tree->root,
+			  key);
+}
+
 
 void *
 red_black_tree_swap(const RedBlackTree *const restrict tree,
@@ -304,6 +367,22 @@ red_black_tree_swap(const RedBlackTree *const restrict tree,
 	return red_black_swap(tree->root,
 			      tree->comparator,
 			      key);
+}
+
+void *
+red_black_tree_swap_min(const RedBlackTree *const restrict tree,
+			const void *const key)
+{
+	return red_black_swap_min(tree->root,
+				  key);
+}
+
+void *
+red_black_tree_swap_max(const RedBlackTree *const restrict tree,
+			const void *const key)
+{
+	return red_black_swap_max(tree->root,
+				  key);
 }
 
 

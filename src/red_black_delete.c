@@ -51,6 +51,8 @@ rb_delete_root(struct RedBlackNode *restrict *const restrict tree,
 				       lchild,
 				       rchild);
 }
+
+
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef void

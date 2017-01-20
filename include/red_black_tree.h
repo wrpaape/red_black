@@ -76,23 +76,54 @@ bool
 red_black_tree_fetch(const RedBlackTree *const restrict tree,
 		     const void *const key,
 		     void **const restrict fetch_ptr);
+bool
+red_black_tree_fetch_min(const RedBlackTree *const restrict tree,
+			 void **const restrict fetch_ptr);
+bool
+red_black_tree_fetch_max(const RedBlackTree *const restrict tree,
+			 void **const restrict fetch_ptr);
 
 bool
 red_black_tree_replace(const RedBlackTree *const restrict tree,
 		       const void *const key,
 		       void **const restrict old_ptr);
+bool
+red_black_tree_replace_min(const RedBlackTree *const restrict tree,
+			   const void *const key,
+			   void **const restrict old_ptr);
+bool
+red_black_tree_replace_max(const RedBlackTree *const restrict tree,
+			   const void *const key,
+			   void **const restrict old_ptr);
 
 void *
 red_black_tree_get(const RedBlackTree *const restrict tree,
 		   const void *const key);
+void *
+red_black_tree_get_min(const RedBlackTree *const restrict tree);
+void *
+red_black_tree_get_max(const RedBlackTree *const restrict tree);
+
 
 void
 red_black_tree_set(const RedBlackTree *const restrict tree,
 		   const void *const key);
+void
+red_black_tree_set_min(const RedBlackTree *const restrict tree,
+		       const void *const key);
+void
+red_black_tree_set_max(const RedBlackTree *const restrict tree,
+		       const void *const key);
 
 void *
 red_black_tree_swap(const RedBlackTree *const restrict tree,
 		    const void *const key);
+void *
+red_black_tree_swap_min(const RedBlackTree *const restrict tree,
+			const void *const key);
+void *
+red_black_tree_swap_max(const RedBlackTree *const restrict tree,
+			const void *const key);
 
 unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree);

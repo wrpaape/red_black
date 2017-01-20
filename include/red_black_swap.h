@@ -14,4 +14,12 @@ red_black_swap(struct RedBlackNode *restrict node,
 	       const RedBlackComparator comparator,
 	       const void *const key);
 
+void *
+red_black_swap_min(struct RedBlackNode *restrict node,
+		   const void *const key);
+
+void *
+red_black_swap_max(struct RedBlackNode *restrict node,
+		   const void *const key);
+
 #endif /* ifndef RED_BLACK_SWAP_H_ */

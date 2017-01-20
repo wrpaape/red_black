@@ -29,3 +29,55 @@ red_black_replace(struct RedBlackNode *restrict node,
 
 	return false;
 }
+
+
+bool
+red_black_replace_min(struct RedBlackNode *restrict node,
+		      const void *const key,
+		      void **const restrict old_ptr)
+{
+	struct RedBlackNode *restrict next;
+
+	const bool nodes_present = (node != NULL);
+
+	if (nodes_present) {
+		while (1) {
+			next = node->left;
+			if (next == NULL)
+				break;
+
+			node = next;
+		}
+
+		*old_ptr  = (void *) node->key;
+		node->key = key;
+	}
+
+	return nodes_present;
+}
+
+
+bool
+red_black_replace_max(struct RedBlackNode *restrict node,
+		      const void *const key,
+		      void **const restrict old_ptr)
+{
+	struct RedBlackNode *restrict next;
+
+	const bool nodes_present = (node != NULL);
+
+	if (nodes_present) {
+		while (1) {
+			next = node->right;
+			if (next == NULL)
+				break;
+
+			node = next;
+		}
+
+		*old_ptr  = (void *) node->key;
+		node->key = key;
+	}
+
+	return nodes_present;
+}

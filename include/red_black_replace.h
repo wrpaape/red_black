@@ -15,4 +15,14 @@ red_black_replace(struct RedBlackNode *restrict node,
 		  const void *const key,
 		  void **const restrict old_ptr);
 
+bool
+red_black_replace_min(struct RedBlackNode *restrict node,
+		      const void *const key,
+		      void **const restrict old_ptr);
+
+bool
+red_black_replace_max(struct RedBlackNode *restrict node,
+		      const void *const key,
+		      void **const restrict old_ptr);
+
 #endif /* ifndef RED_BLACK_REPLACE_H_ */
