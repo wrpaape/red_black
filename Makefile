@@ -400,7 +400,8 @@ REMOVE_OBJ_PREQS	:= $(REMOVE_SRC)				\
 			   $(REMOVE_HDR)				\
 			   $(COMPARATOR_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
-			   $(RESTORE_HDR)
+			   $(RESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
 REMOVE_OBJ_GROUP	:= $(REMOVE_OBJ)				\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)
@@ -424,7 +425,8 @@ DROP_OBJ_PREQS		:= $(DROP_SRC)					\
 			   $(DROP_HDR)					\
 			   $(COMPARATOR_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
-			   $(RESTORE_HDR)
+			   $(RESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
 DROP_OBJ_GROUP		:= $(DROP_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)
@@ -448,7 +450,8 @@ PLUCK_OBJ_PREQS		:= $(PLUCK_SRC)					\
 			   $(PLUCK_HDR)					\
 			   $(COMPARATOR_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
-			   $(RESTORE_HDR)
+			   $(RESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
 PLUCK_OBJ_GROUP		:= $(PLUCK_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)

@@ -1,5 +1,6 @@
-#include "red_black_pluck.h"   /* Comparator, Node, NodeFactory, JumpBuffer */
-#include "red_black_restore.h" /* restore API */
+#include "red_black_pluck.h"	   /* Comparator, Node, NodeFactory, JUMP */
+#include "red_black_restore.h"	   /* restore API */
+#include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 
 
 /* typedefs

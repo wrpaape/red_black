@@ -21,13 +21,6 @@
 
 /* typedefs, struct Declarations
  * ────────────────────────────────────────────────────────────────────────── */
-typedef int
-(*RedBlackMutator)(struct RedBlackNode *restrict *const restrict tree,
-		   const RedBlackComparator comparator,
-		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer,
-		   const void *const key);
-
 typedef bool
 (*RedBlackTreeComparator)(const RedBlackTree *const restrict tree1,
 			  const RedBlackTree *const restrict tree2);
@@ -240,6 +233,41 @@ red_black_tree_remove(RedBlackTree *const restrict tree,
 				remove_ptr) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 }
+
+int
+red_black_tree_remove_min(RedBlackTree *const restrict tree,
+			  void **const restrict remove_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_remove_min(&tree->root,
+				    &tree->node_factory,
+				    &jump_buffer,
+				    remove_ptr) /* 1, 0 */
+	     : 1; /* will only jump if removed */
+}
+
+int
+red_black_tree_remove_max(RedBlackTree *const restrict tree,
+			  void **const restrict remove_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_remove_max(&tree->root,
+				    &tree->node_factory,
+				    &jump_buffer,
+				    remove_ptr) /* 1, 0 */
+	     : 1; /* will only jump if removed */
+}
+
 
 void
 red_black_tree_drop(RedBlackTree *const restrict tree,
@@ -539,24 +567,22 @@ rb_tree_similar(const RedBlackTree *const restrict tree1,
 }
 
 
-static inline int
-rb_tree_mutate_all(RedBlackTree *const restrict dst_tree,
-		   const RedBlackTree *const restrict src_tree,
-		   const RedBlackMutator mutator)
+int
+red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
+			  const RedBlackTree *const restrict src_tree)
 {
 	struct RedBlackNode *restrict *restrict dst_root_ptr;
 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackIterator iter;
-	int count;
+	volatile int count;
 	int status;
 	void *key;
 
 	dst_root_ptr	     = &dst_tree->root;
 	comparator	     = dst_tree->comparator;
 	dst_node_factory_ptr = &dst_tree->node_factory;
-
 
 	red_black_asc_iterator_init(&iter,
 				    src_tree->root);
@@ -572,23 +598,13 @@ rb_tree_mutate_all(RedBlackTree *const restrict dst_tree,
 
 	while (red_black_iterator_next(&iter,
 				       &key))
-		count += mutator(dst_root_ptr,
-				 comparator,
-				 dst_node_factory_ptr,
-				 &jump_buffer,
-				 key); /* 1, 0 */
+		count += red_black_insert(dst_root_ptr,
+					  comparator,
+					  dst_node_factory_ptr,
+					  &jump_buffer,
+					  key); /* 1, 0 */
 
 	return count;
-}
-
-
-int
-red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
-			  const RedBlackTree *const restrict src_tree)
-{
-	return rb_tree_mutate_all(dst_tree,
-				  src_tree,
-				  &red_black_insert);
 }
 
 
@@ -596,9 +612,38 @@ int
 red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 			  const RedBlackTree *const restrict src_tree)
 {
-	return rb_tree_mutate_all(dst_tree,
-				  src_tree,
-				  &red_black_delete);
+	struct RedBlackNode *restrict *restrict dst_root_ptr;
+	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackIterator iter;
+	volatile int count;
+	int status;
+	void *key;
+
+	dst_root_ptr	     = &dst_tree->root;
+	comparator	     = dst_tree->comparator;
+	dst_node_factory_ptr = &dst_tree->node_factory;
+
+	red_black_asc_iterator_init(&iter,
+				    src_tree->root);
+
+	count = 0;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	if (status == RED_BLACK_JUMP_VALUE_2_TRUE)
+		++count; /* successful mutation */
+
+	while (red_black_iterator_next(&iter,
+				       &key))
+		count += red_black_delete(dst_root_ptr,
+					  comparator,
+					  dst_node_factory_ptr,
+					  &jump_buffer,
+					  key); /* 1, 0 */
+
+	return count;
 }
 
 

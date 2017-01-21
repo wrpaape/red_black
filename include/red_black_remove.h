@@ -17,6 +17,18 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 		 const void *const key,
 		 void **const restrict remove_ptr);
 
+int
+red_black_remove_min(struct RedBlackNode *restrict *const restrict tree,
+		     struct RedBlackNodeFactory *const restrict factory,
+		     RedBlackJumpBuffer *const restrict jump_buffer,
+		     void **const restrict remove_ptr);
+
+int
+red_black_remove_max(struct RedBlackNode *restrict *const restrict tree,
+		     struct RedBlackNodeFactory *const restrict factory,
+		     RedBlackJumpBuffer *const restrict jump_buffer,
+		     void **const restrict remove_ptr);
+
 /* may jump w/ a RED_BLACK_JUMP_VALUE_2 value of
  *
  *	RED_BLACK_JUMP_VALUE_2_TRUE	OK, successful removal, remove_ptr set

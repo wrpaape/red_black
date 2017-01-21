@@ -1284,7 +1284,7 @@ rb_restore_r_bot_b(struct RedBlackNode *restrict *const restrict tree,
  * b   - parent is black */
 static inline bool
 rb_restore_l_mid_b(struct RedBlackNode *restrict *const restrict tree,
-			  struct RedBlackNode *const restrict parent)
+		   struct RedBlackNode *const restrict parent)
 {
 	struct RedBlackNode *restrict rnode;
 	struct RedBlackNode *restrict rrchild;

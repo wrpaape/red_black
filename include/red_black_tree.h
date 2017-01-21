@@ -63,6 +63,12 @@ int
 red_black_tree_remove(RedBlackTree *const restrict tree,
 		      const void *const key,
 		      void **const restrict remove_ptr);
+int
+red_black_tree_remove_min(RedBlackTree *const restrict tree,
+			  void **const restrict remove_ptr);
+int
+red_black_tree_remove_max(RedBlackTree *const restrict tree,
+			  void **const restrict remove_ptr);
 
 void
 red_black_tree_drop(RedBlackTree *const restrict tree,
