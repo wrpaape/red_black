@@ -1116,9 +1116,9 @@ rb_restore_r_mid_r(struct RedBlackNode *restrict *const restrict tree,
 /* l   - deletion in left subtree,
  * bot - nodes at deletion subtree black height may be NULL,
  * b   - parent is black */
-static inline bool
+bool
 rb_restore_l_bot_b(struct RedBlackNode *restrict *const restrict tree,
-			  struct RedBlackNode *const restrict parent)
+		   struct RedBlackNode *const restrict parent)
 {
 	struct RedBlackNode *restrict rnode;
 	struct RedBlackNode *restrict rrchild;
@@ -1199,9 +1199,9 @@ rb_restore_l_bot_b(struct RedBlackNode *restrict *const restrict tree,
 /* r   - deletion in right subtree,
  * bot - nodes at deletion subtree black height may be NULL,
  * b   - parent is black */
-static inline bool
+bool
 rb_restore_r_bot_b(struct RedBlackNode *restrict *const restrict tree,
-			  struct RedBlackNode *const restrict parent)
+		   struct RedBlackNode *const restrict parent)
 {
 	struct RedBlackNode *restrict lnode;
 	struct RedBlackNode *restrict llchild;
@@ -1282,7 +1282,7 @@ rb_restore_r_bot_b(struct RedBlackNode *restrict *const restrict tree,
 /* l   - deletion in left subtree,
  * mid - nodes at deletion subtree black height are not NULL,
  * b   - parent is black */
-static inline bool
+bool
 rb_restore_l_mid_b(struct RedBlackNode *restrict *const restrict tree,
 		   struct RedBlackNode *const restrict parent)
 {
@@ -1350,7 +1350,7 @@ rb_restore_l_mid_b(struct RedBlackNode *restrict *const restrict tree,
 /* r   - deletion in right subtree,
  * mid - nodes at deletion subtree black height are not NULL,
  * b   - parent is black */
-static inline bool
+bool
 rb_restore_r_mid_b(struct RedBlackNode *restrict *const restrict tree,
 		   struct RedBlackNode *const restrict parent)
 {

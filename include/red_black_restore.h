@@ -58,4 +58,18 @@ red_black_restore_r_mid(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
 			RedBlackJumpBuffer *const restrict jump_buffer);
 
+/* for restoring in root */
+bool
+rb_restore_l_bot_b(struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNode *const restrict parent);
+bool
+rb_restore_r_bot_b(struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNode *const restrict parent);
+bool
+rb_restore_l_mid_b(struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNode *const restrict parent);
+bool
+rb_restore_r_mid_b(struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNode *const restrict parent);
+
 #endif /* ifndef RED_BLACK_RESTORE_H_ */
