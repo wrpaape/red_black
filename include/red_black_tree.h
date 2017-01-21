@@ -73,10 +73,18 @@ red_black_tree_remove_max(RedBlackTree *const restrict tree,
 void
 red_black_tree_drop(RedBlackTree *const restrict tree,
 		    const void *const key);
+void
+red_black_tree_drop_min(RedBlackTree *const restrict tree);
+void
+red_black_tree_drop_max(RedBlackTree *const restrict tree);
 
 void *
 red_black_tree_pluck(RedBlackTree *const restrict tree,
 		     const void *const key);
+void *
+red_black_tree_pluck_min(RedBlackTree *const restrict tree);
+void *
+red_black_tree_pluck_max(RedBlackTree *const restrict tree);
 
 bool
 red_black_tree_find(const RedBlackTree *const restrict tree,

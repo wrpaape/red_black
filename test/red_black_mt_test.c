@@ -1,5 +1,5 @@
 #include "red_black_mt_test.h" /* threads API */
-#include "red_black_test.h"    /* print/exit macros */
+#include "red_black_test.h"    /* keys, print/exit macros */
 
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */

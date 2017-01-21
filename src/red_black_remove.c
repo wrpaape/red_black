@@ -200,8 +200,6 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 	return status;
 }
 
-#include <stdio.h>
-#define DEBUG(...) printf(__VA_ARGS__); fflush(stdout);
 
 int
 red_black_remove_min(struct RedBlackNode *restrict *const restrict tree,
@@ -250,14 +248,10 @@ red_black_remove_min(struct RedBlackNode *restrict *const restrict tree,
 
 			*remove_ptr = (void *) node->key;
 
-			DEBUG("RESTORING MIN NODE\n");
-
 			red_black_restore_min_node(&parent->left,
 						   node,
 						   factory,
 						   jump_buffer);
-
-			DEBUG("RESTORED MIN NODE\n");
 			/* if returned, need to restore */
 
 			if (parent == root) {
@@ -286,14 +280,10 @@ red_black_remove_min(struct RedBlackNode *restrict *const restrict tree,
 								jump_buffer);
 					/* if returned, unwind stack */
 				}
-
-				DEBUG("RESTORING ROOT\n");
 				/* restore root */
 				(void) rb_restore_l_mid_b(tree,
 							  root);
-				DEBUG("RESTORED ROOT\n");
 			}
-
 		}
 	}
 
@@ -385,10 +375,6 @@ red_black_remove_max(struct RedBlackNode *restrict *const restrict tree,
 				(void) rb_restore_r_mid_b(tree,
 							  root);
 			}
-
-			/* restore root */
-			(void) rb_restore_r_mid_b(tree,
-						  root);
 		}
 	}
 

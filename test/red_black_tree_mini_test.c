@@ -107,35 +107,20 @@ main(void)
 	}
 
 	for (i = 0; i < KEY_COUNT; ++i) {
-		printf("DOIN IT, %d\n", i); fflush(stdout);
 		key = (int) (intptr_t) red_black_tree_get_min(&tree);
-
-		printf("GOT IT: %d\n", key); fflush(stdout);
 
 		if (key != i)
 			TEST_FAILURE("GET_MIN FAILURE -- KEY NOT MIN");
-
-		red_black_tree_print(&tree,
-				     &int_key_sizer,
-				     &int_key_putter);
-
-		printf("REMOVING\n"); fflush(stdout);
 
 		if (red_black_tree_remove_min(&tree,
 					      (void **) &key) != 1)
 			TEST_FAILURE("REMOVE_MIN FAILURE -- OUT OF NODES");
 
-		printf("REMOVED: %d\n", key); fflush(stdout);
-
 		if (key != i)
 			TEST_FAILURE("REMOVE_MIN FAILURE -- KEY NOT MIN");
 
-		printf("VERIFYING\n"); fflush(stdout);
-
 		if (!red_black_tree_verify(&tree))
 			TEST_FAILURE("REMOVE_MIN FAILURE -- INVALID TREE");
-
-		printf("VERIFIED\n"); fflush(stdout);
 	}
 
 	if (red_black_tree_count(&tree) != 0)

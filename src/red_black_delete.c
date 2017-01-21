@@ -232,22 +232,37 @@ red_black_delete_min(struct RedBlackNode *restrict *const restrict tree,
 						   node,
 						   factory,
 						   jump_buffer);
-
 			/* if returned, need to restore */
-			red_black_restore_l_bot(tree,
-						parent,
-						jump_buffer);
 
-			while (parent != root) {
+			if (parent == root) {
+				/* restore root */
+				(void) rb_restore_l_bot_b(tree,
+							  root);
+
+			} else {
 				node = parent;
 
 				--cursor;
 				parent = *cursor;
 
-				red_black_restore_l_mid(&parent->left,
+				red_black_restore_l_bot(&parent->left,
 							node,
 							jump_buffer);
-				/* if returned, continue unwinding stack */
+
+				while (parent != root) {
+					node = parent;
+
+					--cursor;
+					parent = *cursor;
+
+					red_black_restore_l_mid(&parent->left,
+								node,
+								jump_buffer);
+					/* if returned, unwind stack */
+				}
+				/* restore root */
+				(void) rb_restore_l_mid_b(tree,
+							  root);
 			}
 		}
 	}
@@ -304,20 +319,36 @@ red_black_delete_max(struct RedBlackNode *restrict *const restrict tree,
 						   jump_buffer);
 
 			/* if returned, need to restore */
-			red_black_restore_r_bot(tree,
-						parent,
-						jump_buffer);
+			if (parent == root) {
+				/* restore root */
+				(void) rb_restore_r_bot_b(tree,
+							  root);
 
-			while (parent != root) {
+			} else {
 				node = parent;
 
 				--cursor;
 				parent = *cursor;
 
-				red_black_restore_r_mid(&parent->right,
+				red_black_restore_r_bot(&parent->right,
 							node,
 							jump_buffer);
-				/* if returned, continue unwinding stack */
+
+				while (parent != root) {
+					node = parent;
+
+					--cursor;
+					parent = *cursor;
+
+					red_black_restore_r_mid(&parent->right,
+								node,
+								jump_buffer);
+					/* if returned, continue unwinding stack */
+				}
+
+				/* restore root */
+				(void) rb_restore_r_mid_b(tree,
+							  root);
 			}
 		}
 	}

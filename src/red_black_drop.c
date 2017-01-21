@@ -164,3 +164,162 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 			  key);
 	}
 }
+
+
+void
+red_black_drop_min(struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNodeFactory *const restrict factory,
+		   RedBlackJumpBuffer *const restrict jump_buffer)
+{
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict next;
+	struct RedBlackNode *restrict parent;
+	struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
+	struct RedBlackNode *restrict *restrict cursor;
+
+	struct RedBlackNode *const restrict root = *tree;
+
+	node = root->left;
+
+	if (node == NULL) {
+		red_black_restore_min_root(tree,
+					   root,
+					   factory);
+
+	} else {
+		cursor  = &stack[0];
+		*cursor = root;
+
+		/* find min node */
+		while (1) {
+			next = node->left;
+
+			if (next == NULL)
+				break;
+
+			++cursor;
+			*cursor = node;
+
+			node = next;
+		}
+
+		parent = *cursor;
+
+		red_black_restore_min_node(&parent->left,
+					   node,
+					   factory,
+					   jump_buffer);
+
+		/* if returned, need to restore */
+		if (parent == root) {
+			/* restore root */
+			(void) rb_restore_l_bot_b(tree,
+						  root);
+
+		} else {
+			node = parent;
+
+			--cursor;
+			parent = *cursor;
+
+			red_black_restore_l_bot(&parent->left,
+						node,
+						jump_buffer);
+
+			while (parent != root) {
+				node = parent;
+
+				--cursor;
+				parent = *cursor;
+
+				red_black_restore_l_mid(&parent->left,
+							node,
+							jump_buffer);
+				/* if returned, continue unwinding stack */
+			}
+
+			/* restore root */
+			(void) rb_restore_l_mid_b(tree,
+						  root);
+		}
+	}
+}
+
+void
+red_black_drop_max(struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNodeFactory *const restrict factory,
+		   RedBlackJumpBuffer *const restrict jump_buffer)
+{
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict next;
+	struct RedBlackNode *restrict parent;
+	struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
+	struct RedBlackNode *restrict *restrict cursor;
+
+	struct RedBlackNode *const restrict root = *tree;
+
+	node = root->right;
+
+	if (node == NULL) {
+		red_black_restore_max_root(tree,
+					   root,
+					   factory);
+
+	} else {
+		cursor  = &stack[0];
+		*cursor = root;
+
+		/* find max node */
+		while (1) {
+			next = node->right;
+
+			if (next == NULL)
+				break;
+
+			++cursor;
+			*cursor = node;
+
+			node = next;
+		}
+
+		parent = *cursor;
+
+		red_black_restore_max_node(&parent->right,
+					   node,
+					   factory,
+					   jump_buffer);
+
+		/* if returned, need to restore */
+		if (parent == root) {
+			/* restore root */
+			(void) rb_restore_r_bot_b(tree,
+						  root);
+
+		} else {
+			node = parent;
+
+			--cursor;
+			parent = *cursor;
+
+			red_black_restore_r_bot(&parent->right,
+						node,
+						jump_buffer);
+
+			while (parent != root) {
+				node = parent;
+
+				--cursor;
+				parent = *cursor;
+
+				red_black_restore_r_mid(&parent->right,
+							node,
+							jump_buffer);
+				/* if returned, continue unwinding stack */
+			}
+
+			/* restore root */
+			(void) rb_restore_r_mid_b(tree,
+						  root);
+		}
+	}
+}
