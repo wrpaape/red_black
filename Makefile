@@ -103,45 +103,52 @@ endif
 
 # General file paths
 # ──────────────────────────────────────────────────────────────────────────────
-FILE_PATH = $(call JOIN,$(call TRIM,$1) $(call TRIM,$2),$(PATH_DELIM))
+PATH_JOIN = $(call JOIN,$(call TRIM,$1) $(call TRIM,$2),$(PATH_DELIM))
 
-SOURCE_FILE_PATH         = $(call FILE_PATH,$1,$2$(SRC_EXT))
-HEADER_FILE_PATH         = $(call FILE_PATH,$1,$2$(HDR_EXT))
-OBJECT_FILE_PATH         = $(call FILE_PATH,$1,$2$(OBJ_EXT))
-PIC_OBJECT_FILE_PATH     = $(call FILE_PATH,$1,$2_pic$(OBJ_EXT))
-BINARY_FILE_PATH         = $(call FILE_PATH,$1,$2$(BIN_EXT))
-STATIC_LIBRARY_FILE_PATH = $(call FILE_PATH,$1,$2lib$(ST_LIB_EXT))
-SHARED_LIBRARY_FILE_PATH = $(call FILE_PATH,$1,$2lib$(SH_LIB_EXT))
+SOURCE_FILE_PATH         = $(call PATH_JOIN,$1,$2$(SRC_EXT))
+HEADER_FILE_PATH         = $(call PATH_JOIN,$1,$2$(HDR_EXT))
+OBJECT_FILE_PATH         = $(call PATH_JOIN,$1,$2$(OBJ_EXT))
+PIC_OBJECT_FILE_PATH     = $(call PATH_JOIN,$1,$2_pic$(OBJ_EXT))
+BINARY_FILE_PATH         = $(call PATH_JOIN,$1,$2$(BIN_EXT))
+STATIC_LIBRARY_FILE_PATH = $(call PATH_JOIN,$1,$2lib$(ST_LIB_EXT))
+SHARED_LIBRARY_FILE_PATH = $(call PATH_JOIN,$1,$2lib$(SH_LIB_EXT))
 
 
 # Directories
 # ──────────────────────────────────────────────────────────────────────────────
-SOURCE_DIR          := src# library source files
-HEADER_DIR          := include# library header files
-TEST_DIR            := test# test source and header files
-EXAMPLES_DIR        := examples# example source and hear files
-KEY_ACC_DIR         := key_accessors#common key accessors
-OBJECT_DIR          := obj# object files
-BINARY_DIR          := bin# binary executable files
-STATIC_LIBRARY_DIR  := static# static library files
-SHARED_LIBRARY_DIR  := shared# shared library files
+SOURCE_DIR             := src# library source files
+HEADER_DIR             := include# library header files
+TEST_DIR               := test# test source and header files
+EXAMPLES_DIR           := examples# example source and hear files
+KEY_ACC_DIR            := key_accessors#common key accessors
+OBJECT_DIR             := obj# object files
+BINARY_DIR             := bin# binary executable files
+STATIC_LIBRARY_DIR     := static# static library files
+SHARED_LIBRARY_DIR     := shared# shared library files
+UNITY_DIR	       := $(call PATH_JOIN,$(TEST_DIR) unity)
+UNITY_SOURCE_DIR       := $(call PATH_JOIN,$(UNITY_DIR) src)
+UNITY_HEADER_DIR       := $(UNITY_SOURCE_DIR)
+UNITY_OBJECT_DIR       := $(call PATH_JOIN,$(UNITY_DIR) obj)
+UNITY_AUTO_DIR         := $(call PATH_JOIN,$(UNITY_DIR) auto)
+TEST_RUNNER_SOURCE_DIR := $(call PATH_JOIN,$(TEST_SOURCE_DIR) test_runners)
 
 
 # Project file paths
 # ──────────────────────────────────────────────────────────────────────────────
-SOURCE_PATH          = $(call SOURCE_FILE_PATH,$(SOURCE_DIR),$1)
-HEADER_PATH          = $(call HEADER_FILE_PATH,$(HEADER_DIR),$1)
-TEST_SOURCE_PATH     = $(call SOURCE_FILE_PATH,$(TEST_DIR),$1)
-TEST_HEADER_PATH     = $(call HEADER_FILE_PATH,$(TEST_DIR),$1)
-EXAMPLES_SOURCE_PATH = $(call SOURCE_FILE_PATH,$(EXAMPLES_DIR),$1)
-EXAMPLES_HEADER_PATH = $(call HEADER_FILE_PATH,$(EXAMPLES_DIR),$1)
-KEY_ACC_SOURCE_PATH  = $(call SOURCE_FILE_PATH,$(KEY_ACC_DIR),$1)
-KEY_ACC_HEADER_PATH  = $(call HEADER_FILE_PATH,$(KEY_ACC_DIR),$1)
-OBJECT_PATH          = $(call OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
-PIC_OBJECT_PATH      = $(call PIC_OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
-BINARY_PATH          = $(call BINARY_FILE_PATH,$(BINARY_DIR),$1)
-STATIC_LIBRARY_PATH  = $(call STATIC_LIBRARY_FILE_PATH,$(STATIC_LIBRARY_DIR),$1)
-SHARED_LIBRARY_PATH  = $(call SHARED_LIBRARY_FILE_PATH,$(SHARED_LIBRARY_DIR),$1)
+SOURCE_PATH             = $(call SOURCE_FILE_PATH,$(SOURCE_DIR),$1)
+HEADER_PATH             = $(call HEADER_FILE_PATH,$(HEADER_DIR),$1)
+TEST_SOURCE_PATH        = $(call SOURCE_FILE_PATH,$(TEST_DIR),$1)
+TEST_HEADER_PATH        = $(call HEADER_FILE_PATH,$(TEST_DIR),$1)
+TEST_RUNNER_SOURCE_PATH = $(call SOURCE_FILE_PATH,$(TEST_RUNNER_SOURCE_DIR),$1_test_runner)# Unity test runners
+EXAMPLES_SOURCE_PATH 	= $(call SOURCE_FILE_PATH,$(EXAMPLES_DIR),$1)
+EXAMPLES_HEADER_PATH 	= $(call HEADER_FILE_PATH,$(EXAMPLES_DIR),$1)
+KEY_ACC_SOURCE_PATH  	= $(call SOURCE_FILE_PATH,$(KEY_ACC_DIR),$1)
+KEY_ACC_HEADER_PATH  	= $(call HEADER_FILE_PATH,$(KEY_ACC_DIR),$1)
+OBJECT_PATH          	= $(call OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
+PIC_OBJECT_PATH      	= $(call PIC_OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
+BINARY_PATH          	= $(call BINARY_FILE_PATH,$(BINARY_DIR),$1)
+STATIC_LIBRARY_PATH  	= $(call STATIC_LIBRARY_FILE_PATH,$(STATIC_LIBRARY_DIR),$1)
+SHARED_LIBRARY_PATH  	= $(call SHARED_LIBRARY_FILE_PATH,$(SHARED_LIBRARY_DIR),$1)
 
 
 
@@ -196,6 +203,41 @@ else
         RM		:= rm
         RM_FLAGS	:= -rf
 endif
+
+# Ruby
+# ──────────────────────────────────────────────────────────────────────────────
+RUBY		:= ruby
+RUBY_FLAGS	:= $(EMPTY)
+
+
+
+
+## UNITY TEST FRAMEWORK
+# ══════════════════════════════════════════════════════════════════════════════
+UNITY_SRC 		:= $(call UNITY_SOURCE_PATH,unity)
+UNITY_HDR 		:= $(call UNITY_HEADER_PATH,unity)
+UNITY_CONFIG_HDR 	:= $(call UNITY_HEADER_PATH,unity_config)
+UNITY_INTERNALS_HDR 	:= $(call UNITY_HEADER_PATH,unity_internals)
+UNITY_OBJ 		:= $(call UNITY_OBJECT_PATH,unity)
+UNITY_GEN_TRNR_SCRIPT	:= $(call UNITY_SCRIPT_PATH,generate_test_runner)
+UNITY_ENV_FLAGS 	:= -DUNITY_INCLUDE_CONFIG_H
+UNITY_CC_FLAGS		:= $(CC_FLAGS) $(UNITY_ENV_FLAGS) -I$(UNITY_HEADER_DIR)
+UNITY_LD_LIB_FLAGS	:= $(EMPTY)
+# ─────────────── run all tests ────────────────────────────────────────────────
+TEST_FILES_GLOB		:= $(call BINARY_FILE_PATH,$(TEST_BINARY_DIR),*_test)
+ifeq (T,$(SYSTEM_WINDOWS))
+RUN_TESTS		:= FORFILES /M $(TEST_FILES_GLOB) /C "cmd /c @file"
+
+else
+RUN_TESTS		:= for test in $(TEST_FILES_GLOB); do "./$$test"; done
+endif
+# ─────────────── target prequisites ───────────────────────────────────────────
+UNITY_OBJ_PREQS		:= $(UNITY_SRC)					\
+			   $(UNITY_HDR)					\
+			   $(UNITY_INTERNALS_HDR)			\
+			   $(UNITY_CONFIG_HDR)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(UNITY_OBJ)
 
 
 
@@ -955,7 +997,7 @@ MT_TEST_OBJ_PREQS	:= $(MT_TEST_SRC)				\
 			   $(MT_TEST_HDR)				\
 			   $(TEST_HDR)
 MT_TEST_OBJ_GROUP	:= $(MT_TEST_OBJ)				\
-			   $(TEST_OBJ_GROUP) 
+			   $(TEST_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(MT_TEST_OBJ)
 
@@ -1101,9 +1143,12 @@ TARGETS			+= $(CONTACTS_OBJ)				\
 # ══════════════════════════════════════════════════════════════════════════════
 # Phony targets
 # ──────────────────────────────────────────────────────────────────────────────
-.PHONY: all clean
+.PHONY: all run_tests clean
 
 all: $(TARGETS)
+
+run_tests: $(TEST_BINARIES)
+	$(RUN_ALL_TESTS)
 
 clean:
 	$(RM) $(RM_FLAGS) $(TARGETS)
@@ -1322,3 +1367,9 @@ $(INT_KEY_OBJ): $(INT_KEY_OBJ_PREQS)
 
 $(STR_KEY_OBJ): $(STR_KEY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
+
+
+# UNITY OBJECT
+# ──────────────────────────────────────────────────────────────────────────────
+$(UNITY_OBJ): $(UNITY_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) -c $< -o $@
