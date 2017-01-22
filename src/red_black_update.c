@@ -145,8 +145,10 @@ red_black_update(struct RedBlackNode *restrict *const restrict tree,
 							      true); /* RED */
 
 			} else {
+				other_key = parent->key;
+
 				compare = comparator(key,
-						     parent->key);
+						     other_key);
 
 				status = (compare != 0); /* 1, 0 */
 

@@ -228,10 +228,6 @@ UNITY_CONFIG_HDR 	:= $(call UNITY_HEADER_PATH,unity_config)
 UNITY_INTERNALS_HDR 	:= $(call UNITY_HEADER_PATH,unity_internals)
 UNITY_OBJ 		:= $(call UNITY_OBJECT_PATH,unity)
 UNITY_GEN_TRNR_SCRIPT	:= $(call UNITY_SCRIPT_PATH,generate_test_runner)
-$(info $(UNITY_GEN_TRNR_SCRIPT))
-$(info $(UNITY_GEN_TRNR_SCRIPT))
-$(info $(UNITY_GEN_TRNR_SCRIPT))
-$(info $(UNITY_GEN_TRNR_SCRIPT))
 UNITY_ENV_FLAGS 	:= -DUNITY_INCLUDE_CONFIG_H
 UNITY_CC_FLAGS		:= $(CC_FLAGS) $(UNITY_ENV_FLAGS) -I$(UNITY_HEADER_DIR) -I$(TEST_DIR)
 # ─────────────── run all tests ────────────────────────────────────────────────
@@ -1014,6 +1010,36 @@ MT_TEST_OBJ_GROUP	:= $(MT_TEST_OBJ)				\
 TARGETS			+= $(MT_TEST_OBJ)
 
 
+# red_black_tree_insertion_test
+# ──────────────────────────────────────────────────────────────────────────────
+TREE_INSERTION_TEST_SRC	      := $(call TEST_SOURCE_PATH,red_black_tree_insertion)
+TREE_INSERTION_TRNR_SRC	      := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_insertion)
+TREE_INSERTION_TRNR_OBJ	      := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_insertion)
+TREE_INSERTION_TEST_OBJ	      := $(call TEST_OBJECT_PATH,red_black_tree_insertion)
+TREE_INSERTION_TEST_BIN	      := $(call TEST_BINARY_PATH,red_black_tree_insertion)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREE_INSERTION_TRNR_SRC_PREQS := $(TREE_INSERTION_TEST_SRC)
+TREE_INSERTION_TEST_OBJ_PREQS := $(TREE_INSERTION_TEST_SRC)		\
+			   	 $(TREE_HDR)				\
+			   	 $(INT_KEY_HDR)				\
+			   	 $(TEST_HDR)				\
+			   	 $(UNITY_HDR)
+TREE_INSERTION_TRNR_OBJ_PREQS := $(TREE_INSERTION_TRNR_SRC)		\
+			   	 $(TREE_INSERTION_TEST_OBJ_PREQS)
+TREE_INSERTION_TEST_BIN_PREQS := $(TREE_INSERTION_TRNR_OBJ)		\
+			   	 $(TREE_INSERTION_TEST_OBJ)		\
+				 $(INT_KEY_OBJ_GROUP)			\
+				 $(TREE_SH_LIB)				\
+				 $(TEST_OBJ)				\
+				 $(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES		+= $(TREE_INSERTION_TEST_BIN)
+TARGETS			+= $(TREE_INSERTION_TRNR_SRC)			\
+			   $(TREE_INSERTION_TRNR_OBJ)			\
+			   $(TREE_INSERTION_TEST_OBJ)			\
+			   $(TREE_INSERTION_TEST_BIN)
+
+
 # red_black_concat_test
 # ──────────────────────────────────────────────────────────────────────────────
 CONCAT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_concat)
@@ -1209,10 +1235,16 @@ $(LHMAP_TEST_BIN): $(LHMAP_TEST_BIN_PREQS)
 $(LHMAP_TEST_OBJ): $(LHMAP_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
-# $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)
-# 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-# $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
-# 	$(CC) $(CC_FLAGS) $< -o $@
+
+$(TREE_INSERTION_TEST_BIN): $(TREE_INSERTION_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(TREE_INSERTION_TRNR_OBJ): $(TREE_INSERTION_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_INSERTION_TEST_OBJ): $(TREE_INSERTION_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_INSERTION_TRNR_SRC): $(TREE_INSERTION_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+
 
 $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@

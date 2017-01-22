@@ -8,19 +8,16 @@
 static RedBlackTree tree;
 static bool key_set[KEYS_COUNT];
 
-void setUp(void)
+void
+setUp(void)
 {
 	int i;
 	void *key;
 
-	init_keys();
-
-	seed_random();
-
-	shuffle_keys();
-
 	red_black_tree_init(&tree,
 			    &int_key_comparator);
+
+	shuffle_keys();
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = (void *) (intptr_t) keys[i];
@@ -40,12 +37,14 @@ void setUp(void)
 
 }
 
-void tearDown(void)
+void
+tearDown(void)
 {
 	red_black_tree_destroy(&tree);
 }
 
-void test_red_black_concat(void)
+void
+test_red_black_concat(void)
 {
 	int i;
 	int key;

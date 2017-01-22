@@ -81,7 +81,7 @@ EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 /* defines length of array of unique integer keys (must be >= 1) */
-#define KEYS_COUNT 1000000
+#define KEYS_COUNT 10000
 
 extern int keys[KEYS_COUNT];
 extern const int *const restrict keys_until;
@@ -118,10 +118,12 @@ unsigned int
 random_upto(const unsigned int upto);
 
 void
-init_keys(void);
+init_keys(void)
+__attribute__((constructor));
 
 void
-seed_random(void);
+seed_random(void)
+__attribute__((constructor));
 
 void
 shuffle_keys(void);
