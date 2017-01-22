@@ -105,7 +105,6 @@ endif
 # ──────────────────────────────────────────────────────────────────────────────
 PATH_JOIN = $(call JOIN,$(call TRIM,$1) $(call TRIM,$2),$(PATH_DELIM))
 
-SCRIPT_FILE_PATH	 = $(call PATH_JOIN,$1,$2.rb)
 SOURCE_FILE_PATH         = $(call PATH_JOIN,$1,$2$(SRC_EXT))
 HEADER_FILE_PATH         = $(call PATH_JOIN,$1,$2$(HDR_EXT))
 OBJECT_FILE_PATH         = $(call PATH_JOIN,$1,$2$(OBJ_EXT))
@@ -126,12 +125,12 @@ OBJECT_DIR             := obj# object files
 BINARY_DIR             := bin# binary executable files
 STATIC_LIBRARY_DIR     := static# static library files
 SHARED_LIBRARY_DIR     := shared# shared library files
-UNITY_DIR	       := $(call PATH_JOIN,$(TEST_DIR),unity)
-UNITY_SOURCE_DIR       := $(call PATH_JOIN,$(UNITY_DIR),src)
+UNITY_DIR	       := $(call PATH_JOIN,$(TEST_DIR) unity)
+UNITY_SOURCE_DIR       := $(call PATH_JOIN,$(UNITY_DIR) src)
 UNITY_HEADER_DIR       := $(UNITY_SOURCE_DIR)
-UNITY_OBJECT_DIR       := $(call PATH_JOIN,$(UNITY_DIR),obj)
-UNITY_AUTO_DIR         := $(call PATH_JOIN,$(UNITY_DIR),auto)
-TEST_RUNNER_SOURCE_DIR := $(call PATH_JOIN,$(TEST_DIR),test_runners)
+UNITY_OBJECT_DIR       := $(call PATH_JOIN,$(UNITY_DIR) obj)
+UNITY_AUTO_DIR         := $(call PATH_JOIN,$(UNITY_DIR) auto)
+TEST_RUNNER_SOURCE_DIR := $(call PATH_JOIN,$(TEST_SOURCE_DIR) test_runners)
 
 
 # Project file paths
@@ -141,8 +140,6 @@ HEADER_PATH             = $(call HEADER_FILE_PATH,$(HEADER_DIR),$1)
 TEST_SOURCE_PATH        = $(call SOURCE_FILE_PATH,$(TEST_DIR),$1_test)
 TEST_HEADER_PATH        = $(call HEADER_FILE_PATH,$(TEST_DIR),$1_test)
 TEST_RUNNER_SOURCE_PATH = $(call SOURCE_FILE_PATH,$(TEST_RUNNER_SOURCE_DIR),$1_test_runner)
-UNITY_SOURCE_PATH	= $(call SOURCE_FILE_PATH,$(UNITY_SOURCE_DIR),$1)
-UNITY_HEADER_PATH	= $(call HEADER_FILE_PATH,$(UNITY_HEADER_DIR),$1)
 EXAMPLES_SOURCE_PATH 	= $(call SOURCE_FILE_PATH,$(EXAMPLES_DIR),$1)
 EXAMPLES_HEADER_PATH 	= $(call HEADER_FILE_PATH,$(EXAMPLES_DIR),$1)
 KEY_ACC_SOURCE_PATH  	= $(call SOURCE_FILE_PATH,$(KEY_ACC_DIR),$1)
@@ -151,8 +148,6 @@ OBJECT_PATH          	= $(call OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
 PIC_OBJECT_PATH      	= $(call PIC_OBJECT_FILE_PATH,$(OBJECT_DIR),$1)
 TEST_OBJECT_PATH	= $(call OBJECT_PATH,$1_test)
 TEST_RUNNER_OBJECT_PATH	= $(call OBJECT_PATH,$1_test_runner)
-UNITY_SCRIPT_PATH	= $(call SCRIPT_FILE_PATH,$(UNITY_AUTO_DIR),$1)
-UNITY_OBJECT_PATH 	= $(call OBJECT_FILE_PATH,$(UNITY_OBJECT_DIR),$1)
 BINARY_PATH          	= $(call BINARY_FILE_PATH,$(BINARY_DIR),$1)
 TEST_BINARY_PATH	= $(call BINARY_PATH,$1_test)
 STATIC_LIBRARY_PATH  	= $(call STATIC_LIBRARY_FILE_PATH,$(STATIC_LIBRARY_DIR),$1)
@@ -228,10 +223,6 @@ UNITY_CONFIG_HDR 	:= $(call UNITY_HEADER_PATH,unity_config)
 UNITY_INTERNALS_HDR 	:= $(call UNITY_HEADER_PATH,unity_internals)
 UNITY_OBJ 		:= $(call UNITY_OBJECT_PATH,unity)
 UNITY_GEN_TRNR_SCRIPT	:= $(call UNITY_SCRIPT_PATH,generate_test_runner)
-$(info $(UNITY_GEN_TRNR_SCRIPT))
-$(info $(UNITY_GEN_TRNR_SCRIPT))
-$(info $(UNITY_GEN_TRNR_SCRIPT))
-$(info $(UNITY_GEN_TRNR_SCRIPT))
 UNITY_ENV_FLAGS 	:= -DUNITY_INCLUDE_CONFIG_H
 UNITY_CC_FLAGS		:= $(CC_FLAGS) $(UNITY_ENV_FLAGS) -I$(UNITY_HEADER_DIR)
 # ─────────────── run all tests ────────────────────────────────────────────────
@@ -1033,8 +1024,7 @@ CONCAT_TEST_BIN_PREQS	:= $(CONCAT_TRNR_OBJ)				\
 			   $(CONCAT_TEST_OBJ)				\
 			   $(CONCAT_OBJ_GROUP)				\
 			   $(INT_KEY_OBJ_GROUP)				\
-			   $(TREE_SH_LIB)				\
-			   $(UNITY_OBJ)
+			   $(TREE_SH_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TEST_BINARIES		+= $(CONCAT_TEST_BIN)
 TARGETS			+= $(CONCAT_TRNR_SRC)				\
@@ -1046,8 +1036,8 @@ TARGETS			+= $(CONCAT_TRNR_SRC)				\
 # red_black_tree_mini_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_MINI_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_mini)
-TREE_MINI_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_tree_mini)
-TREE_MINI_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_tree_mini)
+TREE_MINI_TEST_OBJ		:= $(call OBJECT_PATH,red_black_tree_mini)
+TREE_MINI_TEST_BIN		:= $(call BINARY_PATH,red_black_tree_mini)
 # ─────────────── target prequisites ───────────────────────────────────────────
 TREE_MINI_TEST_OBJ_PREQS	:= $(TREE_MINI_TEST_SRC)		\
 			   	    $(TREE_HDR)				\
@@ -1064,8 +1054,8 @@ TARGETS				+= $(TREE_MINI_TEST_OBJ)		\
 # red_black_tree_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree)
-TREE_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_tree)
-TREE_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_tree)
+TREE_TEST_OBJ		:= $(call OBJECT_PATH,red_black_tree)
+TREE_TEST_BIN		:= $(call BINARY_PATH,red_black_tree)
 # ─────────────── target prequisites ───────────────────────────────────────────
 TREE_TEST_OBJ_PREQS	:= $(TREE_TEST_SRC)				\
 			   $(TEST_HDR)					\
@@ -1082,10 +1072,10 @@ TARGETS			+= $(TREE_TEST_OBJ)				\
 
 # red_black_lhmap_test
 # ──────────────────────────────────────────────────────────────────────────────
-LHMAP_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_lhmap)
-LHMAP_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_lhmap)
-LHMAP_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_lhmap)
-# ─────────────── target prequisitTEST_es ───────────────────────────────────────────
+LHMAP_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_lhmap_test)
+LHMAP_TEST_OBJ		:= $(call OBJECT_PATH,red_black_lhmap_test)
+LHMAP_TEST_BIN		:= $(call BINARY_PATH,red_black_lhmap_test)
+# ─────────────── target prequisites ───────────────────────────────────────────
 LHMAP_TEST_OBJ_PREQS	:= $(LHMAP_TEST_SRC)				\
 			   $(TEST_HDR)					\
 			   $(LHMAP_HDR)
@@ -1212,7 +1202,7 @@ $(LHMAP_TEST_OBJ): $(LHMAP_TEST_OBJ_PREQS)
 # 	$(CC) $(CC_FLAGS) $< -o $@
 
 $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)
-	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+	$(LD) $(LD_FLAGS) $^ $(LD_BIN_FLAGS) -o $@
 $(CONCAT_TRNR_OBJ): $(CONCAT_TRNR_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) -c $< -o $@
 $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
