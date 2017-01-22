@@ -48,13 +48,13 @@ test_red_black_tree_insert(void)
 {
 	int i;
 	int status;
-	void *key;
+	int key;
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
-		key = (void *) (intptr_t) keys[i];
+		key = keys[i];
 
 		status = red_black_tree_insert(&tree,
-					       key);
+					       (void *) (intptr_t) key);
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
 					      status,
@@ -67,10 +67,10 @@ test_red_black_tree_insert(void)
 	shuffle_keys();
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
-		key = (void *) (intptr_t) keys[i];
+		key = keys[i];
 
 		status = red_black_tree_insert(&tree,
-					       key);
+					       (void *) (intptr_t) key);
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(0,
 					      status,
@@ -85,17 +85,17 @@ test_red_black_tree_update(void)
 {
 	int i;
 	int status;
-	void *key;
-	void *old_key = 0;
+	int key;
+	void *old_key = NULL;
 	void *old_key_initial;
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
-		key = (void *) (intptr_t) keys[i];
+		key = keys[i];
 
 		old_key_initial = old_key;
 
 		status = red_black_tree_update(&tree,
-					       key,
+					       (void *) (intptr_t) key,
 					       &old_key);
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
@@ -112,12 +112,11 @@ test_red_black_tree_update(void)
 
 	shuffle_keys();
 
-
 	for (i = 0; i < KEYS_COUNT; ++i) {
-		key = (void *) (intptr_t) keys[i];
+		key = keys[i];
 
 		status = red_black_tree_update(&tree,
-					       key,
+					       (void *) (intptr_t) key,
 					       &old_key);
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(0,
@@ -125,7 +124,7 @@ test_red_black_tree_update(void)
 					      "RE-INSERTED USED KEY (1)"
 					      " OR OUT OF MEMORY (-1)");
 
-		TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) key,
+		TEST_ASSERT_EQUAL_INT_MESSAGE(key,
 					      (int) (intptr_t) old_key,
 					      "OLD KEY DOES NOT MATCH");
 	}
@@ -136,13 +135,16 @@ void
 test_red_black_tree_put_new(void)
 {
 	int i;
-	void *key;
+	int key;
+	bool status;
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
-		key = (void *) (intptr_t) keys[i];
+		key = keys[i];
 
-		TEST_ASSERT_TRUE_MESSAGE(red_black_tree_put_new(&tree,
-								key),
+		status = red_black_tree_put_new(&tree,
+						(void *) (intptr_t) key);
+
+		TEST_ASSERT_TRUE_MESSAGE(status,
 					 "OUT OF MEMORY");
 	}
 }
