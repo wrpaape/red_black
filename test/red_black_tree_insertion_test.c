@@ -6,23 +6,6 @@
 
 static RedBlackTree tree;
 
-void
-setUp(void)
-{
-	red_black_tree_init(&tree,
-			    &int_key_comparator);
-
-	shuffle_keys();
-}
-
-
-void
-tearDown(void)
-{
-	red_black_tree_destroy(&tree);
-}
-
-
 static inline void
 verify_full_tree(void)
 {
@@ -32,6 +15,31 @@ verify_full_tree(void)
 	TEST_ASSERT_EQUAL_UINT_MESSAGE(KEYS_COUNT,
 				       red_black_tree_count(&tree),
 				       "UNEXPECTED COUNT");
+}
+
+void
+setUp(void)
+{
+	red_black_tree_init(&tree,
+			    &int_key_comparator);
+
+	TEST_ASSERT_TRUE_MESSAGE(red_black_tree_verify(&tree),
+				 "INVALID TREE");
+
+	TEST_ASSERT_EQUAL_UINT_MESSAGE(0,
+				       red_black_tree_count(&tree),
+				       "NON-EMPTY TREE");
+
+	shuffle_keys();
+}
+
+
+void
+tearDown(void)
+{
+	verify_full_tree();
+
+	red_black_tree_destroy(&tree);
 }
 
 
@@ -50,8 +58,8 @@ test_red_black_tree_insert(void)
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
 					      status,
-					      "INSERTED USED KEY"
-					      " OR OUT OF MEMORY");
+					      "INSERTED USED KEY (0)"
+					      " OR OUT OF MEMORY (-1)");
 	}
 
 	verify_full_tree();
@@ -66,11 +74,9 @@ test_red_black_tree_insert(void)
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(0,
 					      status,
-					      "RE-INSERTED USED KEY"
-					      " OR OUT OF MEMORY");
+					      "RE-INSERTED USED KEY (1)"
+					      " OR OUT OF MEMORY (-1)");
 	}
-
-	verify_full_tree();
 }
 
 
@@ -81,9 +87,12 @@ test_red_black_tree_update(void)
 	int status;
 	void *key;
 	void *old_key;
+	void *old_key_initial;
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = (void *) (intptr_t) keys[i];
+
+		old_key_initial = old_key;
 
 		status = red_black_tree_update(&tree,
 					       key,
@@ -91,8 +100,12 @@ test_red_black_tree_update(void)
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
 					      status,
-					      "INSERTED USED KEY"
-					      " OR OUT OF MEMORY");
+					      "INSERTED USED KEY (0)"
+					      " OR OUT OF MEMORY (-1)");
+
+		TEST_ASSERT_EQUAL_PTR_MESSAGE(old_key_initial,
+					      old_key,
+					      "VALUE OF OLD KEY CHANGED");
 	}
 
 	verify_full_tree();
@@ -109,15 +122,13 @@ test_red_black_tree_update(void)
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(0,
 					      status,
-					      "RE-INSERTED USED KEY"
-					      " OR OUT OF MEMORY");
+					      "RE-INSERTED USED KEY (1)"
+					      " OR OUT OF MEMORY (-1)");
 
 		TEST_ASSERT_EQUAL_PTR_MESSAGE(key,
 					      old_key,
 					      "OLD KEY DOES NOT MATCH");
 	}
-
-	verify_full_tree();
 }
 
 
@@ -134,6 +145,4 @@ test_red_black_tree_put_new(void)
 								key),
 					 "OUT OF MEMORY");
 	}
-
-	verify_full_tree();
 }
