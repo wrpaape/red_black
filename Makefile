@@ -231,7 +231,7 @@ UNITY_GEN_TRNR_SCRIPT	:= $(call UNITY_SCRIPT_PATH,generate_test_runner)
 UNITY_ENV_FLAGS 	:= -DUNITY_INCLUDE_CONFIG_H
 UNITY_CC_FLAGS		:= $(CC_FLAGS) $(UNITY_ENV_FLAGS) -I$(UNITY_HEADER_DIR) -I$(TEST_DIR)
 # ─────────────── run all tests ────────────────────────────────────────────────
-TEST_FILES_GLOB		:= $(call BINARY_FILE_PATH,$(TEST_BINARY_DIR),*_test)
+TEST_FILES_GLOB		:= $(call BINARY_FILE_PATH,$(BINARY_DIR),*_test)
 ifeq (T,$(SYSTEM_WINDOWS))
 RUN_TESTS		:= FORFILES /M $(TEST_FILES_GLOB) /C "cmd /c @file"
 
@@ -1040,6 +1040,36 @@ TARGETS			+= $(TREE_INSERTION_TRNR_SRC)			\
 			   $(TREE_INSERTION_TEST_BIN)
 
 
+# red_black_tree_deletion_test
+# ──────────────────────────────────────────────────────────────────────────────
+TREE_DELETION_TEST_SRC	      := $(call TEST_SOURCE_PATH,red_black_tree_deletion)
+TREE_DELETION_TRNR_SRC	      := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_deletion)
+TREE_DELETION_TRNR_OBJ	      := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_deletion)
+TREE_DELETION_TEST_OBJ	      := $(call TEST_OBJECT_PATH,red_black_tree_deletion)
+TREE_DELETION_TEST_BIN	      := $(call TEST_BINARY_PATH,red_black_tree_deletion)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREE_DELETION_TRNR_SRC_PREQS := $(TREE_DELETION_TEST_SRC)
+TREE_DELETION_TEST_OBJ_PREQS := $(TREE_DELETION_TEST_SRC)		\
+			   	 $(TREE_HDR)				\
+			   	 $(INT_KEY_HDR)				\
+			   	 $(TEST_HDR)				\
+			   	 $(UNITY_HDR)
+TREE_DELETION_TRNR_OBJ_PREQS := $(TREE_DELETION_TRNR_SRC)		\
+			   	 $(TREE_DELETION_TEST_OBJ_PREQS)
+TREE_DELETION_TEST_BIN_PREQS := $(TREE_DELETION_TRNR_OBJ)		\
+			   	 $(TREE_DELETION_TEST_OBJ)		\
+				 $(INT_KEY_OBJ_GROUP)			\
+				 $(TREE_SH_LIB)				\
+				 $(TEST_OBJ)				\
+				 $(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES		+= $(TREE_DELETION_TEST_BIN)
+TARGETS			+= $(TREE_DELETION_TRNR_SRC)			\
+			   $(TREE_DELETION_TRNR_OBJ)			\
+			   $(TREE_DELETION_TEST_OBJ)			\
+			   $(TREE_DELETION_TEST_BIN)
+
+
 # red_black_concat_test
 # ──────────────────────────────────────────────────────────────────────────────
 CONCAT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_concat)
@@ -1199,7 +1229,7 @@ TARGETS			+= $(CONTACTS_OBJ)				\
 all: $(TARGETS)
 
 run_tests: $(TEST_BINARIES)
-	$(RUN_ALL_TESTS)
+	$(RUN_TESTS)
 
 clean:
 	$(RM) $(RM_FLAGS) $(TARGETS)
@@ -1243,6 +1273,16 @@ $(TREE_INSERTION_TRNR_OBJ): $(TREE_INSERTION_TRNR_OBJ_PREQS)
 $(TREE_INSERTION_TEST_OBJ): $(TREE_INSERTION_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(TREE_INSERTION_TRNR_SRC): $(TREE_INSERTION_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+
+
+$(TREE_DELETION_TEST_BIN): $(TREE_DELETION_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(TREE_DELETION_TRNR_OBJ): $(TREE_DELETION_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_DELETION_TEST_OBJ): $(TREE_DELETION_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_DELETION_TRNR_SRC): $(TREE_DELETION_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 

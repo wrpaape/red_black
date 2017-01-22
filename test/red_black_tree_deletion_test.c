@@ -157,8 +157,8 @@ test_red_black_tree_remove(void)
 					      status,
 					      "REMOVED KEY TWICE (0)");
 
-		TEST_ASSERT_EQUAL_PTR_MESSAGE(key,
-					      old_key,
+		TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) key,
+					      (int) (intptr_t) old_key,
 					      "OLD KEY DOES NOT MATCH");
 	}
 
@@ -179,8 +179,8 @@ test_red_black_tree_remove(void)
 					      status,
 					      "RE-REMOVED USED KEY (1)");
 
-		TEST_ASSERT_EQUAL_PTR_MESSAGE(old_key_initial,
-					      old_key,
+		TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) old_key_initial,
+					      (int) (intptr_t) old_key,
 					      "VALUE OF OLD KEY CHANGED");
 	}
 }
@@ -223,8 +223,8 @@ test_red_black_tree_remove_min(void)
 				      status,
 				      "REMOVED FROM EMTPY TREE (1)");
 
-	TEST_ASSERT_EQUAL_PTR_MESSAGE(key_initial,
-				      key,
+	TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) key_initial,
+				      (int) (intptr_t) key,
 				      "VALUE OF KEY CHANGED");
 }
 
@@ -266,7 +266,118 @@ test_red_black_tree_remove_max(void)
 				      status,
 				      "REMOVED FROM EMTPY TREE (1)");
 
-	TEST_ASSERT_EQUAL_PTR_MESSAGE(key_initial,
-				      key,
+	TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) key_initial,
+				      (int) (intptr_t) key,
 				      "VALUE OF KEY CHANGED");
+}
+
+
+void
+test_red_black_tree_drop(void)
+{
+	int i;
+	void *key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = (void *) (intptr_t) keys[i];
+
+		red_black_tree_drop(&tree,
+				    key);
+	}
+}
+
+void
+test_red_black_tree_drop_min(void)
+{
+	int i;
+	void *key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = red_black_tree_get_min(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      (int) (intptr_t) key,
+					      "UNEXPECTED MIN KEY");
+
+		red_black_tree_drop_min(&tree);
+	}
+}
+
+void
+test_red_black_tree_drop_max(void)
+{
+	int i;
+	void *key;
+
+	for (i = KEYS_COUNT - 1; i >= 0; --i) {
+		key = red_black_tree_get_max(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      (int) (intptr_t) key,
+					      "UNEXPECTED MAX KEY");
+
+		red_black_tree_drop_max(&tree);
+	}
+}
+
+
+void
+test_red_black_tree_pluck(void)
+{
+	int i;
+	void *key;
+	void *old_key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = (void *) (intptr_t) keys[i];
+
+		old_key = red_black_tree_pluck(&tree,
+					       key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) key,
+					      (int) (intptr_t) old_key,
+					      "OLD KEY DOES NOT MATCH");
+	}
+}
+
+void
+test_red_black_tree_pluck_min(void)
+{
+	int i;
+	void *key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = red_black_tree_get_min(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      (int) (intptr_t) key,
+					      "UNEXPECTED MIN KEY");
+
+		key = red_black_tree_pluck_min(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      (int) (intptr_t) key,
+					      "UNEXPECTED PLUCKED KEY");
+	}
+}
+
+void
+test_red_black_tree_pluck_max(void)
+{
+	int i;
+	void *key;
+
+	for (i = KEYS_COUNT - 1; i >= 0; --i) {
+		key = red_black_tree_get_max(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      (int) (intptr_t) key,
+					      "UNEXPECTED MAX KEY");
+
+		key = red_black_tree_pluck_max(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      (int) (intptr_t) key,
+					      "UNEXPECTED PLUCKED KEY");
+	}
 }

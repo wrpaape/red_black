@@ -86,7 +86,7 @@ test_red_black_tree_update(void)
 	int i;
 	int status;
 	void *key;
-	void *old_key;
+	void *old_key = 0;
 	void *old_key_initial;
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
@@ -103,8 +103,8 @@ test_red_black_tree_update(void)
 					      "INSERTED USED KEY (0)"
 					      " OR OUT OF MEMORY (-1)");
 
-		TEST_ASSERT_EQUAL_PTR_MESSAGE(old_key_initial,
-					      old_key,
+		TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) old_key_initial,
+					      (int) (intptr_t) old_key,
 					      "VALUE OF OLD KEY CHANGED");
 	}
 
@@ -125,8 +125,8 @@ test_red_black_tree_update(void)
 					      "RE-INSERTED USED KEY (1)"
 					      " OR OUT OF MEMORY (-1)");
 
-		TEST_ASSERT_EQUAL_PTR_MESSAGE(key,
-					      old_key,
+		TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) key,
+					      (int) (intptr_t) old_key,
 					      "OLD KEY DOES NOT MATCH");
 	}
 }

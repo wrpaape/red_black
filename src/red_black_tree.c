@@ -303,7 +303,7 @@ red_black_tree_pluck(RedBlackTree *const restrict tree,
 		     const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
-	void *plucked_key;
+	void *volatile plucked_key;
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 		red_black_pluck(&tree->root,
@@ -311,7 +311,7 @@ red_black_tree_pluck(RedBlackTree *const restrict tree,
 				&tree->node_factory,
 				&jump_buffer,
 				key,
-				&plucked_key);
+				(void **) &plucked_key);
 
 	return plucked_key;
 }
@@ -320,13 +320,13 @@ void *
 red_black_tree_pluck_min(RedBlackTree *const restrict tree)
 {
 	RedBlackJumpBuffer jump_buffer;
-	void *plucked_key;
+	void *volatile plucked_key;
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 		red_black_pluck_min(&tree->root,
 				    &tree->node_factory,
 				    &jump_buffer,
-				    &plucked_key);
+				    (void **) &plucked_key);
 
 	return plucked_key;
 }
@@ -335,13 +335,13 @@ void *
 red_black_tree_pluck_max(RedBlackTree *const restrict tree)
 {
 	RedBlackJumpBuffer jump_buffer;
-	void *plucked_key;
+	void *volatile plucked_key;
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 		red_black_pluck_max(&tree->root,
 				    &tree->node_factory,
 				    &jump_buffer,
-				    &plucked_key);
+				    (void **) &plucked_key);
 
 	return plucked_key;
 }
