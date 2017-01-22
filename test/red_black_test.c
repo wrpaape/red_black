@@ -58,14 +58,10 @@ shuffle_keys(void)
 	int i_old;
 	int i_new;
 
-	ENTER("shuffle_keys");
-
 	for (i_old = 0; i_old < I_LAST; ++i_old) {
 		i_new = i_old + random_upto(I_LAST - i_old);
 
 		swap(&keys[i_old],
 		     &keys[i_new]);
 	}
-
-	RETURN("shuffle_keys");
 }

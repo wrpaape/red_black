@@ -233,7 +233,7 @@ $(info $(UNITY_GEN_TRNR_SCRIPT))
 $(info $(UNITY_GEN_TRNR_SCRIPT))
 $(info $(UNITY_GEN_TRNR_SCRIPT))
 UNITY_ENV_FLAGS 	:= -DUNITY_INCLUDE_CONFIG_H
-UNITY_CC_FLAGS		:= $(CC_FLAGS) $(UNITY_ENV_FLAGS) -I$(UNITY_HEADER_DIR)
+UNITY_CC_FLAGS		:= $(CC_FLAGS) $(UNITY_ENV_FLAGS) -I$(UNITY_HEADER_DIR) -I$(TEST_DIR)
 # ─────────────── run all tests ────────────────────────────────────────────────
 TEST_FILES_GLOB		:= $(call BINARY_FILE_PATH,$(TEST_BINARY_DIR),*_test)
 ifeq (T,$(SYSTEM_WINDOWS))
@@ -1024,9 +1024,11 @@ CONCAT_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_concat)
 # ─────────────── target prequisites ───────────────────────────────────────────
 CONCAT_TRNR_SRC_PREQS	:= $(CONCAT_TEST_SRC)
 CONCAT_TEST_OBJ_PREQS	:= $(CONCAT_TEST_SRC)				\
+			   $(CONCAT_HDR)				\
 			   $(TREE_HDR)					\
 			   $(INT_KEY_HDR)				\
-			   $(CONCAT_HDR)
+			   $(TEST_HDR)					\
+			   $(UNITY_HDR)
 CONCAT_TRNR_OBJ_PREQS   := $(CONCAT_TRNR_SRC)				\
 			   $(CONCAT_TEST_OBJ_PREQS)
 CONCAT_TEST_BIN_PREQS	:= $(CONCAT_TRNR_OBJ)				\
@@ -1034,6 +1036,7 @@ CONCAT_TEST_BIN_PREQS	:= $(CONCAT_TRNR_OBJ)				\
 			   $(CONCAT_OBJ_GROUP)				\
 			   $(INT_KEY_OBJ_GROUP)				\
 			   $(TREE_SH_LIB)				\
+			   $(TEST_OBJ)					\
 			   $(UNITY_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TEST_BINARIES		+= $(CONCAT_TEST_BIN)
@@ -1214,9 +1217,9 @@ $(LHMAP_TEST_OBJ): $(LHMAP_TEST_OBJ_PREQS)
 $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(CONCAT_TRNR_OBJ): $(CONCAT_TRNR_OBJ_PREQS)
-	$(CC) $(UNITY_CC_FLAGS) -c $< -o $@
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
-	$(CC) $(UNITY_CC_FLAGS) -c $< -o $@
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(CONCAT_TRNR_SRC): $(CONCAT_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
