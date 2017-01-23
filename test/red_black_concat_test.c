@@ -40,8 +40,6 @@ setUp(void)
 	TEST_ASSERT_EQUAL_UINT_MESSAGE(KEYS_COUNT,
 				       red_black_tree_count(&tree),
 				       "UNEXPECTED COUNT");
-
-
 }
 
 void
@@ -49,6 +47,7 @@ tearDown(void)
 {
 	red_black_tree_destroy(&tree);
 }
+
 
 void
 test_red_black_concat(void)

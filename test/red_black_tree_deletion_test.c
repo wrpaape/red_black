@@ -60,6 +60,7 @@ tearDown(void)
 	red_black_tree_destroy(&tree);
 }
 
+
 void
 test_red_black_tree_delete(void)
 {
