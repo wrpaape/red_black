@@ -1042,62 +1042,92 @@ TARGETS			      += $(TREE_INSERTION_TRNR_SRC)		\
 
 # red_black_tree_access_test
 # ──────────────────────────────────────────────────────────────────────────────
-TREE_ACCESSS_TEST_SRC	      := $(call TEST_SOURCE_PATH,red_black_tree_access)
-TREE_ACCESSS_TRNR_SRC	      := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_access)
-TREE_ACCESSS_TRNR_OBJ	      := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_access)
-TREE_ACCESSS_TEST_OBJ	      := $(call TEST_OBJECT_PATH,red_black_tree_access)
-TREE_ACCESSS_TEST_BIN	      := $(call TEST_BINARY_PATH,red_black_tree_access)
+TREE_ACCESS_TEST_SRC	     := $(call TEST_SOURCE_PATH,red_black_tree_access)
+TREE_ACCESS_TRNR_SRC	     := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_access)
+TREE_ACCESS_TRNR_OBJ	     := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_access)
+TREE_ACCESS_TEST_OBJ	     := $(call TEST_OBJECT_PATH,red_black_tree_access)
+TREE_ACCESS_TEST_BIN	     := $(call TEST_BINARY_PATH,red_black_tree_access)
 # ─────────────── target prequisites ───────────────────────────────────────────
-TREE_ACCESSS_TRNR_SRC_PREQS   := $(TREE_ACCESSS_TEST_SRC)
-TREE_ACCESSS_TEST_OBJ_PREQS   := $(TREE_ACCESSS_TEST_SRC)		\
-			   	 $(TREE_HDR)				\
-			   	 $(INT_KEY_HDR)				\
-			   	 $(TEST_HDR)				\
-			   	 $(UNITY_HDR)
-TREE_ACCESSS_TRNR_OBJ_PREQS   := $(TREE_ACCESSS_TRNR_SRC)		\
-			   	 $(TREE_ACCESSS_TEST_OBJ_PREQS)
-TREE_ACCESSS_TEST_BIN_PREQS   := $(TREE_ACCESSS_TRNR_OBJ)		\
-			   	 $(TREE_ACCESSS_TEST_OBJ)		\
-				 $(INT_KEY_OBJ_GROUP)			\
-				 $(TREE_SH_LIB)				\
-				 $(TEST_OBJ)				\
-				 $(UNITY_OBJ)
+TREE_ACCESS_TRNR_SRC_PREQS   := $(TREE_ACCESS_TEST_SRC)
+TREE_ACCESS_TEST_OBJ_PREQS   := $(TREE_ACCESS_TEST_SRC)			\
+			   	$(TREE_HDR)				\
+			   	$(INT_KEY_HDR)				\
+			   	$(TEST_HDR)				\
+			   	$(UNITY_HDR)
+TREE_ACCESS_TRNR_OBJ_PREQS   := $(TREE_ACCESS_TRNR_SRC)			\
+			   	$(TREE_ACCESS_TEST_OBJ_PREQS)
+TREE_ACCESS_TEST_BIN_PREQS   := $(TREE_ACCESS_TRNR_OBJ)			\
+			   	$(TREE_ACCESS_TEST_OBJ)			\
+				$(INT_KEY_OBJ_GROUP)			\
+				$(TREE_SH_LIB)				\
+				$(TEST_OBJ)				\
+				$(UNITY_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TEST_BINARIES		      += $(TREE_ACCESSS_TEST_BIN)
-TARGETS			      += $(TREE_ACCESSS_TRNR_SRC)		\
-			         $(TREE_ACCESSS_TRNR_OBJ)		\
-			         $(TREE_ACCESSS_TEST_OBJ)		\
-			         $(TREE_ACCESSS_TEST_BIN)
+TEST_BINARIES		     += $(TREE_ACCESS_TEST_BIN)
+TARGETS			     += $(TREE_ACCESS_TRNR_SRC)			\
+			        $(TREE_ACCESS_TRNR_OBJ)			\
+			        $(TREE_ACCESS_TEST_OBJ)			\
+			        $(TREE_ACCESS_TEST_BIN)
+
+
+# red_black_tree_iterator_test
+# ──────────────────────────────────────────────────────────────────────────────
+TREE_ITERATOR_TEST_SRC	     := $(call TEST_SOURCE_PATH,red_black_tree_iterator)
+TREE_ITERATOR_TRNR_SRC	     := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_iterator)
+TREE_ITERATOR_TRNR_OBJ	     := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_iterator)
+TREE_ITERATOR_TEST_OBJ	     := $(call TEST_OBJECT_PATH,red_black_tree_iterator)
+TREE_ITERATOR_TEST_BIN	     := $(call TEST_BINARY_PATH,red_black_tree_iterator)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREE_ITERATOR_TRNR_SRC_PREQS := $(TREE_ITERATOR_TEST_SRC)
+TREE_ITERATOR_TEST_OBJ_PREQS := $(TREE_ITERATOR_TEST_SRC)		\
+			        $(TREE_HDR)				\
+			        $(INT_KEY_HDR)				\
+			        $(TEST_HDR)				\
+			        $(UNITY_HDR)
+TREE_ITERATOR_TRNR_OBJ_PREQS := $(TREE_ITERATOR_TRNR_SRC)		\
+			   	$(TREE_ITERATOR_TEST_OBJ_PREQS)
+TREE_ITERATOR_TEST_BIN_PREQS := $(TREE_ITERATOR_TRNR_OBJ)		\
+			        $(TREE_ITERATOR_TEST_OBJ)		\
+			        $(INT_KEY_OBJ_GROUP)			\
+			        $(TREE_SH_LIB)				\
+			        $(TEST_OBJ)				\
+				$(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES		     += $(TREE_ITERATOR_TEST_BIN)
+TARGETS			     += $(TREE_ITERATOR_TRNR_SRC)		\
+			        $(TREE_ITERATOR_TRNR_OBJ)		\
+			        $(TREE_ITERATOR_TEST_OBJ)		\
+			        $(TREE_ITERATOR_TEST_BIN)
 
 
 # red_black_tree_deletion_test
 # ──────────────────────────────────────────────────────────────────────────────
-TREE_DELETION_TEST_SRC	      := $(call TEST_SOURCE_PATH,red_black_tree_deletion)
-TREE_DELETION_TRNR_SRC	      := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_deletion)
-TREE_DELETION_TRNR_OBJ	      := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_deletion)
-TREE_DELETION_TEST_OBJ	      := $(call TEST_OBJECT_PATH,red_black_tree_deletion)
-TREE_DELETION_TEST_BIN	      := $(call TEST_BINARY_PATH,red_black_tree_deletion)
+TREE_DELETION_TEST_SRC	     := $(call TEST_SOURCE_PATH,red_black_tree_deletion)
+TREE_DELETION_TRNR_SRC	     := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_deletion)
+TREE_DELETION_TRNR_OBJ	     := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_deletion)
+TREE_DELETION_TEST_OBJ	     := $(call TEST_OBJECT_PATH,red_black_tree_deletion)
+TREE_DELETION_TEST_BIN	     := $(call TEST_BINARY_PATH,red_black_tree_deletion)
 # ─────────────── target prequisites ───────────────────────────────────────────
 TREE_DELETION_TRNR_SRC_PREQS := $(TREE_DELETION_TEST_SRC)
 TREE_DELETION_TEST_OBJ_PREQS := $(TREE_DELETION_TEST_SRC)		\
-			   	 $(TREE_HDR)				\
-			   	 $(INT_KEY_HDR)				\
-			   	 $(TEST_HDR)				\
-			   	 $(UNITY_HDR)
+			   	$(TREE_HDR)				\
+			   	$(INT_KEY_HDR)				\
+			   	$(TEST_HDR)				\
+			   	$(UNITY_HDR)
 TREE_DELETION_TRNR_OBJ_PREQS := $(TREE_DELETION_TRNR_SRC)		\
-			   	 $(TREE_DELETION_TEST_OBJ_PREQS)
+			   	$(TREE_DELETION_TEST_OBJ_PREQS)
 TREE_DELETION_TEST_BIN_PREQS := $(TREE_DELETION_TRNR_OBJ)		\
-			   	 $(TREE_DELETION_TEST_OBJ)		\
-				 $(INT_KEY_OBJ_GROUP)			\
-				 $(TREE_SH_LIB)				\
-				 $(TEST_OBJ)				\
-				 $(UNITY_OBJ)
+			   	$(TREE_DELETION_TEST_OBJ)		\
+				$(INT_KEY_OBJ_GROUP)			\
+				$(TREE_SH_LIB)				\
+				$(TEST_OBJ)				\
+				$(UNITY_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TEST_BINARIES		+= $(TREE_DELETION_TEST_BIN)
-TARGETS			+= $(TREE_DELETION_TRNR_SRC)			\
-			   $(TREE_DELETION_TRNR_OBJ)			\
-			   $(TREE_DELETION_TEST_OBJ)			\
-			   $(TREE_DELETION_TEST_BIN)
+TEST_BINARIES		     += $(TREE_DELETION_TEST_BIN)
+TARGETS			     += $(TREE_DELETION_TRNR_SRC)		\
+			        $(TREE_DELETION_TRNR_OBJ)		\
+			        $(TREE_DELETION_TEST_OBJ)		\
+			        $(TREE_DELETION_TEST_BIN)
 
 
 # red_black_concat_test
@@ -1306,13 +1336,23 @@ $(TREE_INSERTION_TRNR_SRC): $(TREE_INSERTION_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 
-$(TREE_ACCESSS_TEST_BIN): $(TREE_ACCESSS_TEST_BIN_PREQS)
+$(TREE_ACCESS_TEST_BIN): $(TREE_ACCESS_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(TREE_ACCESSS_TRNR_OBJ): $(TREE_ACCESSS_TRNR_OBJ_PREQS)
+$(TREE_ACCESS_TRNR_OBJ): $(TREE_ACCESS_TRNR_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-$(TREE_ACCESSS_TEST_OBJ): $(TREE_ACCESSS_TEST_OBJ_PREQS)
+$(TREE_ACCESS_TEST_OBJ): $(TREE_ACCESS_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-$(TREE_ACCESSS_TRNR_SRC): $(TREE_ACCESSS_TRNR_SRC_PREQS)
+$(TREE_ACCESS_TRNR_SRC): $(TREE_ACCESS_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+
+
+$(TREE_ITERATOR_TEST_BIN): $(TREE_ITERATOR_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(TREE_ITERATOR_TRNR_OBJ): $(TREE_ITERATOR_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_ITERATOR_TEST_OBJ): $(TREE_ITERATOR_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_ITERATOR_TRNR_SRC): $(TREE_ITERATOR_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 
