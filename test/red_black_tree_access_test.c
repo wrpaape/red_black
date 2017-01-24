@@ -270,12 +270,8 @@ test_red_black_tree_replace(void)
 void
 test_red_black_tree_replace_min(void)
 {
-	int key;
-	void *replaced_key = NULL;
-	void *replaced_key_initial;
+	void *replaced_key;
 	bool status;
-
-	replaced_key_initial = replaced_key;
 
 	status = red_black_tree_replace_min(&tree,
 					    (void *) INT_MAX,
@@ -293,22 +289,62 @@ test_red_black_tree_replace_min(void)
 	TEST_ASSERT_FALSE_MESSAGE(status,
 				  "UNEXPECTEDLY VALID TREE");
 
-
-	key = (int) random_upto(KEYS_COUNT - 1);
-
-	status = red_black_tree_replace(&tree,
-					(void *) (intptr_t) key,
-					&replaced_key);
+	status = red_black_tree_replace_min(&tree,
+					    (void *) 0,
+					    &replaced_key);
 
 	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "COULDN'T REPLACE KEY");
+				 "FAILED TO REPLACE IN NON-EMPTY TREE");
 
-	TEST_ASSERT_EQUAL_INT_MESSAGE(key,
+	TEST_ASSERT_EQUAL_INT_MESSAGE(INT_MAX,
 				      (int) (intptr_t) replaced_key,
 				      "REPLACED KEY NOT EQUAL");
+
+	status = red_black_tree_verify(&tree);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "UNEXPECTEDLY INVALID TREE");
+
+	verify_unmodified_tree();
 }
 
 void
 test_red_black_tree_replace_max(void)
 {
+	void *replaced_key;
+	bool status;
+
+	status = red_black_tree_replace_max(&tree,
+					    (void *) INT_MIN,
+					    &replaced_key);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "FAILED TO REPLACE IN NON-EMPTY TREE");
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(KEYS_COUNT - 1,
+				      (int) (intptr_t) replaced_key,
+				      "UNEXPECTED REPLACE MAX KEY");
+
+	status = red_black_tree_verify(&tree);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "UNEXPECTEDLY VALID TREE");
+
+	status = red_black_tree_replace_max(&tree,
+					    (void *) (KEYS_COUNT - 1),
+					    &replaced_key);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "FAILED TO REPLACE IN NON-EMPTY TREE");
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(INT_MIN,
+				      (int) (intptr_t) replaced_key,
+				      "REPLACED KEY NOT EQUAL");
+
+	status = red_black_tree_verify(&tree);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "UNEXPECTEDLY INVALID TREE");
+
+	verify_unmodified_tree();
 }
