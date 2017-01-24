@@ -348,3 +348,212 @@ test_red_black_tree_replace_max(void)
 
 	verify_unmodified_tree();
 }
+
+
+void
+test_red_black_tree_get(void)
+{
+	int i;
+	int key;
+	int got_key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = keys[i];
+
+		got_key = (int) (intptr_t)
+			  red_black_tree_get(&tree,
+					     (void *) (intptr_t) key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(key,
+					      got_key,
+					      "GOT UNEXPECTED KEY");
+	}
+
+	verify_unmodified_tree();
+}
+
+void
+test_red_black_tree_get_min(void)
+{
+	int i;
+	int key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = (int) (intptr_t) red_black_tree_get_min(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      key,
+					      "GOT UNEXPECTED MIN KEY");
+
+		red_black_tree_drop_min(&tree);
+	}
+
+	verify_empty_tree();
+}
+
+void
+test_red_black_tree_get_max(void)
+{
+	int i;
+	int key;
+
+	for (i = KEYS_COUNT - 1; i >= 0; --i) {
+		key = (int) (intptr_t) red_black_tree_get_max(&tree);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      key,
+					      "GOT UNEXPECTED MAX KEY");
+
+		red_black_tree_drop_max(&tree);
+	}
+
+	verify_empty_tree();
+}
+
+
+void
+test_red_black_tree_set(void)
+{
+	int i;
+	int key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = keys[i];
+
+		red_black_tree_set(&tree,
+				   (void *) (intptr_t) key);
+	}
+
+	verify_unmodified_tree();
+}
+
+void
+test_red_black_tree_set_min(void)
+{
+	bool status;
+
+	red_black_tree_set_min(&tree,
+			       (void *) INT_MAX);
+
+	status = red_black_tree_verify(&tree);
+
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "UNEXPECTEDLY VALID TREE");
+
+	red_black_tree_set_min(&tree,
+			       (void *) 0);
+
+	status = red_black_tree_verify(&tree);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "UNEXPECTEDLY INVALID TREE");
+
+	verify_unmodified_tree();
+}
+
+void
+test_red_black_tree_set_max(void)
+{
+	bool status;
+
+	red_black_tree_set_max(&tree,
+			       (void *) INT_MIN);
+
+	status = red_black_tree_verify(&tree);
+
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "UNEXPECTEDLY VALID TREE");
+
+	red_black_tree_set_max(&tree,
+			       (void *) (KEYS_COUNT - 1));
+
+	status = red_black_tree_verify(&tree);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "UNEXPECTEDLY INVALID TREE");
+
+	verify_unmodified_tree();
+}
+
+
+void
+test_red_black_tree_swap(void)
+{
+	int i;
+	int key;
+	int swapped_key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = keys[i];
+
+		swapped_key = (int) (intptr_t)
+			      red_black_tree_swap(&tree,
+						  (void *) (intptr_t) key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(key,
+					      swapped_key,
+					      "UNEXPECTED SWAP KEY");
+	}
+
+	verify_unmodified_tree();
+}
+
+void
+test_red_black_tree_swap_min(void)
+{
+	int i;
+	int key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = (int) (intptr_t)
+		      red_black_tree_swap_min(&tree,
+					      (void *) INT_MAX);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      key,
+					      "UNEXPECTED MIN KEY");
+
+		key = (int) (intptr_t)
+		      red_black_tree_swap_min(&tree,
+					      (void *) (intptr_t) key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(INT_MAX,
+					      key,
+					      "UNEXPECTED MIN KEY");
+
+		red_black_tree_drop_min(&tree);
+	}
+
+	verify_empty_tree();
+}
+
+void
+test_red_black_tree_swap_max(void)
+{
+	int i;
+	int key;
+
+	for (i = KEYS_COUNT - 1; i >= 0; --i) {
+		key = (int) (intptr_t)
+		      red_black_tree_swap_max(&tree,
+					      (void *) INT_MIN);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      key,
+					      "UNEXPECTED MAX KEY");
+
+		key = (int) (intptr_t)
+		      red_black_tree_swap_max(&tree,
+					      (void *) (intptr_t) key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(INT_MIN,
+					      key,
+					      "UNEXPECTED MAX KEY");
+
+		red_black_tree_drop_max(&tree);
+	}
+
+	verify_empty_tree();
+}
