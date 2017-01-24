@@ -1,8 +1,9 @@
-#include "unity.h"             /* UNITY testing framework */
-#include "red_black_tree.h"    /* RedBlackTree, struct RedBlackNode */
-#include "int_key.h"           /* int_key_comparator */
-#include "red_black_test.h"    /* keys */
-#include <stdint.h>	       /* intptr_t */
+#include "unity.h"          /* UNITY testing framework */
+#include "red_black_tree.h" /* RedBlackTree, struct RedBlackNode */
+#include "int_key.h"        /* int_key_comparator */
+#include "red_black_test.h" /* keys */
+#include <stdint.h>	    /* intptr_t */
+#include <limits.h>	    /* INT_MIN|MAX */
 
 static RedBlackTree tree;
 static RedBlackTree tree_copy;
@@ -152,7 +153,7 @@ test_red_black_tree_fetch(void)
 
 
 void
-test_red_black_tree_find_min(void)
+test_red_black_tree_fetch_min(void)
 {
 	int i;
 	void *fetched_key;
@@ -186,4 +187,128 @@ test_red_black_tree_find_min(void)
 	TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) fetched_key_initial,
 				      (int) (intptr_t) fetched_key,
 				      "FETCH KEY VALUE CHANGED");
+}
+
+
+void
+test_red_black_tree_fetch_max(void)
+{
+	int i;
+	void *fetched_key;
+	void *fetched_key_initial;
+	bool status;
+
+	for (i = KEYS_COUNT - 1; i >= 0; --i) {
+		status = red_black_tree_fetch_max(&tree,
+						  &fetched_key);
+
+		TEST_ASSERT_TRUE_MESSAGE(status,
+					 "DIDN'T FIND MAX KEY");
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(i,
+					      (int) (intptr_t) fetched_key,
+					      "FETCHED MAX KEY DOES NOT MATCH");
+
+		red_black_tree_drop_max(&tree);
+	}
+
+	verify_empty_tree();
+
+	fetched_key_initial = fetched_key;
+
+	status = red_black_tree_fetch_max(&tree,
+					  &fetched_key);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "FOUND UNEXPECTED MAX KEY");
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) fetched_key_initial,
+				      (int) (intptr_t) fetched_key,
+				      "FETCH KEY VALUE CHANGED");
+}
+
+void
+test_red_black_tree_replace(void)
+{
+	int key;
+	void *replaced_key = NULL;
+	void *replaced_key_initial;
+	bool status;
+
+	replaced_key_initial = replaced_key;
+
+	status = red_black_tree_replace(&tree,
+					(void *) -1,
+					&replaced_key);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "REPLACED UNEXPECTED KEY");
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE((int) (intptr_t) replaced_key_initial,
+				      (int) (intptr_t) replaced_key,
+				      "REPLACE KEY VALUE CHANGED");
+
+	verify_unmodified_tree();
+
+
+	key = (int) random_upto(KEYS_COUNT - 1);
+
+	status = red_black_tree_replace(&tree,
+					(void *) (intptr_t) key,
+					&replaced_key);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "COULDN'T REPLACE KEY");
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(key,
+				      (int) (intptr_t) replaced_key,
+				      "REPLACED KEY NOT EQUAL");
+
+	verify_unmodified_tree();
+}
+
+void
+test_red_black_tree_replace_min(void)
+{
+	int key;
+	void *replaced_key = NULL;
+	void *replaced_key_initial;
+	bool status;
+
+	replaced_key_initial = replaced_key;
+
+	status = red_black_tree_replace_min(&tree,
+					    (void *) INT_MAX,
+					    &replaced_key);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "FAILED TO REPLACE IN NON-EMPTY TREE");
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      (int) (intptr_t) replaced_key,
+				      "UNEXPECTED REPLACE MIN KEY");
+
+	status = red_black_tree_verify(&tree);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "UNEXPECTEDLY VALID TREE");
+
+
+	key = (int) random_upto(KEYS_COUNT - 1);
+
+	status = red_black_tree_replace(&tree,
+					(void *) (intptr_t) key,
+					&replaced_key);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "COULDN'T REPLACE KEY");
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(key,
+				      (int) (intptr_t) replaced_key,
+				      "REPLACED KEY NOT EQUAL");
+}
+
+void
+test_red_black_tree_replace_max(void)
+{
 }

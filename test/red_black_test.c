@@ -12,16 +12,20 @@ const int *const restrict keys_until = &keys[KEYS_COUNT];
 unsigned int
 random_upto(const unsigned int upto)
 {
-	unsigned long rand;
+	unsigned int random;
 
-	const unsigned long span      = (unsigned long) (upto + 1);
-	const unsigned long threshold = -span % span;
+	/* range_length: length of inclusive range 0 ... upto
+	 * valid_limit:  largest raw random unsigned long which will not map
+	 * uniformly when MOD'd by 'range_length' (i.e. favor some values in range
+	 * 0 ... upto more than others). */
+	const unsigned int range_length = upto + 1;
+	const unsigned int valid_limit  = RAND_MAX - (RAND_MAX % range_length);
 
 	do {
-		rand = (unsigned long) random();
-	} while (rand < threshold);
+		random = (unsigned int) rand();
+	} while (random > valid_limit);
 
-	return (unsigned int) (rand % span);
+	return random % range_length;
 }
 
 static inline void
@@ -49,7 +53,7 @@ init_keys(void)
 void
 seed_random(void)
 {
-	srandom((unsigned) time(NULL));
+	srand((unsigned) time(NULL));
 }
 
 void
