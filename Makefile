@@ -111,8 +111,8 @@ HEADER_FILE_PATH         = $(call PATH_JOIN,$1,$2$(HDR_EXT))
 OBJECT_FILE_PATH         = $(call PATH_JOIN,$1,$2$(OBJ_EXT))
 PIC_OBJECT_FILE_PATH     = $(call PATH_JOIN,$1,$2_pic$(OBJ_EXT))
 BINARY_FILE_PATH         = $(call PATH_JOIN,$1,$2$(BIN_EXT))
-STATIC_LIBRARY_FILE_PATH = $(call PATH_JOIN,$1,$2lib$(ST_LIB_EXT))
-SHARED_LIBRARY_FILE_PATH = $(call PATH_JOIN,$1,$2lib$(SH_LIB_EXT))
+STATIC_LIBRARY_FILE_PATH = $(call PATH_JOIN,$1,lib$2$(ST_LIB_EXT))
+SHARED_LIBRARY_FILE_PATH = $(call PATH_JOIN,$1,lib$2$(SH_LIB_EXT))
 
 
 # Directories
@@ -369,27 +369,27 @@ TARGETS			+= $(UPDATE_OBJ)				\
 			   $(UPDATE_PIC_OBJ)
 
 
-# red_black_put_new
+# red_black_put
 # ──────────────────────────────────────────────────────────────────────────────
-PUT_NEW_SRC		:= $(call SOURCE_PATH,red_black_put_new)
-PUT_NEW_HDR		:= $(call HEADER_PATH,red_black_put_new)
-PUT_NEW_OBJ		:= $(call OBJECT_PATH,red_black_put_new)
-PUT_NEW_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_put_new)
+PUT_SRC			:= $(call SOURCE_PATH,red_black_put)
+PUT_HDR			:= $(call HEADER_PATH,red_black_put)
+PUT_OBJ			:= $(call OBJECT_PATH,red_black_put)
+PUT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_put)
 # ─────────────── target prequisites ───────────────────────────────────────────
-PUT_NEW_OBJ_PREQS	:= $(PUT_NEW_SRC)				\
-			   $(PUT_NEW_HDR)				\
+PUT_OBJ_PREQS		:= $(PUT_SRC)					\
+			   $(PUT_HDR)					\
 			   $(NODE_HDR)					\
 			   $(COMPARATOR_HDR)				\
 			   $(JUMP_HDR)					\
 			   $(CORRECT_HDR)
-PUT_NEW_OBJ_GROUP	:= $(PUT_NEW_OBJ)				\
+PUT_OBJ_GROUP		:= $(PUT_OBJ)					\
 			   $(CORRECT_OBJ_GROUP)
-PUT_NEW_PIC_OBJ_PREQS	:= $(PUT_NEW_OBJ_PREQS)
-PUT_NEW_PIC_OBJ_GROUP	:= $(PUT_NEW_PIC_OBJ)				\
+PUT_PIC_OBJ_PREQS	:= $(PUT_OBJ_PREQS)
+PUT_PIC_OBJ_GROUP	:= $(PUT_PIC_OBJ)				\
 			   $(CORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(PUT_NEW_OBJ)				\
-			   $(PUT_NEW_PIC_OBJ)
+TARGETS			+= $(PUT_OBJ)					\
+			   $(PUT_PIC_OBJ)
 
 
 # red_black_restore
@@ -812,7 +812,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(UPDATE_HDR)				\
-		   	   $(PUT_NEW_HDR)				\
+		   	   $(PUT_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
 		   	   $(DROP_HDR)					\
@@ -832,7 +832,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(ITERATOR_OBJ_GROUP)			\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(UPDATE_OBJ_GROUP)				\
-			   $(PUT_NEW_OBJ_GROUP)				\
+			   $(PUT_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
 		   	   $(DROP_OBJ_GROUP)				\
@@ -854,7 +854,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(ITERATOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(UPDATE_PIC_OBJ_GROUP)			\
-			   $(PUT_NEW_PIC_OBJ_GROUP)			\
+			   $(PUT_PIC_OBJ_GROUP)			\
 			   $(DELETE_PIC_OBJ_GROUP)			\
 			   $(REMOVE_PIC_OBJ_GROUP)			\
 		   	   $(DROP_PIC_OBJ_GROUP)			\
@@ -906,7 +906,7 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(VERIFY_HDR)				\
 		   	   $(CONCAT_HDR)				\
-		   	   $(PUT_NEW_HDR)				\
+		   	   $(PUT_HDR)				\
 			   $(MALLOC_HDR)
 LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 			   $(LOCK_OBJ_GROUP)				\
@@ -923,7 +923,7 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 		   	   $(FETCH_OBJ_GROUP)				\
 		   	   $(VERIFY_OBJ_GROUP)				\
 		   	   $(CONCAT_OBJ_GROUP)				\
-		   	   $(PUT_NEW_OBJ_GROUP)
+		   	   $(PUT_OBJ_GROUP)
 LHMAP_PIC_OBJ_PREQS	:= $(LHMAP_OBJ_PREQS)
 LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 			   $(LOCK_PIC_OBJ_GROUP)			\
@@ -940,7 +940,7 @@ LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 		   	   $(FETCH_PIC_OBJ_GROUP)			\
 		   	   $(VERIFY_PIC_OBJ_GROUP)			\
 		   	   $(CONCAT_PIC_OBJ_GROUP)			\
-		   	   $(PUT_NEW_PIC_OBJ_GROUP)
+		   	   $(PUT_PIC_OBJ_GROUP)
 LHMAP_ST_LIB_PREQS	:= $(LHMAP_OBJ_GROUP)
 LHMAP_SH_LIB_PREQS	:= $(LHMAP_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
@@ -1433,9 +1433,9 @@ $(UPDATE_OBJ): $(UPDATE_OBJ_PREQS)
 $(UPDATE_PIC_OBJ): $(UPDATE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(PUT_NEW_OBJ): $(PUT_NEW_OBJ_PREQS)
+$(PUT_OBJ): $(PUT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(PUT_NEW_PIC_OBJ): $(PUT_NEW_PIC_OBJ_PREQS)
+$(PUT_PIC_OBJ): $(PUT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(CORRECT_OBJ): $(CORRECT_OBJ_PREQS)

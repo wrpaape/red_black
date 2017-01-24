@@ -132,7 +132,7 @@ test_red_black_tree_update(void)
 
 
 void
-test_red_black_tree_put_new(void)
+test_red_black_tree_put(void)
 {
 	int i;
 	int key;
@@ -141,8 +141,8 @@ test_red_black_tree_put_new(void)
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = keys[i];
 
-		status = red_black_tree_put_new(&tree,
-						(void *) (intptr_t) key);
+		status = red_black_tree_put(&tree,
+					    (void *) (intptr_t) key);
 
 		TEST_ASSERT_TRUE_MESSAGE(status,
 					 "OUT OF MEMORY");

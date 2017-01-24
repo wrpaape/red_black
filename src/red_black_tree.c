@@ -1,7 +1,7 @@
 #include "red_black_tree.h"	 /* types */
 #include "red_black_insert.h"	 /* red_black_insert */
 #include "red_black_update.h"	 /* red_black_update */
-#include "red_black_put_new.h"	 /* red_black_put_new */
+#include "red_black_put.h"	 /* red_black_put */
 #include "red_black_delete.h"	 /* red_black_delete */
 #include "red_black_remove.h"	 /* red_black_remove */
 #include "red_black_drop.h"	 /* red_black_drop */
@@ -125,8 +125,8 @@ red_black_tree_update(RedBlackTree *const restrict tree,
 }
 
 bool
-red_black_tree_put_new(RedBlackTree *const restrict tree,
-		       const void *const key)
+red_black_tree_put(RedBlackTree *const restrict tree,
+		   const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackNodeFactory *restrict node_factory_ptr;
@@ -149,10 +149,10 @@ red_black_tree_put_new(RedBlackTree *const restrict tree,
 
 	node->key = key;
 
-	red_black_put_new(root_ptr,
-			  comparator,
-			  &jump_buffer,
-			  node);
+	red_black_put(root_ptr,
+		      comparator,
+		      &jump_buffer,
+		      node);
 
 	return true; /* successful attach */
 }
@@ -639,7 +639,7 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
-		++count; /* successful mutation */
+		++count; /* successful insertion */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* RED_BLACK_MALLOC failure */
 
@@ -680,7 +680,7 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	if (status == RED_BLACK_JUMP_VALUE_2_TRUE)
-		++count; /* successful mutation */
+		++count; /* successful deletion */
 
 	while (red_black_iterator_next(&iter,
 				       &key))
@@ -721,13 +721,13 @@ rb_tree_union(RedBlackTree *const restrict union_tree,
 
 
 int
-red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
-			    const RedBlackTree *const restrict tree1,
-			    const RedBlackTree *const restrict tree2)
+red_black_tree_intersect(RedBlackTree *const restrict intersect_tree,
+			 const RedBlackTree *const restrict tree1,
+			 const RedBlackTree *const restrict tree2)
 {
 
-	struct RedBlackNode *restrict *restrict intersection_root_ptr;
-	struct RedBlackNodeFactory *restrict intersection_node_factory_ptr;
+	struct RedBlackNode *restrict *restrict intersect_root_ptr;
+	struct RedBlackNodeFactory *restrict intersect_node_factory_ptr;
 	const struct RedBlackNode *restrict root1;
 	struct RedBlackNode *restrict node;
 	RedBlackComparator comparator;
@@ -739,10 +739,10 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 	root1      = tree1->root;
 	comparator = tree1->comparator;
 
-	intersection_root_ptr         = &intersection_tree->root;
-	intersection_node_factory_ptr = &intersection_tree->node_factory;
+	intersect_root_ptr         = &intersect_tree->root;
+	intersect_node_factory_ptr = &intersect_tree->node_factory;
 
-	red_black_tree_init(intersection_tree,
+	red_black_tree_init(intersect_tree,
 			    comparator);
 
 	red_black_asc_iterator_init(&iter2,
@@ -761,15 +761,15 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 
 			++count;
 
-			node = rbnf_allocate(intersection_node_factory_ptr,
+			node = rbnf_allocate(intersect_node_factory_ptr,
 					     &jump_buffer);
 
 			node->key = key;
 
-			red_black_put_new(intersection_root_ptr,
-					  comparator,
-					  &jump_buffer,
-					  node);
+			red_black_put(intersect_root_ptr,
+				      comparator,
+				      &jump_buffer,
+				      node);
 		}
 
 	return count;

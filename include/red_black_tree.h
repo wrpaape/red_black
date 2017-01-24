@@ -48,8 +48,8 @@ red_black_tree_update(RedBlackTree *const restrict tree,
 		      void **const restrict old_ptr);
 
 bool
-red_black_tree_put_new(RedBlackTree *const restrict tree,
-		       const void *const key);
+red_black_tree_put(RedBlackTree *const restrict tree,
+		   const void *const key);
 
 int
 red_black_tree_delete(RedBlackTree *const restrict tree,
@@ -183,9 +183,14 @@ rb_tree_union(RedBlackTree *const restrict union_tree,
 	      const unsigned int count1);
 
 int
-red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
-			    const RedBlackTree *const restrict tree1,
-			    const RedBlackTree *const restrict tree2);
+red_black_tree_intersect(RedBlackTree *const restrict intersect_tree,
+			 const RedBlackTree *const restrict tree1,
+			 const RedBlackTree *const restrict tree2);
+
+int
+red_black_tree_except(RedBlackTree *const restrict except_tree,
+		      const RedBlackTree *const restrict tree1,
+		      const RedBlackTree *const restrict tree2);
 
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,

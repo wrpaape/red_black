@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_PUT_NEW_H_
-#define RED_BLACK_PUT_NEW_H_
+#ifndef RED_BLACK_PUT_H_
+#define RED_BLACK_PUT_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -11,12 +11,12 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_put_new(struct RedBlackNode *restrict *const restrict tree,
-		  const RedBlackComparator comparator,
-		  RedBlackJumpBuffer *const restrict jump_buffer,
-		  struct RedBlackNode *const restrict node);
+red_black_put(struct RedBlackNode *restrict *const restrict tree,
+	      const RedBlackComparator comparator,
+	      RedBlackJumpBuffer *const restrict jump_buffer,
+	      struct RedBlackNode *const restrict node);
 
 /* may jump or return after successful insertion
  * ────────────────────────────────────────────────────────────────────────── */
 
-#endif /* ifndef RED_BLACK_PUT_NEW_H_ */
+#endif /* ifndef RED_BLACK_PUT_H_ */
