@@ -67,7 +67,6 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 	      const void *const key)
 {
 	struct RedBlackNode *restrict parent;
-	const void *other_key;
 	RedBlackPutNode next_put;
 	int compare;
 	int status;
@@ -82,10 +81,8 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 		return 1; /* tree putd */
 	}
 
-	other_key = grandparent->key;
-
 	compare = comparator(key,
-			     other_key);
+			     grandparent->key);
 
 	status = (compare != 0); /* 1, 0 */
 
@@ -100,10 +97,8 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 							     true); /* RED */
 
 			} else {
-				other_key = parent->key;
-
 				compare = comparator(key,
-						     other_key);
+						     parent->key);
 
 				status = (compare != 0); /* 1, 0 */
 
@@ -137,10 +132,8 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 							      true); /* RED */
 
 			} else {
-				other_key = parent->key;
-
 				compare = comparator(key,
-						     other_key);
+						     parent->key);
 
 				status = (compare != 0); /* 1, 0 */
 
@@ -184,7 +177,6 @@ rb_put_ll(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	const void *other_key;
 	RedBlackPutNode next_put;
 	struct RedBlackNode *restrict node;
 
@@ -205,10 +197,8 @@ rb_put_ll(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		other_key = node->key;
-
 		compare = comparator(key,
-				     other_key);
+				     node->key);
 
 		if (compare == 0) {
 			node->key = key;
@@ -254,7 +244,6 @@ rb_put_lr(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	const void *other_key;
 	RedBlackPutNode next_put;
 	struct RedBlackNode *restrict node;
 
@@ -278,10 +267,8 @@ rb_put_lr(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		other_key = node->key;
-
 		compare = comparator(key,
-				     other_key);
+				     node->key);
 
 		if (compare == 0) {
 			node->key = key;
@@ -328,7 +315,6 @@ rb_put_rr(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	const void *other_key;
 	RedBlackPutNode next_put;
 	struct RedBlackNode *restrict node;
 
@@ -349,10 +335,8 @@ rb_put_rr(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		other_key = node->key;
-
 		compare = comparator(key,
-				     other_key);
+				     node->key);
 
 		if (compare == 0) {
 			node->key = key;
@@ -398,7 +382,6 @@ rb_put_rl(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	const void *other_key;
 	RedBlackPutNode next_put;
 	struct RedBlackNode *restrict node;
 
@@ -422,10 +405,8 @@ rb_put_rl(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		other_key = node->key;
-
 		compare = comparator(key,
-				     other_key);
+				     node->key);
 
 		if (compare == 0) {
 			node->key = key;

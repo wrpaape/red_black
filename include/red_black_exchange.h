@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_REPLACE_H_
-#define RED_BLACK_REPLACE_H_
+#ifndef RED_BLACK_EXCHANGE_H_
+#define RED_BLACK_EXCHANGE_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -10,16 +10,19 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 bool
-red_black_replace(struct RedBlackNode *restrict node,
-		  const RedBlackComparator comparator,
-		  const void *const key);
+red_black_exchange(struct RedBlackNode *restrict node,
+		   const RedBlackComparator comparator,
+		   const void *const key,
+		   void **const restrict old_ptr);
 
 bool
-red_black_replace_min(struct RedBlackNode *restrict node,
-		      const void *const key);
+red_black_exchange_min(struct RedBlackNode *restrict node,
+		       const void *const key,
+		       void **const restrict old_ptr);
 
 bool
-red_black_replace_max(struct RedBlackNode *restrict node,
-		      const void *const key);
+red_black_exchange_max(struct RedBlackNode *restrict node,
+		       const void *const key,
+		       void **const restrict old_ptr);
 
-#endif /* ifndef RED_BLACK_REPLACE_H_ */
+#endif /* ifndef RED_BLACK_EXCHANGE_H_ */

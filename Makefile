@@ -595,6 +595,25 @@ TARGETS			+= $(REPLACE_OBJ)				\
 			   $(REPLACE_PIC_OBJ)
 
 
+# red_black_exchange
+# ──────────────────────────────────────────────────────────────────────────────
+EXCHANGE_SRC		:= $(call SOURCE_PATH,red_black_exchange)
+EXCHANGE_HDR		:= $(call HEADER_PATH,red_black_exchange)
+EXCHANGE_OBJ		:= $(call OBJECT_PATH,red_black_exchange)
+EXCHANGE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_exchange)
+# ─────────────── target prequisites ───────────────────────────────────────────
+EXCHANGE_OBJ_PREQS	:= $(EXCHANGE_SRC)				\
+			   $(EXCHANGE_HDR)				\
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)
+EXCHANGE_OBJ_GROUP	:= $(EXCHANGE_OBJ)
+EXCHANGE_PIC_OBJ_PREQS	:= $(EXCHANGE_OBJ_PREQS)
+EXCHANGE_PIC_OBJ_GROUP	:= $(EXCHANGE_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(EXCHANGE_OBJ)				\
+			   $(EXCHANGE_PIC_OBJ)
+
+
 # red_black_get
 # ──────────────────────────────────────────────────────────────────────────────
 GET_SRC			:= $(call SOURCE_PATH,red_black_get)
@@ -845,6 +864,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(REPLACE_HDR)				\
+		   	   $(EXCHANGE_HDR)				\
 		   	   $(GET_HDR)					\
 		   	   $(SET_HDR)					\
 		   	   $(SWAP_HDR)					\
@@ -866,6 +886,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(FIND_OBJ_GROUP)				\
 			   $(FETCH_OBJ_GROUP)				\
 			   $(REPLACE_OBJ_GROUP)				\
+			   $(EXCHANGE_OBJ_GROUP)			\
 			   $(GET_OBJ_GROUP)				\
 			   $(SET_OBJ_GROUP)				\
 			   $(SWAP_OBJ_GROUP)				\
@@ -889,6 +910,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(FIND_PIC_OBJ_GROUP)			\
 			   $(FETCH_PIC_OBJ_GROUP)			\
 			   $(REPLACE_PIC_OBJ_GROUP)			\
+			   $(EXCHANGE_PIC_OBJ_GROUP)			\
 			   $(GET_PIC_OBJ_GROUP)				\
 			   $(SET_PIC_OBJ_GROUP)				\
 			   $(SWAP_PIC_OBJ_GROUP)			\
@@ -1513,6 +1535,11 @@ $(FETCH_PIC_OBJ): $(FETCH_PIC_OBJ_PREQS)
 $(REPLACE_OBJ): $(REPLACE_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(REPLACE_PIC_OBJ): $(REPLACE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(EXCHANGE_OBJ): $(EXCHANGE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(EXCHANGE_PIC_OBJ): $(EXCHANGE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(GET_OBJ): $(GET_OBJ_PREQS)

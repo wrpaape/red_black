@@ -1,10 +1,11 @@
-#include "red_black_replace.h" /* Node, Comparator */
-#include <stddef.h>	       /* NULL */
+#include "red_black_exchange.h" /* Node, Comparator */
+#include <stddef.h>	        /* NULL */
 
 bool
-red_black_replace(struct RedBlackNode *restrict node,
-		  const RedBlackComparator comparator,
-		  const void *const key)
+red_black_exchange(struct RedBlackNode *restrict node,
+		   const RedBlackComparator comparator,
+		   const void *const key,
+		   void **const restrict old_ptr)
 {
 	int compare;
 	const void *node_key;
@@ -17,6 +18,7 @@ red_black_replace(struct RedBlackNode *restrict node,
 
 		if (compare == 0) {
 			node->key = key;
+			*old_ptr  = (void *) node_key;
 			return true;
 		}
 
@@ -30,8 +32,9 @@ red_black_replace(struct RedBlackNode *restrict node,
 
 
 bool
-red_black_replace_min(struct RedBlackNode *restrict node,
-		      const void *const key)
+red_black_exchange_min(struct RedBlackNode *restrict node,
+		       const void *const key,
+		       void **const restrict old_ptr)
 {
 	struct RedBlackNode *restrict next;
 
@@ -46,6 +49,7 @@ red_black_replace_min(struct RedBlackNode *restrict node,
 			node = next;
 		}
 
+		*old_ptr  = (void *) node->key;
 		node->key = key;
 	}
 
@@ -54,8 +58,9 @@ red_black_replace_min(struct RedBlackNode *restrict node,
 
 
 bool
-red_black_replace_max(struct RedBlackNode *restrict node,
-		      const void *const key)
+red_black_exchange_max(struct RedBlackNode *restrict node,
+		       const void *const key,
+		       void **const restrict old_ptr)
 {
 	struct RedBlackNode *restrict next;
 
@@ -70,6 +75,7 @@ red_black_replace_max(struct RedBlackNode *restrict node,
 			node = next;
 		}
 
+		*old_ptr  = (void *) node->key;
 		node->key = key;
 	}
 

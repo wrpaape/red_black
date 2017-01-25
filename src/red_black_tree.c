@@ -10,6 +10,7 @@
 #include "red_black_find.h"	 /* red_black_find */
 #include "red_black_fetch.h"	 /* red_black_fetch */
 #include "red_black_replace.h"	 /* red_black_replace */
+#include "red_black_exchange.h"	 /* red_black_exchange */
 #include "red_black_get.h"	 /* red_black_get */
 #include "red_black_set.h"	 /* red_black_set */
 #include "red_black_swap.h"	 /* red_black_swap */
@@ -406,33 +407,59 @@ red_black_tree_fetch_max(const RedBlackTree *const restrict tree,
 
 bool
 red_black_tree_replace(const RedBlackTree *const restrict tree,
-		       const void *const key,
-		       void **const restrict old_ptr)
+		       const void *const key)
 {
 	return red_black_replace(tree->root,
 				 tree->comparator,
-				 key,
-				 old_ptr);
+				 key);
 }
 
 bool
 red_black_tree_replace_min(const RedBlackTree *const restrict tree,
-			   const void *const key,
-			   void **const restrict old_ptr)
+			   const void *const key)
 {
 	return red_black_replace_min(tree->root,
-				     key,
-				     old_ptr);
+				     key);
 }
 
 bool
 red_black_tree_replace_max(const RedBlackTree *const restrict tree,
-			   const void *const key,
-			   void **const restrict old_ptr)
+			   const void *const key)
 {
 	return red_black_replace_max(tree->root,
-				     key,
-				     old_ptr);
+				     key);
+}
+
+
+bool
+red_black_tree_exchange(const RedBlackTree *const restrict tree,
+			const void *const key,
+			void **const restrict old_ptr)
+{
+	return red_black_exchange(tree->root,
+				  tree->comparator,
+				  key,
+				  old_ptr);
+}
+
+bool
+red_black_tree_exchange_min(const RedBlackTree *const restrict tree,
+			    const void *const key,
+			    void **const restrict old_ptr)
+{
+	return red_black_exchange_min(tree->root,
+				      key,
+				      old_ptr);
+}
+
+bool
+red_black_tree_exchange_max(const RedBlackTree *const restrict tree,
+			    const void *const key,
+			    void **const restrict old_ptr)
+{
+	return red_black_exchange_max(tree->root,
+				      key,
+				      old_ptr);
 }
 
 
@@ -674,47 +701,45 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 }
 
 
-/* int */
-/* red_black_tree_update_all(RedBlackTree *const restrict dst_tree, */
-/* 			  const RedBlackTree *const restrict src_tree) */
-/* { */
-/* 	struct RedBlackNode *restrict *restrict dst_root_ptr; */
-/* 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr; */
-/* 	RedBlackComparator comparator; */
-/* 	RedBlackJumpBuffer jump_buffer; */
-/* 	struct RedBlackIterator iter; */
-/* 	volatile int count; */
-/* 	int status; */
-/* 	void *key; */
-/* 	void *old_key; */
+int
+red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
+		       const RedBlackTree *const restrict src_tree)
+{
+	struct RedBlackNode *restrict *restrict dst_root_ptr;
+	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackIterator iter;
+	volatile int count;
+	int status;
+	void *key;
 
-/* 	dst_root_ptr	     = &dst_tree->root; */
-/* 	comparator	     = dst_tree->comparator; */
-/* 	dst_node_factory_ptr = &dst_tree->node_factory; */
+	dst_root_ptr	     = &dst_tree->root;
+	comparator	     = dst_tree->comparator;
+	dst_node_factory_ptr = &dst_tree->node_factory;
 
-/* 	red_black_asc_iterator_init(&iter, */
-/* 				    src_tree->root); */
+	red_black_asc_iterator_init(&iter,
+				    src_tree->root);
 
-/* 	count = 0; */
+	count = 0;
 
-/* 	status = RED_BLACK_SET_JUMP(jump_buffer); */
+	status = RED_BLACK_SET_JUMP(jump_buffer);
 
-/* 	if (status == RED_BLACK_JUMP_VALUE_3_TRUE) */
-/* 		++count; /1* successful insertion *1/ */
-/* 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR) */
-/* 		return -1; /1* RED_BLACK_MALLOC failure *1/ */
+	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
+		++count; /* successful insertion */
+	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+		return -1; /* RED_BLACK_MALLOC failure */
 
-/* 	while (red_black_iterator_next(&iter, */
-/* 				       &key)) */
-/* 		count += red_black_update(dst_root_ptr, */
-/* 					  comparator, */
-/* 					  dst_node_factory_ptr, */
-/* 					  &jump_buffer, */
-/* 					  key, */
-/* 					  &old_key); /1* 1, 0 *1/ */
+	while (red_black_iterator_next(&iter,
+				       &key))
+		count += red_black_put(dst_root_ptr,
+				       comparator,
+				       dst_node_factory_ptr,
+				       &jump_buffer,
+				       key); /* 1, 0 */
 
-/* 	return count; */
-/* } */
+	return count;
+}
 
 
 bool
@@ -820,6 +845,36 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 }
 
 
+void
+red_black_tree_subtract_all(RedBlackTree *const restrict dst_tree,
+			    const RedBlackTree *const restrict src_tree)
+{
+	struct RedBlackNode *restrict *restrict dst_root_ptr;
+	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackIterator iter;
+	void *key;
+
+	dst_root_ptr	     = &dst_tree->root;
+	comparator	     = dst_tree->comparator;
+	dst_node_factory_ptr = &dst_tree->node_factory;
+
+	red_black_asc_iterator_init(&iter,
+				    src_tree->root);
+
+	(void) RED_BLACK_SET_JUMP(jump_buffer);
+
+	while (red_black_iterator_next(&iter,
+				       &key))
+		red_black_subtract(dst_root_ptr,
+				   comparator,
+				   dst_node_factory_ptr,
+				   &jump_buffer,
+				   key); /* 1, 0 */
+}
+
+
 int
 red_black_tree_union(RedBlackTree *const restrict union_tree,
 		     const RedBlackTree *const restrict tree1,
@@ -899,6 +954,32 @@ red_black_tree_intersect(RedBlackTree *const restrict intersect_tree,
 		}
 
 	return count;
+}
+
+
+int
+red_black_tree_except(RedBlackTree *const restrict except_tree,
+		      const RedBlackTree *const restrict tree1,
+		      const RedBlackTree *const restrict tree2)
+{
+	return rb_tree_except(except_tree,
+			      tree1,
+			      tree2,
+			      red_black_tree_count(tree1));
+}
+
+int
+rb_tree_except(RedBlackTree *const restrict except_tree,
+	       const RedBlackTree *const restrict tree1,
+	       const RedBlackTree *const restrict tree2,
+	       const unsigned int count1)
+{
+	return rb_tree_clone(except_tree,
+			     tree1,
+			     count1)
+	     ? (count1 + red_black_tree_delete_all(except_tree,
+						   tree2))
+	     : -1; /* RED_BLACK_MALLOC failure */
 }
 
 

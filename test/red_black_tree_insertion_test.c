@@ -81,6 +81,43 @@ test_red_black_tree_insert(void)
 
 
 void
+test_red_black_tree_put(void)
+{
+	int i;
+	int status;
+	int key;
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = keys[i];
+
+		status = red_black_tree_put(&tree,
+					    (void *) (intptr_t) key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
+					      status,
+					      "INSERTED USED KEY (0)"
+					      " OR OUT OF MEMORY (-1)");
+	}
+
+	verify_full_tree();
+
+	shuffle_keys();
+
+	for (i = 0; i < KEYS_COUNT; ++i) {
+		key = keys[i];
+
+		status = red_black_tree_put(&tree,
+					    (void *) (intptr_t) key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+					      status,
+					      "RE-INSERTED USED KEY (1)"
+					      " OR OUT OF MEMORY (-1)");
+	}
+}
+
+
+void
 test_red_black_tree_update(void)
 {
 	int i;
