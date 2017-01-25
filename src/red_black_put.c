@@ -78,7 +78,7 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 				 jump_buffer,
 				 key,
 				 false); /* BLACK */
-		return 1; /* tree putd */
+		return 1; /* tree updated */
 	}
 
 	compare = comparator(key,
@@ -114,7 +114,7 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 							factory,
 							jump_buffer,
 							key);
-					/* if return, tree must have putd */
+					/* if return, tree must have updated */
 
 				} else {
 					parent->key = key;
@@ -149,7 +149,7 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 							factory,
 							jump_buffer,
 							key);
-					/* if return, tree must have putd */
+					/* if return, tree must have updated */
 
 				} else {
 					parent->key = key;

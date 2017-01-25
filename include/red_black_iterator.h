@@ -5,6 +5,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node.h"        /* RedBlackNode, bool */
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
+#include <stddef.h>		   /* size_t, offsetof() */
 
 
 /* typedefs, struct declarations
@@ -18,9 +19,14 @@ struct RedBlackIteratorBlueprint {
 	const RedBlackIteratorSeeker resetter;
 };
 
+struct RedBlackIteratorOffset {
+	size_t prev;
+	size_t next;
+};
+
 struct RedBlackIterator {
 	const struct RedBlackNode *restrict *restrict cursor;
-	const struct RedBlackIteratorBlueprint *restrict blueprint;
+	const struct RedBlackIteratorOffset *restrict offset;
 	const struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
 };
 
