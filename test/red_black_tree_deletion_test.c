@@ -9,13 +9,15 @@ static RedBlackTree tree;
 static inline void
 verify_empty_tree(void)
 {
-
-	TEST_ASSERT_TRUE_MESSAGE(red_black_tree_verify(&tree),
-				 "INVALID TREE");
+	TEST_ASSERT_TRUE_MESSAGE(red_black_tree_empty(&tree),
+				 "NON-EMPTY TREE");
 
 	TEST_ASSERT_EQUAL_UINT_MESSAGE(0,
 				       red_black_tree_count(&tree),
 				       "NON-EMPTY TREE");
+
+	TEST_ASSERT_TRUE_MESSAGE(red_black_tree_verify(&tree),
+				 "INVALID TREE");
 }
 
 void

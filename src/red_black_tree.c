@@ -536,6 +536,13 @@ red_black_tree_swap_max(const RedBlackTree *const restrict tree,
 }
 
 
+bool
+red_black_tree_empty(const RedBlackTree *const restrict tree)
+{
+	return (tree->root == NULL);
+}
+
+
 unsigned int
 red_black_tree_count(const RedBlackTree *const restrict tree)
 {
@@ -558,7 +565,6 @@ red_black_tree_verify(const RedBlackTree *const restrict tree)
 
 	return status;
 }
-
 
 
 bool
