@@ -2,7 +2,7 @@
 #include "red_black_hnode.h"  /* HNode|Key, initializer, comparator */
 #include "red_black_insert.h" /* red_black_insert */
 #include "red_black_update.h" /* red_black_update */
-#include "red_black_put.h"    /* red_black_put */
+#include "red_black_add.h"    /* red_black_add */
 #include "red_black_delete.h" /* red_black_delete */
 #include "red_black_remove.h" /* red_black_remove */
 #include "red_black_find.h"   /* red_black_find */
@@ -86,7 +86,7 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		goto NEXT_NODE;
 
 	while (1) {
-		next = head->left; /* must fetch next before NULLed in put */
+		next = head->left; /* must fetch next before NULLed in add */
 
 		/* fetch hash key hash */
 		hash = ((struct RedBlackHNode *) head)->hkey.hash;
@@ -95,7 +95,7 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		bucket = &buckets[hash & new_count_m1];
 
 		/* append to bucket tree, may jump */
-		red_black_put(&bucket->root,
+		red_black_add(&bucket->root,
 			      &red_black_hkey_comparator,
 			      &jump_buffer,
 			      head);

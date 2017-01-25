@@ -1,4 +1,4 @@
-#include "red_black_drop.h"	   /* Comparator, Node, NodeFactory, JUMP */
+#include "red_black_subtract.h"	   /* Comparator, Node, NodeFactory, JUMP */
 #include "red_black_restore.h"	   /* restore API */
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 
@@ -6,14 +6,14 @@
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef void
-(*RedBlackDropNode)(struct RedBlackNode *restrict *const restrict tree,
-		    struct RedBlackNode *const restrict parent,
-		    const RedBlackComparator comparator,
-		    struct RedBlackNodeFactory *const restrict factory,
-		    RedBlackJumpBuffer *const restrict jump_buffer,
-		    const void *const key);
+(*RedBlackSubtractNode)(struct RedBlackNode *restrict *const restrict tree,
+			struct RedBlackNode *const restrict parent,
+			const RedBlackComparator comparator,
+			struct RedBlackNodeFactory *const restrict factory,
+			RedBlackJumpBuffer *const restrict jump_buffer,
+			const void *const key);
 
-/* drop state machine functions
+/* subtract state machine functions
  *
  * JUMPS
  *	RED_BLACK_JUMP_VALUE_3_TRUE	OK, successful deletion, tree updated
@@ -23,29 +23,29 @@ typedef void
  *	need to restore (check if can rotate, recolor) in THIS frame
  * ────────────────────────────────────────────────────────────────────────── */
 static void
-rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
-	  struct RedBlackNode *const restrict parent,
-	  const RedBlackComparator comparator,
-	  struct RedBlackNodeFactory *const restrict factory,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
-	  const void *const key);
+rb_subtract_l(struct RedBlackNode *restrict *const restrict tree,
+	      struct RedBlackNode *const restrict parent,
+	      const RedBlackComparator comparator,
+	      struct RedBlackNodeFactory *const restrict factory,
+	      RedBlackJumpBuffer *const restrict jump_buffer,
+	      const void *const key);
 static void
-rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
-	  struct RedBlackNode *const restrict parent,
-	  const RedBlackComparator comparator,
-	  struct RedBlackNodeFactory *const restrict factory,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
-	  const void *const key);
+rb_subtract_r(struct RedBlackNode *restrict *const restrict tree,
+	      struct RedBlackNode *const restrict parent,
+	      const RedBlackComparator comparator,
+	      struct RedBlackNodeFactory *const restrict factory,
+	      RedBlackJumpBuffer *const restrict jump_buffer,
+	      const void *const key);
 
 static void
-rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
-	  struct RedBlackNode *const restrict parent,
-	  const RedBlackComparator comparator,
-	  struct RedBlackNodeFactory *const restrict factory,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
-	  const void *const key)
+rb_subtract_l(struct RedBlackNode *restrict *const restrict tree,
+	      struct RedBlackNode *const restrict parent,
+	      const RedBlackComparator comparator,
+	      struct RedBlackNodeFactory *const restrict factory,
+	      RedBlackJumpBuffer *const restrict jump_buffer,
+	      const void *const key)
 {
-	RedBlackDropNode next_drop;
+	RedBlackSubtractNode next_subtract;
 
 	struct RedBlackNode *restrict *const restrict subtree = &parent->left;
 	struct RedBlackNode *const restrict lnode	      = *subtree;
@@ -65,16 +65,16 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		next_drop = (compare < 0)
-			  ? &rb_drop_l
-			  : &rb_drop_r;
+		next_subtract = (compare < 0)
+			      ? &rb_subtract_l
+			      : &rb_subtract_r;
 
-		next_drop(subtree,
-			  lnode,
-			  comparator,
-			  factory,
-			  jump_buffer,
-			  key);
+		next_subtract(subtree,
+			      lnode,
+			      comparator,
+			      factory,
+			      jump_buffer,
+			      key);
 
 		/* if returned, need to restore */
 		red_black_restore_l_mid(tree,
@@ -85,14 +85,14 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 }
 
 static void
-rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
+rb_subtract_r(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
 	  RedBlackJumpBuffer *const restrict jump_buffer,
 	  const void *const key)
 {
-	RedBlackDropNode next_drop;
+	RedBlackSubtractNode next_subtract;
 
 	struct RedBlackNode *restrict *const restrict subtree = &parent->right;
 	struct RedBlackNode *const restrict rnode	      = *subtree;
@@ -112,16 +112,16 @@ rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		next_drop = (compare < 0)
-			  ? &rb_drop_l
-			  : &rb_drop_r;
+		next_subtract = (compare < 0)
+			      ? &rb_subtract_l
+			      : &rb_subtract_r;
 
-		next_drop(subtree,
-			  rnode,
-			  comparator,
-			  factory,
-			  jump_buffer,
-			  key);
+		next_subtract(subtree,
+			      rnode,
+			      comparator,
+			      factory,
+			      jump_buffer,
+			      key);
 
 		/* if returned, need to restore */
 		red_black_restore_r_mid(tree,
@@ -134,13 +134,13 @@ rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 
 
 void
-red_black_drop(struct RedBlackNode *restrict *const restrict tree,
-	       const RedBlackComparator comparator,
-	       struct RedBlackNodeFactory *const restrict factory,
-	       RedBlackJumpBuffer *const restrict jump_buffer,
-	       const void *const key)
+red_black_subtract(struct RedBlackNode *restrict *const restrict tree,
+		   const RedBlackComparator comparator,
+		   struct RedBlackNodeFactory *const restrict factory,
+		   RedBlackJumpBuffer *const restrict jump_buffer,
+		   const void *const key)
 {
-	RedBlackDropNode next_drop;
+	RedBlackSubtractNode next_subtract;
 	struct RedBlackNode *const restrict root = *tree;
 
 	const int compare = comparator(key,
@@ -152,24 +152,24 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 				       factory);
 
 	} else {
-		next_drop = (compare < 0)
-			  ? &rb_drop_l
-			  : &rb_drop_r;
+		next_subtract = (compare < 0)
+			      ? &rb_subtract_l
+			      : &rb_subtract_r;
 
-		next_drop(tree,
-			  root,
-			  comparator,
-			  factory,
-			  jump_buffer,
-			  key);
+		next_subtract(tree,
+			      root,
+			      comparator,
+			      factory,
+			      jump_buffer,
+			      key);
 	}
 }
 
 
 void
-red_black_drop_min(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_subtract_min(struct RedBlackNode *restrict *const restrict tree,
+		       struct RedBlackNodeFactory *const restrict factory,
+		       RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict next;
@@ -246,9 +246,9 @@ red_black_drop_min(struct RedBlackNode *restrict *const restrict tree,
 }
 
 void
-red_black_drop_max(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer)
+red_black_subtract_max(struct RedBlackNode *restrict *const restrict tree,
+		       struct RedBlackNodeFactory *const restrict factory,
+		       RedBlackJumpBuffer *const restrict jump_buffer)
 {
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict next;

@@ -345,6 +345,30 @@ TARGETS			+= $(INSERT_OBJ)				\
 			   $(INSERT_PIC_OBJ)
 
 
+# red_black_put
+# ──────────────────────────────────────────────────────────────────────────────
+PUT_SRC			:= $(call SOURCE_PATH,red_black_put)
+PUT_HDR			:= $(call HEADER_PATH,red_black_put)
+PUT_OBJ			:= $(call OBJECT_PATH,red_black_put)
+PUT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_put)
+# ─────────────── target prequisites ───────────────────────────────────────────
+PUT_OBJ_PREQS		:= $(PUT_SRC)					\
+			   $(PUT_HDR)					\
+			   $(COMPARATOR_HDR)				\
+			   $(NODE_FACTORY_HDR)				\
+			   $(CORRECT_HDR)
+PUT_OBJ_GROUP		:= $(PUT_OBJ)					\
+			   $(NODE_FACTORY_OBJ_GROUP)			\
+			   $(CORRECT_OBJ_GROUP)
+PUT_PIC_OBJ_PREQS	:= $(PUT_OBJ_PREQS)
+PUT_PIC_OBJ_GROUP	:= $(PUT_PIC_OBJ)				\
+			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(CORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(PUT_OBJ)					\
+			   $(PUT_PIC_OBJ)
+
+
 # red_black_update
 # ──────────────────────────────────────────────────────────────────────────────
 UPDATE_SRC		:= $(call SOURCE_PATH,red_black_update)
@@ -369,27 +393,27 @@ TARGETS			+= $(UPDATE_OBJ)				\
 			   $(UPDATE_PIC_OBJ)
 
 
-# red_black_put
+# red_black_add
 # ──────────────────────────────────────────────────────────────────────────────
-PUT_SRC			:= $(call SOURCE_PATH,red_black_put)
-PUT_HDR			:= $(call HEADER_PATH,red_black_put)
-PUT_OBJ			:= $(call OBJECT_PATH,red_black_put)
-PUT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_put)
+ADD_SRC			:= $(call SOURCE_PATH,red_black_add)
+ADD_HDR			:= $(call HEADER_PATH,red_black_add)
+ADD_OBJ			:= $(call OBJECT_PATH,red_black_add)
+ADD_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_add)
 # ─────────────── target prequisites ───────────────────────────────────────────
-PUT_OBJ_PREQS		:= $(PUT_SRC)					\
-			   $(PUT_HDR)					\
+ADD_OBJ_PREQS		:= $(ADD_SRC)					\
+			   $(ADD_HDR)					\
 			   $(NODE_HDR)					\
 			   $(COMPARATOR_HDR)				\
 			   $(JUMP_HDR)					\
 			   $(CORRECT_HDR)
-PUT_OBJ_GROUP		:= $(PUT_OBJ)					\
+ADD_OBJ_GROUP		:= $(ADD_OBJ)					\
 			   $(CORRECT_OBJ_GROUP)
-PUT_PIC_OBJ_PREQS	:= $(PUT_OBJ_PREQS)
-PUT_PIC_OBJ_GROUP	:= $(PUT_PIC_OBJ)				\
+ADD_PIC_OBJ_PREQS	:= $(ADD_OBJ_PREQS)
+ADD_PIC_OBJ_GROUP	:= $(ADD_PIC_OBJ)				\
 			   $(CORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(PUT_OBJ)					\
-			   $(PUT_PIC_OBJ)
+TARGETS			+= $(ADD_OBJ)					\
+			   $(ADD_PIC_OBJ)
 
 
 # red_black_restore
@@ -464,29 +488,29 @@ TARGETS			+= $(REMOVE_OBJ)				\
 			   $(REMOVE_PIC_OBJ)
 
 
-# red_black_drop
+# red_black_subtract
 # ──────────────────────────────────────────────────────────────────────────────
-DROP_SRC		:= $(call SOURCE_PATH,red_black_drop)
-DROP_HDR		:= $(call HEADER_PATH,red_black_drop)
-DROP_OBJ		:= $(call OBJECT_PATH,red_black_drop)
-DROP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_drop)
+SUBTRACT_SRC		:= $(call SOURCE_PATH,red_black_subtract)
+SUBTRACT_HDR		:= $(call HEADER_PATH,red_black_subtract)
+SUBTRACT_OBJ		:= $(call OBJECT_PATH,red_black_subtract)
+SUBTRACT_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_subtract)
 # ─────────────── target prequisites ───────────────────────────────────────────
-DROP_OBJ_PREQS		:= $(DROP_SRC)					\
-			   $(DROP_HDR)					\
+SUBTRACT_OBJ_PREQS	:= $(SUBTRACT_SRC)				\
+			   $(SUBTRACT_HDR)				\
 			   $(COMPARATOR_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
 			   $(RESTORE_HDR)				\
 			   $(STACK_COUNT_HDR)
-DROP_OBJ_GROUP		:= $(DROP_OBJ)					\
+SUBTRACT_OBJ_GROUP	:= $(SUBTRACT_OBJ)				\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(RESTORE_OBJ_GROUP)
-DROP_PIC_OBJ_PREQS	:= $(DROP_OBJ_PREQS)
-DROP_PIC_OBJ_GROUP	:= $(DROP_PIC_OBJ)				\
+SUBTRACT_PIC_OBJ_PREQS	:= $(SUBTRACT_OBJ_PREQS)
+SUBTRACT_PIC_OBJ_GROUP	:= $(SUBTRACT_PIC_OBJ)				\
 			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
 			   $(RESTORE_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(DROP_OBJ)					\
-			   $(DROP_PIC_OBJ)
+TARGETS			+= $(SUBTRACT_OBJ)				\
+			   $(SUBTRACT_PIC_OBJ)
 
 
 # red_black_pluck
@@ -811,11 +835,12 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(ITERATOR_HDR)				\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
+		   	   $(PUT_HDR)					\
 		   	   $(UPDATE_HDR)				\
-		   	   $(PUT_HDR)				\
+		   	   $(ADD_HDR)					\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
-		   	   $(DROP_HDR)					\
+		   	   $(SUBTRACT_HDR)				\
 		   	   $(PLUCK_HDR)					\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
@@ -831,11 +856,12 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(ITERATOR_OBJ_GROUP)			\
 			   $(INSERT_OBJ_GROUP)				\
-			   $(UPDATE_OBJ_GROUP)				\
 			   $(PUT_OBJ_GROUP)				\
+			   $(UPDATE_OBJ_GROUP)				\
+			   $(ADD_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
-		   	   $(DROP_OBJ_GROUP)				\
+		   	   $(SUBTRACT_OBJ_GROUP)			\
 		   	   $(PLUCK_OBJ_GROUP)				\
 			   $(FIND_OBJ_GROUP)				\
 			   $(FETCH_OBJ_GROUP)				\
@@ -853,11 +879,12 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
 			   $(ITERATOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
+			   $(PUT_PIC_OBJ_GROUP)				\
 			   $(UPDATE_PIC_OBJ_GROUP)			\
-			   $(PUT_PIC_OBJ_GROUP)			\
+			   $(ADD_PIC_OBJ_GROUP)				\
 			   $(DELETE_PIC_OBJ_GROUP)			\
 			   $(REMOVE_PIC_OBJ_GROUP)			\
-		   	   $(DROP_PIC_OBJ_GROUP)			\
+		   	   $(SUBTRACT_PIC_OBJ_GROUP)			\
 		   	   $(PLUCK_PIC_OBJ_GROUP)			\
 			   $(FIND_PIC_OBJ_GROUP)			\
 			   $(FETCH_PIC_OBJ_GROUP)			\
@@ -901,12 +928,12 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 		   	   $(UPDATE_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
-		   	   $(DROP_HDR)					\
+		   	   $(SUBTRACT_HDR)				\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(VERIFY_HDR)				\
 		   	   $(CONCAT_HDR)				\
-		   	   $(PUT_HDR)				\
+		   	   $(ADD_HDR)					\
 			   $(MALLOC_HDR)
 LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 			   $(LOCK_OBJ_GROUP)				\
@@ -918,12 +945,12 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 		   	   $(UPDATE_OBJ_GROUP)				\
 		   	   $(DELETE_OBJ_GROUP)				\
 		   	   $(REMOVE_OBJ_GROUP)				\
-		   	   $(DROP_OBJ_GROUP)				\
+		   	   $(SUBTRACT_OBJ_GROUP)			\
 		   	   $(FIND_OBJ_GROUP)				\
 		   	   $(FETCH_OBJ_GROUP)				\
 		   	   $(VERIFY_OBJ_GROUP)				\
 		   	   $(CONCAT_OBJ_GROUP)				\
-		   	   $(PUT_OBJ_GROUP)
+		   	   $(ADD_OBJ_GROUP)
 LHMAP_PIC_OBJ_PREQS	:= $(LHMAP_OBJ_PREQS)
 LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 			   $(LOCK_PIC_OBJ_GROUP)			\
@@ -935,12 +962,12 @@ LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 		   	   $(UPDATE_PIC_OBJ_GROUP)			\
 		   	   $(DELETE_PIC_OBJ_GROUP)			\
 		   	   $(REMOVE_PIC_OBJ_GROUP)			\
-		   	   $(DROP_PIC_OBJ_GROUP)			\
+		   	   $(SUBTRACT_PIC_OBJ_GROUP)			\
 		   	   $(FIND_PIC_OBJ_GROUP)			\
 		   	   $(FETCH_PIC_OBJ_GROUP)			\
 		   	   $(VERIFY_PIC_OBJ_GROUP)			\
 		   	   $(CONCAT_PIC_OBJ_GROUP)			\
-		   	   $(PUT_PIC_OBJ_GROUP)
+		   	   $(ADD_PIC_OBJ_GROUP)
 LHMAP_ST_LIB_PREQS	:= $(LHMAP_OBJ_GROUP)
 LHMAP_SH_LIB_PREQS	:= $(LHMAP_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
@@ -1428,14 +1455,19 @@ $(INSERT_OBJ): $(INSERT_OBJ_PREQS)
 $(INSERT_PIC_OBJ): $(INSERT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
+$(PUT_OBJ): $(PUT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(PUT_PIC_OBJ): $(PUT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
 $(UPDATE_OBJ): $(UPDATE_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(UPDATE_PIC_OBJ): $(UPDATE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(PUT_OBJ): $(PUT_OBJ_PREQS)
+$(ADD_OBJ): $(ADD_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(PUT_PIC_OBJ): $(PUT_PIC_OBJ_PREQS)
+$(ADD_PIC_OBJ): $(ADD_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(CORRECT_OBJ): $(CORRECT_OBJ_PREQS)
@@ -1453,9 +1485,9 @@ $(REMOVE_OBJ): $(REMOVE_OBJ_PREQS)
 $(REMOVE_PIC_OBJ): $(REMOVE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(DROP_OBJ): $(DROP_OBJ_PREQS)
+$(SUBTRACT_OBJ): $(SUBTRACT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(DROP_PIC_OBJ): $(DROP_PIC_OBJ_PREQS)
+$(SUBTRACT_PIC_OBJ): $(SUBTRACT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(PLUCK_OBJ): $(PLUCK_OBJ_PREQS)

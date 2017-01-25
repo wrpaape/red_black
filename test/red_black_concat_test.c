@@ -29,7 +29,7 @@ setUp(void)
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = (void *) (intptr_t) keys[i];
 
-		TEST_ASSERT_TRUE_MESSAGE(red_black_tree_put(&tree,
+		TEST_ASSERT_TRUE_MESSAGE(red_black_tree_add(&tree,
 							    key),
 					 "OUT OF MEMORY");
 	}

@@ -35,7 +35,7 @@ setUp(void)
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = keys[i];
 
-		status = red_black_tree_put(&tree,
+		status = red_black_tree_add(&tree,
 					    (void *) (intptr_t) key);
 
 		TEST_ASSERT_TRUE_MESSAGE(status,
@@ -279,7 +279,7 @@ test_red_black_tree_remove_max(void)
 
 
 void
-test_red_black_tree_drop(void)
+test_red_black_tree_subtract(void)
 {
 	int i;
 	int key;
@@ -287,13 +287,13 @@ test_red_black_tree_drop(void)
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = keys[i];
 
-		red_black_tree_drop(&tree,
-				    (void *) (intptr_t) key);
+		red_black_tree_subtract(&tree,
+					(void *) (intptr_t) key);
 	}
 }
 
 void
-test_red_black_tree_drop_min(void)
+test_red_black_tree_subtract_min(void)
 {
 	int i;
 	int key;
@@ -305,12 +305,12 @@ test_red_black_tree_drop_min(void)
 					      key,
 					      "UNEXPECTED MIN KEY");
 
-		red_black_tree_drop_min(&tree);
+		red_black_tree_subtract_min(&tree);
 	}
 }
 
 void
-test_red_black_tree_drop_max(void)
+test_red_black_tree_subtract_max(void)
 {
 	int i;
 	int key;
@@ -322,7 +322,7 @@ test_red_black_tree_drop_max(void)
 					      key,
 					      "UNEXPECTED MAX KEY");
 
-		red_black_tree_drop_max(&tree);
+		red_black_tree_subtract_max(&tree);
 	}
 }
 

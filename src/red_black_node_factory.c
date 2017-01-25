@@ -97,21 +97,21 @@ rbnf_init_w_nodes(struct RedBlackNodeFactory *const restrict factory,
 		  const struct RedBlackNodeFactoryBlueprint *const restrict bp,
 		  const unsigned int count_nodes)
 {
-     struct RedBlackNodeFactoryBufferBlock *restrict first_block;
-     size_t allocate_size;
+	struct RedBlackNodeFactoryBufferBlock *restrict first_block;
+	size_t allocate_size;
 
-     allocate_size = sizeof(*first_block) + (bp->size_node * count_nodes);
+	allocate_size = sizeof(*first_block) + (bp->size_node * count_nodes);
 
-     first_block = RED_BLACK_MALLOC(allocate_size);
+	first_block = RED_BLACK_MALLOC(allocate_size);
 
-     if (first_block == NULL)
-	     return NULL;
+	if (first_block == NULL)
+		return NULL;
 
-     rbnf_do_init(factory,
-		  bp,
-		  first_block);
+	rbnf_do_init(factory,
+		     bp,
+		     first_block);
 
-     return (struct RedBlackNode *) (first_block + 1);
+	return (struct RedBlackNode *) (first_block + 1);
 }
 
 void
@@ -175,6 +175,37 @@ rbnf_allocate(struct RedBlackNodeFactory *const restrict factory,
 		factory->free = node->left;
 
 	return node;
+}
+
+static inline struct RedBlackNode *
+rbnfb_allocate_nodes(struct RedBlackNodeFactoryBuffer *const restrict buffer,
+		     const size_t size_node,
+		     const unsigned int count_nodes)
+{
+	struct RedBlackNodeFactoryBufferBlock *restrict block;
+	size_t allocate_size;
+
+	allocate_size = sizeof(*block) + (size_node * count_nodes);
+
+	block = RED_BLACK_MALLOC(allocate_size);
+
+	if (block == NULL)
+		return NULL;
+
+	block->next    = buffer->blocks;
+	buffer->blocks = block;
+
+	return (struct RedBlackNode *) (block + 1);
+}
+
+
+struct RedBlackNode *
+rbnf_allocate_nodes(struct RedBlackNodeFactory *const restrict factory,
+		    const unsigned int count_nodes)
+{
+	return rbnfb_allocate_nodes(&factory->buffer,
+				    factory->blueprint->size_node,
+				    count_nodes);
 }
 
 

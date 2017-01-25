@@ -43,12 +43,16 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 		      const void *const key);
 
 int
+red_black_tree_put(RedBlackTree *const restrict tree,
+		   const void *const key);
+
+int
 red_black_tree_update(RedBlackTree *const restrict tree,
 		      const void *const key,
 		      void **const restrict old_ptr);
 
 bool
-red_black_tree_put(RedBlackTree *const restrict tree,
+red_black_tree_add(RedBlackTree *const restrict tree,
 		   const void *const key);
 
 int
@@ -71,12 +75,12 @@ red_black_tree_remove_max(RedBlackTree *const restrict tree,
 			  void **const restrict remove_ptr);
 
 void
-red_black_tree_drop(RedBlackTree *const restrict tree,
-		    const void *const key);
+red_black_tree_subtract(RedBlackTree *const restrict tree,
+			const void *const key);
 void
-red_black_tree_drop_min(RedBlackTree *const restrict tree);
+red_black_tree_subtract_min(RedBlackTree *const restrict tree);
 void
-red_black_tree_drop_max(RedBlackTree *const restrict tree);
+red_black_tree_subtract_max(RedBlackTree *const restrict tree);
 
 void *
 red_black_tree_pluck(RedBlackTree *const restrict tree,
@@ -166,6 +170,18 @@ rb_tree_similar(const RedBlackTree *const restrict tree1,
 int
 red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 			  const RedBlackTree *const restrict src_tree);
+
+int
+red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
+		       const RedBlackTree *const restrict src_tree);
+
+bool
+red_black_tree_add_all(RedBlackTree *const restrict dst_tree,
+		       const RedBlackTree *const restrict src_tree);
+bool
+rb_tree_add_all(RedBlackTree *const restrict dst_tree,
+		const RedBlackTree *const restrict src_tree,
+		const unsigned int count_src);
 
 int
 red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,

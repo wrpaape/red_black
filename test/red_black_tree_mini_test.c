@@ -86,8 +86,8 @@ main(void)
 
 
 	for (i = 0; i < KEY_COUNT; ++i) {
-		red_black_tree_drop(&tree,
-				    (const void *) (intptr_t) keys[i]);
+		red_black_tree_subtract(&tree,
+					(const void *) (intptr_t) keys[i]);
 
 		if (!red_black_tree_verify(&tree))
 			TEST_FAILURE("DROP FAILURE -- INVALID TREE");
