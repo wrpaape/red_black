@@ -1211,24 +1211,6 @@ TARGETS			+= $(CONCAT_TRNR_SRC)				\
 			   $(CONCAT_TEST_BIN)
 
 
-# red_black_tree_mini_test
-# ──────────────────────────────────────────────────────────────────────────────
-TREE_MINI_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_mini)
-TREE_MINI_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_tree_mini)
-TREE_MINI_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_tree_mini)
-# ─────────────── target prequisites ───────────────────────────────────────────
-TREE_MINI_TEST_OBJ_PREQS	:= $(TREE_MINI_TEST_SRC)		\
-			   	    $(TREE_HDR)				\
-			   	    $(INT_KEY_HDR)
-TREE_MINI_TEST_BIN_PREQS	:= $(TREE_MINI_TEST_OBJ)		\
-			   	    $(INT_KEY_OBJ_GROUP)		\
-			   	    $(TREE_SH_LIB)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS				+= $(TREE_MINI_TEST_OBJ)		\
-			   	   $(TREE_MINI_TEST_BIN)
-
-
-
 # red_black_tree_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree)
@@ -1423,11 +1405,6 @@ $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(CONCAT_TRNR_SRC): $(CONCAT_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
-
-$(TREE_MINI_TEST_BIN): $(TREE_MINI_TEST_BIN_PREQS)
-	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(TREE_MINI_TEST_OBJ): $(TREE_MINI_TEST_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
 
 $(MT_TEST_OBJ): $(MT_TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
