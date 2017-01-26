@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_ETOR_H_
-#define RED_BLACK_ETOR_H_
+#ifndef RED_BLACK_ITOR_H_
+#define RED_BLACK_ITOR_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -10,34 +10,36 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-struct RedBlackEtorOffset {
-	size_t next;
-	size_t prev;
+struct RedBlackItorNode {
+	struct RedBlackNode *restrict *restrict tree;
+	struct RedBlackNode *restrict node;
 };
 
-struct RedBlackEtor {
+struct RedBlackItor {
 	const struct RedBlackNode *restrict *restrict cursor;
-	const struct RedBlackEtorOffset *restrict offset;
-	const struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
+	const struct RedBlackItorNode *restrict stack[RED_BLACK_STACK_COUNT];
 };
 
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_asc_etor_init(struct RedBlackEtor *const restrict etor,
+red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
 			const struct RedBlackNode *restrict root);
 
 void
-red_black_desc_etor_init(struct RedBlackEtor *const restrict etor,
+red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 			 const struct RedBlackNode *restrict root);
 
 void
-red_black_etor_reset(struct RedBlackEtor *const restrict etor,
+red_black_itor_reset(struct RedBlackItor *const restrict itor,
 		     const struct RedBlackNode *restrict root);
 
 bool
-red_black_etor_next(struct RedBlackEtor *const restrict etor,
-			  void **const restrict key_ptr);
+red_black_itor_next(struct RedBlackItor *const restrict itor,
+		    void **const restrict key_ptr);
 
-#endif /* ifndef RED_BLACK_ETOR_H_ */
+void
+red_black_itor_drop(struct RedBlackItor *const restrict itor);
+
+#endif /* ifndef RED_BLACK_ITOR_H_ */
