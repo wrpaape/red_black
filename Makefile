@@ -284,23 +284,23 @@ TARGETS				+= $(NODE_FACTORY_OBJ)			\
 			   	   $(NODE_FACTORY_PIC_OBJ)
 
 
-# red_black_iterator
+# red_black_etor
 # ──────────────────────────────────────────────────────────────────────────────
-ITERATOR_SRC		:= $(call SOURCE_PATH,red_black_iterator)
-ITERATOR_HDR		:= $(call HEADER_PATH,red_black_iterator)
-ITERATOR_OBJ		:= $(call OBJECT_PATH,red_black_iterator)
-ITERATOR_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_iterator)
+ETOR_SRC		:= $(call SOURCE_PATH,red_black_etor)
+ETOR_HDR		:= $(call HEADER_PATH,red_black_etor)
+ETOR_OBJ		:= $(call OBJECT_PATH,red_black_etor)
+ETOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_etor)
 # ─────────────── target prequisites ───────────────────────────────────────────
-ITERATOR_OBJ_PREQS	:= $(ITERATOR_SRC)				\
-			   $(ITERATOR_HDR)				\
+ETOR_OBJ_PREQS		:= $(ETOR_SRC)					\
+			   $(ETOR_HDR)					\
 			   $(NODE_HDR)					\
 			   $(STACK_COUNT_HDR)
-ITERATOR_OBJ_GROUP	:= $(ITERATOR_OBJ)
-ITERATOR_PIC_OBJ_PREQS	:= $(ITERATOR_OBJ_PREQS)
-ITERATOR_PIC_OBJ_GROUP	:= $(ITERATOR_PIC_OBJ)
+ETOR_OBJ_GROUP		:= $(ETOR_OBJ)
+ETOR_PIC_OBJ_PREQS	:= $(ETOR_OBJ_PREQS)
+ETOR_PIC_OBJ_GROUP	:= $(ETOR_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(ITERATOR_OBJ)				\
-			   $(ITERATOR_PIC_OBJ)
+TARGETS			+= $(ETOR_OBJ)					\
+			   $(ETOR_PIC_OBJ)
 
 # red_black_correct
 # ──────────────────────────────────────────────────────────────────────────────
@@ -851,7 +851,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 			   $(TREE_HDR)					\
 		   	   $(COMPARATOR_HDR)				\
 		   	   $(NODE_FACTORY_HDR)				\
-		   	   $(ITERATOR_HDR)				\
+		   	   $(ETOR_HDR)				\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(PUT_HDR)					\
@@ -874,7 +874,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_HDR)
 TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
-			   $(ITERATOR_OBJ_GROUP)			\
+			   $(ETOR_OBJ_GROUP)			\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(PUT_OBJ_GROUP)				\
 			   $(UPDATE_OBJ_GROUP)				\
@@ -898,7 +898,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
 TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
-			   $(ITERATOR_PIC_OBJ_GROUP)			\
+			   $(ETOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(PUT_PIC_OBJ_GROUP)				\
 			   $(UPDATE_PIC_OBJ_GROUP)			\
@@ -944,7 +944,7 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 			   $(LOCK_HDR)					\
 		   	   $(NODE_FACTORY_HDR)				\
 			   $(HMAP_COUNT_HDR)				\
-		   	   $(ITERATOR_HDR)				\
+		   	   $(ETOR_HDR)				\
 		   	   $(HASH_NODE_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(UPDATE_HDR)				\
@@ -961,7 +961,7 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 			   $(LOCK_OBJ_GROUP)				\
 		   	   $(NODE_FACTORY_OBJ_GROUP)			\
 		   	   $(HMAP_COUNT_OBJ_GROUP)			\
-		   	   $(ITERATOR_OBJ_GROUP)			\
+		   	   $(ETOR_OBJ_GROUP)			\
 		   	   $(HKEY_OBJ_GROUP)				\
 		   	   $(INSERT_OBJ_GROUP)				\
 		   	   $(UPDATE_OBJ_GROUP)				\
@@ -978,7 +978,7 @@ LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 			   $(LOCK_PIC_OBJ_GROUP)			\
 		   	   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
 		   	   $(HMAP_COUNT_PIC_OBJ_GROUP)			\
-		   	   $(ITERATOR_PIC_OBJ_GROUP)			\
+		   	   $(ETOR_PIC_OBJ_GROUP)			\
 		   	   $(HKEY_PIC_OBJ_GROUP)			\
 		   	   $(INSERT_PIC_OBJ_GROUP)			\
 		   	   $(UPDATE_PIC_OBJ_GROUP)			\
@@ -1119,34 +1119,34 @@ TARGETS			     += $(TREE_ACCESS_TRNR_SRC)			\
 			        $(TREE_ACCESS_TEST_BIN)
 
 
-# red_black_tree_iterator_test
+# red_black_tree_traversal_test
 # ──────────────────────────────────────────────────────────────────────────────
-TREE_ITERATOR_TEST_SRC	     := $(call TEST_SOURCE_PATH,red_black_tree_iterator)
-TREE_ITERATOR_TRNR_SRC	     := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_iterator)
-TREE_ITERATOR_TRNR_OBJ	     := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_iterator)
-TREE_ITERATOR_TEST_OBJ	     := $(call TEST_OBJECT_PATH,red_black_tree_iterator)
-TREE_ITERATOR_TEST_BIN	     := $(call TEST_BINARY_PATH,red_black_tree_iterator)
+TREE_TRAVERSAL_TEST_SRC	      := $(call TEST_SOURCE_PATH,red_black_tree_traversal)
+TREE_TRAVERSAL_TRNR_SRC	      := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_traversal)
+TREE_TRAVERSAL_TRNR_OBJ	      := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_traversal)
+TREE_TRAVERSAL_TEST_OBJ	      := $(call TEST_OBJECT_PATH,red_black_tree_traversal)
+TREE_TRAVERSAL_TEST_BIN	      := $(call TEST_BINARY_PATH,red_black_tree_traversal)
 # ─────────────── target prequisites ───────────────────────────────────────────
-TREE_ITERATOR_TRNR_SRC_PREQS := $(TREE_ITERATOR_TEST_SRC)
-TREE_ITERATOR_TEST_OBJ_PREQS := $(TREE_ITERATOR_TEST_SRC)		\
-			        $(TREE_HDR)				\
-			        $(INT_KEY_HDR)				\
-			        $(TEST_HDR)				\
-			        $(UNITY_HDR)
-TREE_ITERATOR_TRNR_OBJ_PREQS := $(TREE_ITERATOR_TRNR_SRC)		\
-			   	$(TREE_ITERATOR_TEST_OBJ_PREQS)
-TREE_ITERATOR_TEST_BIN_PREQS := $(TREE_ITERATOR_TRNR_OBJ)		\
-			        $(TREE_ITERATOR_TEST_OBJ)		\
-			        $(INT_KEY_OBJ_GROUP)			\
-			        $(TREE_SH_LIB)				\
-			        $(TEST_OBJ)				\
-				$(UNITY_OBJ)
+TREE_TRAVERSAL_TRNR_SRC_PREQS := $(TREE_TRAVERSAL_TEST_SRC)
+TREE_TRAVERSAL_TEST_OBJ_PREQS := $(TREE_TRAVERSAL_TEST_SRC)		\
+			         $(TREE_HDR)				\
+			         $(INT_KEY_HDR)				\
+			         $(TEST_HDR)				\
+			         $(UNITY_HDR)
+TREE_TRAVERSAL_TRNR_OBJ_PREQS := $(TREE_TRAVERSAL_TRNR_SRC)		\
+			   	 $(TREE_TRAVERSAL_TEST_OBJ_PREQS)
+TREE_TRAVERSAL_TEST_BIN_PREQS := $(TREE_TRAVERSAL_TRNR_OBJ)		\
+			         $(TREE_TRAVERSAL_TEST_OBJ)		\
+			         $(INT_KEY_OBJ_GROUP)			\
+			         $(TREE_SH_LIB)				\
+			         $(TEST_OBJ)				\
+				 $(UNITY_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TEST_BINARIES		     += $(TREE_ITERATOR_TEST_BIN)
-TARGETS			     += $(TREE_ITERATOR_TRNR_SRC)		\
-			        $(TREE_ITERATOR_TRNR_OBJ)		\
-			        $(TREE_ITERATOR_TEST_OBJ)		\
-			        $(TREE_ITERATOR_TEST_BIN)
+TEST_BINARIES		      += $(TREE_TRAVERSAL_TEST_BIN)
+TARGETS			      += $(TREE_TRAVERSAL_TRNR_SRC)		\
+			         $(TREE_TRAVERSAL_TRNR_OBJ)		\
+			         $(TREE_TRAVERSAL_TEST_OBJ)		\
+			         $(TREE_TRAVERSAL_TEST_BIN)
 
 
 # red_black_tree_deletion_test
@@ -1377,13 +1377,13 @@ $(TREE_ACCESS_TRNR_SRC): $(TREE_ACCESS_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 
-$(TREE_ITERATOR_TEST_BIN): $(TREE_ITERATOR_TEST_BIN_PREQS)
+$(TREE_TRAVERSAL_TEST_BIN): $(TREE_TRAVERSAL_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(TREE_ITERATOR_TRNR_OBJ): $(TREE_ITERATOR_TRNR_OBJ_PREQS)
+$(TREE_TRAVERSAL_TRNR_OBJ): $(TREE_TRAVERSAL_TRNR_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-$(TREE_ITERATOR_TEST_OBJ): $(TREE_ITERATOR_TEST_OBJ_PREQS)
+$(TREE_TRAVERSAL_TEST_OBJ): $(TREE_TRAVERSAL_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-$(TREE_ITERATOR_TRNR_SRC): $(TREE_ITERATOR_TRNR_SRC_PREQS)
+$(TREE_TRAVERSAL_TRNR_SRC): $(TREE_TRAVERSAL_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 
@@ -1444,9 +1444,9 @@ $(NODE_FACTORY_OBJ): $(NODE_FACTORY_OBJ_PREQS)
 $(NODE_FACTORY_PIC_OBJ): $(NODE_FACTORY_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(ITERATOR_OBJ): $(ITERATOR_OBJ_PREQS)
+$(ETOR_OBJ): $(ETOR_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(ITERATOR_PIC_OBJ): $(ITERATOR_PIC_OBJ_PREQS)
+$(ETOR_PIC_OBJ): $(ETOR_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(INSERT_OBJ): $(INSERT_OBJ_PREQS)

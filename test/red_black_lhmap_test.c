@@ -205,7 +205,7 @@ test_find(void *arg)
 
 
 ThreadReturn
-test_iterator(void *arg)
+test_etor(void *arg)
 {
 	int *restrict key;
 	unsigned int count;
@@ -215,10 +215,10 @@ test_iterator(void *arg)
 
 	/* static bool key_set[KEYS_COUNT]; */
 
-	RedBlackLHMapLIterator iterator;
+	RedBlackLHMapLEtor etor;
 
 
-	ENTER("test_iterator");
+	ENTER("test_etor");
 
 	/* calloc to preserve thread stack space */
 	bool *const restrict key_set = calloc(KEYS_COUNT,
@@ -227,28 +227,28 @@ test_iterator(void *arg)
 	if (key_set == NULL)
 		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
 
-	/* test iterator */
-	if (!red_black_lhmap_literator_init(&iterator,
-					   &lhmap))
-				SYS_FAILURE("lhmap_literator_init",
+	/* test etor */
+	if (!red_black_lhmap_letor_init(&etor,
+					&lhmap))
+				SYS_FAILURE("lhmap_letor_init",
 					    "LOCK FAILURE");
 
 	count = 0;
 
 	while (1) {
-		status = red_black_lhmap_literator_next(&iterator,
-							(void **) &key,
-							&length);
+		status = red_black_lhmap_letor_next(&etor,
+						    (void **) &key,
+						    &length);
 
 		if (status == 0)
 			break;
 
 		if (status < 0)
-			SYS_FAILURE("lhmap_literator_next",
+			SYS_FAILURE("lhmap_letor_next",
 				    "LOCK FAILURE");
 
 		if (length != sizeof(*key))
-			TEST_FAILURE("lhmap_literator_next",
+			TEST_FAILURE("lhmap_letor_next",
 				     "GOT UNEXPECTED LENGTH %zu INSTEAD OF %zu",
 				     length,
 				     sizeof(*key));
@@ -257,7 +257,7 @@ test_iterator(void *arg)
 		key_set_ptr = key_set + *key;
 
 		if (*key_set_ptr)
-			TEST_FAILURE("lhmap_literator_next",
+			TEST_FAILURE("lhmap_letor_next",
 				     "ITERATOR TRAVERSED SAME KEY TWICE: %d (%d) (%d)",
 				     *key, *key_set_ptr, (int) (key - &keys[0]));
 
@@ -268,15 +268,15 @@ test_iterator(void *arg)
 	free(key_set);
 
 	if (count < KEYS_COUNT)
-		TEST_FAILURE("lhmap_literator",
+		TEST_FAILURE("lhmap_letor",
 			     "ITERATOR SKIPPED ENTRIES");
 	else if (count > KEYS_COUNT)
-		TEST_FAILURE("lhmap_literator",
+		TEST_FAILURE("lhmap_letor",
 			     "ITERATOR TRAVERSED MORE THAN " KC_STR " KEYS");
 
-	TEST_PASS("iterator");
+	TEST_PASS("etor");
 
-	RETURN("test_iterator");
+	RETURN("test_etor");
 
 	return (ThreadReturn) 0;
 }
@@ -295,8 +295,8 @@ test_delete(void *arg)
 	unused_key = -1;
 
 	status = red_black_lhmap_delete(&lhmap,
-					   (void *) &unused_key,
-					   sizeof(unused_key));
+					(void *) &unused_key,
+					sizeof(unused_key));
 
 	if (status != 0) {
 		if (status < 0)
@@ -409,7 +409,7 @@ test_single_thread_operations(void)
 
 	test_count(KEYS_COUNT);
 
-	(void) test_iterator(NULL);
+	(void) test_etor(NULL);
 
 	test_count(KEYS_COUNT);
 
@@ -441,7 +441,7 @@ test_multi_thread_operations(void)
 
 	test_count(KEYS_COUNT);
 
-	multi_thread_test(&test_iterator);
+	multi_thread_test(&test_etor);
 
 	test_count(KEYS_COUNT);
 

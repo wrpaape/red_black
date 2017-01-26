@@ -4,7 +4,7 @@
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_lock.h" /* RedBlackLock */
-#include "red_black_tree.h" /* RedBlackTree, RedBlackTreeIterator */
+#include "red_black_tree.h" /* RedBlackTree, RedBlackTreeEtor */
 
 
 /* typedefs, struct declarations
@@ -15,13 +15,13 @@ struct _RedBlackLTree {
 };
 typedef struct _RedBlackLTree RedBlackLTree;
 
-typedef struct RedBlackIterator RedBlackLTreeIterator;
+typedef struct RedBlackEtor RedBlackLTreeEtor;
 
-struct _RedBlackLTreeLIterator {
-	RedBlackLTreeIterator tree_iterator;
+struct _RedBlackLTreeLEtor {
+	RedBlackLTreeEtor tree_etor;
 	RedBlackLock *restrict tree_lock;
 };
-typedef struct _RedBlackLTreeLIterator RedBlackLTreeLIterator;
+typedef struct _RedBlackLTreeLEtor RedBlackLTreeLEtor;
 
 
 /* external API

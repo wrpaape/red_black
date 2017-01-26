@@ -632,26 +632,26 @@ rb_tree_similar(const RedBlackTree *const restrict tree1,
 {
 	bool status1;
 	bool status2;
-	struct RedBlackIterator iter1;
-	struct RedBlackIterator iter2;
+	struct RedBlackEtor etor1;
+	struct RedBlackEtor etor2;
 	RedBlackComparator comparator;
 	void *key1;
 	void *key2;
 
-	red_black_asc_iterator_init(&iter1,
-				    tree1->root);
+	red_black_asc_etor_init(&etor1,
+				tree1->root);
 
 	comparator = tree1->comparator;
 
-	red_black_asc_iterator_init(&iter2,
-				    tree2->root);
+	red_black_asc_etor_init(&etor2,
+				tree2->root);
 
 	while (1) {
-		status1 = red_black_iterator_next(&iter1,
-						  &key1);
+		status1 = red_black_etor_next(&etor1,
+					      &key1);
 
-		status2 = red_black_iterator_next(&iter2,
-						  &key2);
+		status2 = red_black_etor_next(&etor2,
+					      &key2);
 
 		if (status1 != status2)
 			return false;
@@ -674,7 +674,7 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
-	struct RedBlackIterator iter;
+	struct RedBlackEtor etor;
 	volatile int count;
 	int status;
 	void *key;
@@ -683,8 +683,8 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 	comparator	     = dst_tree->comparator;
 	dst_node_factory_ptr = &dst_tree->node_factory;
 
-	red_black_asc_iterator_init(&iter,
-				    src_tree->root);
+	red_black_asc_etor_init(&etor,
+				src_tree->root);
 
 	count = 0;
 
@@ -695,8 +695,8 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* RED_BLACK_MALLOC failure */
 
-	while (red_black_iterator_next(&iter,
-				       &key))
+	while (red_black_etor_next(&etor,
+				   &key))
 		count += red_black_insert(dst_root_ptr,
 					  comparator,
 					  dst_node_factory_ptr,
@@ -715,7 +715,7 @@ red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
-	struct RedBlackIterator iter;
+	struct RedBlackEtor etor;
 	volatile int count;
 	int status;
 	void *key;
@@ -724,8 +724,8 @@ red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
 	comparator	     = dst_tree->comparator;
 	dst_node_factory_ptr = &dst_tree->node_factory;
 
-	red_black_asc_iterator_init(&iter,
-				    src_tree->root);
+	red_black_asc_etor_init(&etor,
+				src_tree->root);
 
 	count = 0;
 
@@ -736,8 +736,8 @@ red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* RED_BLACK_MALLOC failure */
 
-	while (red_black_iterator_next(&iter,
-				       &key))
+	while (red_black_etor_next(&etor,
+				   &key))
 		count += red_black_put(dst_root_ptr,
 				       comparator,
 				       dst_node_factory_ptr,
@@ -765,7 +765,7 @@ rb_tree_add_all(RedBlackTree *const restrict dst_tree,
 	struct RedBlackNode *restrict *restrict dst_root_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
-	struct RedBlackIterator iter;
+	struct RedBlackEtor etor;
 	struct RedBlackNode *volatile restrict node;
 	bool status;
 	void *key;
@@ -782,11 +782,11 @@ rb_tree_add_all(RedBlackTree *const restrict dst_tree,
 			dst_root_ptr = &dst_tree->root;
 			comparator   = dst_tree->comparator;
 
-			red_black_asc_iterator_init(&iter,
-						    src_tree->root);
+			red_black_asc_etor_init(&etor,
+						src_tree->root);
 
-			(void) red_black_iterator_next(&iter,
-						       &key);
+			(void) red_black_etor_next(&etor,
+						   &key);
 
 			if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
 				goto NEXT_KEY;
@@ -799,8 +799,8 @@ rb_tree_add_all(RedBlackTree *const restrict dst_tree,
 					      &jump_buffer,
 					      node);
 NEXT_KEY:
-				if (!red_black_iterator_next(&iter,
-							     &key))
+				if (!red_black_etor_next(&etor,
+							 &key))
 					break;
 
 				++node;
@@ -820,7 +820,7 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
-	struct RedBlackIterator iter;
+	struct RedBlackEtor etor;
 	volatile int count;
 	int status;
 	void *key;
@@ -829,8 +829,8 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 	comparator	     = dst_tree->comparator;
 	dst_node_factory_ptr = &dst_tree->node_factory;
 
-	red_black_asc_iterator_init(&iter,
-				    src_tree->root);
+	red_black_asc_etor_init(&etor,
+				src_tree->root);
 
 	count = 0;
 
@@ -839,8 +839,8 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 	if (status == RED_BLACK_JUMP_VALUE_2_TRUE)
 		++count; /* successful deletion */
 
-	while (red_black_iterator_next(&iter,
-				       &key))
+	while (red_black_etor_next(&etor,
+				   &key))
 		count += red_black_delete(dst_root_ptr,
 					  comparator,
 					  dst_node_factory_ptr,
@@ -859,20 +859,20 @@ red_black_tree_drop_all(RedBlackTree *const restrict dst_tree,
 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
-	struct RedBlackIterator iter;
+	struct RedBlackEtor etor;
 	void *key;
 
 	dst_root_ptr	     = &dst_tree->root;
 	comparator	     = dst_tree->comparator;
 	dst_node_factory_ptr = &dst_tree->node_factory;
 
-	red_black_asc_iterator_init(&iter,
-				    src_tree->root);
+	red_black_asc_etor_init(&etor,
+				src_tree->root);
 
 	(void) RED_BLACK_SET_JUMP(jump_buffer);
 
-	while (red_black_iterator_next(&iter,
-				       &key))
+	while (red_black_etor_next(&etor,
+				   &key))
 		red_black_drop(dst_root_ptr,
 			       comparator,
 			       dst_node_factory_ptr,
@@ -919,7 +919,7 @@ red_black_tree_intersect(RedBlackTree *const restrict intersect_tree,
 	struct RedBlackNode *restrict node;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
-	struct RedBlackIterator iter2;
+	struct RedBlackEtor etor2;
 	volatile int count;
 	void *key;
 
@@ -932,16 +932,16 @@ red_black_tree_intersect(RedBlackTree *const restrict intersect_tree,
 	red_black_tree_init(intersect_tree,
 			    comparator);
 
-	red_black_asc_iterator_init(&iter2,
-				    tree2->root);
+	red_black_asc_etor_init(&etor2,
+				tree2->root);
 
 	count = 0;
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* RED_BLACK_MALLOC failure */
 
-	while (red_black_iterator_next(&iter2,
-				       &key))
+	while (red_black_etor_next(&etor2,
+				   &key))
 		if (red_black_find(root1,
 				   comparator,
 				   key)) {
@@ -1001,36 +1001,36 @@ red_black_tree_print(const RedBlackTree *const restrict tree,
 
 
 void
-red_black_tree_asc_iterator_init(RedBlackTreeIterator *const restrict iter,
+red_black_tree_asc_etor_init(RedBlackTreeEtor *const restrict etor,
 				 const RedBlackTree *const restrict tree)
 {
-	red_black_asc_iterator_init(iter,
-				    tree->root);
+	red_black_asc_etor_init(etor,
+				tree->root);
 }
 
 
 void
-red_black_tree_desc_iterator_init(RedBlackTreeIterator *const restrict iter,
+red_black_tree_desc_etor_init(RedBlackTreeEtor *const restrict etor,
 				  const RedBlackTree *const restrict tree)
 {
-	red_black_desc_iterator_init(iter,
-				     tree->root);
-}
-
-
-void
-red_black_tree_iterator_reset(RedBlackTreeIterator *const restrict iter,
-			      const RedBlackTree *const restrict tree)
-{
-	red_black_iterator_reset(iter,
+	red_black_desc_etor_init(etor,
 				 tree->root);
 }
 
 
-bool
-red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iter,
-			     void **const restrict key_ptr)
+void
+red_black_tree_etor_reset(RedBlackTreeEtor *const restrict etor,
+			  const RedBlackTree *const restrict tree)
 {
-	return red_black_iterator_next(iter,
-				       key_ptr);
+	red_black_etor_reset(etor,
+			     tree->root);
+}
+
+
+bool
+red_black_tree_etor_next(RedBlackTreeEtor *const restrict etor,
+			 void **const restrict key_ptr)
+{
+	return red_black_etor_next(etor,
+				   key_ptr);
 }

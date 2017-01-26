@@ -1,31 +1,31 @@
-#include "red_black_iterator.h" /* RedBlackIterator, RedBlackIteratorSeeker */
-#include <stddef.h>             /* NULL */
+#include "red_black_etor.h" /* RedBlackEtor */
+#include <stddef.h>         /* NULL */
 
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
-static const struct RedBlackIteratorOffset asc_iterator_offset = {
+static const struct RedBlackEtorOffset asc_etor_offset = {
 	.next = offsetof(struct RedBlackNode, right),
 	.prev = offsetof(struct RedBlackNode, left)
 };
 
-static const struct RedBlackIteratorOffset desc_iterator_offset = {
+static const struct RedBlackEtorOffset desc_etor_offset = {
 	.next = offsetof(struct RedBlackNode, left),
 	.prev = offsetof(struct RedBlackNode, right)
 };
 
 
 /* get node->left|right depending on OFF */
-#define RBI_GET_OFFSET(NODE,						\
+#define RBE_GET_OFFSET(NODE,						\
 		       OFF)						\
 *((const struct RedBlackNode *restrict *restrict) (((char *) (NODE)) + (OFF)))
 
 
 static inline const struct RedBlackNode *restrict *restrict
-rbi_update(const struct RedBlackNode *restrict *restrict cursor,
+rbe_update(const struct RedBlackNode *restrict *restrict cursor,
 	   const struct RedBlackNode *restrict node,
-	   const struct RedBlackIteratorOffset *const restrict offset)
+	   const struct RedBlackEtorOffset *const restrict offset)
 {
-	node = RBI_GET_OFFSET(node,
+	node = RBE_GET_OFFSET(node,
 			      offset->next);
 
 	if (node == NULL)
@@ -37,7 +37,7 @@ rbi_update(const struct RedBlackNode *restrict *restrict cursor,
 	while (1) {
 		*cursor = node;
 
-		node = RBI_GET_OFFSET(node,
+		node = RBE_GET_OFFSET(node,
 				      prev);
 
 		if (node == NULL)
@@ -49,7 +49,7 @@ rbi_update(const struct RedBlackNode *restrict *restrict cursor,
 
 
 static inline const struct RedBlackNode *restrict *restrict
-rbi_reset(const struct RedBlackNode *restrict *restrict cursor,
+rbe_reset(const struct RedBlackNode *restrict *restrict cursor,
 	  const struct RedBlackNode *restrict node,
 	  const size_t prev)
 {
@@ -58,7 +58,7 @@ rbi_reset(const struct RedBlackNode *restrict *restrict cursor,
 		++cursor;
 		*cursor = node;
 
-		node = RBI_GET_OFFSET(node,
+		node = RBE_GET_OFFSET(node,
 				      prev);
 	}
 
@@ -67,67 +67,67 @@ rbi_reset(const struct RedBlackNode *restrict *restrict cursor,
 
 
 static inline void
-rb_iterator_init(struct RedBlackIterator *const restrict iter,
-		 const struct RedBlackNode *restrict root,
-		 const struct RedBlackIteratorOffset *const restrict offset)
+rb_etor_init(struct RedBlackEtor *const restrict etor,
+		   const struct RedBlackNode *restrict root,
+		   const struct RedBlackEtorOffset *const restrict offset)
 
 {
 	const struct RedBlackNode *restrict *restrict cursor;
 
-	iter->offset = offset;
+	etor->offset = offset;
 
-	cursor = &iter->stack[0];
+	cursor = &etor->stack[0];
 
 	*cursor = NULL; /* mark top of stack */
 
-	iter->cursor = rbi_reset(cursor,
+	etor->cursor = rbe_reset(cursor,
 				 root,
 				 offset->prev);
 }
 
 
 void
-red_black_asc_iterator_init(struct RedBlackIterator *const restrict iter,
-			    const struct RedBlackNode *restrict root)
+red_black_asc_etor_init(struct RedBlackEtor *const restrict etor,
+			const struct RedBlackNode *restrict root)
 {
-	rb_iterator_init(iter,
-			 root,
-			 &asc_iterator_offset);
+	rb_etor_init(etor,
+		     root,
+		     &asc_etor_offset);
 }
 
 
 void
-red_black_desc_iterator_init(struct RedBlackIterator *const restrict iter,
-			     const struct RedBlackNode *restrict root)
-{
-	rb_iterator_init(iter,
-			 root,
-			 &desc_iterator_offset);
-}
-
-
-void
-red_black_iterator_reset(struct RedBlackIterator *const restrict iter,
+red_black_desc_etor_init(struct RedBlackEtor *const restrict etor,
 			 const struct RedBlackNode *restrict root)
 {
-	iter->cursor = rbi_reset(&iter->stack[0],
+	rb_etor_init(etor,
+		     root,
+		     &desc_etor_offset);
+}
+
+
+void
+red_black_etor_reset(struct RedBlackEtor *const restrict etor,
+		     const struct RedBlackNode *restrict root)
+{
+	etor->cursor = rbe_reset(&etor->stack[0],
 				 root,
-				 iter->offset->prev);
+				 etor->offset->prev);
 }
 
 
 bool
-red_black_iterator_next(struct RedBlackIterator *const restrict iter,
-			void **const restrict key_ptr)
+red_black_etor_next(struct RedBlackEtor *const restrict etor,
+		    void **const restrict key_ptr)
 {
-	const struct RedBlackNode *const restrict node = *(iter->cursor);
+	const struct RedBlackNode *const restrict node = *(etor->cursor);
 
 	const bool has_next = (node != NULL);
 
 	if (has_next) {
-		iter->cursor = rbi_update(iter->cursor,
+		etor->cursor = rbe_update(etor->cursor,
 					  node,
-					  iter->offset);
+					  etor->offset);
 
 		*key_ptr = (void *) node->key;
 	}

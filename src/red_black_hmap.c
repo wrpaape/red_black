@@ -455,53 +455,53 @@ red_black_hmap_verify(RedBlackHMap *const restrict map)
 
 
 void
-red_black_hmap_iterator_init(RedBlackHMapIterator *const restrict iter,
-			     RedBlackHMap *const restrict map)
+red_black_hmap_etor_init(RedBlackHMapEtor *const restrict etor,
+			 RedBlackHMap *const restrict map)
 {
 	struct RedBlackHBucket *restrict first_bucket;
 
 	first_bucket = map->buckets;
 
-	/* initialize first bucket iterator */
-	red_black_asc_iterator_init(&iter->bucket_iter,
-				    first_bucket->root);
+	/* initialize first bucket etor */
+	red_black_asc_etor_init(&etor->bucket_etor,
+				first_bucket->root);
 
-	iter->bucket      = first_bucket;
-	iter->last_bucket = first_bucket + map->count.buckets_m1;
+	etor->bucket      = first_bucket;
+	etor->last_bucket = first_bucket + map->count.buckets_m1;
 }
 
 
 bool
-red_black_hmap_iterator_next(RedBlackHMapIterator *const restrict iter,
-			     void **const restrict key_ptr,
-			     size_t *const restrict length_ptr)
+red_black_hmap_etor_next(RedBlackHMapEtor *const restrict etor,
+			 void **const restrict key_ptr,
+			 size_t *const restrict length_ptr)
 {
-	struct RedBlackIterator *restrict bucket_iter;
+	struct RedBlackEtor *restrict bucket_etor;
 	struct RedBlackHBucket *restrict bucket;
 	struct RedBlackHBucket *restrict last_bucket;
 	struct RedBlackHKey *restrict hkey_ptr;
 
-	bucket_iter = &iter->bucket_iter;
+	bucket_etor = &etor->bucket_etor;
 
 	/* if current bucket has remaining keys, return with next key, length */
-	if (red_black_iterator_next(bucket_iter,
-				    (void **) &hkey_ptr))
+	if (red_black_etor_next(bucket_etor,
+				(void **) &hkey_ptr))
 		goto FOUND_NEXT;
 
-	bucket      = iter->bucket;
-	last_bucket = iter->last_bucket;
+	bucket      = etor->bucket;
+	last_bucket = etor->last_bucket;
 
 	while (bucket < last_bucket) {
 		++bucket; /* advance to next bucket */
 
-		/* reset bucket iterator */
-		red_black_asc_iterator_set(bucket_iter,
-					   bucket->root);
+		/* reset bucket etor */
+		red_black_etor_reset(bucket_etor,
+				     bucket->root);
 
 		/* if bucket is non-empty, return with first key, length */
-		if (red_black_iterator_next(bucket_iter,
-					    (void **) &hkey_ptr)) {
-			iter->bucket = bucket; /* update bucket */
+		if (red_black_etor_next(bucket_etor,
+					(void **) &hkey_ptr)) {
+			etor->bucket = bucket; /* update bucket */
 FOUND_NEXT:
 			*key_ptr    = (void *) hkey_ptr->key;
 			*length_ptr = hkey_ptr->length;

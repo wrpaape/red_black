@@ -6,7 +6,7 @@
 #include "red_black_lock.h"         /* RedBlackLock */
 #include "red_black_node_factory.h" /* RedBlackNodeFactory */
 #include "red_black_hmap_count.h"   /* RedBlackHMapCount */
-#include "red_black_iterator.h"	    /* RedBlackIterator */
+#include "red_black_etor.h"	    /* RedBlackEtor */
 
 
 /* typedefs, struct declarations
@@ -24,18 +24,18 @@ struct _RedBlackLHMap {
 };
 typedef struct _RedBlackLHMap RedBlackLHMap;
 
-struct _RedBlackLHMapIterator {
-	struct RedBlackIterator bucket_iter;
+struct _RedBlackLHMapEtor {
+	struct RedBlackEtor bucket_etor;
 	struct RedBlackLHBucket *restrict bucket;
 	struct RedBlackLHBucket *restrict last_bucket;
 };
-typedef struct _RedBlackLHMapIterator RedBlackLHMapIterator;
+typedef struct _RedBlackLHMapEtor RedBlackLHMapEtor;
 
-struct _RedBlackLHMapLIterator {
-	RedBlackLHMapIterator map_iter;
+struct _RedBlackLHMapLEtor {
+	RedBlackLHMapEtor map_etor;
 	RedBlackLock *restrict map_lock;
 };
-typedef struct _RedBlackLHMapLIterator RedBlackLHMapLIterator;
+typedef struct _RedBlackLHMapLEtor RedBlackLHMapLEtor;
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
@@ -122,30 +122,30 @@ bool
 red_black_lhmap_verify_u(RedBlackLHMap *const restrict map);
 
 void
-red_black_lhmap_iterator_init(RedBlackLHMapIterator *const restrict iter,
-			      RedBlackLHMap *const restrict map);
+red_black_lhmap_etor_init(RedBlackLHMapEtor *const restrict etor,
+			  RedBlackLHMap *const restrict map);
 
 bool
-red_black_lhmap_iterator_next(RedBlackLHMapIterator *const restrict iter,
-			      void **const restrict key_ptr,
-			      size_t *const restrict length_ptr);
+red_black_lhmap_etor_next(RedBlackLHMapEtor *const restrict etor,
+			  void **const restrict key_ptr,
+			  size_t *const restrict length_ptr);
 
 int
-red_black_lhmap_literator_init(RedBlackLHMapLIterator *const restrict iter,
-			       RedBlackLHMap *const restrict map);
+red_black_lhmap_letor_init(RedBlackLHMapLEtor *const restrict etor,
+			   RedBlackLHMap *const restrict map);
 
 bool
-red_black_lhmap_literator_unlock(RedBlackLHMapLIterator *const restrict iter);
+red_black_lhmap_letor_unlock(RedBlackLHMapLEtor *const restrict etor);
 
 bool
-red_black_lhmap_literator_lock(RedBlackLHMapLIterator *const restrict iter);
+red_black_lhmap_letor_lock(RedBlackLHMapLEtor *const restrict etor);
 
 int
-red_black_lhmap_literator_next(RedBlackLHMapLIterator *const restrict iter,
-			       void **const restrict key_ptr,
-			       size_t *const restrict length_ptr);
+red_black_lhmap_letor_next(RedBlackLHMapLEtor *const restrict etor,
+			   void **const restrict key_ptr,
+			   size_t *const restrict length_ptr);
 bool
-red_black_lhmap_literator_next_u(RedBlackLHMapLIterator *const restrict iter,
-				 void **const restrict key_ptr,
-				 size_t *const restrict length_ptr);
+red_black_lhmap_letor_next_u(RedBlackLHMapLEtor *const restrict etor,
+			     void **const restrict key_ptr,
+			     size_t *const restrict length_ptr);
 #endif /* ifndef RED_BLACK_LHMAP_H_ */

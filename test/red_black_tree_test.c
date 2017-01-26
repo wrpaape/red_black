@@ -174,27 +174,27 @@ test_find(void)
 }
 
 static inline void
-test_iterator(void)
+test_etor(void)
 {
 	int last_key;
 	int next_key;
 	unsigned int count;
 
-	RedBlackTreeIterator iterator;
+	RedBlackTreeEtor etor;
 
-	ENTER("test_iterator");
+	ENTER("test_etor");
 
-	/* test ascending iterator */
-	red_black_tree_asc_iterator_init(&iterator,
-					 &tree);
+	/* test ascending etor */
+	red_black_tree_asc_etor_init(&etor,
+				     &tree);
 
 	last_key = -1;
 	count    = 0;
 
-	while (red_black_tree_iterator_next(&iterator,
-					    (void **) &next_key)) {
+	while (red_black_tree_etor_next(&etor,
+					(void **) &next_key)) {
 		if (last_key > next_key)
-			TEST_FAILURE("tree_iterator",
+			TEST_FAILURE("tree_etor",
 				     "ASCENDING ITERATOR OUT OF ORDER");
 
 		last_key = next_key;
@@ -203,23 +203,23 @@ test_iterator(void)
 	}
 
 	if (count < KEYS_COUNT)
-		TEST_FAILURE("tree_iterator",
+		TEST_FAILURE("tree_etor",
 			     "ASCENDING ITERATOR SKIPPED ENTRIES");
 	else if (count > KEYS_COUNT)
-		TEST_FAILURE("tree_iterator",
+		TEST_FAILURE("tree_etor",
 			     "ASCENDING ITERATOR REPEATED ENTRIES");
 
-	/* test descending iterator */
-	red_black_tree_desc_iterator_init(&iterator,
-					  &tree);
+	/* test descending etor */
+	red_black_tree_desc_etor_init(&etor,
+				      &tree);
 
 	last_key = KEYS_COUNT + 1;
 	count    = 0;
 
-	while (red_black_tree_iterator_next(&iterator,
-					    (void **) &next_key)) {
+	while (red_black_tree_etor_next(&etor,
+					(void **) &next_key)) {
 		if (last_key < next_key)
-			TEST_FAILURE("tree_iterator",
+			TEST_FAILURE("tree_etor",
 				     "DESCENDING ITERATOR OUT OF ORDER");
 
 		last_key = next_key;
@@ -228,15 +228,15 @@ test_iterator(void)
 	}
 
 	if (count < KEYS_COUNT)
-		TEST_FAILURE("tree_iterator",
+		TEST_FAILURE("tree_etor",
 			     "DESCENDING ITERATOR SKIPPED ENTRIES");
 	else if (count > KEYS_COUNT)
-		TEST_FAILURE("tree_iterator",
+		TEST_FAILURE("tree_etor",
 			     "DESCENDING ITERATOR REPEATED ENTRIES");
 
-	TEST_PASS("iterator");
+	TEST_PASS("etor");
 
-	RETURN("test_iterator");
+	RETURN("test_etor");
 }
 
 
@@ -336,7 +336,7 @@ main(void)
 
 	test_count(KEYS_COUNT);
 
-	test_iterator();
+	test_etor();
 
 	test_count(KEYS_COUNT);
 

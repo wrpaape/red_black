@@ -5,7 +5,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_comparator.h"   /* Comparator */
 #include "red_black_node_factory.h" /* Node, NodeFactory, JumpBuffer, bool */
-#include "red_black_iterator.h"     /* RedBlackIterator */
+#include "red_black_etor.h"         /* RedBlackEtor */
 #include "red_black_print_types.h"  /* KeySizer|Putter, size_t */
 
 
@@ -18,7 +18,7 @@ struct _RedBlackTree {
 };
 typedef struct _RedBlackTree RedBlackTree;
 
-typedef struct RedBlackIterator RedBlackTreeIterator;
+typedef struct RedBlackEtor RedBlackTreeEtor;
 
 
 /* external API
@@ -236,18 +236,18 @@ red_black_tree_print(const RedBlackTree *const restrict tree,
 		     const RedBlackKeyPutter key_putter);
 
 void
-red_black_tree_asc_iterator_init(RedBlackTreeIterator *const restrict iter,
-				 const RedBlackTree *const restrict tree);
+red_black_tree_asc_etor_init(RedBlackTreeEtor *const restrict etor,
+			     const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_desc_iterator_init(RedBlackTreeIterator *const restrict iter,
-				  const RedBlackTree *const restrict tree);
-void
-red_black_tree_iterator_reset(RedBlackTreeIterator *const restrict iter,
+red_black_tree_desc_etor_init(RedBlackTreeEtor *const restrict etor,
 			      const RedBlackTree *const restrict tree);
+void
+red_black_tree_etor_reset(RedBlackTreeEtor *const restrict etor,
+			  const RedBlackTree *const restrict tree);
 
 bool
-red_black_tree_iterator_next(RedBlackTreeIterator *const restrict iter,
-			     void **const restrict key_ptr);
+red_black_tree_etor_next(RedBlackTreeEtor *const restrict etor,
+			 void **const restrict key_ptr);
 
 #endif /* ifndef RED_BLACK_TREE_H_ */

@@ -5,7 +5,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node_factory.h" /* RedBlackNodeFactory */
 #include "red_black_hmap_count.h"   /* RedBlackHMapCount */
-#include "red_black_iterator.h"	    /* RedBlackIterator */
+#include "red_black_etor.h"	    /* RedBlackEtor */
 
 
 /* typedefs, struct declarations
@@ -21,12 +21,12 @@ struct _RedBlackHMap {
 };
 typedef struct _RedBlackHMap RedBlackHMap;
 
-struct _RedBlackHMapIterator {
-	struct RedBlackIterator bucket_iter;
+struct _RedBlackHMapEtor {
+	struct RedBlackEtor bucket_etor;
 	struct RedBlackHBucket *restrict bucket;
 	struct RedBlackHBucket *restrict last_bucket;
 };
-typedef struct _RedBlackHMapIterator RedBlackHMapIterator;
+typedef struct _RedBlackHMapEtor RedBlackHMapEtor;
 
 
 /* external API
@@ -78,11 +78,11 @@ bool
 red_black_hmap_verify(RedBlackHMap *const restrict map);
 
 void
-red_black_hmap_iterator_init(RedBlackHMapIterator *const restrict iter,
-			     RedBlackHMap *const restrict map);
+red_black_hmap_etor_init(RedBlackHMapEtor *const restrict etor,
+			 RedBlackHMap *const restrict map);
 
 bool
-red_black_hmap_iterator_next(RedBlackHMapIterator *const restrict iter,
-			     void **const restrict key_ptr,
-			     size_t *const restrict length_ptr);
+red_black_hmap_etor_next(RedBlackHMapEtor *const restrict etor,
+			 void **const restrict key_ptr,
+			 size_t *const restrict length_ptr);
 #endif /* ifndef RED_BLACK_HMAP_H_ */

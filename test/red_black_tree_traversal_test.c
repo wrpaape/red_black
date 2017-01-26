@@ -69,21 +69,21 @@ tearDown(void)
 
 
 void
-test_red_black_tree_asc_iterator(void)
+test_red_black_tree_asc_etor(void)
 {
 	int i;
 	int j;
 	void *key;
 	bool status;
-	RedBlackTreeIterator iter;
+	RedBlackTreeEtor etor;
 
-	red_black_tree_asc_iterator_init(&iter,
+	red_black_tree_asc_etor_init(&etor,
 					 &tree);
 
 	for (i = 0; i < 2; ++i) {
 		for (j = 0; j < KEYS_COUNT; ++j) {
-			status = red_black_tree_iterator_next(&iter,
-							      &key);
+			status = red_black_tree_etor_next(&etor,
+							  &key);
 
 			TEST_ASSERT_TRUE_MESSAGE(status,
 						 "ASC ITERATOR SKIPPED KEYS");
@@ -93,34 +93,34 @@ test_red_black_tree_asc_iterator(void)
 						      "UNEXPECTED NEXT KEY");
 		}
 
-		status = red_black_tree_iterator_next(&iter,
-						      &key);
+		status = red_black_tree_etor_next(&etor,
+						  &key);
 
 		TEST_ASSERT_FALSE_MESSAGE(status,
 					  "KEYS REMAIN AFTER ASC ITERATION");
 
-		red_black_tree_iterator_reset(&iter,
+		red_black_tree_etor_reset(&etor,
 					      &tree);
 	}
 }
 
 
 void
-test_red_black_tree_desc_iterator(void)
+test_red_black_tree_desc_etor(void)
 {
 	int i;
 	int j;
 	void *key;
 	bool status;
-	RedBlackTreeIterator iter;
+	RedBlackTreeEtor etor;
 
-	red_black_tree_desc_iterator_init(&iter,
-					  &tree);
+	red_black_tree_desc_etor_init(&etor,
+				      &tree);
 
 	for (i = 0; i < 2; ++i) {
 		for (j = KEYS_COUNT - 1; j >= 0; --j) {
-			status = red_black_tree_iterator_next(&iter,
-							      &key);
+			status = red_black_tree_etor_next(&etor,
+							  &key);
 
 			TEST_ASSERT_TRUE_MESSAGE(status,
 						 "DESC ITERATOR SKIPPED KEYS");
@@ -130,13 +130,13 @@ test_red_black_tree_desc_iterator(void)
 						      "UNEXPECTED NEXT KEY");
 		}
 
-		status = red_black_tree_iterator_next(&iter,
-						      &key);
+		status = red_black_tree_etor_next(&etor,
+						  &key);
 
 		TEST_ASSERT_FALSE_MESSAGE(status,
 					  "KEYS REMAIN AFTER DESC ITERATION");
 
-		red_black_tree_iterator_reset(&iter,
-					      &tree);
+		red_black_tree_etor_reset(&etor,
+					  &tree);
 	}
 }
