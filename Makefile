@@ -284,6 +284,24 @@ TARGETS				+= $(NODE_FACTORY_OBJ)			\
 			   	   $(NODE_FACTORY_PIC_OBJ)
 
 
+# red_black_link_offset
+# ──────────────────────────────────────────────────────────────────────────────
+LINK_OFFSET_SRC			:= $(call SOURCE_PATH,red_black_link_offset)
+LINK_OFFSET_HDR			:= $(call HEADER_PATH,red_black_link_offset)
+LINK_OFFSET_OBJ			:= $(call OBJECT_PATH,red_black_link_offset)
+LINK_OFFSET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_link_offset)
+# ─────────────── target prequisites ───────────────────────────────────────────
+LINK_OFFSET_OBJ_PREQS		:= $(LINK_OFFSET_SRC)			\
+			   	   $(LINK_OFFSET_HDR)			\
+			   	   $(NODE_HDR)
+LINK_OFFSET_OBJ_GROUP		:= $(LINK_OFFSET_OBJ)
+LINK_OFFSET_PIC_OBJ_PREQS	:= $(LINK_OFFSET_OBJ_PREQS)
+LINK_OFFSET_PIC_OBJ_GROUP	:= $(LINK_OFFSET_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS				+= $(LINK_OFFSET_OBJ)			\
+				   $(LINK_OFFSET_PIC_OBJ)
+
+
 # red_black_etor
 # ──────────────────────────────────────────────────────────────────────────────
 ETOR_SRC		:= $(call SOURCE_PATH,red_black_etor)
@@ -293,11 +311,13 @@ ETOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_etor)
 # ─────────────── target prequisites ───────────────────────────────────────────
 ETOR_OBJ_PREQS		:= $(ETOR_SRC)					\
 			   $(ETOR_HDR)					\
-			   $(NODE_HDR)					\
+			   $(LINK_OFFSET_HDR)				\
 			   $(STACK_COUNT_HDR)
-ETOR_OBJ_GROUP		:= $(ETOR_OBJ)
+ETOR_OBJ_GROUP		:= $(ETOR_OBJ)					\
+			   $(LINK_OFFSET_OBJ_GROUP)
 ETOR_PIC_OBJ_PREQS	:= $(ETOR_OBJ_PREQS)
-ETOR_PIC_OBJ_GROUP	:= $(ETOR_PIC_OBJ)
+ETOR_PIC_OBJ_GROUP	:= $(ETOR_PIC_OBJ)				\
+			   $(LINK_OFFSET_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(ETOR_OBJ)					\
 			   $(ETOR_PIC_OBJ)
@@ -874,14 +894,14 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_HDR)
 TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
-			   $(ETOR_OBJ_GROUP)			\
+			   $(ETOR_OBJ_GROUP)				\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(PUT_OBJ_GROUP)				\
 			   $(UPDATE_OBJ_GROUP)				\
 			   $(ADD_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
-		   	   $(DROP_OBJ_GROUP)			\
+		   	   $(DROP_OBJ_GROUP)				\
 		   	   $(PLUCK_OBJ_GROUP)				\
 			   $(FIND_OBJ_GROUP)				\
 			   $(FETCH_OBJ_GROUP)				\
@@ -950,7 +970,7 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 		   	   $(UPDATE_HDR)				\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
-		   	   $(DROP_HDR)				\
+		   	   $(DROP_HDR)					\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
 		   	   $(VERIFY_HDR)				\
@@ -961,13 +981,13 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 			   $(LOCK_OBJ_GROUP)				\
 		   	   $(NODE_FACTORY_OBJ_GROUP)			\
 		   	   $(HMAP_COUNT_OBJ_GROUP)			\
-		   	   $(ETOR_OBJ_GROUP)			\
+		   	   $(ETOR_OBJ_GROUP)				\
 		   	   $(HKEY_OBJ_GROUP)				\
 		   	   $(INSERT_OBJ_GROUP)				\
 		   	   $(UPDATE_OBJ_GROUP)				\
 		   	   $(DELETE_OBJ_GROUP)				\
 		   	   $(REMOVE_OBJ_GROUP)				\
-		   	   $(DROP_OBJ_GROUP)			\
+		   	   $(DROP_OBJ_GROUP)				\
 		   	   $(FIND_OBJ_GROUP)				\
 		   	   $(FETCH_OBJ_GROUP)				\
 		   	   $(VERIFY_OBJ_GROUP)				\
@@ -1447,6 +1467,11 @@ $(NODE_FACTORY_PIC_OBJ): $(NODE_FACTORY_PIC_OBJ_PREQS)
 $(ETOR_OBJ): $(ETOR_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(ETOR_PIC_OBJ): $(ETOR_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(LINK_OFFSET_OBJ): $(LINK_OFFSET_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(LINK_OFFSET_PIC_OBJ): $(LINK_OFFSET_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(INSERT_OBJ): $(INSERT_OBJ_PREQS)

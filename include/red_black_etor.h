@@ -3,21 +3,15 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node.h"        /* RedBlackNode, bool */
+#include "red_black_link_offset.h" /* Node, LinkOffset, bool, size_t */
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
-#include <stddef.h>		   /* size_t, offsetof() */
 
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-struct RedBlackEtorOffset {
-	size_t next;
-	size_t prev;
-};
-
 struct RedBlackEtor {
 	const struct RedBlackNode *restrict *restrict cursor;
-	const struct RedBlackEtorOffset *restrict offset;
+	const struct RedBlackLinkOffset *restrict offset;
 	const struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
 };
 

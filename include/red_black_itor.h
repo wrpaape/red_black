@@ -13,11 +13,12 @@
 struct RedBlackItorNode {
 	struct RedBlackNode *restrict *restrict tree;
 	struct RedBlackNode *restrict node;
+
 };
 
 struct RedBlackItor {
-	const struct RedBlackNode *restrict *restrict cursor;
-	const struct RedBlackItorNode *restrict stack[RED_BLACK_STACK_COUNT];
+	const struct RedBlackItorNode *restrict cursor;
+	const struct RedBlackItorNode stack[RED_BLACK_STACK_COUNT];
 };
 
 
