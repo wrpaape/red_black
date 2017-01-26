@@ -169,7 +169,7 @@ test_red_black_tree_fetch_min(void)
 					      (int) (intptr_t) fetched_key,
 					      "FETCHED MIN KEY DOES NOT MATCH");
 
-		red_black_tree_subtract_min(&tree);
+		red_black_tree_drop_min(&tree);
 	}
 
 	verify_empty_tree();
@@ -207,7 +207,7 @@ test_red_black_tree_fetch_max(void)
 					      (int) (intptr_t) fetched_key,
 					      "FETCHED MAX KEY DOES NOT MATCH");
 
-		red_black_tree_subtract_max(&tree);
+		red_black_tree_drop_max(&tree);
 	}
 
 	verify_empty_tree();
@@ -470,7 +470,7 @@ test_red_black_tree_get_min(void)
 					      key,
 					      "GOT UNEXPECTED MIN KEY");
 
-		red_black_tree_subtract_min(&tree);
+		red_black_tree_drop_min(&tree);
 	}
 
 	verify_empty_tree();
@@ -489,7 +489,7 @@ test_red_black_tree_get_max(void)
 					      key,
 					      "GOT UNEXPECTED MAX KEY");
 
-		red_black_tree_subtract_max(&tree);
+		red_black_tree_drop_max(&tree);
 	}
 
 	verify_empty_tree();
@@ -608,7 +608,7 @@ test_red_black_tree_swap_min(void)
 					      key,
 					      "UNEXPECTED MIN KEY");
 
-		red_black_tree_subtract_min(&tree);
+		red_black_tree_drop_min(&tree);
 	}
 
 	verify_empty_tree();
@@ -637,7 +637,7 @@ test_red_black_tree_swap_max(void)
 					      key,
 					      "UNEXPECTED MAX KEY");
 
-		red_black_tree_subtract_max(&tree);
+		red_black_tree_drop_max(&tree);
 	}
 
 	verify_empty_tree();

@@ -75,12 +75,12 @@ red_black_tree_remove_max(RedBlackTree *const restrict tree,
 			  void **const restrict remove_ptr);
 
 void
-red_black_tree_subtract(RedBlackTree *const restrict tree,
-			const void *const key);
+red_black_tree_drop(RedBlackTree *const restrict tree,
+		    const void *const key);
 void
-red_black_tree_subtract_min(RedBlackTree *const restrict tree);
+red_black_tree_drop_min(RedBlackTree *const restrict tree);
 void
-red_black_tree_subtract_max(RedBlackTree *const restrict tree);
+red_black_tree_drop_max(RedBlackTree *const restrict tree);
 
 void *
 red_black_tree_pluck(RedBlackTree *const restrict tree,
@@ -201,8 +201,8 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 			  const RedBlackTree *const restrict src_tree);
 
 void
-red_black_tree_subtract_all(RedBlackTree *const restrict dst_tree,
-			    const RedBlackTree *const restrict src_tree);
+red_black_tree_drop_all(RedBlackTree *const restrict dst_tree,
+			const RedBlackTree *const restrict src_tree);
 
 int
 red_black_tree_union(RedBlackTree *const restrict union_tree,

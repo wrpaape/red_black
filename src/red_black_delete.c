@@ -267,7 +267,7 @@ red_black_delete_min(struct RedBlackNode *restrict *const restrict tree,
 		}
 	}
 
-	return status; /* 1, 0 (deleted, untouched) */
+	return status; /* 1, 0 (removed, untouched) */
 }
 
 

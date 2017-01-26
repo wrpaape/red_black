@@ -14,14 +14,9 @@ typedef const struct RedBlackNode *restrict *restrict
 (*RedBlackIteratorSeeker)(const struct RedBlackNode *restrict *restrict cursor,
 			  const struct RedBlackNode *restrict node);
 
-struct RedBlackIteratorBlueprint {
-	const RedBlackIteratorSeeker updater;
-	const RedBlackIteratorSeeker resetter;
-};
-
 struct RedBlackIteratorOffset {
-	size_t prev;
 	size_t next;
+	size_t prev;
 };
 
 struct RedBlackIterator {

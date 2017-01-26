@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_SUBTRACT_H_
-#define RED_BLACK_SUBTRACT_H_
+#ifndef RED_BLACK_DROP_H_
+#define RED_BLACK_DROP_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -10,23 +10,23 @@
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_subtract(struct RedBlackNode *restrict *const restrict tree,
-		   const RedBlackComparator comparator,
+red_black_drop(struct RedBlackNode *restrict *const restrict tree,
+	       const RedBlackComparator comparator,
+	       struct RedBlackNodeFactory *const restrict factory,
+	       RedBlackJumpBuffer *const restrict jump_buffer,
+	       const void *const key);
+
+void
+red_black_drop_min(struct RedBlackNode *restrict *const restrict tree,
 		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer,
-		   const void *const key);
+		   RedBlackJumpBuffer *const restrict jump_buffer);
 
 void
-red_black_subtract_min(struct RedBlackNode *restrict *const restrict tree,
-		       struct RedBlackNodeFactory *const restrict factory,
-		       RedBlackJumpBuffer *const restrict jump_buffer);
-
-void
-red_black_subtract_max(struct RedBlackNode *restrict *const restrict tree,
-		       struct RedBlackNodeFactory *const restrict factory,
-		       RedBlackJumpBuffer *const restrict jump_buffer);
+red_black_drop_max(struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNodeFactory *const restrict factory,
+		   RedBlackJumpBuffer *const restrict jump_buffer);
 
 /* may jump or return after successful deletion
  * ────────────────────────────────────────────────────────────────────────── */
 
-#endif /* ifndef RED_BLACK_SUBTRACT_H_ */
+#endif /* ifndef RED_BLACK_DROP_H_ */

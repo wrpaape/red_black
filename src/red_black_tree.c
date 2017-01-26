@@ -5,7 +5,7 @@
 #include "red_black_add.h"	 /* red_black_add */
 #include "red_black_delete.h"	 /* red_black_delete */
 #include "red_black_remove.h"	 /* red_black_remove */
-#include "red_black_subtract.h"	 /* red_black_subtract */
+#include "red_black_drop.h"	 /* red_black_drop */
 #include "red_black_pluck.h"	 /* red_black_pluck */
 #include "red_black_find.h"	 /* red_black_find */
 #include "red_black_fetch.h"	 /* red_black_fetch */
@@ -282,39 +282,39 @@ red_black_tree_remove_max(RedBlackTree *const restrict tree,
 
 
 void
-red_black_tree_subtract(RedBlackTree *const restrict tree,
-			const void *const key)
+red_black_tree_drop(RedBlackTree *const restrict tree,
+		    const void *const key)
 {
 	RedBlackJumpBuffer jump_buffer;
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
-		red_black_subtract(&tree->root,
-				   tree->comparator,
+		red_black_drop(&tree->root,
+			       tree->comparator,
+			       &tree->node_factory,
+			       &jump_buffer,
+			       key);
+}
+
+void
+red_black_tree_drop_min(RedBlackTree *const restrict tree)
+{
+	RedBlackJumpBuffer jump_buffer;
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
+		red_black_drop_min(&tree->root,
 				   &tree->node_factory,
-				   &jump_buffer,
-				   key);
+				   &jump_buffer);
 }
 
 void
-red_black_tree_subtract_min(RedBlackTree *const restrict tree)
+red_black_tree_drop_max(RedBlackTree *const restrict tree)
 {
 	RedBlackJumpBuffer jump_buffer;
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
-		red_black_subtract_min(&tree->root,
-				       &tree->node_factory,
-				       &jump_buffer);
-}
-
-void
-red_black_tree_subtract_max(RedBlackTree *const restrict tree)
-{
-	RedBlackJumpBuffer jump_buffer;
-
-	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
-		red_black_subtract_max(&tree->root,
-				       &tree->node_factory,
-				       &jump_buffer);
+		red_black_drop_max(&tree->root,
+				   &tree->node_factory,
+				   &jump_buffer);
 }
 
 
@@ -852,8 +852,8 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 
 
 void
-red_black_tree_subtract_all(RedBlackTree *const restrict dst_tree,
-			    const RedBlackTree *const restrict src_tree)
+red_black_tree_drop_all(RedBlackTree *const restrict dst_tree,
+			const RedBlackTree *const restrict src_tree)
 {
 	struct RedBlackNode *restrict *restrict dst_root_ptr;
 	struct RedBlackNodeFactory *restrict dst_node_factory_ptr;
@@ -873,11 +873,11 @@ red_black_tree_subtract_all(RedBlackTree *const restrict dst_tree,
 
 	while (red_black_iterator_next(&iter,
 				       &key))
-		red_black_subtract(dst_root_ptr,
-				   comparator,
-				   dst_node_factory_ptr,
-				   &jump_buffer,
-				   key); /* 1, 0 */
+		red_black_drop(dst_root_ptr,
+			       comparator,
+			       dst_node_factory_ptr,
+			       &jump_buffer,
+			       key); /* 1, 0 */
 }
 
 
