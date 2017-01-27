@@ -53,25 +53,34 @@ rbi_update(struct RedBlackItorNode *restrict cursor,
 }
 
 
-static inline struct RedBlackItorNode *restrict
-rbi_reset(struct RedBlackItorNode *restrict cursor,
-	  struct RedBlackNode *restrict *restrict tree,
-	  const struct RedBlackItorController *const restrict controller)
+static inline void
+rbi_reset(struct RedBlackItorCursor *restrict cursor,
+	  struct RedBlackItorNode *restrict *restrict stack_cursor,
+	  struct RedBlackItorNode *restrict path_cursor,
+	  const struct RedBlackItorController *const restrict controller,
+	  struct RedBlackNode *restrict *restrict tree)
 {
 	struct RedBlackNode *restrict node;
 	size_t offset;
 	RedBlackItorRestoreNode restore;
 
-	/* set cursor to most prev (least/greatest) node, keep track of stack */
+	node = *tree;
+
+	/* set cursors to most prev (least/left for asc, greatest/right for
+	 * desc) node, keep track of stack */
 	if (node != NULL) {
 		offset  = controller->prev.offset;
 		restore = controller->prev.restore;
 
 		do {
-			++cursor;
-			cursor->tree    = tree;
-			cursor->node    = node;
-			cursor->restore = restore;
+			++stack_cursor;
+			++path_cursor;
+
+			*stack_cursor = path_cursor;
+
+			path_cursor->tree    = tree;
+			path_cursor->node    = node;
+			path_cursor->restore = restore;
 
 			tree = RED_BLACK_LINK_OFFSET(node,
 						     offset);
@@ -79,7 +88,8 @@ rbi_reset(struct RedBlackItorNode *restrict cursor,
 		} while (node != NULL);
 	}
 
-	return cursor;
+	cursor->stack = stack_cursor;
+	cursor->path  = path_cursor;
 }
 
 static inline void
@@ -88,17 +98,22 @@ rb_itor_init(struct RedBlackEtor *const restrict itor,
 	     const struct RedBlackItorController *const restrict controller)
 
 {
-	struct RedBlackItorNode *restrict cursor;
+	struct RedBlackItorNode *restrict *restrict stack_cursor;
+	struct RedBlackItorNode *restrict path_cursor;
 
 	itor->controller = controller;
 
-	cursor = &itor->stack[0];
+	stack_cursor  = &itor->stack[0];
+	*stack_cursor = NULL; /* mark top of stack */
 
-	cursor->tree = NULL; /* mark top of stack */
+	path_cursor       = &itor->path[0];
+	path_cursor->tree = NULL; /* mark top of stack */
 
-	itor->cursor = rbi_reset(cursor,
-				 tree,
-				 controller);
+	rbi_reset(&itor->cursor,
+		  stack_cursor,
+		  path_cursor,
+		  controller,
+		  tree);
 }
 
 void
@@ -145,9 +160,11 @@ void
 red_black_itor_reset(struct RedBlackItor *const restrict itor,
 		     struct RedBlackNode *restrict *const restrict tree)
 {
-	itor->cursor = rbi_reset(&itor->stack[0],
-				 root,
-				 itor->controller);
+	rbi_reset(&itor->cursor,
+		  &itor->stack[0],
+		  &itor->path[0],
+		  itor->controller,
+		  tree);
 }
 
 bool

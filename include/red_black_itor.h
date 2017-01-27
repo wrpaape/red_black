@@ -18,6 +18,11 @@ struct RedBlackItorNode {
 	RedBlackItorRestoreNode restore;
 };
 
+struct RedBlackItorCursor {
+	struct RedBlackItorNode *restrict *restrict stack;
+	struct RedBlackItorNode *restrict path;
+};
+
 struct RedBlackItorControlNode {
 	size_t offset;
 	RedBlackItorRestoreNode restore;
@@ -29,10 +34,11 @@ struct RedBlackItorController {
 };
 
 struct RedBlackItor {
-	struct RedBlackItorNode *restrict cursor;
-	const struct RedBlackItorController *restrict control;
+	struct RedBlackItorCursor cursor;
+	const struct RedBlackItorController *restrict controller;
 	struct RedBlackNodeFactory *restrict factory;
-	struct RedBlackItorNode stack[RED_BLACK_STACK_COUNT];
+	struct RedBlackItorNode *restrict stack[RED_BLACK_STACK_COUNT];
+	struct RedBlackItorNode path[RED_BLACK_STACK_COUNT];
 };
 
 

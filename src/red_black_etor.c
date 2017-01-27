@@ -4,8 +4,8 @@
 
 static inline const struct RedBlackNode *restrict *restrict
 rbe_update(const struct RedBlackNode *restrict *restrict cursor,
-	   const struct RedBlackNode *restrict node,
-	   const struct RedBlackEtorController *const restrict controller)
+	   const struct RedBlackEtorController *const restrict controller,
+	   const struct RedBlackNode *restrict node)
 {
 	node = *RED_BLACK_LINK_OFFSET(node,
 				      controller->next);
@@ -32,12 +32,13 @@ rbe_update(const struct RedBlackNode *restrict *restrict cursor,
 
 static inline const struct RedBlackNode *restrict *restrict
 rbe_reset(const struct RedBlackNode *restrict *restrict cursor,
-	  const struct RedBlackNode *restrict node,
-	  const struct RedBlackEtorController *const restrict controller)
+	  const struct RedBlackEtorController *const restrict controller,
+	  const struct RedBlackNode *restrict node)
 {
 	size_t offset;
 
-	/* set cursor to most prev (least/greatest) node, keep track of stack */
+	/* set cursors to most prev (least/left for asc, greatest/right for
+	 * desc) node, keep track of stack */
 	if (node != NULL) {
 		offset = controller->prev;
 
@@ -69,8 +70,8 @@ rb_etor_init(struct RedBlackEtor *const restrict etor,
 	*cursor = NULL; /* mark top of stack */
 
 	etor->cursor = rbe_reset(cursor,
-				 root,
-				 controller);
+				 controller,
+				 root);
 }
 
 
@@ -109,8 +110,8 @@ red_black_etor_reset(struct RedBlackEtor *const restrict etor,
 		     const struct RedBlackNode *restrict root)
 {
 	etor->cursor = rbe_reset(&etor->stack[0],
-				 root,
-				 etor->controller);
+				 etor->controller,
+				 root);
 }
 
 
@@ -126,8 +127,8 @@ red_black_etor_next(struct RedBlackEtor *const restrict etor,
 
 	if (has_next) {
 		etor->cursor = rbe_update(etor->cursor,
-					  node,
-					  etor->controller);
+					  etor->controller,
+					  node);
 
 		*key_ptr = (void *) node->key;
 	}
