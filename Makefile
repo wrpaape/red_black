@@ -261,6 +261,7 @@ NODE_HDR        := $(call HEADER_PATH,red_black_node)
 HNODE_HDR       := $(call HEADER_PATH,red_black_hnode)
 PRINT_TYPES_HDR := $(call HEADER_PATH,red_black_print_types)
 RED_BLACK_HDR   := $(call HEADER_PATH,red_black)
+LINK_OFFSET_HDR	:= $(call HEADER_PATH,red_black_link_offset)
 
 
 # red_black_node_factory
@@ -284,24 +285,6 @@ TARGETS				+= $(NODE_FACTORY_OBJ)			\
 			   	   $(NODE_FACTORY_PIC_OBJ)
 
 
-# red_black_link_offset
-# ──────────────────────────────────────────────────────────────────────────────
-LINK_OFFSET_SRC			:= $(call SOURCE_PATH,red_black_link_offset)
-LINK_OFFSET_HDR			:= $(call HEADER_PATH,red_black_link_offset)
-LINK_OFFSET_OBJ			:= $(call OBJECT_PATH,red_black_link_offset)
-LINK_OFFSET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_link_offset)
-# ─────────────── target prequisites ───────────────────────────────────────────
-LINK_OFFSET_OBJ_PREQS		:= $(LINK_OFFSET_SRC)			\
-			   	   $(LINK_OFFSET_HDR)			\
-			   	   $(NODE_HDR)
-LINK_OFFSET_OBJ_GROUP		:= $(LINK_OFFSET_OBJ)
-LINK_OFFSET_PIC_OBJ_PREQS	:= $(LINK_OFFSET_OBJ_PREQS)
-LINK_OFFSET_PIC_OBJ_GROUP	:= $(LINK_OFFSET_PIC_OBJ)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS				+= $(LINK_OFFSET_OBJ)			\
-				   $(LINK_OFFSET_PIC_OBJ)
-
-
 # red_black_etor
 # ──────────────────────────────────────────────────────────────────────────────
 ETOR_SRC		:= $(call SOURCE_PATH,red_black_etor)
@@ -313,11 +296,9 @@ ETOR_OBJ_PREQS		:= $(ETOR_SRC)					\
 			   $(ETOR_HDR)					\
 			   $(LINK_OFFSET_HDR)				\
 			   $(STACK_COUNT_HDR)
-ETOR_OBJ_GROUP		:= $(ETOR_OBJ)					\
-			   $(LINK_OFFSET_OBJ_GROUP)
+ETOR_OBJ_GROUP		:= $(ETOR_OBJ)
 ETOR_PIC_OBJ_PREQS	:= $(ETOR_OBJ_PREQS)
-ETOR_PIC_OBJ_GROUP	:= $(ETOR_PIC_OBJ)				\
-			   $(LINK_OFFSET_PIC_OBJ_GROUP)
+ETOR_PIC_OBJ_GROUP	:= $(ETOR_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(ETOR_OBJ)					\
 			   $(ETOR_PIC_OBJ)
@@ -1467,11 +1448,6 @@ $(NODE_FACTORY_PIC_OBJ): $(NODE_FACTORY_PIC_OBJ_PREQS)
 $(ETOR_OBJ): $(ETOR_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(ETOR_PIC_OBJ): $(ETOR_PIC_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(LINK_OFFSET_OBJ): $(LINK_OFFSET_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-$(LINK_OFFSET_PIC_OBJ): $(LINK_OFFSET_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(INSERT_OBJ): $(INSERT_OBJ_PREQS)

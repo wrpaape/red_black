@@ -1,26 +1,26 @@
-#include "red_black_etor.h" /* RedBlackEtor */
-#include <stddef.h>         /* NULL */
+#include "red_black_etor.h"        /* RedBlackEtor, Node, offsetof(), NULL */
+#include "red_black_link_offset.h" /* RED_BLACK_LINK_OFFSET */
 
 
 static inline const struct RedBlackNode *restrict *restrict
 rbe_update(const struct RedBlackNode *restrict *restrict cursor,
 	   const struct RedBlackNode *restrict node,
-	   const struct RedBlackLinkOffset *const restrict offset)
+	   const struct RedBlackEtorController *const restrict controller)
 {
-	node = RBLO_GET_NODE(node,
-			     offset->next);
+	node = *RED_BLACK_LINK_OFFSET(node,
+				      controller->next);
 
 	if (node == NULL)
 		return cursor - 1;
 
 	/* find next pre/successor, overwrite cursor, keep track of stack */
-	const size_t prev = offset->prev;
+	const size_t offset = controller->prev;
 
 	while (1) {
 		*cursor = node;
 
-		node = RBLO_GET_NODE(node,
-				     prev);
+		node = *RED_BLACK_LINK_OFFSET(node,
+					      offset);
 
 		if (node == NULL)
 			return cursor; /* return pointer to pre/successor */
@@ -33,15 +33,21 @@ rbe_update(const struct RedBlackNode *restrict *restrict cursor,
 static inline const struct RedBlackNode *restrict *restrict
 rbe_reset(const struct RedBlackNode *restrict *restrict cursor,
 	  const struct RedBlackNode *restrict node,
-	  const size_t prev)
+	  const struct RedBlackEtorController *const restrict controller)
 {
-	/* set cursor to beginning node, keep track of stack */
-	while (node != NULL) {
-		++cursor;
-		*cursor = node;
+	size_t offset;
 
-		node = RBLO_GET_NODE(node,
-				     prev);
+	/* set cursor to most prev (least/greatest) node, keep track of stack */
+	if (node != NULL) {
+		offset = controller->prev;
+
+		do {
+			++cursor;
+			*cursor = node;
+
+			node = *RED_BLACK_LINK_OFFSET(node,
+						      offset);
+		} while (node != NULL);
 	}
 
 	return cursor;
@@ -50,13 +56,13 @@ rbe_reset(const struct RedBlackNode *restrict *restrict cursor,
 
 static inline void
 rb_etor_init(struct RedBlackEtor *const restrict etor,
-		   const struct RedBlackNode *restrict root,
-		   const struct RedBlackLinkOffset *const restrict offset)
+	     const struct RedBlackNode *restrict root,
+	     const struct RedBlackEtorController *const restrict controller)
 
 {
 	const struct RedBlackNode *restrict *restrict cursor;
 
-	etor->offset = offset;
+	etor->controller = controller;
 
 	cursor = &etor->stack[0];
 
@@ -64,7 +70,7 @@ rb_etor_init(struct RedBlackEtor *const restrict etor,
 
 	etor->cursor = rbe_reset(cursor,
 				 root,
-				 offset->prev);
+				 controller);
 }
 
 
@@ -72,9 +78,14 @@ void
 red_black_asc_etor_init(struct RedBlackEtor *const restrict etor,
 			const struct RedBlackNode *restrict root)
 {
+	static const struct RedBlackEtorController asc_controller = {
+		.next = offsetof(struct RedBlackNode, right),
+		.prev = offsetof(struct RedBlackNode, left)
+	};
+
 	rb_etor_init(etor,
 		     root,
-		     &asc_link_offset);
+		     &asc_controller);
 }
 
 
@@ -82,9 +93,14 @@ void
 red_black_desc_etor_init(struct RedBlackEtor *const restrict etor,
 			 const struct RedBlackNode *restrict root)
 {
+	static const struct RedBlackEtorController desc_controller = {
+		.next = offsetof(struct RedBlackNode, left),
+		.prev = offsetof(struct RedBlackNode, right)
+	};
+
 	rb_etor_init(etor,
 		     root,
-		     &desc_link_offset);
+		     &desc_controller);
 }
 
 
@@ -94,7 +110,7 @@ red_black_etor_reset(struct RedBlackEtor *const restrict etor,
 {
 	etor->cursor = rbe_reset(&etor->stack[0],
 				 root,
-				 etor->offset->prev);
+				 etor->controller);
 }
 
 
@@ -102,14 +118,16 @@ bool
 red_black_etor_next(struct RedBlackEtor *const restrict etor,
 		    void **const restrict key_ptr)
 {
-	const struct RedBlackNode *const restrict node = *(etor->cursor);
+	const struct RedBlackNode *restrict node;
+	bool has_next;
 
-	const bool has_next = (node != NULL);
+	node     = *(etor->cursor);
+	has_next = (node != NULL);
 
 	if (has_next) {
 		etor->cursor = rbe_update(etor->cursor,
 					  node,
-					  etor->offset);
+					  etor->controller);
 
 		*key_ptr = (void *) node->key;
 	}
