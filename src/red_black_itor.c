@@ -15,41 +15,14 @@ rbi_restore_right(struct RedBlackItor *const restrict itor_node)
 }
 
 
-static inline struct RedBlackItorNode *restrict
-rbi_update(struct RedBlackItorNode *restrict cursor,
-	   const struct RedBlackNode *restrict node,
-	   const struct RedBlackEtorController *const restrict controller)
+static inline void
+rbi_update(struct RedBlackItorCursor *restrict cursor,
+	   struct RedBlackItorNode *restrict *restrict stack_cursor,
+	   struct RedBlackItorNode *restrict path_cursor,
+	   const struct RedBlackItorController *const restrict controller,
+	   struct RedBlackNode *restrict *restrict tree,
+	   struct RedBlackNode *restrict node)
 {
-	struct RedBlackNode *restrict *restrict tree;
-
-	offset = controller->next.offset;
-
-	tree = RED_BLACK_LINK_OFFSET(node,
-				     controller->next.offset);
-
-	node = *tree;
-
-	if (node == NULL)
-		return cursor - 1;
-
-	cursor->restore = controller->next.restore;
-
-	/* find next pre/successor, overwrite cursor, keep track of stack */
-	const size_t offset                   = controller->prev.offset;
-	const RedBlackItorRestoreNode restore = controller->prev.restore;
-
-	while (1) {
-		cursor->tree = tree;
-		cursor->node = node;
-
-		node = *RED_BLACK_LINK_OFFSET(node,
-					      offset);
-
-		if (node == NULL)
-			return cursor; /* return pointer to pre/successor */
-
-		++cursor;
-	}
 }
 
 
@@ -95,13 +68,18 @@ rbi_reset(struct RedBlackItorCursor *restrict cursor,
 static inline void
 rb_itor_init(struct RedBlackEtor *const restrict itor,
 	     struct RedBlackNode *restrict *const restrict tree,
+	     struct RedBlackNodeFactory *const restrict factory,
 	     const struct RedBlackItorController *const restrict controller)
 
 {
 	struct RedBlackItorNode *restrict *restrict stack_cursor;
 	struct RedBlackItorNode *restrict path_cursor;
+	struct RedBlackItorCursor *restrict cursor_ptr;
+
+	cursor_ptr = &itor->cursor;
 
 	itor->controller = controller;
+	itor->factory    = factory;
 
 	stack_cursor  = &itor->stack[0];
 	*stack_cursor = NULL; /* mark top of stack */
@@ -109,7 +87,7 @@ rb_itor_init(struct RedBlackEtor *const restrict itor,
 	path_cursor       = &itor->path[0];
 	path_cursor->tree = NULL; /* mark top of stack */
 
-	rbi_reset(&itor->cursor,
+	rbi_reset(cursor_ptr,
 		  stack_cursor,
 		  path_cursor,
 		  controller,
@@ -118,7 +96,8 @@ rb_itor_init(struct RedBlackEtor *const restrict itor,
 
 void
 red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
-			struct RedBlackNode *restrict *const restrict tree)
+			struct RedBlackNode *restrict *const restrict tree,
+			struct RedBlackNodeFactory *const restrict factory)
 {
 	static const struct RedBlackItorController asc_controller = {
 		.next =  {
@@ -133,12 +112,14 @@ red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
 
 	rb_itor_init(itor,
 		     tree,
+		     factory,
 		     &asc_controller);
 }
 
 void
 red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
-			 struct RedBlackNode *restrict *const restrict tree)
+			 struct RedBlackNode *restrict *const restrict tree,
+			 struct RedBlackNodeFactory *const restrict factory)
 {
 	static const struct RedBlackItorController desc_controller = {
 		.next =  {
@@ -153,17 +134,27 @@ red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 
 	rb_itor_init(itor,
 		     tree,
+		     factory,
 		     &desc_controller);
 }
 
 void
 red_black_itor_reset(struct RedBlackItor *const restrict itor,
-		     struct RedBlackNode *restrict *const restrict tree)
+		     struct RedBlackNode *restrict *const restrict tree,
+		     struct RedBlackNodeFactory *const restrict factory);
 {
-	rbi_reset(&itor->cursor,
+	struct RedBlackItorCursor *restrict cursor_ptr;
+	const struct RedBlackItorController *restrict controller;
+
+	cursor_ptr = &itor->cursor;
+	controller = itor->controller;
+
+	itor->factory = factory;
+
+	rbi_reset(cursor_ptr,
 		  &itor->stack[0],
 		  &itor->path[0],
-		  itor->controller,
+		  controller,
 		  tree);
 }
 
@@ -171,19 +162,29 @@ bool
 red_black_itor_next(struct RedBlackItor *const restrict itor,
 		    void **const restrict key_ptr)
 {
-	struct RedBlackItorNode *restrict itor_node;
+	struct RedBlackItorCursor *restrict cursor_ptr;
+	struct RedBlackItorNode *restrict *restrict stack_cursor;
+	struct RedBlackItorNode *restrict path_cursor;
+	const struct RedBlackNode *restrict *restrict tree;
 	const struct RedBlackNode *restrict node;
 	bool has_next;
 
-	itor_node = itor->cursor;
-	has_next  = (itor_node->tree != NULL);
+	cursor_ptr   = &itor->cursor;
+	stack_cursor = cursor_ptr->stack;
+	has_next     = (stack_cursor != NULL);
 
 	if (has_next) {
-		node = itor_node->node;
+		path_cursor = cursor_ptr->path;
 
-		itor->cursor = rbi_update(itor_node,
-					  node,
-					  itor->controller);
+		tree = path_cursor->tree;
+		node = path_cursor->node;
+
+		rbi_update(cursor_ptr,
+			   stack_cursor,
+			   path_cursor,
+			   itor->controller,
+			   tree,
+			   node);
 
 		*key_ptr = (void *) node->key;
 	}

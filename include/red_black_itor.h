@@ -56,7 +56,8 @@ red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 
 void
 red_black_itor_reset(struct RedBlackItor *const restrict itor,
-		     struct RedBlackNode *restrict *const restrict tree);
+		     struct RedBlackNode *restrict *const restrict tree,
+		     struct RedBlackNodeFactory *const restrict factory);
 
 bool
 red_black_itor_next(struct RedBlackItor *const restrict itor,
