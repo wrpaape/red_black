@@ -197,3 +197,87 @@ red_black_itor_drop(struct RedBlackItor *const restrict itor);
 
 
 bool
+red_black_itor_verify(const struct RedBlackItor *const restrict itor,
+		      const struct RedBlackNode *restrict *restrict tree,
+		      const RedBlackComparator comparator)
+{
+	RedBlackItorRestoreNode restore;
+	const struct RedBlackNode *restrict node:
+	const struct RedBlackNode *restrict *restrict current_tree:
+	const struct RedBlackNode *restrict current_node:
+	const void *current_key;
+	const struct RedBlackItorNode *restrict *restrict current_stack_cursor;
+	const struct RedBlackItorNode *restrict current_path_cursor;
+	const struct RedBlackItorNode *restrict *restrict base_stack_cursor;
+	const struct RedBlackItorNode *restrict path_cursor;
+	bool path_cursor_points_to_base;
+	int compare;
+
+	current_stack_cursor = itor->cursor.stack;
+	current_path_cursor  = itor->cursor.path;
+
+	/* ensure stack and path point to same node */
+	if (*current_stack_cursor != current_path_cursor)
+		return false;
+
+	base_stack_cursor = &itor->stack[0];
+
+	/* ensure stack and path begin with NULL markers */
+	if (*base_stack_cursor != NULL)
+		return false;
+
+	path_cursor = &itor->path[0];
+
+	if (path_cursor->tree != NULL)
+		return false;
+
+	node = *tree;
+
+	/* ensure both cursors point to base position if empty tree */
+	path_cursor_points_to_base = (path_cursor == current_path_cursor);
+
+	if (node == NULL)
+		return path_cursor_points_to_base
+		    && (base_stack_cursor == current_stack_cursor);
+	else if (path_cursor_points_to_base)
+		return false; /* non-empty tree should never point to base */
+
+	/* fetch current tree, node, and key */
+	current_tree = current_path_cursor->tree;
+	current_node = current_path_cursor->node;
+	current_key  = current_node->key;
+
+	/* traverse tree, ensuring path matches upto current_node */
+	while (1) {
+		++path_cursor;
+
+		if (   (path_cursor->tree != tree)
+		    || (path_cursor->node != node))
+			return false;
+
+		compare = comparator(node->key,
+				     current_key);
+
+		if (compare == 0) /* found node, check current alignment */
+			return (path_cursor == current_path_cursor)
+			    && (tree        == current_tree)
+			    && (node        == current_node);
+
+		if (compare < 0) {
+			tree    = &node->left;
+			restore = &rbi_restore_left;
+
+		} else {
+			tree    = &node->right;
+			restore = &rbi_restore_right;
+		}
+
+		if (path_cursor->restore != restore)
+			return false;
+
+		node = *tree;
+
+		if (node == NULL) /* path is not aligned */
+			return false;
+	}
+}

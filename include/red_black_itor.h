@@ -5,6 +5,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node_factory.h" /* Node, NodeFactory, bool, size_t */
 #include "red_black_stack_count.h"  /* RED_BLACK_STACK_COUNT */
+#include "red_black_comparator.h"   /* Comparator (verify) */
 
 
 /* typedefs, struct declarations
@@ -65,5 +66,10 @@ red_black_itor_next(struct RedBlackItor *const restrict itor,
 
 void
 red_black_itor_drop(struct RedBlackItor *const restrict itor);
+
+bool
+red_black_itor_verify(const struct RedBlackItor *const restrict itor,
+		      const struct RedBlackNode *restrict *restrict tree,
+		      const RedBlackComparator comparator);
 
 #endif /* ifndef RED_BLACK_ITOR_H_ */

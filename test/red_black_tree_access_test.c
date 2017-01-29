@@ -8,6 +8,7 @@
 static RedBlackTree tree;
 static RedBlackTree tree_copy;
 
+
 static inline void
 verify_empty_tree(void)
 {
@@ -21,6 +22,7 @@ verify_empty_tree(void)
 	TEST_ASSERT_TRUE_MESSAGE(red_black_tree_verify(&tree),
 				 "INVALID TREE");
 }
+
 
 static inline void
 verify_unmodified_tree(void)
