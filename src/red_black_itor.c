@@ -194,3 +194,6 @@ red_black_itor_next(struct RedBlackItor *const restrict itor,
 
 void
 red_black_itor_drop(struct RedBlackItor *const restrict itor);
+
+
+bool
