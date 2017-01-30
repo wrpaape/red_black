@@ -313,12 +313,15 @@ ITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_itor)
 # ─────────────── target prequisites ───────────────────────────────────────────
 ITOR_OBJ_PREQS		:= $(ITOR_SRC)					\
 			   $(ITOR_HDR)					\
-			   $(LINK_OFFSET_HDR)				\
+			   $(NODE_FACTORY_HDR)				\
 			   $(STACK_COUNT_HDR)				\
-			   $(COMPARATOR_HDR)
-ITOR_OBJ_GROUP		:= $(ITOR_OBJ)
+			   $(COMPARATOR_HDR)				\
+			   $(LINK_OFFSET_HDR)
+ITOR_OBJ_GROUP		:= $(ITOR_OBJ)					\
+			   $(NODE_FACTORY_OBJ_GROUP)
 ITOR_PIC_OBJ_PREQS	:= $(ITOR_OBJ_PREQS)
-ITOR_PIC_OBJ_GROUP	:= $(ITOR_PIC_OBJ)
+ITOR_PIC_OBJ_GROUP	:= $(ITOR_PIC_OBJ)				\
+			   $(NODE_FACTORY_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(ITOR_OBJ)					\
 			   $(ITOR_PIC_OBJ)
@@ -873,7 +876,8 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 			   $(TREE_HDR)					\
 		   	   $(COMPARATOR_HDR)				\
 		   	   $(NODE_FACTORY_HDR)				\
-		   	   $(ETOR_HDR)				\
+		   	   $(ETOR_HDR)					\
+		   	   $(ITOR_HDR)					\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(PUT_HDR)					\
@@ -881,7 +885,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(ADD_HDR)					\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
-		   	   $(DROP_HDR)				\
+		   	   $(DROP_HDR)					\
 		   	   $(PLUCK_HDR)					\
 		   	   $(FIND_HDR)					\
 		   	   $(FETCH_HDR)					\
@@ -897,6 +901,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
 			   $(ETOR_OBJ_GROUP)				\
+			   $(ITOR_OBJ_GROUP)				\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(PUT_OBJ_GROUP)				\
 			   $(UPDATE_OBJ_GROUP)				\
@@ -921,6 +926,7 @@ TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
 TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
 			   $(ETOR_PIC_OBJ_GROUP)			\
+			   $(ITOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(PUT_PIC_OBJ_GROUP)				\
 			   $(UPDATE_PIC_OBJ_GROUP)			\
@@ -966,7 +972,7 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 			   $(LOCK_HDR)					\
 		   	   $(NODE_FACTORY_HDR)				\
 			   $(HMAP_COUNT_HDR)				\
-		   	   $(ETOR_HDR)				\
+		   	   $(ETOR_HDR)					\
 		   	   $(HASH_NODE_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(UPDATE_HDR)				\

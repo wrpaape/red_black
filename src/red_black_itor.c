@@ -23,31 +23,35 @@ rbi_reset(struct RedBlackItorCursor *restrict cursor,
 	  struct RedBlackNode *restrict *restrict tree)
 {
 	struct RedBlackNode *restrict node;
-	size_t offset;
-	RedBlackItorRestoreNode restore;
+	size_t prev_offset;
+	RedBlackItorRestoreNode prev_restore;
 
 	node = *tree;
 
 	/* set cursors to most prev (least/left for asc, greatest/right for
 	 * desc) node, keep track of stack */
 	if (node != NULL) {
-		offset  = controller->prev.offset;
-		restore = controller->prev.restore;
+		prev_offset  = controller->prev.offset;
+		prev_restore = controller->prev.restore;
 
-		do {
-			++stack_cursor;
+		while (1) {
 			++path_cursor;
+			++stack_cursor;
 
 			*stack_cursor = path_cursor;
 
-			path_cursor->tree    = tree;
-			path_cursor->node    = node;
-			path_cursor->restore = restore;
+			path_cursor->tree = tree;
+			path_cursor->node = node;
 
 			tree = RED_BLACK_LINK_OFFSET(node,
-						     offset);
+						     prev_offset);
 			node = *tree;
-		} while (node != NULL);
+
+			if (node == NULL)
+				break;
+
+			path_cursor->restore = prev_restore;
+		}
 	}
 
 	cursor->stack = stack_cursor;
@@ -74,7 +78,7 @@ rb_itor_init(struct RedBlackItor *const restrict itor,
 	*stack_cursor = NULL; /* mark top of stack */
 
 	path_cursor       = &itor->path[0];
-	path_cursor->tree = NULL; /* mark top of stack */
+	path_cursor->tree = NULL; /* mark top of path */
 
 	rbi_reset(cursor_ptr,
 		  stack_cursor,
@@ -82,6 +86,7 @@ rb_itor_init(struct RedBlackItor *const restrict itor,
 		  controller,
 		  tree);
 }
+
 
 void
 red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
@@ -105,6 +110,7 @@ red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
 		     &asc_controller);
 }
 
+
 void
 red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 			 struct RedBlackNode *restrict *const restrict tree,
@@ -126,6 +132,7 @@ red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 		     factory,
 		     &desc_controller);
 }
+
 
 void
 red_black_itor_reset(struct RedBlackItor *const restrict itor,
@@ -295,8 +302,8 @@ red_black_itor_verify(const struct RedBlackItor *const restrict itor,
 		    || (path_cursor->node != node))
 			return false;
 
-		compare = comparator(node->key,
-				     current_key);
+		compare = comparator(current_key,
+				     node->key);
 
 		if (compare == 0) /* found node, check current alignment */
 			return (path_cursor == current_path_cursor)
