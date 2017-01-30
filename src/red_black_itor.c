@@ -4,71 +4,14 @@
 
 /* TODO: dummy restore functions */
 static struct RedBlackItorNode *restrict
-rbi_restore_left(struct RedBlackItor *const restrict itor_node)
+rbi_restore_left(struct RedBlackItorNode *const restrict itor_node)
 {
 	return itor_node;
 }
 static struct RedBlackItorNode *restrict
-rbi_restore_right(struct RedBlackItor *const restrict itor_node)
+rbi_restore_right(struct RedBlackItorNode *const restrict itor_node)
 {
 	return itor_node;
-}
-
-
-static inline void
-rbi_update(struct RedBlackItorCursor *restrict cursor,
-	   struct RedBlackItorNode *restrict *restrict stack_cursor,
-	   struct RedBlackItorNode *restrict path_cursor,
-	   const struct RedBlackItorController *const restrict controller,
-	   struct RedBlackNode *restrict node)
-{
-	struct RedBlackNode *restrict *restrict tree;
-	struct RedBlackItorNode *restrict next_itor_node;
-	size_t prev_offset;
-	RedBlackItorRestoreNode prev_restore;
-
-	tree = RED_BLACK_LINK_OFFSET(node,
-				     controller->next.offset);
-	node = *tree;
-
-	if (node == NULL) { /* if can't go forward, walk back up stack */
-		--stack_cursor;
-
-		next_itor_node = *stack_cursor;
-
-		if (next_itor_node != NULL)
-			do {
-				--path_cursor;
-			} while (path_cursor != next_itor_node);
-
-	} else { /* find next successor */
-		/* update current restore direction */
-		path_cursor->restore = controller->next.restore;
-
-		prev_offset  = controller->prev.offset;
-		prev_restore = controller->prev.restore;
-
-		while (1) {
-			++path_cursor;
-			*stack_cursor = path_cursor; /* overwrite stack */
-
-			path_cursor->tree = tree;
-			path_cursor->node = node;
-
-			tree = RED_BLACK_LINK_OFFSET(node,
-						     prev_offset);
-
-			node = *tree;
-
-			if (node == NULL)
-				break;
-
-			++stack_cursor;
-		}
-	}
-
-	cursor->stack = stack_cursor;
-	cursor->path  = path_cursor;
 }
 
 
@@ -112,7 +55,7 @@ rbi_reset(struct RedBlackItorCursor *restrict cursor,
 }
 
 static inline void
-rb_itor_init(struct RedBlackEtor *const restrict itor,
+rb_itor_init(struct RedBlackItor *const restrict itor,
 	     struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNodeFactory *const restrict factory,
 	     const struct RedBlackItorController *const restrict controller)
@@ -187,7 +130,7 @@ red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 void
 red_black_itor_reset(struct RedBlackItor *const restrict itor,
 		     struct RedBlackNode *restrict *const restrict tree,
-		     struct RedBlackNodeFactory *const restrict factory);
+		     struct RedBlackNodeFactory *const restrict factory)
 {
 	struct RedBlackItorCursor *restrict cursor_ptr;
 	const struct RedBlackItorController *restrict controller;
@@ -205,54 +148,107 @@ red_black_itor_reset(struct RedBlackItor *const restrict itor,
 }
 
 bool
-red_black_itor_next(struct RedBlackItor *const restrict itor,
-		    void **const restrict key_ptr)
+red_black_itor_current(const struct RedBlackItor *const restrict itor,
+		       void **const restrict key_ptr)
+{
+	const struct RedBlackItorNode *restrict current_itor_node;
+	bool has_current;
+
+	current_itor_node = *(itor->cursor.stack);
+	has_current       = (current_itor_node != NULL);
+
+	if (has_current)
+		*key_ptr = (void *) current_itor_node->node->key;
+
+	return has_current;
+}
+
+
+void
+red_black_itor_drop(struct RedBlackItor *const restrict itor)
+{
+}
+
+
+void
+red_black_itor_skip(struct RedBlackItor *const restrict itor)
 {
 	struct RedBlackItorCursor *restrict cursor_ptr;
 	struct RedBlackItorNode *restrict *restrict stack_cursor;
 	struct RedBlackItorNode *restrict path_cursor;
-	const struct RedBlackNode *restrict *restrict tree;
-	const struct RedBlackNode *restrict node;
-	bool has_next;
+	const struct RedBlackItorController *restrict controller;
+	struct RedBlackNode *restrict *restrict tree;
+	struct RedBlackItorNode *restrict next_itor_node;
+	struct RedBlackNode *restrict node;
+	size_t prev_offset;
+	RedBlackItorRestoreNode prev_restore;
 
 	cursor_ptr   = &itor->cursor;
 	stack_cursor = cursor_ptr->stack;
-	has_next     = (stack_cursor != NULL);
+	path_cursor  = cursor_ptr->path;
 
-	if (has_next) {
-		path_cursor = cursor_ptr->path;
+	controller = itor->controller;
 
-		node = path_cursor->node;
+	tree = RED_BLACK_LINK_OFFSET(path_cursor->node,
+				     controller->next.offset);
+	node = *tree;
 
-		rbi_update(cursor_ptr,
-			   stack_cursor,
-			   path_cursor,
-			   itor->controller,
-			   node);
+	if (node == NULL) { /* if can't go forward, walk back up stack */
+		--stack_cursor;
 
-		*key_ptr = (void *) node->key;
+		next_itor_node = *stack_cursor;
+
+		if (next_itor_node != NULL) /* unwind path if next node */
+			do {
+				--path_cursor;
+			} while (path_cursor != next_itor_node);
+
+	} else { /* find next successor */
+		/* update current restore direction */
+		path_cursor->restore = controller->next.restore;
+
+		prev_offset  = controller->prev.offset;
+		prev_restore = controller->prev.restore;
+
+		while (1) {
+			++path_cursor;
+			*stack_cursor = path_cursor; /* overwrite stack */
+
+			path_cursor->tree = tree;
+			path_cursor->node = node;
+
+			tree = RED_BLACK_LINK_OFFSET(node,
+						     prev_offset);
+
+			node = *tree;
+
+			if (node == NULL)
+				break;
+
+			path_cursor->restore = prev_restore;
+
+			++stack_cursor;
+		}
 	}
 
-	return has_next;
+	cursor_ptr->stack = stack_cursor;
+	cursor_ptr->path  = path_cursor;
 }
-
-void
-red_black_itor_drop(struct RedBlackItor *const restrict itor);
 
 
 bool
 red_black_itor_verify(const struct RedBlackItor *const restrict itor,
-		      const struct RedBlackNode *restrict *restrict tree,
+		      struct RedBlackNode *const restrict *restrict tree,
 		      const RedBlackComparator comparator)
 {
 	RedBlackItorRestoreNode restore;
-	const struct RedBlackNode *restrict node:
-	const struct RedBlackNode *restrict *restrict current_tree:
-	const struct RedBlackNode *restrict current_node:
+	struct RedBlackNode *const restrict *restrict current_tree;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict current_node;
 	const void *current_key;
-	const struct RedBlackItorNode *restrict *restrict current_stack_cursor;
-	const struct RedBlackItorNode *restrict current_path_cursor;
-	const struct RedBlackItorNode *restrict *restrict base_stack_cursor;
+	struct RedBlackItorNode *const restrict *restrict current_stack_cursor;
+	struct RedBlackItorNode *restrict current_path_cursor;
+	struct RedBlackItorNode *const restrict *restrict base_stack_cursor;
 	const struct RedBlackItorNode *restrict path_cursor;
 	bool path_cursor_points_to_base;
 	int compare;

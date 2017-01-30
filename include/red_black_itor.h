@@ -30,8 +30,8 @@ struct RedBlackItorControlNode {
 };
 
 struct RedBlackItorController {
-	struct RedBlackControlNode next;
-	struct RedBlackControlNode prev;
+	struct RedBlackItorControlNode next;
+	struct RedBlackItorControlNode prev;
 };
 
 struct RedBlackItor {
@@ -61,15 +61,18 @@ red_black_itor_reset(struct RedBlackItor *const restrict itor,
 		     struct RedBlackNodeFactory *const restrict factory);
 
 bool
-red_black_itor_next(struct RedBlackItor *const restrict itor,
-		    void **const restrict key_ptr);
+red_black_itor_current(const struct RedBlackItor *const restrict itor,
+		       void **const restrict key_ptr);
 
 void
 red_black_itor_drop(struct RedBlackItor *const restrict itor);
 
+void
+red_black_itor_skip(struct RedBlackItor *const restrict itor);
+
 bool
 red_black_itor_verify(const struct RedBlackItor *const restrict itor,
-		      const struct RedBlackNode *restrict *restrict tree,
+		      struct RedBlackNode *const restrict *restrict tree,
 		      const RedBlackComparator comparator);
 
 #endif /* ifndef RED_BLACK_ITOR_H_ */

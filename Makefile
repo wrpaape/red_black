@@ -303,6 +303,27 @@ ETOR_PIC_OBJ_GROUP	:= $(ETOR_PIC_OBJ)
 TARGETS			+= $(ETOR_OBJ)					\
 			   $(ETOR_PIC_OBJ)
 
+
+# red_black_itor
+# ──────────────────────────────────────────────────────────────────────────────
+ITOR_SRC		:= $(call SOURCE_PATH,red_black_itor)
+ITOR_HDR		:= $(call HEADER_PATH,red_black_itor)
+ITOR_OBJ		:= $(call OBJECT_PATH,red_black_itor)
+ITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_itor)
+# ─────────────── target prequisites ───────────────────────────────────────────
+ITOR_OBJ_PREQS		:= $(ITOR_SRC)					\
+			   $(ITOR_HDR)					\
+			   $(LINK_OFFSET_HDR)				\
+			   $(STACK_COUNT_HDR)				\
+			   $(COMPARATOR_HDR)
+ITOR_OBJ_GROUP		:= $(ITOR_OBJ)
+ITOR_PIC_OBJ_PREQS	:= $(ITOR_OBJ_PREQS)
+ITOR_PIC_OBJ_GROUP	:= $(ITOR_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(ITOR_OBJ)					\
+			   $(ITOR_PIC_OBJ)
+
+
 # red_black_correct
 # ──────────────────────────────────────────────────────────────────────────────
 CORRECT_SRC		:= $(call SOURCE_PATH,red_black_correct)
@@ -1424,6 +1445,11 @@ $(NODE_FACTORY_PIC_OBJ): $(NODE_FACTORY_PIC_OBJ_PREQS)
 $(ETOR_OBJ): $(ETOR_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(ETOR_PIC_OBJ): $(ETOR_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(ITOR_OBJ): $(ITOR_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(ITOR_PIC_OBJ): $(ITOR_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(INSERT_OBJ): $(INSERT_OBJ_PREQS)

@@ -1034,3 +1034,66 @@ red_black_tree_etor_next(RedBlackTreeEtor *const restrict etor,
 	return red_black_etor_next(etor,
 				   key_ptr);
 }
+
+
+void
+red_black_tree_asc_itor_init(RedBlackTreeItor *const restrict itor,
+			     RedBlackTree *const restrict tree)
+{
+	red_black_asc_itor_init(itor,
+				&tree->root,
+				&tree->node_factory);
+}
+
+
+void
+red_black_tree_desc_itor_init(RedBlackTreeItor *const restrict itor,
+			      RedBlackTree *const restrict tree)
+{
+	red_black_desc_itor_init(itor,
+				 &tree->root,
+				 &tree->node_factory);
+}
+
+
+void
+red_black_tree_itor_reset(RedBlackTreeItor *const restrict itor,
+			  RedBlackTree *const restrict tree)
+{
+	red_black_itor_reset(itor,
+			     &tree->root,
+			     &tree->node_factory);
+}
+
+
+bool
+red_black_tree_itor_current(const RedBlackTreeItor *const restrict itor,
+			    void **const restrict key_ptr)
+{
+	return red_black_itor_current(itor,
+				      key_ptr);
+}
+
+
+void
+red_black_tree_itor_drop(RedBlackTreeItor *const restrict itor)
+{
+	red_black_itor_drop(itor);
+}
+
+
+void
+red_black_tree_itor_skip(RedBlackTreeItor *const restrict itor)
+{
+	red_black_itor_skip(itor);
+}
+
+
+bool
+red_black_tree_itor_verify(const RedBlackTreeItor *const restrict itor,
+			   const RedBlackTree *const restrict tree)
+{
+	return red_black_itor_verify(itor,
+				     &tree->root,
+				     tree->comparator);
+}
