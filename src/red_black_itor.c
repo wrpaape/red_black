@@ -20,9 +20,55 @@ rbi_update(struct RedBlackItorCursor *restrict cursor,
 	   struct RedBlackItorNode *restrict *restrict stack_cursor,
 	   struct RedBlackItorNode *restrict path_cursor,
 	   const struct RedBlackItorController *const restrict controller,
-	   struct RedBlackNode *restrict *restrict tree,
 	   struct RedBlackNode *restrict node)
 {
+	struct RedBlackNode *restrict *restrict tree;
+	struct RedBlackItorNode *restrict next_itor_node;
+	size_t prev_offset;
+	RedBlackItorRestoreNode prev_restore;
+
+	tree = RED_BLACK_LINK_OFFSET(node,
+				     controller->next.offset);
+	node = *tree;
+
+	if (node == NULL) { /* if can't go forward, walk back up stack */
+		--stack_cursor;
+
+		next_itor_node = *stack_cursor;
+
+		if (next_itor_node != NULL)
+			do {
+				--path_cursor;
+			} while (path_cursor != next_itor_node);
+
+	} else { /* find next successor */
+		/* update current restore direction */
+		path_cursor->restore = controller->next.restore;
+
+		prev_offset  = controller->prev.offset;
+		prev_restore = controller->prev.restore;
+
+		while (1) {
+			++path_cursor;
+			*stack_cursor = path_cursor; /* overwrite stack */
+
+			path_cursor->tree = tree;
+			path_cursor->node = node;
+
+			tree = RED_BLACK_LINK_OFFSET(node,
+						     prev_offset);
+
+			node = *tree;
+
+			if (node == NULL)
+				break;
+
+			++stack_cursor;
+		}
+	}
+
+	cursor->stack = stack_cursor;
+	cursor->path  = path_cursor;
 }
 
 
@@ -176,14 +222,12 @@ red_black_itor_next(struct RedBlackItor *const restrict itor,
 	if (has_next) {
 		path_cursor = cursor_ptr->path;
 
-		tree = path_cursor->tree;
 		node = path_cursor->node;
 
 		rbi_update(cursor_ptr,
 			   stack_cursor,
 			   path_cursor,
 			   itor->controller,
-			   tree,
 			   node);
 
 		*key_ptr = (void *) node->key;

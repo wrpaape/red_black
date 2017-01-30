@@ -7,7 +7,7 @@
 static RedBlackTree tree;
 static RedBlackTree tree_copy;
 static RedBlackTreeEtor etor;
-static RedBlackTreeItor itor;
+/* static RedBlackTreeItor itor; */
 
 
 static inline void
@@ -163,10 +163,10 @@ test_red_black_tree_desc_etor(void)
 }
 
 
-#if 0
-void
-test_red_black_tree_itor_drop(const int delta)
+static inline void
+do_test_red_black_tree_itor_drop(const int delta)
 {
+#if 0
 	int i;
 	int j;
 	unsigned int count;
@@ -223,12 +223,14 @@ test_red_black_tree_itor_drop(const int delta)
 	}
 
 	verify_empty_tree();
+#endif
 }
 
 
 void
 test_red_black_tree_asc_itor(void)
 {
+#if 0
 	int i;
 	int j;
 	void *key;
@@ -260,13 +262,15 @@ test_red_black_tree_asc_itor(void)
 					  &tree);
 	}
 
-	test_red_black_tree_itor_drop(1);
+	/* do_test_red_black_tree_itor_drop(1); */
+#endif
 }
 
 
 void
 test_red_black_tree_desc_itor(void)
 {
+#if 0
 	int i;
 	int j;
 	void *key;
@@ -305,6 +309,6 @@ test_red_black_tree_desc_itor(void)
 	    return;
 #endif
 
-	test_red_black_tree_itor_drop(-1);
-}
+	/* do_test_red_black_tree_itor_drop(-1); */
 #endif
+}

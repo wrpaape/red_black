@@ -6,6 +6,7 @@
 #include "red_black_comparator.h"   /* Comparator */
 #include "red_black_node_factory.h" /* Node, NodeFactory, JumpBuffer, bool */
 #include "red_black_etor.h"         /* RedBlackEtor */
+/* #include "red_black_itor.h"         /1* RedBlackItor *1/ */
 #include "red_black_print_types.h"  /* KeySizer|Putter, size_t */
 
 
@@ -249,5 +250,25 @@ red_black_tree_etor_reset(RedBlackTreeEtor *const restrict etor,
 bool
 red_black_tree_etor_next(RedBlackTreeEtor *const restrict etor,
 			 void **const restrict key_ptr);
+
+#if 0
+void
+red_black_tree_asc_itor_init(RedBlackTreeItor *const restrict itor,
+			     const RedBlackTree *const restrict tree);
+
+void
+red_black_tree_desc_itor_init(RedBlackTreeItor *const restrict itor,
+			      const RedBlackTree *const restrict tree);
+void
+red_black_tree_itor_reset(RedBlackTreeItor *const restrict itor,
+			  const RedBlackTree *const restrict tree);
+
+bool
+red_black_tree_itor_next(RedBlackTreeItor *const restrict itor,
+			 void **const restrict key_ptr);
+
+void
+red_black_tree_itor_drop(RedBlackTreeItor *const restrict itor);
+#endif
 
 #endif /* ifndef RED_BLACK_TREE_H_ */
