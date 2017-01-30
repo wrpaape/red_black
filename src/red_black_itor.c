@@ -16,7 +16,7 @@ rbi_restore_right(struct RedBlackItorNode *const restrict itor_node)
 
 
 static inline void
-rbi_reset(struct RedBlackItorCursor *restrict cursor,
+rbi_reset(struct RedBlackItorCursor *restrict cursor_ptr,
 	  struct RedBlackItorNode *restrict *restrict stack_cursor,
 	  struct RedBlackItorNode *restrict path_cursor,
 	  const struct RedBlackItorController *const restrict controller,
@@ -54,8 +54,8 @@ rbi_reset(struct RedBlackItorCursor *restrict cursor,
 		}
 	}
 
-	cursor->stack = stack_cursor;
-	cursor->path  = path_cursor;
+	cursor_ptr->stack = stack_cursor;
+	cursor_ptr->path  = path_cursor;
 }
 
 static inline void

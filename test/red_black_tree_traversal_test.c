@@ -254,7 +254,7 @@ test_red_black_tree_asc_itor(void)
 
 			TEST_ASSERT_EQUAL_INT_MESSAGE(j,
 						      (int) (intptr_t) key,
-						      "UNEXPECTED NEXT KEY");
+						      "UNEXPECTED CURRENT KEY");
 
 			red_black_tree_itor_skip(&itor);
 		}
@@ -276,7 +276,6 @@ test_red_black_tree_asc_itor(void)
 void
 test_red_black_tree_desc_itor(void)
 {
-#if 0
 	int i;
 	int j;
 	void *key;
@@ -288,19 +287,27 @@ test_red_black_tree_desc_itor(void)
 
 	for (i = 0; i < 2; ++i) {
 		for (j = KEYS_COUNT - 1; j >= 0; --j) {
-			status = red_black_tree_itor_next(&itor,
-							  &key);
+			status = red_black_tree_itor_verify(&itor,
+							    &tree);
+
+			TEST_ASSERT_TRUE_MESSAGE(status,
+						 "INVALID DESC ITERATOR");
+
+			status = red_black_tree_itor_current(&itor,
+							     &key);
 
 			TEST_ASSERT_TRUE_MESSAGE(status,
 						 "DESC ITERATOR SKIPPED KEYS");
 
 			TEST_ASSERT_EQUAL_INT_MESSAGE(j,
 						      (int) (intptr_t) key,
-						      "UNEXPECTED NEXT KEY");
+						      "UNEXPECTED CURRENT KEY");
+
+			red_black_tree_itor_skip(&itor);
 		}
 
-		status = red_black_tree_itor_next(&itor,
-						  &key);
+		status = red_black_tree_itor_current(&itor,
+						     &key);
 
 		TEST_ASSERT_FALSE_MESSAGE(status,
 					  "KEYS REMAIN AFTER DESC ITERATION");
@@ -309,12 +316,9 @@ test_red_black_tree_desc_itor(void)
 					  &tree);
 	}
 
-#if ((KEYS_COUNT - 1) & 1) /* ensure 1st entry is even */
-	if (!red_black_tree_itor_next(&itor,
-				      &key))
-	    return;
+#if ((KEYS_COUNT > 0) && ((KEYS_COUNT - 1) & 1)) /* ensure 1st entry is even */
+	red_black_tree_itor_skip(&itor);
 #endif
 
 	/* do_test_red_black_tree_itor_drop(-1); */
-#endif
 }

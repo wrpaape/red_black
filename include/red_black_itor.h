@@ -29,6 +29,12 @@ struct RedBlackItorControlNode {
 	RedBlackItorRestoreNode restore;
 };
 
+/* typedef void */
+/* (*RedBlackItorDropNode)(struct RedBlackItorCursor *const restrict cursor_ptr, */
+/* 			struct RedBlackItorNode *restrict *restrict stack_cursor, */
+/* 			struct RedBlackItorNode *restrict path_cursor; */
+/* 			struct RedBlackNodeFactory *const restrict factory) */
+
 struct RedBlackItorController {
 	struct RedBlackItorControlNode next;
 	struct RedBlackItorControlNode prev;
