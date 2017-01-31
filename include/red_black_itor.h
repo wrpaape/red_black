@@ -3,37 +3,18 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node_factory.h" /* Node, NodeFactory, bool, size_t */
+#include "red_black_itor_types.h"   /* Node, Itor types, bool */
+#include "red_black_node_factory.h" /* NodeFactory, size_t */
 #include "red_black_stack_count.h"  /* RED_BLACK_STACK_COUNT */
 #include "red_black_comparator.h"   /* Comparator (verify) */
 
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-typedef struct RedBlackItorNode *restrict
-(*RedBlackItorRestoreNode)(struct RedBlackItorNode *const restrict itor_node);
-
-struct RedBlackItorNode {
-	struct RedBlackNode *restrict *restrict tree;
-	struct RedBlackNode *restrict node;
-	RedBlackItorRestoreNode restore;
-};
-
-struct RedBlackItorCursor {
-	struct RedBlackItorNode *restrict *restrict stack;
-	struct RedBlackItorNode *restrict path;
-};
-
 struct RedBlackItorControlNode {
 	size_t offset;
 	RedBlackItorRestoreNode restore;
 };
-
-/* typedef void */
-/* (*RedBlackItorDropNode)(struct RedBlackItorCursor *const restrict cursor_ptr, */
-/* 			struct RedBlackItorNode *restrict *restrict stack_cursor, */
-/* 			struct RedBlackItorNode *restrict path_cursor; */
-/* 			struct RedBlackNodeFactory *const restrict factory) */
 
 struct RedBlackItorController {
 	struct RedBlackItorControlNode next;

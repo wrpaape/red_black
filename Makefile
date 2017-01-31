@@ -260,8 +260,9 @@ MALLOC_HDR      := $(call HEADER_PATH,red_black_malloc)
 NODE_HDR        := $(call HEADER_PATH,red_black_node)
 HNODE_HDR       := $(call HEADER_PATH,red_black_hnode)
 PRINT_TYPES_HDR := $(call HEADER_PATH,red_black_print_types)
-RED_BLACK_HDR   := $(call HEADER_PATH,red_black)
 LINK_OFFSET_HDR	:= $(call HEADER_PATH,red_black_link_offset)
+ITOR_TYPES_HDR  := $(call HEADER_PATH,red_black_itor_types)
+RED_BLACK_HDR   := $(call HEADER_PATH,red_black)
 
 
 # red_black_node_factory
@@ -313,6 +314,7 @@ ITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_itor)
 # ─────────────── target prequisites ───────────────────────────────────────────
 ITOR_OBJ_PREQS		:= $(ITOR_SRC)					\
 			   $(ITOR_HDR)					\
+			   $(ITOR_TYPES_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
 			   $(STACK_COUNT_HDR)				\
 			   $(COMPARATOR_HDR)				\
