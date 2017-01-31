@@ -5,8 +5,8 @@
 
 static inline bool
 rbi_restore_black(struct RedBlackItorCursor *const restrict cursor,
-		  struct RedBlackItorNode *restrict *const restrict itor_node,
-		  struct RedBlackNode *restrict *restrict tree,
+		  struct RedBlackNode *restrict *const restrict node_ptr,
+		  struct RedBlackNode *restrict *const restrict tree,
 		  struct RedBlackNode *const restrict lchild,
 		  struct RedBlackNode *restrict rchild)
 {
@@ -19,21 +19,26 @@ rbi_restore_black(struct RedBlackItorCursor *const restrict cursor,
 	struct RedBlackNode *restrict *restrict replacement_cursor;
 
 
-	tree = itor_node->tree
-
 	if (lchild == NULL) {
 		*tree = rchild;
 
 		restored = (rchild != NULL);
-		if (restored)
-			rchild->is_red = false; /* rchild RED leaf -> restore */
+		if (restored) {
+			*node_ptr = rchild;
+			rchild->is_red = false; /* RED leaf -> restore */
+
+		} else {
+			*(cursor->stack) = NULL; /* no successors */
+		}
 
 		return restored;
 
 	} else if (rchild == NULL) {
 		*tree = lchild;
-		lchild->is_red = false;
-		return true; /* lchild must be RED leaf, -> BLACK -> restored */
+		lchild->is_red = false; /* RED leaf -> BLACK -> restored */
+
+		*(cursor->stack) = NULL; /* no successors */
+		return true;
 	}
 
 	/* find min successor, its parent, its right child, and its ancestor
@@ -106,12 +111,15 @@ red_black_itor_restore_root(struct RedBlackItorCursor *const restrict cursor,
 			    struct RedBlackNodeFactory *const restrict factory)
 {
 	struct RedBlackNode *restrict *restrict tree;
+	struct RedBlackNode *restrict *restrict node_ptr;
 	struct RedBlackNode *restrict root;
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
 
-	tree = itor_root->tree;
-	root = itor_root->node;
+	tree     = itor_root->tree;
+	node_ptr = &itor_root->node;
+
+	root = *node_ptr;
 
 	lchild = root->left;
 	rchild = root->right;
@@ -121,7 +129,7 @@ red_black_itor_restore_root(struct RedBlackItorCursor *const restrict cursor,
 		  root);
 
 	(void) rbi_restore_black(cursor,
-				 itor_root,
+				 node_ptr,
 				 tree,
 				 lchild,
 				 rchild);
