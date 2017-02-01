@@ -17,8 +17,8 @@ rbi_restore_right(struct RedBlackItorNode *const restrict itor_node)
 
 static inline void
 rbi_reset(struct RedBlackItorCursor *restrict cursor_ptr,
-	  struct RedBlackItorNode *restrict *restrict stack_cursor,
 	  struct RedBlackItorNode *restrict path_cursor,
+	  struct RedBlackItorNode *restrict *restrict stack_cursor,
 	  const struct RedBlackItorController *const restrict controller,
 	  struct RedBlackNode *restrict *restrict tree)
 {
@@ -67,6 +67,7 @@ rb_itor_init(struct RedBlackItor *const restrict itor,
 
 {
 	struct RedBlackItorNode *restrict *restrict stack_cursor;
+	struct RedBlackItorNode *restrict path_cursor;
 	struct RedBlackItorCursor *restrict cursor_ptr;
 
 	cursor_ptr = &itor->cursor;
@@ -74,12 +75,14 @@ rb_itor_init(struct RedBlackItor *const restrict itor,
 	itor->controller = controller;
 	itor->factory    = factory;
 
+	path_cursor = &itor->path[0];
+
 	stack_cursor  = &itor->stack[0];
 	*stack_cursor = NULL; /* mark top of stack */
 
 	rbi_reset(cursor_ptr,
+		  path_cursor,
 		  stack_cursor,
-		  &itor->path[0],
 		  controller,
 		  tree);
 }
@@ -145,8 +148,8 @@ red_black_itor_reset(struct RedBlackItor *const restrict itor,
 	itor->factory = factory;
 
 	rbi_reset(cursor_ptr,
-		  &itor->stack[0],
 		  &itor->path[0],
+		  &itor->stack[0],
 		  controller,
 		  tree);
 }
@@ -171,9 +174,27 @@ red_black_itor_current(const struct RedBlackItor *const restrict itor,
 void
 red_black_itor_drop(struct RedBlackItor *const restrict itor)
 {
-	/* struct RedBlackItorCursor *restrict cursor_ptr; */
-	/* struct RedBlackItorNode *restrict itor_node; */
-	/* const struct RedBlackItorController *restrict controller; */
+	struct RedBlackItorCursor *restrict cursor_ptr;
+	struct RedBlackItorNode *restrict itor_node;
+	struct RedBlackItorNode *restrict itor_root;
+	const struct RedBlackItorController *restrict controller;
+	struct RedBlackNodeFactory *restrict factory;
+
+	cursor_ptr = &itor->cursor;
+	controller = itor->controller;
+	factory    = itor->factory;
+	itor_root  = &itor->path[0];
+
+
+	itor_node = cursor_ptr->path;
+
+	if (itor_node == itor_root) {
+
+		red_black_itor_restore_root(cursor_ptr,
+					    itor_root,
+					    factory);
+
+	}
 }
 
 
@@ -269,13 +290,9 @@ red_black_itor_verify(const struct RedBlackItor *const restrict itor,
 	if (current_itor_node != current_path_cursor)
 		return current_itor_node == NULL;
 
-	base_stack_cursor = &itor->stack[0];
-
-	/* ensure stack and path begin with NULL markers */
-	if (*base_stack_cursor != NULL)
-		return false;
-
 	path_cursor = &itor->path[0];
+
+	base_stack_cursor = &itor->stack[0];
 
 	/* ensure both cursors point to base position if empty tree */
 	node = *tree;
@@ -283,6 +300,10 @@ red_black_itor_verify(const struct RedBlackItor *const restrict itor,
 	if (node == NULL)
 		return (path_cursor       == current_path_cursor)
 		    && (base_stack_cursor == current_stack_cursor);
+
+	/* ensure stack begins with NULL marker */
+	if (*base_stack_cursor != NULL)
+		return false;
 
 	/* fetch current tree, node, and key */
 	current_tree = current_path_cursor->tree;

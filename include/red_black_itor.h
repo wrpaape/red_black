@@ -25,8 +25,8 @@ struct RedBlackItor {
 	struct RedBlackItorCursor cursor;
 	const struct RedBlackItorController *restrict controller;
 	struct RedBlackNodeFactory *restrict factory;
-	struct RedBlackItorNode *restrict stack[RED_BLACK_STACK_COUNT];
 	struct RedBlackItorNode path[RED_BLACK_STACK_COUNT];
+	struct RedBlackItorNode *restrict stack[RED_BLACK_STACK_COUNT];
 };
 
 
