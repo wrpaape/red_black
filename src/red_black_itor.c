@@ -101,7 +101,8 @@ red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
 		.prev =  {
 			.offset  = offsetof(struct RedBlackNode, left),
 			.restore = &rbi_restore_left
-		}
+		},
+		.restore = &red_black_asc_itor_restore
 	};
 
 	rb_itor_init(itor,
@@ -124,7 +125,8 @@ red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 		.prev =  {
 			.offset  = offsetof(struct RedBlackNode, right),
 			.restore = &rbi_restore_right
-		}
+		},
+		.restore = &red_black_desc_itor_restore
 	};
 
 	rb_itor_init(itor,
