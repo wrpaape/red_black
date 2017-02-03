@@ -177,7 +177,6 @@ void
 red_black_itor_drop(struct RedBlackItor *const restrict itor)
 {
 	struct RedBlackItorCursor *restrict cursor_ptr;
-	struct RedBlackItorNode *restrict itor_node;
 	struct RedBlackItorNode *restrict itor_root;
 	const struct RedBlackItorController *restrict controller;
 	struct RedBlackNodeFactory *restrict factory;
@@ -187,16 +186,9 @@ red_black_itor_drop(struct RedBlackItor *const restrict itor)
 	factory    = itor->factory;
 	itor_root  = &itor->path[0];
 
-
-	itor_node = cursor_ptr->path;
-
-	if (itor_node == itor_root) {
-
-		red_black_itor_restore_root(cursor_ptr,
-					    itor_root,
-					    factory);
-
-	}
+	controller->restore(cursor_ptr,
+			    itor_root,
+			    factory)
 }
 
 

@@ -27,11 +27,4 @@ struct RedBlackItorCursor {
 	struct RedBlackItorNode *restrict path;
 };
 
-
-/* typedef void */
-/* (*RedBlackItorDropNode)(struct RedBlackItorCursor *const restrict cursor_ptr, */
-/* 			struct RedBlackItorNode *restrict *restrict stack_cursor, */
-/* 			struct RedBlackItorNode *restrict path_cursor; */
-/* 			struct RedBlackNodeFactory *const restrict factory) */
-
 #endif /* ifndef RED_BLACK_ITOR_TYPES_H_ */
