@@ -15,10 +15,6 @@ struct RedBlackItorControlNode {
 	RedBlackItorRestoreNode restore;
 };
 
-typedef void
-(*RedBlackItorRestore)(struct RedBlackItorCursor *const restrict cursor,
-		       struct RedBlackItorNode *const restrict itor_root,
-		       struct RedBlackNodeFactory *const restrict factory);
 
 struct RedBlackItorController {
 	struct RedBlackItorControlNode next;

@@ -1,5 +1,6 @@
-#include "red_black_itor.h"        /* RedBlackItor */
-#include "red_black_link_offset.h" /* asc|desc_link_offset, stddef */
+#include "red_black_itor.h"         /* RedBlackItor */
+#include "red_black_link_offset.h"  /* asc|desc_link_offset, stddef */
+#include "red_black_itor_restore.h" /* asc|desc_itor_restore */
 
 
 /* TODO: dummy restore functions */
