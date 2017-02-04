@@ -11,15 +11,15 @@
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
 struct RedBlackItorControlNode {
-	size_t offset;
-	RedBlackItorRestoreNode restore;
+	const size_t offset;
+	const RedBlackItorRestoreNode restore;
 };
 
 
 struct RedBlackItorController {
-	struct RedBlackItorControlNode next;
-	struct RedBlackItorControlNode prev;
-	RedBlackItorRestore restore;
+	const struct RedBlackItorControlNode next;
+	const struct RedBlackItorControlNode prev;
+	const RedBlackItorRestore restore;
 };
 
 struct RedBlackItor {
