@@ -1,18 +1,28 @@
 #include "red_black_itor.h"         /* RedBlackItor */
 #include "red_black_link_offset.h"  /* asc|desc_link_offset, stddef */
-#include "red_black_itor_restore.h" /* asc|desc_itor_restore */
+/* #include "red_black_itor_restore.h" /1* asc|desc_itor_restore *1/ */
 
 
 /* TODO: dummy restore functions */
-static struct RedBlackItorNode *restrict
+static void
+red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
+			   struct RedBlackItorNode *const restrict itor_root,
+			   struct RedBlackNodeFactory *const restrict factory)
+{
+}
+static void
+red_black_desc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
+			    struct RedBlackItorNode *const restrict itor_root,
+			    struct RedBlackNodeFactory *const restrict factory)
+{
+}
+static void
 rbi_restore_left(struct RedBlackItorNode *const restrict itor_node)
 {
-	return itor_node;
 }
-static struct RedBlackItorNode *restrict
+static void
 rbi_restore_right(struct RedBlackItorNode *const restrict itor_node)
 {
-	return itor_node;
 }
 
 
@@ -189,7 +199,7 @@ red_black_itor_drop(struct RedBlackItor *const restrict itor)
 
 	controller->restore(cursor_ptr,
 			    itor_root,
-			    factory)
+			    factory);
 }
 
 
