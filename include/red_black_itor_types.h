@@ -3,7 +3,7 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node_factory.h" /* Node, NodeFactory */
+#include "red_black_node_factory.h" /* Node, NodeFactory, bool */
 
 
 /* typedefs, struct declarations
@@ -17,17 +17,23 @@ typedef void
 (*RedBlackItorRestoreNode)(struct RedBlackItorNode *const restrict itor_root,
 			   struct RedBlackItorNode *const restrict itor_node);
 
-struct RedBlackItorRestoreController {
+struct RedBlackItorRestoreControlNode {
 	const RedBlackItorRestoreCursor cursor_and_node;
 	const RedBlackItorRestoreCursor only_cursor;
 	const RedBlackItorRestoreNode only_node;
 };
 
 
+
+struct RedBlackItorRestoreController {
+	const struct RedBlackItorRestoreNode
+};
+
+
 struct RedBlackItorNode {
 	struct RedBlackNode *restrict *restrict tree;
 	struct RedBlackNode *restrict node;
-	const struct RedBlackItorRestoreController *restrict restore;
+	const struct RedBlackItorRestoreControlNode *restrict restore;
 };
 
 struct RedBlackItorCursor {
