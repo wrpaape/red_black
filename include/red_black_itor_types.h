@@ -38,7 +38,6 @@ struct RedBlackItorNode {
 	struct RedBlackNode *restrict *restrict tree;
 	struct RedBlackNode *restrict node;
 	bool subtree_is_left;
-	RedBlackItorRestoreNode restore;
 };
 
 struct RedBlackItorCursor {

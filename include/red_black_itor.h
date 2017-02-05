@@ -12,7 +12,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 struct RedBlackItorControlNode {
 	const size_t offset;
-	const RedBlackItorRestoreNode restore;
+	const bool subtree_is_left;
 };
 
 
