@@ -1,9 +1,11 @@
 #include "red_black_itor.h"         /* RedBlackItor */
 #include "red_black_link_offset.h"  /* asc|desc_link_offset, stddef */
-/* #include "red_black_itor_restore.h" /1* asc|desc_itor_restore *1/ */
+
+#if 1
+#include "red_black_itor_restore.h" /* asc|desc_itor_restore */
 
 
-/* TODO: dummy restore functions */
+#else
 static void
 red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
 			   struct RedBlackItorNode *const restrict itor_root,
@@ -16,14 +18,7 @@ red_black_desc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
 			    struct RedBlackNodeFactory *const restrict factory)
 {
 }
-static void
-rbi_restore_left(struct RedBlackItorNode *const restrict itor_node)
-{
-}
-static void
-rbi_restore_right(struct RedBlackItorNode *const restrict itor_node)
-{
-}
+#endif
 
 
 static inline void
@@ -35,15 +30,15 @@ rbi_reset(struct RedBlackItorCursor *restrict cursor_ptr,
 {
 	struct RedBlackNode *restrict node;
 	size_t prev_offset;
-	RedBlackItorRestoreNode prev_restore;
+	bool prev_subtree_is_left;
 
 	node = *tree;
 
 	/* set cursors to most prev (least/left for asc, greatest/right for
 	 * desc) node, keep track of stack */
 	if (node != NULL) {
-		prev_offset  = controller->prev.offset;
-		prev_restore = controller->prev.restore;
+		prev_offset          = controller->prev.offset;
+		prev_subtree_is_left = controller->prev.subtree_is_left;
 
 		while (1) {
 			++stack_cursor;
@@ -60,7 +55,7 @@ rbi_reset(struct RedBlackItorCursor *restrict cursor_ptr,
 			if (node == NULL)
 				break;
 
-			path_cursor->restore = prev_restore;
+			path_cursor->subtree_is_left = prev_subtree_is_left;
 
 			++path_cursor;
 		}
@@ -106,12 +101,12 @@ red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
 {
 	static const struct RedBlackItorController asc_controller = {
 		.next =  {
-			.offset  = offsetof(struct RedBlackNode, right),
-			.restore = &rbi_restore_right
+			.offset          = offsetof(struct RedBlackNode, right),
+			.subtree_is_left = false
 		},
 		.prev =  {
-			.offset  = offsetof(struct RedBlackNode, left),
-			.restore = &rbi_restore_left
+			.offset		 = offsetof(struct RedBlackNode, left),
+			.subtree_is_left = true
 		},
 		.restore = &red_black_asc_itor_restore
 	};
@@ -130,12 +125,12 @@ red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 {
 	static const struct RedBlackItorController desc_controller = {
 		.next =  {
-			.offset  = offsetof(struct RedBlackNode, left),
-			.restore = &rbi_restore_left
+			.offset		 = offsetof(struct RedBlackNode, left),
+			.subtree_is_left = true
 		},
 		.prev =  {
-			.offset  = offsetof(struct RedBlackNode, right),
-			.restore = &rbi_restore_right
+			.offset		 = offsetof(struct RedBlackNode, right),
+			.subtree_is_left = false
 		},
 		.restore = &red_black_desc_itor_restore
 	};
@@ -214,7 +209,7 @@ red_black_itor_skip(struct RedBlackItor *const restrict itor)
 	struct RedBlackItorNode *restrict next_itor_node;
 	struct RedBlackNode *restrict node;
 	size_t prev_offset;
-	RedBlackItorRestoreNode prev_restore;
+	bool prev_subtree_is_left;
 
 	cursor_ptr   = &itor->cursor;
 	stack_cursor = cursor_ptr->stack;
@@ -238,10 +233,10 @@ red_black_itor_skip(struct RedBlackItor *const restrict itor)
 
 	} else { /* find next successor */
 		/* update current restore direction */
-		path_cursor->restore = controller->next.restore;
+		path_cursor->subtree_is_left = controller->next.subtree_is_left;
 
-		prev_offset  = controller->prev.offset;
-		prev_restore = controller->prev.restore;
+		prev_offset	     = controller->prev.offset;
+		prev_subtree_is_left = controller->prev.subtree_is_left;
 
 		while (1) {
 			++path_cursor;
@@ -258,7 +253,7 @@ red_black_itor_skip(struct RedBlackItor *const restrict itor)
 			if (node == NULL)
 				break;
 
-			path_cursor->restore = prev_restore;
+			path_cursor->subtree_is_left = prev_subtree_is_left;
 
 			++stack_cursor;
 		}
@@ -274,7 +269,6 @@ red_black_itor_verify(const struct RedBlackItor *const restrict itor,
 		      struct RedBlackNode *const restrict *restrict tree,
 		      const RedBlackComparator comparator)
 {
-	RedBlackItorRestoreNode restore;
 	struct RedBlackNode *const restrict *restrict current_tree;
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict current_node;
@@ -285,6 +279,7 @@ red_black_itor_verify(const struct RedBlackItor *const restrict itor,
 	struct RedBlackItorNode *const restrict *restrict base_stack_cursor;
 	const struct RedBlackItorNode *restrict path_cursor;
 	int compare;
+	bool subtree_is_left;
 
 	current_stack_cursor = itor->cursor.stack;
 	current_path_cursor  = itor->cursor.path;
@@ -329,17 +324,15 @@ red_black_itor_verify(const struct RedBlackItor *const restrict itor,
 			    && (tree        == current_tree)
 			    && (node        == current_node);
 
-		if (compare < 0) {
-			tree    = &node->left;
-			restore = &rbi_restore_left;
+		subtree_is_left = (compare < 0);
 
-		} else {
-			tree    = &node->right;
-			restore = &rbi_restore_right;
-		}
-
-		if (path_cursor->restore != restore)
+		if (path_cursor->subtree_is_left != subtree_is_left)
 			return false;
+
+
+		tree = (subtree_is_left)
+		     ? &node->left
+		     : &node->right;
 
 		node = *tree;
 

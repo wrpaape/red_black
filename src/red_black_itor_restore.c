@@ -2,13 +2,75 @@
 #include "red_black_stack_count.h"  /* RED_BLACK_STACK_COUNT */
 #include <stddef.h>		    /* NULL */
 
+/* typedef void */
+/* (*RedBlackItorRestoreNode)(struct RedBlackItorCursor *const restrict cursor, */
+/* 			   struct RedBlackItorNode *const restrict itor_root, */
+/* 			   struct RedBlackItorNode *const restrict itor_node, */
+/* 			   struct RedBlackNode *const restrict lchild, */
+/* 			   struct RedBlackNode *restrict rchild); */
 
-static inline bool
-rbi_restore_black(struct RedBlackItorCursor *const restrict cursor,
-		  struct RedBlackNode *restrict *const restrict node_ptr,
-		  struct RedBlackNode *restrict *const restrict tree,
-		  struct RedBlackNode *const restrict lchild,
-		  struct RedBlackNode *restrict rchild)
+static inline void
+rbai_restore_both_bot_l_l(struct RedBlackItorCursor *const restrict cursor,
+			  struct RedBlackItorNode *const restrict itor_root,
+			  struct RedBlackItorNode *const restrict itor_node)
+
+static inline void
+rbai_restore_both_bot_r(struct RedBlackItorCursor *const restrict cursor,
+			struct RedBlackItorNode *const restrict itor_root,
+			struct RedBlackItorNode *const restrict itor_node)
+{
+}
+
+static inline void
+rbai_restore_both_bot_b(struct RedBlackItorCursor *const restrict cursor,
+			struct RedBlackItorNode *const restrict itor_root,
+			struct RedBlackItorNode *const restrict itor_node)
+{
+}
+
+static inline void
+rbai_restore_both_bot(struct RedBlackItorCursor *const restrict cursor,
+		      struct RedBlackItorNode *const restrict itor_root,
+		      struct RedBlackItorNode *const restrict itor_node)
+{
+	struct RedBlackItorNode *restrict itor_node;
+	struct RedBlackNode *restrict *restrict tree;
+	struct RedBlackNode *restrict *restrict node_ptr;
+	struct RedBlackNode *restrict parent;
+
+	tree     = itor_node->tree;
+	node_ptr = &itor_node->node;
+
+	parent = *node_ptr;
+
+	if (itor_node->subtree_is_left) {
+		if (parent->is_red)
+			rbai_restore_both_bot_l_l(cursor,
+						  itor_root,
+						  itor_node,
+						  tree,
+						  node_ptr,
+						  parent);
+		else
+			rbai_restore_both_bot_l_b(cursor,
+						  itor_root,
+						  itor_node,
+						  tree,
+						  node_ptr,
+						  parent);
+
+	} else {
+	}
+}
+
+static inline void
+rbai_restore_red(struct RedBlackItorCursor *const restrict cursor,
+		 struct RedBlackItorNode *const restrict itor_root,
+		 struct RedBlackItorNode *const restrict itor_node,
+		 struct RedBlackNode *restrict *const restrict tree,
+		 struct RedBlackNode *restrict *const restrict node_ptr,
+		 struct RedBlackNode *const restrict lchild,
+		 struct RedBlackNode *restrict rchild)
 {
 	struct RedBlackNode *restrict replacement_parent;
 	struct RedBlackNode *restrict replacement_child;
@@ -18,27 +80,14 @@ rbi_restore_black(struct RedBlackItorCursor *const restrict cursor,
 	struct RedBlackNode *restrict replacement_stack[RED_BLACK_STACK_COUNT];
 	struct RedBlackNode *restrict *restrict replacement_cursor;
 
-
 	if (lchild == NULL) {
-		*tree = rchild;
+		*tree = NULL; /* rchild must be NULL */
 
-		restored = (rchild != NULL);
-		if (restored) {
-			*node_ptr = rchild;
-			rchild->is_red = false; /* RED leaf -> restore */
-
-		} else {
-			*(cursor->stack) = NULL; /* no successors */
-		}
-
-		return restored;
-
-	} else if (rchild == NULL) {
-		*tree = lchild;
-		lchild->is_red = false; /* RED leaf -> BLACK -> restored */
-
-		*(cursor->stack) = NULL; /* no successors */
-		return true;
+		/* need to restore cursor AND balance */
+		rbai_restore_both(cursor,
+				  itor_root,
+				  itor_node - 1);
+		return;
 	}
 
 	/* find min successor, its parent, its right child, and its ancestor
@@ -46,10 +95,12 @@ rbi_restore_black(struct RedBlackItorCursor *const restrict cursor,
 	 * ────────────────────────────────────────────────────────────────── */
 	replacement = rchild->left;
 
-	if (replacement == NULL) /* black height of 1 or 2 */
-		return rb_restore_black_shallow(tree,
-						lchild,
-						rchild);
+	if (replacement == NULL) {
+		rb_restore_red_shallow(tree,
+				       lchild,
+				       rchild);
+		return;
+	}
 
 	replacement_cursor  = &replacement_stack[0];
 	*replacement_cursor = NULL;
@@ -71,11 +122,11 @@ rbi_restore_black(struct RedBlackItorCursor *const restrict cursor,
 	replacement_child	 = replacement->right;
 	replacement_parent->left = replacement_child; /* pop replacement */
 
-	restored = rb_restore_black_rtree(&rchild,
-					  replacement_cursor,
-					  replacement_parent,
-					  replacement,
-					  replacement_child);
+	restored = rb_restore_red_rtree(&rchild,
+					replacement_cursor,
+					replacement_parent,
+					replacement,
+					replacement_child);
 
 	replacement->right = rchild; /* set right subtree of replacement */
 
@@ -83,64 +134,74 @@ rbi_restore_black(struct RedBlackItorCursor *const restrict cursor,
 		/* black height restored through recoloring and/or rotation of
 		 * ancestors or right child of replacement
 		 *
-		 * replacement guaranteed BLACK */
+		 * replacement is RED */
 		*tree = replacement;
 		replacement->left = lchild;
-		return true;
-	}
 
-	/* replacement is BLACK, left subtree of replacement is still NULL
-	 *
-	 * right subtree of replacement is valid (balanced) but deficient 1
-	 * black height
-	 *
-	 * right subtree of replacement has BLACK root (rchild) and black
-	 * height of AT LEAST 2 (inclusive)
-	 *
-	 * lchild has black height of AT LEAST 3 (inclusive)
-	 * ────────────────────────────────────────────────────────────────── */
-	return rb_restore_black_ltree(tree,
-				      lchild,
-				      replacement);
+	} else {
+		rb_restore_red_ltree(tree,
+				     lchild,
+				     replacement);
+	}
 }
 
 
-void
-red_black_itor_restore_root(struct RedBlackItorCursor *const restrict cursor,
-			    struct RedBlackItorNode *const restrict itor_root
-			    struct RedBlackNodeFactory *const restrict factory)
+static inline void
+rbai_restore_black(struct RedBlackItorCursor *const restrict cursor,
+		   struct RedBlackItorNode *const restrict itor_root,
+		   struct RedBlackItorNode *const restrict itor_node,
+		   struct RedBlackNode *restrict *const restrict tree,
+		   struct RedBlackNode *restrict *const restrict node_ptr,
+		   struct RedBlackNode *const restrict lchild,
+		   struct RedBlackNode *restrict rchild)
 {
-	struct RedBlackNode *restrict *restrict tree;
-	struct RedBlackNode *restrict *restrict node_ptr;
-	struct RedBlackNode *restrict root;
-	struct RedBlackNode *restrict lchild;
-	struct RedBlackNode *restrict rchild;
-
-	tree     = itor_root->tree;
-	node_ptr = &itor_root->node;
-
-	root = *node_ptr;
-
-	lchild = root->left;
-	rchild = root->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	(void) rbi_restore_black(cursor,
-				 node_ptr,
-				 tree,
-				 lchild,
-				 rchild);
 }
 
 
 void
 red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
-			   struct RedBlackItorNode *const restrict itor_root
+			   struct RedBlackItorNode *const restrict itor_root,
 			   struct RedBlackNodeFactory *const restrict factory)
 {
+	struct RedBlackItorNode *restrict itor_node;
+	struct RedBlackNode *restrict *restrict tree;
+	struct RedBlackNode *restrict *restrict node_ptr;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict lchild;
+	struct RedBlackNode *restrict rchild;
+	bool is_red;
+
+	itor_node = cursor->path;
+
+	tree     = itor_node->tree;
+	node_ptr = &itor_node->node;
+
+	node = *node_ptr;
+
+	is_red = node->is_red;
+	lchild = node->left;
+	rchild = node->right;
+
+	/* free node */
+	rbnf_free(factory,
+		  node);
+
+	if (is_red)
+		rbai_restore_red(cursor,
+				 itor_root,
+				 itor_node,
+				 tree,
+				 node_ptr,
+				 lchild,
+				 rchild);
+	else
+		rbai_restore_black(cursor,
+				   itor_root,
+				   itor_node,
+				   tree,
+				   node_ptr,
+				   lchild,
+				   rchild);
 }
 
 void

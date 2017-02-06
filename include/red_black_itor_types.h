@@ -8,32 +8,6 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-/* typedef void */
-/* (*RedBlackItorRestoreCursor)(struct RedBlackItorCursor *const restrict cursor, */
-/* 			     struct RedBlackItorNode *const restrict itor_root, */
-/* 			     struct RedBlackItorNode *const restrict itor_node); */
-
-/* typedef void */
-/* (*RedBlackItorRestoreNode)(struct RedBlackItorNode *const restrict itor_root, */
-/* 			   struct RedBlackItorNode *const restrict itor_node); */
-
-/* struct RedBlackItorRestoreControlNode { */
-/* 	const RedBlackItorRestoreCursor cursor_and_node; */
-/* 	const RedBlackItorRestoreCursor only_cursor; */
-/* 	const RedBlackItorRestoreNode only_node; */
-/* }; */
-
-
-
-/* struct RedBlackItorRestoreController { */
-/* 	const struct RedBlackItorRestoreNode */
-/* }; */
-
-struct RedBlackItorNode;
-
-typedef void
-(*RedBlackItorRestoreNode)(struct RedBlackItorNode *const restrict itor_node);
-
 struct RedBlackItorNode {
 	struct RedBlackNode *restrict *restrict tree;
 	struct RedBlackNode *restrict node;

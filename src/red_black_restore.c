@@ -930,7 +930,7 @@ red_black_restore_max_node(struct RedBlackNode *restrict *const restrict tree,
  * r   - parent is red */
 static inline void
 rb_restore_l_bot_r(struct RedBlackNode *restrict *const restrict tree,
-			  struct RedBlackNode *const restrict parent)
+		   struct RedBlackNode *const restrict parent)
 {
 	struct RedBlackNode *restrict rnode;
 	struct RedBlackNode *restrict rrchild;
