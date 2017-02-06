@@ -253,16 +253,18 @@ TARGETS			+= $(UNITY_OBJ)
 # ══════════════════════════════════════════════════════════════════════════════
 # Independent Headers
 # ──────────────────────────────────────────────────────────────────────────────
-STACK_COUNT_HDR := $(call HEADER_PATH,red_black_stack_count)
-COMPARATOR_HDR  := $(call HEADER_PATH,red_black_comparator)
-JUMP_HDR        := $(call HEADER_PATH,red_black_jump)
-MALLOC_HDR      := $(call HEADER_PATH,red_black_malloc)
-NODE_HDR        := $(call HEADER_PATH,red_black_node)
-HNODE_HDR       := $(call HEADER_PATH,red_black_hnode)
-PRINT_TYPES_HDR := $(call HEADER_PATH,red_black_print_types)
-LINK_OFFSET_HDR	:= $(call HEADER_PATH,red_black_link_offset)
-ITOR_TYPES_HDR  := $(call HEADER_PATH,red_black_itor_types)
-RED_BLACK_HDR   := $(call HEADER_PATH,red_black)
+STACK_COUNT_HDR 	  := $(call HEADER_PATH,red_black_stack_count)
+COMPARATOR_HDR  	  := $(call HEADER_PATH,red_black_comparator)
+JUMP_HDR        	  := $(call HEADER_PATH,red_black_jump)
+MALLOC_HDR      	  := $(call HEADER_PATH,red_black_malloc)
+NODE_HDR        	  := $(call HEADER_PATH,red_black_node)
+HNODE_HDR       	  := $(call HEADER_PATH,red_black_hnode)
+PRINT_TYPES_HDR 	  := $(call HEADER_PATH,red_black_print_types)
+LINK_OFFSET_HDR		  := $(call HEADER_PATH,red_black_link_offset)
+ITOR_NODE_HDR   	  := $(call HEADER_PATH,red_black_itor_node)
+ITOR_NODE_PARENT_INFO_HDR := $(call HEADER_PATH,red_black_itor_node_parent_info)
+ITOR_CURSOR_HDR           := $(call HEADER_PATH,red_black_itor_cursor)
+RED_BLACK_HDR   	  := $(call HEADER_PATH,red_black)
 
 
 # red_black_node_factory
@@ -314,10 +316,11 @@ ITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_itor)
 # ─────────────── target prequisites ───────────────────────────────────────────
 ITOR_OBJ_PREQS		:= $(ITOR_SRC)					\
 			   $(ITOR_HDR)					\
-			   $(ITOR_TYPES_HDR)				\
+			   $(ITOR_CURSOR_HDR)				\
 			   $(NODE_FACTORY_HDR)				\
 			   $(STACK_COUNT_HDR)				\
 			   $(COMPARATOR_HDR)				\
+			   $(ITOR_NODE_PARENT_INFO_HDR)			\
 			   $(LINK_OFFSET_HDR)
 ITOR_OBJ_GROUP		:= $(ITOR_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)

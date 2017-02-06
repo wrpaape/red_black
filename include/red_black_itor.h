@@ -3,7 +3,8 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_itor_types.h"   /* Node, NodeFactory, Itor types */
+#include "red_black_itor_cursor.h"  /* Node, ItorNode, ItorCursor */
+#include "red_black_node_factory.h" /* NodeFactory */
 #include "red_black_stack_count.h"  /* RED_BLACK_STACK_COUNT */
 #include "red_black_comparator.h"   /* Comparator (verify) */
 
@@ -15,6 +16,9 @@ struct RedBlackItorControlNode {
 	const int direction;
 };
 
+typedef void
+(*RedBlackItorRestore)(struct RedBlackItorCursor *const restrict cursor,
+		       struct RedBlackNodeFactory *const restrict factory);
 
 struct RedBlackItorController {
 	const struct RedBlackItorControlNode next;

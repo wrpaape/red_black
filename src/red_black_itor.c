@@ -1,5 +1,6 @@
-#include "red_black_itor.h"         /* RedBlackItor */
-#include "red_black_link_offset.h"  /* asc|desc_link_offset, stddef */
+#include "red_black_itor.h"		     /* RedBlackItor, Itor types */
+#include "red_black_itor_node_parent_info.h" /* PARENT_INFO macros */
+#include "red_black_link_offset.h"	     /* asc|desc_link_offset, stddef */
 
 #if 0
 #include "red_black_itor_restore.h" /* asc|desc_itor_restore */
@@ -9,13 +10,11 @@
 static void
 red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
 			   struct RedBlackNodeFactory *const restrict factory)
-{
-}
+{}
 static void
 red_black_desc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
 			    struct RedBlackNodeFactory *const restrict factory)
-{
-}
+{}
 #endif
 
 
@@ -119,11 +118,11 @@ red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
 	static const struct RedBlackItorController asc_controller = {
 		.next =  {
 			.offset    = offsetof(struct RedBlackNode, right),
-			.direction = RBI_PARENT_INFO_DIRECTION_RIGHT
+			.direction = RBIN_PARENT_INFO_DIRECTION_RIGHT
 		},
 		.prev =  {
 			.offset	   = offsetof(struct RedBlackNode, left),
-			.direction = RBI_PARENT_INFO_DIRECTION_LEFT
+			.direction = RBIN_PARENT_INFO_DIRECTION_LEFT
 		},
 		.restore = &red_black_asc_itor_restore
 	};
@@ -143,11 +142,11 @@ red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
 	static const struct RedBlackItorController desc_controller = {
 		.next =  {
 			.offset	   = offsetof(struct RedBlackNode, left),
-			.direction = RBI_PARENT_INFO_DIRECTION_LEFT
+			.direction = RBIN_PARENT_INFO_DIRECTION_LEFT
 		},
 		.prev =  {
 			.offset	   = offsetof(struct RedBlackNode, right),
-			.direction = RBI_PARENT_INFO_DIRECTION_RIGHT
+			.direction = RBIN_PARENT_INFO_DIRECTION_RIGHT
 		},
 		.restore = &red_black_desc_itor_restore
 	};
@@ -342,14 +341,14 @@ red_black_itor_verify(const struct RedBlackItor *const restrict itor,
 
 		if (compare < 0) {
 			expected_parent_info = node->is_red
-					     ? RBI_PARENT_INFO_RED_LEFT
-					     : RBI_PARENT_INFO_BLACK_LEFT;
+					     ? RBIN_PARENT_INFO_RED_LEFT
+					     : RBIN_PARENT_INFO_BLACK_LEFT;
 			tree = &node->left;
 
 		} else {
 			expected_parent_info = node->is_red
-					     ? RBI_PARENT_INFO_RED_RIGHT
-					     : RBI_PARENT_INFO_BLACK_RIGHT;
+					     ? RBIN_PARENT_INFO_RED_RIGHT
+					     : RBIN_PARENT_INFO_BLACK_RIGHT;
 			tree = &node->right;
 		}
 
