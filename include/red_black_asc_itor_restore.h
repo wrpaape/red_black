@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_ITOR_RESTORE_H_
-#define RED_BLACK_ITOR_RESTORE_H_
+#ifndef RED_BLACK_ASC_ITOR_RESTORE_H_
+#define RED_BLACK_ASC_ITOR_RESTORE_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -10,8 +10,4 @@ red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
 			   struct RedBlackItorNode *const restrict itor_root,
 			   struct RedBlackNodeFactory *const restrict factory);
 
-void
-red_black_desc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
-			    struct RedBlackItorNode *const restrict itor_root,
-			    struct RedBlackNodeFactory *const restrict factory);
-#endif /* ifndef RED_BLACK_ITOR_RESTORE_H_ */
+#endif /* ifndef RED_BLACK_ASC_ITOR_RESTORE_H_ */
