@@ -199,16 +199,8 @@ red_black_itor_current(const struct RedBlackItor *const restrict itor,
 void
 red_black_itor_drop(struct RedBlackItor *const restrict itor)
 {
-	struct RedBlackItorCursor *restrict cursor;
-	const struct RedBlackItorController *restrict controller;
-	struct RedBlackNodeFactory *restrict factory;
-
-	cursor     = &itor->cursor;
-	controller = itor->controller;
-	factory    = itor->factory;
-
-	controller->restore(cursor,
-			    factory);
+	itor->controller->restore(&itor->cursor,
+				  itor->factory);
 }
 
 

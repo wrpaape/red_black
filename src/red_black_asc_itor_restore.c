@@ -2,6 +2,16 @@
 #include "red_black_stack_count.h"      /* RED_BLACK_STACK_COUNT */
 #include <stddef.h>		        /* NULL */
 
+static inline void
+rbai_restore_red(struct RedBlackItorCursor *const restrict cursor,
+		 struct RedBlackItorNode *const restrict itor_node,
+		 struct RedBlackNode *restrict *const restrict tree,
+		 struct RedBlackNode *restrict *const restrict node_ptr,
+		 struct RedBlackNode *const restrict lchild,
+		 struct RedBlackNode *const restrict rchild)
+{
+}
+
 
 void
 red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
@@ -39,7 +49,6 @@ red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
 				 rchild);
 	else
 		rbai_restore_black(cursor,
-				   itor_root,
 				   itor_node,
 				   tree,
 				   node_ptr,
