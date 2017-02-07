@@ -533,6 +533,8 @@ put_string_key(char *buffer,
 
 
 ##Implementation
+
+###The "Parent" Pointer Compromise
 TODO
 
 
