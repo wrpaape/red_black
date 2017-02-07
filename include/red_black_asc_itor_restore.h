@@ -3,8 +3,12 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_itor_types.h" /* Node, NodeFactory ItorNode, ItorCursor */
+#include "red_black_itor_cursor.h"  /* Node, NodeFactory ItorNode, ItorCursor */
+#include "red_black_node_factory.h" /* NodeFactory */
 
+
+/* external API
+ * ────────────────────────────────────────────────────────────────────────── */
 void
 red_black_asc_itor_restore(struct RedBlackItorCursor *const restrict cursor,
 			   struct RedBlackItorNode *const restrict itor_root,

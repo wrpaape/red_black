@@ -1,10 +1,10 @@
 #include "red_black_itor.h"		     /* RedBlackItor, Itor types */
-#include "red_black_itor_node_parent_info.h" /* PARENT_INFO macros */
+#include "red_black_itor_node_parent_info.h" /* RBIN_PARENT_INFO macros */
 #include "red_black_link_offset.h"	     /* asc|desc_link_offset, stddef */
 
 #if 0
-#include "red_black_itor_restore.h" /* asc|desc_itor_restore */
-
+#include "red_black_asc_itor_restore.h"  /* asc_itor_restore */
+#include "red_black_desc_itor_restore.h" /* desc_itor_restore */
 
 #else
 static void

@@ -1,5 +1,5 @@
 #include "red_black_asc_itor_restore.h" /* Node, NodeFactory, Itor types */
-#include "red_black_itor_restore.h"	/* function types, STACK_COUNT */
+#include "red_black_itor_restore.h"	/* restore deps */
 
 
 /* restore red-black properties ONLY */
@@ -13,10 +13,10 @@ static void
 rbai_restore_valid_r_r(struct RedBlackItorNode *const restrict itor_node);
 
 static const RedBlackItorRestoreValid rbai_restore_valid[] = {
-	[RBI_PARENT_INFO_BLACK_LEFT]  = &rbai_restore_valid_b_l,
-	[RBI_PARENT_INFO_RED_LEFT]    = &rbai_restore_valid_r_l,
-	[RBI_PARENT_INFO_BLACK_RIGHT] = &rbai_restore_valid_b_r,
-	[RBI_PARENT_INFO_RED_RIGHT]   = &rbai_restore_valid_r_r
+	[RBIN_PARENT_INFO_BLACK_LEFT]  = &rbai_restore_valid_b_l,
+	[RBIN_PARENT_INFO_RED_LEFT]    = &rbai_restore_valid_r_l,
+	[RBIN_PARENT_INFO_BLACK_RIGHT] = &rbai_restore_valid_b_r,
+	[RBIN_PARENT_INFO_RED_RIGHT]   = &rbai_restore_valid_r_r
 };
 
 
@@ -35,10 +35,10 @@ rbai_restore_cursor_r_r(struct RedBlackItorCursor *const restrict cursor,
 			struct RedBlackItorNode *const restrict itor_node);
 
 static const RedBlackItorRestoreCursor rbai_restore_cursor[] = {
-	[RBI_PARENT_INFO_BLACK_LEFT]  = &rbai_restore_cursor_b_l,
-	[RBI_PARENT_INFO_RED_LEFT]    = &rbai_restore_cursor_r_l,
-	[RBI_PARENT_INFO_BLACK_RIGHT] = &rbai_restore_cursor_b_r,
-	[RBI_PARENT_INFO_RED_RIGHT]   = &rbai_restore_cursor_r_r
+	[RBIN_PARENT_INFO_BLACK_LEFT]  = &rbai_restore_cursor_b_l,
+	[RBIN_PARENT_INFO_RED_LEFT]    = &rbai_restore_cursor_r_l,
+	[RBIN_PARENT_INFO_BLACK_RIGHT] = &rbai_restore_cursor_b_r,
+	[RBIN_PARENT_INFO_RED_RIGHT]   = &rbai_restore_cursor_r_r
 };
 
 
@@ -57,10 +57,10 @@ rbai_restore_both_r_r(struct RedBlackItorCursor *const restrict cursor,
 		      struct RedBlackItorNode *const restrict itor_node);
 
 static const RedBlackItorRestoreBoth rbai_restore_both[] = {
-	[RBI_PARENT_INFO_BLACK_LEFT]  = &rbai_restore_both_b_l,
-	[RBI_PARENT_INFO_RED_LEFT]    = &rbai_restore_both_r_l,
-	[RBI_PARENT_INFO_BLACK_RIGHT] = &rbai_restore_both_b_r,
-	[RBI_PARENT_INFO_RED_RIGHT]   = &rbai_restore_both_r_r
+	[RBIN_PARENT_INFO_BLACK_LEFT]  = &rbai_restore_both_b_l,
+	[RBIN_PARENT_INFO_RED_LEFT]    = &rbai_restore_both_r_l,
+	[RBIN_PARENT_INFO_BLACK_RIGHT] = &rbai_restore_both_b_r,
+	[RBIN_PARENT_INFO_RED_RIGHT]   = &rbai_restore_both_r_r
 };
 
 
