@@ -260,10 +260,6 @@ MALLOC_HDR      	  := $(call HEADER_PATH,red_black_malloc)
 NODE_HDR        	  := $(call HEADER_PATH,red_black_node)
 HNODE_HDR       	  := $(call HEADER_PATH,red_black_hnode)
 PRINT_TYPES_HDR 	  := $(call HEADER_PATH,red_black_print_types)
-LINK_OFFSET_HDR		  := $(call HEADER_PATH,red_black_link_offset)
-ITOR_NODE_HDR   	  := $(call HEADER_PATH,red_black_itor_node)
-ITOR_NODE_PARENT_INFO_HDR := $(call HEADER_PATH,red_black_itor_node_parent_info)
-ITOR_CURSOR_HDR           := $(call HEADER_PATH,red_black_itor_cursor)
 RED_BLACK_HDR   	  := $(call HEADER_PATH,red_black)
 
 
@@ -288,25 +284,6 @@ TARGETS				+= $(NODE_FACTORY_OBJ)			\
 			   	   $(NODE_FACTORY_PIC_OBJ)
 
 
-# red_black_etor
-# ──────────────────────────────────────────────────────────────────────────────
-ETOR_SRC		:= $(call SOURCE_PATH,red_black_etor)
-ETOR_HDR		:= $(call HEADER_PATH,red_black_etor)
-ETOR_OBJ		:= $(call OBJECT_PATH,red_black_etor)
-ETOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_etor)
-# ─────────────── target prequisites ───────────────────────────────────────────
-ETOR_OBJ_PREQS		:= $(ETOR_SRC)					\
-			   $(ETOR_HDR)					\
-			   $(LINK_OFFSET_HDR)				\
-			   $(STACK_COUNT_HDR)
-ETOR_OBJ_GROUP		:= $(ETOR_OBJ)
-ETOR_PIC_OBJ_PREQS	:= $(ETOR_OBJ_PREQS)
-ETOR_PIC_OBJ_GROUP	:= $(ETOR_PIC_OBJ)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(ETOR_OBJ)					\
-			   $(ETOR_PIC_OBJ)
-
-
 # red_black_itor
 # ──────────────────────────────────────────────────────────────────────────────
 ITOR_SRC		:= $(call SOURCE_PATH,red_black_itor)
@@ -316,17 +293,10 @@ ITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_itor)
 # ─────────────── target prequisites ───────────────────────────────────────────
 ITOR_OBJ_PREQS		:= $(ITOR_SRC)					\
 			   $(ITOR_HDR)					\
-			   $(ITOR_CURSOR_HDR)				\
-			   $(NODE_FACTORY_HDR)				\
-			   $(STACK_COUNT_HDR)				\
-			   $(COMPARATOR_HDR)				\
-			   $(ITOR_NODE_PARENT_INFO_HDR)			\
-			   $(LINK_OFFSET_HDR)
-ITOR_OBJ_GROUP		:= $(ITOR_OBJ)					\
-			   $(NODE_FACTORY_OBJ_GROUP)
+			   $(STACK_COUNT_HDR)
+ITOR_OBJ_GROUP		:= $(ITOR_OBJ)
 ITOR_PIC_OBJ_PREQS	:= $(ITOR_OBJ_PREQS)
-ITOR_PIC_OBJ_GROUP	:= $(ITOR_PIC_OBJ)				\
-			   $(NODE_FACTORY_PIC_OBJ_GROUP)
+ITOR_PIC_OBJ_GROUP	:= $(ITOR_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(ITOR_OBJ)					\
 			   $(ITOR_PIC_OBJ)
@@ -881,7 +851,6 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 			   $(TREE_HDR)					\
 		   	   $(COMPARATOR_HDR)				\
 		   	   $(NODE_FACTORY_HDR)				\
-		   	   $(ETOR_HDR)					\
 		   	   $(ITOR_HDR)					\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
@@ -905,7 +874,6 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_HDR)
 TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
-			   $(ETOR_OBJ_GROUP)				\
 			   $(ITOR_OBJ_GROUP)				\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(PUT_OBJ_GROUP)				\
@@ -930,7 +898,6 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
 TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
-			   $(ETOR_PIC_OBJ_GROUP)			\
 			   $(ITOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(PUT_PIC_OBJ_GROUP)				\
@@ -977,7 +944,7 @@ LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
 			   $(LOCK_HDR)					\
 		   	   $(NODE_FACTORY_HDR)				\
 			   $(HMAP_COUNT_HDR)				\
-		   	   $(ETOR_HDR)					\
+		   	   $(ITOR_HDR)					\
 		   	   $(HASH_NODE_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(UPDATE_HDR)				\
@@ -994,7 +961,7 @@ LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
 			   $(LOCK_OBJ_GROUP)				\
 		   	   $(NODE_FACTORY_OBJ_GROUP)			\
 		   	   $(HMAP_COUNT_OBJ_GROUP)			\
-		   	   $(ETOR_OBJ_GROUP)				\
+		   	   $(ITOR_OBJ_GROUP)				\
 		   	   $(HKEY_OBJ_GROUP)				\
 		   	   $(INSERT_OBJ_GROUP)				\
 		   	   $(UPDATE_OBJ_GROUP)				\
@@ -1011,7 +978,7 @@ LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
 			   $(LOCK_PIC_OBJ_GROUP)			\
 		   	   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
 		   	   $(HMAP_COUNT_PIC_OBJ_GROUP)			\
-		   	   $(ETOR_PIC_OBJ_GROUP)			\
+		   	   $(ITOR_PIC_OBJ_GROUP)			\
 		   	   $(HKEY_PIC_OBJ_GROUP)			\
 		   	   $(INSERT_PIC_OBJ_GROUP)			\
 		   	   $(UPDATE_PIC_OBJ_GROUP)			\
@@ -1451,11 +1418,6 @@ $(TREE_PIC_OBJ): $(TREE_PIC_OBJ_PREQS)
 $(NODE_FACTORY_OBJ): $(NODE_FACTORY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(NODE_FACTORY_PIC_OBJ): $(NODE_FACTORY_PIC_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(ETOR_OBJ): $(ETOR_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-$(ETOR_PIC_OBJ): $(ETOR_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(ITOR_OBJ): $(ITOR_OBJ_PREQS)

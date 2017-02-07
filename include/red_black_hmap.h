@@ -5,7 +5,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node_factory.h" /* RedBlackNodeFactory */
 #include "red_black_hmap_count.h"   /* RedBlackHMapCount */
-#include "red_black_etor.h"	    /* RedBlackEtor */
+#include "red_black_itor.h"	    /* RedBlackItor */
 
 
 /* typedefs, struct declarations
@@ -21,12 +21,12 @@ struct _RedBlackHMap {
 };
 typedef struct _RedBlackHMap RedBlackHMap;
 
-struct _RedBlackHMapEtor {
-	struct RedBlackEtor bucket_etor;
+struct _RedBlackHMapItor {
+	struct RedBlackItor bucket_itor;
 	struct RedBlackHBucket *restrict bucket;
 	struct RedBlackHBucket *restrict last_bucket;
 };
-typedef struct _RedBlackHMapEtor RedBlackHMapEtor;
+typedef struct _RedBlackHMapItor RedBlackHMapItor;
 
 
 /* external API
@@ -78,11 +78,11 @@ bool
 red_black_hmap_verify(RedBlackHMap *const restrict map);
 
 void
-red_black_hmap_etor_init(RedBlackHMapEtor *const restrict etor,
+red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
 			 RedBlackHMap *const restrict map);
 
 bool
-red_black_hmap_etor_next(RedBlackHMapEtor *const restrict etor,
+red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
 			 void **const restrict key_ptr,
 			 size_t *const restrict length_ptr);
 #endif /* ifndef RED_BLACK_HMAP_H_ */

@@ -1,4 +1,4 @@
-#include "red_black_tree.h" /* RedBlackTree|Etor */
+#include "red_black_tree.h" /* RedBlackTree|Itor */
 #include "str_key.h"        /* str_key_comparator */
 #include <stdio.h>          /* puts, perror, EOF */
 #include <stdlib.h>         /* exit, EXIT_FAILURE */
@@ -16,7 +16,7 @@ main(int argc,
      char *argv[])
 {
 	RedBlackTree tree;
-	RedBlackTreeEtor etor;
+	RedBlackTreeItor itor;
 	const char *restrict key;
 
 	/* initialize string tree */
@@ -29,12 +29,12 @@ main(int argc,
 					  argv[i]) < 0)
 			EXIT_ON_FAILURE("insertion failure -- OUT OF MEMORY");
 
-	/* initialize ascending etor */
-	red_black_tree_asc_etor_init(&etor,
+	/* initialize ascending itor */
+	red_black_tree_asc_itor_init(&itor,
 				     &tree);
 
 	/* print unique arguments in ascending order */
-	while (red_black_tree_etor_next(&etor,
+	while (red_black_tree_itor_next(&itor,
 					(void **) &key))
 		if (puts(key) == EOF)
 			EXIT_ON_FAILURE("puts failure");

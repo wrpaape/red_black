@@ -455,53 +455,53 @@ red_black_hmap_verify(RedBlackHMap *const restrict map)
 
 
 void
-red_black_hmap_etor_init(RedBlackHMapEtor *const restrict etor,
+red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
 			 RedBlackHMap *const restrict map)
 {
 	struct RedBlackHBucket *restrict first_bucket;
 
 	first_bucket = map->buckets;
 
-	/* initialize first bucket etor */
-	red_black_asc_etor_init(&etor->bucket_etor,
+	/* initialize first bucket itor */
+	red_black_asc_itor_init(&itor->bucket_itor,
 				first_bucket->root);
 
-	etor->bucket      = first_bucket;
-	etor->last_bucket = first_bucket + map->count.buckets_m1;
+	itor->bucket      = first_bucket;
+	itor->last_bucket = first_bucket + map->count.buckets_m1;
 }
 
 
 bool
-red_black_hmap_etor_next(RedBlackHMapEtor *const restrict etor,
+red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
 			 void **const restrict key_ptr,
 			 size_t *const restrict length_ptr)
 {
-	struct RedBlackEtor *restrict bucket_etor;
+	struct RedBlackItor *restrict bucket_itor;
 	struct RedBlackHBucket *restrict bucket;
 	struct RedBlackHBucket *restrict last_bucket;
 	struct RedBlackHKey *restrict hkey_ptr;
 
-	bucket_etor = &etor->bucket_etor;
+	bucket_itor = &itor->bucket_itor;
 
 	/* if current bucket has remaining keys, return with next key, length */
-	if (red_black_etor_next(bucket_etor,
+	if (red_black_itor_next(bucket_itor,
 				(void **) &hkey_ptr))
 		goto FOUND_NEXT;
 
-	bucket      = etor->bucket;
-	last_bucket = etor->last_bucket;
+	bucket      = itor->bucket;
+	last_bucket = itor->last_bucket;
 
 	while (bucket < last_bucket) {
 		++bucket; /* advance to next bucket */
 
-		/* reset bucket etor */
-		red_black_etor_reset(bucket_etor,
+		/* reset bucket itor */
+		red_black_itor_reset(bucket_itor,
 				     bucket->root);
 
 		/* if bucket is non-empty, return with first key, length */
-		if (red_black_etor_next(bucket_etor,
+		if (red_black_itor_next(bucket_itor,
 					(void **) &hkey_ptr)) {
-			etor->bucket = bucket; /* update bucket */
+			itor->bucket = bucket; /* update bucket */
 FOUND_NEXT:
 			*key_ptr    = (void *) hkey_ptr->key;
 			*length_ptr = hkey_ptr->length;

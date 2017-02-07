@@ -205,7 +205,7 @@ test_find(void *arg)
 
 
 ThreadReturn
-test_etor(void *arg)
+test_itor(void *arg)
 {
 	int *restrict key;
 	unsigned int count;
@@ -215,10 +215,10 @@ test_etor(void *arg)
 
 	/* static bool key_set[KEYS_COUNT]; */
 
-	RedBlackLHMapLEtor etor;
+	RedBlackLHMapLItor itor;
 
 
-	ENTER("test_etor");
+	ENTER("test_itor");
 
 	/* calloc to preserve thread stack space */
 	bool *const restrict key_set = calloc(KEYS_COUNT,
@@ -227,16 +227,16 @@ test_etor(void *arg)
 	if (key_set == NULL)
 		EXIT_ON_SYS_FAILURE("OUT OF MEMORY");
 
-	/* test etor */
-	if (!red_black_lhmap_letor_init(&etor,
+	/* test itor */
+	if (!red_black_lhmap_litor_init(&itor,
 					&lhmap))
-				SYS_FAILURE("lhmap_letor_init",
+				SYS_FAILURE("lhmap_litor_init",
 					    "LOCK FAILURE");
 
 	count = 0;
 
 	while (1) {
-		status = red_black_lhmap_letor_next(&etor,
+		status = red_black_lhmap_litor_next(&itor,
 						    (void **) &key,
 						    &length);
 
@@ -244,11 +244,11 @@ test_etor(void *arg)
 			break;
 
 		if (status < 0)
-			SYS_FAILURE("lhmap_letor_next",
+			SYS_FAILURE("lhmap_litor_next",
 				    "LOCK FAILURE");
 
 		if (length != sizeof(*key))
-			TEST_FAILURE("lhmap_letor_next",
+			TEST_FAILURE("lhmap_litor_next",
 				     "GOT UNEXPECTED LENGTH %zu INSTEAD OF %zu",
 				     length,
 				     sizeof(*key));
@@ -257,7 +257,7 @@ test_etor(void *arg)
 		key_set_ptr = key_set + *key;
 
 		if (*key_set_ptr)
-			TEST_FAILURE("lhmap_letor_next",
+			TEST_FAILURE("lhmap_litor_next",
 				     "ITERATOR TRAVERSED SAME KEY TWICE: %d (%d) (%d)",
 				     *key, *key_set_ptr, (int) (key - &keys[0]));
 
@@ -268,15 +268,15 @@ test_etor(void *arg)
 	free(key_set);
 
 	if (count < KEYS_COUNT)
-		TEST_FAILURE("lhmap_letor",
+		TEST_FAILURE("lhmap_litor",
 			     "ITERATOR SKIPPED ENTRIES");
 	else if (count > KEYS_COUNT)
-		TEST_FAILURE("lhmap_letor",
+		TEST_FAILURE("lhmap_litor",
 			     "ITERATOR TRAVERSED MORE THAN " KC_STR " KEYS");
 
-	TEST_PASS("etor");
+	TEST_PASS("itor");
 
-	RETURN("test_etor");
+	RETURN("test_itor");
 
 	return (ThreadReturn) 0;
 }
@@ -409,7 +409,7 @@ test_single_thread_operations(void)
 
 	test_count(KEYS_COUNT);
 
-	(void) test_etor(NULL);
+	(void) test_itor(NULL);
 
 	test_count(KEYS_COUNT);
 
@@ -441,7 +441,7 @@ test_multi_thread_operations(void)
 
 	test_count(KEYS_COUNT);
 
-	multi_thread_test(&test_etor);
+	multi_thread_test(&test_itor);
 
 	test_count(KEYS_COUNT);
 

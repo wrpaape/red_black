@@ -5,7 +5,6 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_comparator.h"   /* Comparator */
 #include "red_black_node_factory.h" /* Node, NodeFactory, JumpBuffer, bool */
-#include "red_black_etor.h"         /* RedBlackEtor */
 #include "red_black_itor.h"         /* RedBlackItor */
 #include "red_black_print_types.h"  /* KeySizer|Putter, size_t */
 
@@ -18,8 +17,6 @@ struct _RedBlackTree {
 	struct RedBlackNodeFactory node_factory;
 };
 typedef struct _RedBlackTree RedBlackTree;
-
-typedef struct RedBlackEtor RedBlackTreeEtor;
 
 typedef struct RedBlackItor RedBlackTreeItor;
 
@@ -239,43 +236,18 @@ red_black_tree_print(const RedBlackTree *const restrict tree,
 		     const RedBlackKeyPutter key_putter);
 
 void
-red_black_tree_asc_etor_init(RedBlackTreeEtor *const restrict etor,
+red_black_tree_asc_itor_init(RedBlackTreeItor *const restrict itor,
 			     const RedBlackTree *const restrict tree);
 
 void
-red_black_tree_desc_etor_init(RedBlackTreeEtor *const restrict etor,
+red_black_tree_desc_itor_init(RedBlackTreeItor *const restrict itor,
 			      const RedBlackTree *const restrict tree);
 void
-red_black_tree_etor_reset(RedBlackTreeEtor *const restrict etor,
+red_black_tree_itor_reset(RedBlackTreeItor *const restrict itor,
 			  const RedBlackTree *const restrict tree);
 
 bool
-red_black_tree_etor_next(RedBlackTreeEtor *const restrict etor,
+red_black_tree_itor_next(RedBlackTreeItor *const restrict itor,
 			 void **const restrict key_ptr);
-
-void
-red_black_tree_asc_itor_init(RedBlackTreeItor *const restrict itor,
-			     RedBlackTree *const restrict tree);
-
-void
-red_black_tree_desc_itor_init(RedBlackTreeItor *const restrict itor,
-			      RedBlackTree *const restrict tree);
-void
-red_black_tree_itor_reset(RedBlackTreeItor *const restrict itor,
-			  RedBlackTree *const restrict tree);
-
-bool
-red_black_tree_itor_current(const RedBlackTreeItor *const restrict itor,
-			    void **const restrict key_ptr);
-
-void
-red_black_tree_itor_drop(RedBlackTreeItor *const restrict itor);
-
-void
-red_black_tree_itor_skip(RedBlackTreeItor *const restrict itor);
-
-bool
-red_black_tree_itor_verify(const RedBlackTreeItor *const restrict itor,
-			   const RedBlackTree *const restrict tree);
 
 #endif /* ifndef RED_BLACK_TREE_H_ */

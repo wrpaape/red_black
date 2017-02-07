@@ -996,59 +996,59 @@ red_black_lhmap_verify_u(RedBlackLHMap *const restrict map)
 
 
 static inline void
-rb_lhmap_etor_init(RedBlackLHMapEtor *const restrict etor,
+rb_lhmap_itor_init(RedBlackLHMapItor *const restrict itor,
 		   struct RedBlackLHBucket *const restrict first_bucket,
 		   const unsigned int count_m1)
 {
-	/* initialize first bucket etor */
-	red_black_asc_etor_init(&etor->bucket_etor,
+	/* initialize first bucket itor */
+	red_black_asc_itor_init(&itor->bucket_itor,
 				first_bucket->root);
 
-	etor->bucket      = first_bucket;
-	etor->last_bucket = first_bucket + count_m1;
+	itor->bucket      = first_bucket;
+	itor->last_bucket = first_bucket + count_m1;
 }
 
 
 void
-red_black_lhmap_etor_init(RedBlackLHMapEtor *const restrict etor,
+red_black_lhmap_itor_init(RedBlackLHMapItor *const restrict itor,
 			  RedBlackLHMap *const restrict map)
 {
-	rb_lhmap_etor_init(etor,
+	rb_lhmap_itor_init(itor,
 			   map->buckets,
 			   map->count.buckets_m1);
 }
 
 bool
-red_black_lhmap_etor_next(RedBlackLHMapEtor *const restrict etor,
+red_black_lhmap_itor_next(RedBlackLHMapItor *const restrict itor,
 			  void **const restrict key_ptr,
 			  size_t *const restrict length_ptr)
 {
-	struct RedBlackEtor *restrict bucket_etor;
+	struct RedBlackItor *restrict bucket_itor;
 	struct RedBlackLHBucket *restrict bucket;
 	struct RedBlackLHBucket *restrict last_bucket;
 	struct RedBlackHKey *restrict hkey_ptr;
 
-	bucket_etor = &etor->bucket_etor;
+	bucket_itor = &itor->bucket_itor;
 
 	/* if current bucket has remaining keys, return with next key, length */
-	if (red_black_etor_next(bucket_etor,
+	if (red_black_itor_next(bucket_itor,
 				    (void **) &hkey_ptr))
 		goto FOUND_NEXT;
 
-	bucket      = etor->bucket;
-	last_bucket = etor->last_bucket;
+	bucket      = itor->bucket;
+	last_bucket = itor->last_bucket;
 
 	while (bucket < last_bucket) {
 		++bucket; /* advance to next bucket */
 
-		/* reset bucket etor */
-		red_black_etor_reset(bucket_etor,
+		/* reset bucket itor */
+		red_black_itor_reset(bucket_itor,
 					 bucket->root);
 
 		/* if bucket is non-empty, return with first key, length */
-		if (red_black_etor_next(bucket_etor,
+		if (red_black_itor_next(bucket_itor,
 					    (void **) &hkey_ptr)) {
-			etor->bucket = bucket; /* update bucket */
+			itor->bucket = bucket; /* update bucket */
 FOUND_NEXT:
 			*key_ptr    = (void *) hkey_ptr->key;
 			*length_ptr = hkey_ptr->length;
@@ -1061,7 +1061,7 @@ FOUND_NEXT:
 
 
 int
-red_black_lhmap_letor_init(RedBlackLHMapLEtor *const restrict etor,
+red_black_lhmap_litor_init(RedBlackLHMapLItor *const restrict itor,
 			   RedBlackLHMap *const restrict map)
 {
 	bool status;
@@ -1081,11 +1081,11 @@ red_black_lhmap_letor_init(RedBlackLHMapLEtor *const restrict etor,
 		status = (RBL_LOCK_READ(&first_bucket->lock) == 0);
 
 		if (status) {
-			rb_lhmap_etor_init(&etor->map_etor,
+			rb_lhmap_itor_init(&itor->map_itor,
 					   first_bucket,
 					   map->count.buckets_m1);
 
-			etor->map_lock = map_lock;
+			itor->map_lock = map_lock;
 
 		} else {
 			(void) RBL_UNLOCK_READ(map_lock);
@@ -1097,16 +1097,16 @@ red_black_lhmap_letor_init(RedBlackLHMapLEtor *const restrict etor,
 
 
 bool
-red_black_lhmap_letor_unlock(RedBlackLHMapLEtor *const restrict etor)
+red_black_lhmap_litor_unlock(RedBlackLHMapLItor *const restrict itor)
 {
 
 	bool status;
 	RedBlackLock *restrict map_lock;
 
 	/* release SHARED lock on bucket */
-	status = (RBL_UNLOCK_READ(&etor->map_etor.bucket->lock) == 0);
+	status = (RBL_UNLOCK_READ(&itor->map_itor.bucket->lock) == 0);
 
-	map_lock = etor->map_lock;
+	map_lock = itor->map_lock;
 
 	/* release SHARED lock on map */
 	if (status)
@@ -1119,19 +1119,19 @@ red_black_lhmap_letor_unlock(RedBlackLHMapLEtor *const restrict etor)
 
 
 bool
-red_black_lhmap_letor_lock(RedBlackLHMapLEtor *const restrict etor)
+red_black_lhmap_litor_lock(RedBlackLHMapLItor *const restrict itor)
 {
 	bool status;
 	RedBlackLock *restrict map_lock;
 
-	map_lock = etor->map_lock;
+	map_lock = itor->map_lock;
 
 	/* obtain a SHARED lock on map */
 	status = (RBL_LOCK_READ(map_lock) == 0);
 
 	if (status) {
 		/* obtain a SHARED lock on bucket */
-		status = (RBL_LOCK_READ(&etor->map_etor.bucket->lock) == 0);
+		status = (RBL_LOCK_READ(&itor->map_itor.bucket->lock) == 0);
 
 		if (!status)
 			(void) RBL_UNLOCK_READ(map_lock);
@@ -1142,38 +1142,38 @@ red_black_lhmap_letor_lock(RedBlackLHMapLEtor *const restrict etor)
 
 
 int
-red_black_lhmap_letor_next(RedBlackLHMapLEtor *const restrict etor,
-			       void **const restrict key_ptr,
-			       size_t *const restrict length_ptr)
+red_black_lhmap_litor_next(RedBlackLHMapLItor *const restrict itor,
+			   void **const restrict key_ptr,
+			   size_t *const restrict length_ptr)
 {
-	struct RedBlackEtor *restrict bucket_etor;
+	struct RedBlackItor *restrict bucket_itor;
 	struct RedBlackLHBucket *restrict bucket;
 	struct RedBlackLHBucket *restrict last_bucket;
 	struct RedBlackHKey *restrict hkey_ptr;
 	RedBlackLock *restrict bucket_lock;
 
-	bucket_etor = &etor->map_etor.bucket_etor;
+	bucket_itor = &itor->map_itor.bucket_itor;
 
 	/* if current bucket has remaining keys, return with next key, length */
-	if (red_black_etor_next(bucket_etor,
+	if (red_black_itor_next(bucket_itor,
 				    (void **) &hkey_ptr))
 		goto FOUND_NEXT;
 
-	bucket      = etor->map_etor.bucket;
-	last_bucket = etor->map_etor.last_bucket;
+	bucket      = itor->map_itor.bucket;
+	last_bucket = itor->map_itor.last_bucket;
 
 	bucket_lock = &bucket->lock;
 
 	while (1) {
 		/* release SHARED lock on bucket */
 		if (RBL_UNLOCK_READ(bucket_lock) != 0) {
-			(void) RBL_UNLOCK_READ(etor->map_lock);
+			(void) RBL_UNLOCK_READ(itor->map_lock);
 			return -2;
 		}
 
 		if (bucket == last_bucket) {
 			/* all buckets traversed, release SHARED lock on map */
-			if (RBL_UNLOCK_READ(etor->map_lock) != 0)
+			if (RBL_UNLOCK_READ(itor->map_lock) != 0)
 				return -2;
 
 			return 0;
@@ -1185,18 +1185,18 @@ red_black_lhmap_letor_next(RedBlackLHMapLEtor *const restrict etor,
 
 		/* obtain a SHARED lock on bucket */
 		if (RBL_LOCK_READ(bucket_lock) != 0) {
-			(void) RBL_UNLOCK_READ(etor->map_lock);
+			(void) RBL_UNLOCK_READ(itor->map_lock);
 			return -2;
 		}
 
-		/* reset bucket etor */
-		red_black_etor_reset(bucket_etor,
+		/* reset bucket itor */
+		red_black_itor_reset(bucket_itor,
 				     bucket->root);
 
 		/* if bucket is non-empty, return with first key, length */
-		if (red_black_etor_next(bucket_etor,
+		if (red_black_itor_next(bucket_itor,
 					(void **) &hkey_ptr)) {
-			etor->map_etor.bucket = bucket; /* update bucket */
+			itor->map_itor.bucket = bucket; /* update bucket */
 FOUND_NEXT:
 			*key_ptr    = (void *) hkey_ptr->key;
 			*length_ptr = hkey_ptr->length;
@@ -1206,11 +1206,11 @@ FOUND_NEXT:
 }
 
 bool
-red_black_lhmap_letor_next_u(RedBlackLHMapLEtor *const restrict etor,
-				 void **const restrict key_ptr,
-				 size_t *const restrict length_ptr)
+red_black_lhmap_litor_next_u(RedBlackLHMapLItor *const restrict itor,
+			     void **const restrict key_ptr,
+			     size_t *const restrict length_ptr)
 {
-	return red_black_lhmap_etor_next(&etor->map_etor,
+	return red_black_lhmap_itor_next(&itor->map_itor,
 					 key_ptr,
 					 length_ptr);
 }

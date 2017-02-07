@@ -1,4 +1,4 @@
-#include "red_black_tree.h" /* RedblackTree|Etor */
+#include "red_black_tree.h" /* RedblackTree|Itor */
 #include "str_key.h"	    /* string comparator */
 #include "examples_io.h"    /* READ/WRITE/EXIT macros, stdlib (malloc/free) */
 #include <string.h>	    /* memcpy */
@@ -110,7 +110,7 @@ put_contact(char *restrict buffer,
 static inline char *
 put_contacts(char *restrict buffer)
 {
-	RedBlackTreeEtor etor;
+	RedBlackTreeItor itor;
 	const struct Contact *contact;
 
 	(void) memcpy(buffer,
@@ -119,10 +119,10 @@ put_contacts(char *restrict buffer)
 
 	buffer += CONTACTS_HEADER_LENGTH;
 
-	red_black_tree_asc_etor_init(&etor,
+	red_black_tree_asc_itor_init(&itor,
 				     &contacts);
 
-	while (red_black_tree_etor_next(&etor,
+	while (red_black_tree_itor_next(&itor,
 					(void **) &contact))
 		buffer = put_contact(buffer,
 				     contact);
@@ -251,13 +251,13 @@ setup(void)
 static inline void
 teardown(void)
 {
-	RedBlackTreeEtor etor;
+	RedBlackTreeItor itor;
 	struct Contact *restrict contact;
 
-	red_black_tree_asc_etor_init(&etor,
+	red_black_tree_asc_itor_init(&itor,
 				     &contacts);
 
-	while (red_black_tree_etor_next(&etor,
+	while (red_black_tree_itor_next(&itor,
 					(void **) &contact))
 		free(contact);
 

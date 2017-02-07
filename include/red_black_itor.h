@@ -3,35 +3,22 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_itor_cursor.h"  /* Node, ItorNode, ItorCursor */
-#include "red_black_node_factory.h" /* NodeFactory */
-#include "red_black_stack_count.h"  /* RED_BLACK_STACK_COUNT */
-#include "red_black_comparator.h"   /* Comparator (verify) */
+#include "red_black_node.h"	   /* RedBlackNode */
+#include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
+#include <stddef.h>	           /* size_t, NULL, offsetof() */
 
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-struct RedBlackItorControlNode {
-	const size_t offset;
-	const int direction;
-};
-
-typedef void
-(*RedBlackItorRestore)(struct RedBlackItorCursor *const restrict cursor,
-		       struct RedBlackNodeFactory *const restrict factory);
-
 struct RedBlackItorController {
-	const struct RedBlackItorControlNode next;
-	const struct RedBlackItorControlNode prev;
-	const RedBlackItorRestore restore;
+	size_t next;
+	size_t prev;
 };
 
 struct RedBlackItor {
-	struct RedBlackItorCursor cursor;
+	const struct RedBlackNode *restrict *restrict cursor;
 	const struct RedBlackItorController *restrict controller;
-	struct RedBlackNodeFactory *restrict factory;
-	struct RedBlackItorNode path[RED_BLACK_STACK_COUNT];
-	struct RedBlackItorNode *restrict stack[RED_BLACK_STACK_COUNT];
+	const struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
 };
 
 
@@ -39,32 +26,18 @@ struct RedBlackItor {
  * ────────────────────────────────────────────────────────────────────────── */
 void
 red_black_asc_itor_init(struct RedBlackItor *const restrict itor,
-			struct RedBlackNode *restrict *const restrict tree,
-			struct RedBlackNodeFactory *const restrict factory);
+			const struct RedBlackNode *restrict root);
 
 void
 red_black_desc_itor_init(struct RedBlackItor *const restrict itor,
-			 struct RedBlackNode *restrict *const restrict tree,
-			 struct RedBlackNodeFactory *const restrict factory);
+			 const struct RedBlackNode *restrict root);
 
 void
 red_black_itor_reset(struct RedBlackItor *const restrict itor,
-		     struct RedBlackNode *restrict *const restrict tree,
-		     struct RedBlackNodeFactory *const restrict factory);
+		     const struct RedBlackNode *restrict root);
 
 bool
-red_black_itor_current(const struct RedBlackItor *const restrict itor,
-		       void **const restrict key_ptr);
-
-void
-red_black_itor_drop(struct RedBlackItor *const restrict itor);
-
-void
-red_black_itor_skip(struct RedBlackItor *const restrict itor);
-
-bool
-red_black_itor_verify(const struct RedBlackItor *const restrict itor,
-		      struct RedBlackNode *const restrict *restrict tree,
-		      const RedBlackComparator comparator);
+red_black_itor_next(struct RedBlackItor *const restrict itor,
+			  void **const restrict key_ptr);
 
 #endif /* ifndef RED_BLACK_ITOR_H_ */
