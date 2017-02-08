@@ -12,7 +12,7 @@ int
 red_black_put(struct RedBlackNode *restrict *const restrict tree,
 	      const RedBlackComparator comparator,
 	      struct RedBlackNodeFactory *const restrict factory,
-	      RedBlackJumpBuffer *const restrict jump_buffer,
+	      RedBlackJumpBuffer jump_buffer,
 	      const void *const key);
 
 /* may jump w/ a RED_BLACK_JUMP_VALUE_3 value of

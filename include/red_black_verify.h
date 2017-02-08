@@ -10,6 +10,6 @@
 bool
 red_black_verify(const struct RedBlackNode *const restrict root,
 		 const RedBlackComparator comparator,
-		 RedBlackJumpBuffer *const restrict jump_buffer);
+		 RedBlackJumpBuffer jump_buffer);
 
 #endif /* ifndef RED_BLACK_VERIFY_H_ */

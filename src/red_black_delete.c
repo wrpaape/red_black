@@ -10,7 +10,7 @@ typedef void
 		      struct RedBlackNode *const restrict parent,
 		      const RedBlackComparator comparator,
 		      struct RedBlackNodeFactory *const restrict factory,
-		      RedBlackJumpBuffer *const restrict jump_buffer,
+		      RedBlackJumpBuffer jump_buffer,
 		      const void *const key);
 
 /* delete state machine functions
@@ -27,14 +27,14 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key);
 static void
 rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key);
 
 static void
@@ -42,7 +42,7 @@ rb_delete_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key)
 {
 	RedBlackDeleteNode next_delete;
@@ -93,7 +93,7 @@ rb_delete_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key)
 {
 	RedBlackDeleteNode next_delete;
@@ -145,7 +145,7 @@ int
 red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackNodeFactory *const restrict factory,
-		 RedBlackJumpBuffer *const restrict jump_buffer,
+		 RedBlackJumpBuffer jump_buffer,
 		 const void *const key)
 {
 	int status;
@@ -189,7 +189,7 @@ red_black_delete(struct RedBlackNode *restrict *const restrict tree,
 int
 red_black_delete_min(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNodeFactory *const restrict factory,
-		     RedBlackJumpBuffer *const restrict jump_buffer)
+		     RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict next;
@@ -274,7 +274,7 @@ red_black_delete_min(struct RedBlackNode *restrict *const restrict tree,
 int
 red_black_delete_max(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNodeFactory *const restrict factory,
-		     RedBlackJumpBuffer *const restrict jump_buffer)
+		     RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict next;

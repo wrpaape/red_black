@@ -13,20 +13,20 @@ void
 red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 		const RedBlackComparator comparator,
 		struct RedBlackNodeFactory *const restrict factory,
-		RedBlackJumpBuffer *const restrict jump_buffer,
+		RedBlackJumpBuffer jump_buffer,
 		const void *const key,
 		void **const restrict pluck_ptr);
 
 void
 red_black_pluck_min(struct RedBlackNode *restrict *const restrict tree,
 		    struct RedBlackNodeFactory *const restrict factory,
-		    RedBlackJumpBuffer *const restrict jump_buffer,
+		    RedBlackJumpBuffer jump_buffer,
 		    void **const restrict pluck_ptr);
 
 void
 red_black_pluck_max(struct RedBlackNode *restrict *const restrict tree,
 		    struct RedBlackNodeFactory *const restrict factory,
-		    RedBlackJumpBuffer *const restrict jump_buffer,
+		    RedBlackJumpBuffer jump_buffer,
 		    void **const restrict pluck_ptr);
 
 /* may jump or return after successful deletion

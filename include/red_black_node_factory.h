@@ -61,7 +61,7 @@ rbnf_reset(struct RedBlackNodeFactory *const restrict factory);
 
 struct RedBlackNode *
 rbnf_allocate(struct RedBlackNodeFactory *const restrict factory,
-	      RedBlackJumpBuffer *const restrict jump_buffer);
+	      RedBlackJumpBuffer jump_buffer);
 
 struct RedBlackNode *
 rbnf_allocate_nodes(struct RedBlackNodeFactory *const restrict factory,
@@ -69,7 +69,7 @@ rbnf_allocate_nodes(struct RedBlackNodeFactory *const restrict factory,
 
 struct RedBlackNode *
 rbnf_new(struct RedBlackNodeFactory *const restrict factory,
-	 RedBlackJumpBuffer *const restrict jump_buffer,
+	 RedBlackJumpBuffer jump_buffer,
 	 const void *const key,
 	 const bool is_red);
 

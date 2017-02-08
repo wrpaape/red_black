@@ -10,7 +10,7 @@ typedef void
 		      struct RedBlackNode *const restrict parent,
 		      const RedBlackComparator comparator,
 		      struct RedBlackNodeFactory *const restrict factory,
-		      RedBlackJumpBuffer *const restrict jump_buffer,
+		      RedBlackJumpBuffer jump_buffer,
 		      const void *const key,
 		      void **const restrict remove_ptr);
 
@@ -28,7 +28,7 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key,
 	    void **const restrict remove_ptr);
 static void
@@ -36,7 +36,7 @@ rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key,
 	    void **const restrict remove_ptr);
 
@@ -45,7 +45,7 @@ rb_remove_l(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key,
 	    void **const restrict remove_ptr)
 {
@@ -100,7 +100,7 @@ rb_remove_r(struct RedBlackNode *restrict *const restrict tree,
 	    struct RedBlackNode *const restrict parent,
 	    const RedBlackComparator comparator,
 	    struct RedBlackNodeFactory *const restrict factory,
-	    RedBlackJumpBuffer *const restrict jump_buffer,
+	    RedBlackJumpBuffer jump_buffer,
 	    const void *const key,
 	    void **const restrict remove_ptr)
 {
@@ -156,7 +156,7 @@ int
 red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackNodeFactory *const restrict factory,
-		 RedBlackJumpBuffer *const restrict jump_buffer,
+		 RedBlackJumpBuffer jump_buffer,
 		 const void *const key,
 		 void **const restrict remove_ptr)
 {
@@ -204,7 +204,7 @@ red_black_remove(struct RedBlackNode *restrict *const restrict tree,
 int
 red_black_remove_min(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNodeFactory *const restrict factory,
-		     RedBlackJumpBuffer *const restrict jump_buffer,
+		     RedBlackJumpBuffer jump_buffer,
 		     void **const restrict remove_ptr)
 {
 	struct RedBlackNode *restrict node;
@@ -294,7 +294,7 @@ red_black_remove_min(struct RedBlackNode *restrict *const restrict tree,
 int
 red_black_remove_max(struct RedBlackNode *restrict *const restrict tree,
 		     struct RedBlackNodeFactory *const restrict factory,
-		     RedBlackJumpBuffer *const restrict jump_buffer,
+		     RedBlackJumpBuffer jump_buffer,
 		     void **const restrict remove_ptr)
 {
 	struct RedBlackNode *restrict node;

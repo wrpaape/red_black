@@ -14,6 +14,6 @@ void
 red_black_congruent(const struct RedBlackNode *const restrict node1,
 		    const struct RedBlackNode *const restrict node2,
 		    const RedBlackComparator comparator,
-		    RedBlackJumpBuffer *const restrict jump_buffer);
+		    RedBlackJumpBuffer jump_buffer);
 
 #endif /* ifndef RED_BLACK_CONGRUENT_H_ */

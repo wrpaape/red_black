@@ -13,18 +13,18 @@ void
 red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 	       const RedBlackComparator comparator,
 	       struct RedBlackNodeFactory *const restrict factory,
-	       RedBlackJumpBuffer *const restrict jump_buffer,
+	       RedBlackJumpBuffer jump_buffer,
 	       const void *const key);
 
 void
 red_black_drop_min(struct RedBlackNode *restrict *const restrict tree,
 		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer);
+		   RedBlackJumpBuffer jump_buffer);
 
 void
 red_black_drop_max(struct RedBlackNode *restrict *const restrict tree,
 		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer);
+		   RedBlackJumpBuffer jump_buffer);
 
 /* may jump or return after successful deletion
  * ────────────────────────────────────────────────────────────────────────── */

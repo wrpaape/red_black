@@ -26,37 +26,37 @@ void
 red_black_restore_node(struct RedBlackNode *restrict *const restrict tree,
 		       struct RedBlackNode *const restrict node,
 		       struct RedBlackNodeFactory *const restrict factory,
-		       RedBlackJumpBuffer *const restrict jump_buffer);
+		       RedBlackJumpBuffer jump_buffer);
 void
 red_black_restore_min_node(struct RedBlackNode *restrict *const restrict tree,
 			   struct RedBlackNode *const restrict node,
 			   struct RedBlackNodeFactory *const restrict factory,
-			   RedBlackJumpBuffer *const restrict jump_buffer);
+			   RedBlackJumpBuffer jump_buffer);
 void
 red_black_restore_max_node(struct RedBlackNode *restrict *const restrict tree,
 			   struct RedBlackNode *const restrict node,
 			   struct RedBlackNodeFactory *const restrict factory,
-			   RedBlackJumpBuffer *const restrict jump_buffer);
+			   RedBlackJumpBuffer jump_buffer);
 
 void
 red_black_restore_l_bot(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer);
+			RedBlackJumpBuffer jump_buffer);
 
 void
 red_black_restore_l_mid(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer);
+			RedBlackJumpBuffer jump_buffer);
 
 void
 red_black_restore_r_bot(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer);
+			RedBlackJumpBuffer jump_buffer);
 
 void
 red_black_restore_r_mid(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer);
+			RedBlackJumpBuffer jump_buffer);
 
 /* for restoring in root */
 bool

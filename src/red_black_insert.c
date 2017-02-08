@@ -10,7 +10,7 @@ typedef bool
 		      struct RedBlackNode *const restrict parent,
 		      const RedBlackComparator comparator,
 		      struct RedBlackNodeFactory *const restrict factory,
-		      RedBlackJumpBuffer *const restrict jump_buffer,
+		      RedBlackJumpBuffer jump_buffer,
 		      const void *const key);
 
 
@@ -31,7 +31,7 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key);
 static bool
 rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
@@ -39,7 +39,7 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key);
 static bool
 rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
@@ -47,7 +47,7 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key);
 static bool
 rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
@@ -55,7 +55,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key);
 
 
@@ -63,7 +63,7 @@ int
 red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackNodeFactory *const restrict factory,
-		 RedBlackJumpBuffer *const restrict jump_buffer,
+		 RedBlackJumpBuffer jump_buffer,
 		 const void *const key)
 {
 	struct RedBlackNode *restrict parent;
@@ -163,7 +163,7 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key)
 {
 	bool status;
@@ -227,7 +227,7 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key)
 {
 	bool status;
@@ -295,7 +295,7 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key)
 {
 	bool status;
@@ -359,7 +359,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key)
 {
 	bool status;

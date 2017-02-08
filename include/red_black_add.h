@@ -13,7 +13,7 @@
 void
 red_black_add(struct RedBlackNode *restrict *const restrict tree,
 	      const RedBlackComparator comparator,
-	      RedBlackJumpBuffer *const restrict jump_buffer,
+	      RedBlackJumpBuffer jump_buffer,
 	      struct RedBlackNode *const restrict node);
 
 /* may jump or return after successful insertion

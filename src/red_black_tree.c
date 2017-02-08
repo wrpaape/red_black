@@ -101,7 +101,7 @@ red_black_tree_insert(RedBlackTree *const restrict tree,
 	     ? red_black_insert(&tree->root,
 				tree->comparator,
 				&tree->node_factory,
-				&jump_buffer,
+				jump_buffer,
 				key) /* 1, 0 */
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
@@ -119,7 +119,7 @@ red_black_tree_put(RedBlackTree *const restrict tree,
 	     ? red_black_put(&tree->root,
 			     tree->comparator,
 			     &tree->node_factory,
-			     &jump_buffer,
+			     jump_buffer,
 			     key) /* 1, 0 */
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
@@ -138,7 +138,7 @@ red_black_tree_update(RedBlackTree *const restrict tree,
 	     ? red_black_update(&tree->root,
 				tree->comparator,
 				&tree->node_factory,
-				&jump_buffer,
+				jump_buffer,
 				key,
 				old_ptr) /* 1, 0 */
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
@@ -165,13 +165,13 @@ red_black_tree_add(RedBlackTree *const restrict tree,
 		return status != RED_BLACK_JUMP_VALUE_3_ERROR;
 
 	node = rbnf_allocate(node_factory_ptr,
-			     &jump_buffer);
+			     jump_buffer);
 
 	node->key = key;
 
 	red_black_add(root_ptr,
 		      comparator,
-		      &jump_buffer,
+		      jump_buffer,
 		      node);
 
 	return true; /* successful addition */
@@ -190,7 +190,7 @@ red_black_tree_delete(RedBlackTree *const restrict tree,
 	     ? red_black_delete(&tree->root,
 				tree->comparator,
 				&tree->node_factory,
-				&jump_buffer,
+				jump_buffer,
 				key) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 }
@@ -206,7 +206,7 @@ red_black_tree_delete_min(RedBlackTree *const restrict tree)
 	return (status == 0)
 	     ? red_black_delete_min(&tree->root,
 				    &tree->node_factory,
-				    &jump_buffer) /* 1, 0 */
+				    jump_buffer) /* 1, 0 */
 	     : 1; /* will only jump if deleted */
 }
 
@@ -221,7 +221,7 @@ red_black_tree_delete_max(RedBlackTree *const restrict tree)
 	return (status == 0)
 	     ? red_black_delete_max(&tree->root,
 				    &tree->node_factory,
-				    &jump_buffer) /* 1, 0 */
+				    jump_buffer) /* 1, 0 */
 	     : 1; /* will only jump if deleted */
 }
 
@@ -240,7 +240,7 @@ red_black_tree_remove(RedBlackTree *const restrict tree,
 	     ? red_black_remove(&tree->root,
 				tree->comparator,
 				&tree->node_factory,
-				&jump_buffer,
+				jump_buffer,
 				key,
 				remove_ptr) /* 1, 0 */
 	     : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
@@ -258,7 +258,7 @@ red_black_tree_remove_min(RedBlackTree *const restrict tree,
 	return (status == 0)
 	     ? red_black_remove_min(&tree->root,
 				    &tree->node_factory,
-				    &jump_buffer,
+				    jump_buffer,
 				    remove_ptr) /* 1, 0 */
 	     : 1; /* will only jump if removed */
 }
@@ -275,7 +275,7 @@ red_black_tree_remove_max(RedBlackTree *const restrict tree,
 	return (status == 0)
 	     ? red_black_remove_max(&tree->root,
 				    &tree->node_factory,
-				    &jump_buffer,
+				    jump_buffer,
 				    remove_ptr) /* 1, 0 */
 	     : 1; /* will only jump if removed */
 }
@@ -291,7 +291,7 @@ red_black_tree_drop(RedBlackTree *const restrict tree,
 		red_black_drop(&tree->root,
 			       tree->comparator,
 			       &tree->node_factory,
-			       &jump_buffer,
+			       jump_buffer,
 			       key);
 }
 
@@ -303,7 +303,7 @@ red_black_tree_drop_min(RedBlackTree *const restrict tree)
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 		red_black_drop_min(&tree->root,
 				   &tree->node_factory,
-				   &jump_buffer);
+				   jump_buffer);
 }
 
 void
@@ -314,7 +314,7 @@ red_black_tree_drop_max(RedBlackTree *const restrict tree)
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 		red_black_drop_max(&tree->root,
 				   &tree->node_factory,
-				   &jump_buffer);
+				   jump_buffer);
 }
 
 
@@ -329,7 +329,7 @@ red_black_tree_pluck(RedBlackTree *const restrict tree,
 		red_black_pluck(&tree->root,
 				tree->comparator,
 				&tree->node_factory,
-				&jump_buffer,
+				jump_buffer,
 				key,
 				(void **) &plucked_key);
 
@@ -345,7 +345,7 @@ red_black_tree_pluck_min(RedBlackTree *const restrict tree)
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 		red_black_pluck_min(&tree->root,
 				    &tree->node_factory,
-				    &jump_buffer,
+				    jump_buffer,
 				    (void **) &plucked_key);
 
 	return plucked_key;
@@ -360,7 +360,7 @@ red_black_tree_pluck_max(RedBlackTree *const restrict tree)
 	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 		red_black_pluck_max(&tree->root,
 				    &tree->node_factory,
-				    &jump_buffer,
+				    jump_buffer,
 				    (void **) &plucked_key);
 
 	return plucked_key;
@@ -561,7 +561,7 @@ red_black_tree_verify(const RedBlackTree *const restrict tree)
 	if (status)
 		status = red_black_verify(tree->root,
 					  tree->comparator,
-					  &jump_buffer);
+					  jump_buffer);
 
 	return status;
 }
@@ -600,7 +600,7 @@ rb_tree_congruent(const RedBlackTree *const restrict tree1,
 		red_black_congruent(tree1->root,
 				    tree2->root,
 				    tree1->comparator,
-				    &jump_buffer);
+				    jump_buffer);
 		/* if returned w/o jump, status is true */
 
 	return status;
@@ -700,7 +700,7 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 		count += red_black_insert(dst_root_ptr,
 					  comparator,
 					  dst_node_factory_ptr,
-					  &jump_buffer,
+					  jump_buffer,
 					  key); /* 1, 0 */
 
 	return count;
@@ -741,7 +741,7 @@ red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
 		count += red_black_put(dst_root_ptr,
 				       comparator,
 				       dst_node_factory_ptr,
-				       &jump_buffer,
+				       jump_buffer,
 				       key); /* 1, 0 */
 
 	return count;
@@ -796,7 +796,7 @@ rb_tree_add_all(RedBlackTree *const restrict dst_tree,
 
 				red_black_add(dst_root_ptr,
 					      comparator,
-					      &jump_buffer,
+					      jump_buffer,
 					      node);
 NEXT_KEY:
 				if (!red_black_itor_next(&itor,
@@ -844,7 +844,7 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 		count += red_black_delete(dst_root_ptr,
 					  comparator,
 					  dst_node_factory_ptr,
-					  &jump_buffer,
+					  jump_buffer,
 					  key); /* 1, 0 */
 
 	return count;
@@ -876,7 +876,7 @@ red_black_tree_drop_all(RedBlackTree *const restrict dst_tree,
 		red_black_drop(dst_root_ptr,
 			       comparator,
 			       dst_node_factory_ptr,
-			       &jump_buffer,
+			       jump_buffer,
 			       key); /* 1, 0 */
 }
 
@@ -949,13 +949,13 @@ red_black_tree_intersect(RedBlackTree *const restrict intersect_tree,
 			++count;
 
 			node = rbnf_allocate(intersect_node_factory_ptr,
-					     &jump_buffer);
+					     jump_buffer);
 
 			node->key = key;
 
 			red_black_add(intersect_root_ptr,
 				      comparator,
-				      &jump_buffer,
+				      jump_buffer,
 				      node);
 		}
 

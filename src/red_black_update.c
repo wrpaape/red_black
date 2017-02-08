@@ -10,7 +10,7 @@ typedef bool
 		      struct RedBlackNode *const restrict parent,
 		      const RedBlackComparator comparator,
 		      struct RedBlackNodeFactory *const restrict factory,
-		      RedBlackJumpBuffer *const restrict jump_buffer,
+		      RedBlackJumpBuffer jump_buffer,
 		      const void *const key,
 		      void **const restrict old_ptr);
 
@@ -32,7 +32,7 @@ rb_update_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr);
 static bool
@@ -41,7 +41,7 @@ rb_update_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr);
 static bool
@@ -50,7 +50,7 @@ rb_update_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr);
 static bool
@@ -59,7 +59,7 @@ rb_update_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr);
 
@@ -68,7 +68,7 @@ int
 red_black_update(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackNodeFactory *const restrict factory,
-		 RedBlackJumpBuffer *const restrict jump_buffer,
+		 RedBlackJumpBuffer jump_buffer,
 		 const void *const key,
 		 void **const restrict old_ptr)
 {
@@ -190,7 +190,7 @@ rb_update_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr)
 {
@@ -263,7 +263,7 @@ rb_update_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr)
 {
@@ -340,7 +340,7 @@ rb_update_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr)
 {
@@ -413,7 +413,7 @@ rb_update_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
 	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer *const restrict jump_buffer,
+	     RedBlackJumpBuffer jump_buffer,
 	     const void *const key,
 	     void **const restrict old_ptr)
 {

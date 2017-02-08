@@ -10,7 +10,7 @@ typedef bool
 		   struct RedBlackNode *const restrict grandparent,
 		   struct RedBlackNode *const restrict parent,
 		   const RedBlackComparator comparator,
-		   RedBlackJumpBuffer *const restrict jump_buffer,
+		   RedBlackJumpBuffer jump_buffer,
 		   struct RedBlackNode *const restrict node);
 
 
@@ -28,35 +28,35 @@ rb_add_ll(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node);
 static bool
 rb_add_lr(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node);
 static bool
 rb_add_rr(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node);
 static bool
 rb_add_rl(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node);
 
 
 void
 red_black_add(struct RedBlackNode *restrict *const restrict tree,
 	      const RedBlackComparator comparator,
-	      RedBlackJumpBuffer *const restrict jump_buffer,
+	      RedBlackJumpBuffer jump_buffer,
 	      struct RedBlackNode *const restrict node)
 {
 	struct RedBlackNode *restrict parent;
@@ -127,7 +127,7 @@ rb_add_ll(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;
@@ -180,7 +180,7 @@ rb_add_lr(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;
@@ -235,7 +235,7 @@ rb_add_rr(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;
@@ -288,7 +288,7 @@ rb_add_rl(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict grandparent,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;

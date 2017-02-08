@@ -10,7 +10,7 @@ typedef void
 		     struct RedBlackNode *const restrict parent,
 		     const RedBlackComparator comparator,
 		     struct RedBlackNodeFactory *const restrict factory,
-		     RedBlackJumpBuffer *const restrict jump_buffer,
+		     RedBlackJumpBuffer jump_buffer,
 		     const void *const key,
 		     void **const restrict pluck_ptr);
 
@@ -28,7 +28,7 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
-	   RedBlackJumpBuffer *const restrict jump_buffer,
+	   RedBlackJumpBuffer jump_buffer,
 	   const void *const key,
 	   void **const restrict pluck_ptr);
 static void
@@ -36,7 +36,7 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
-	   RedBlackJumpBuffer *const restrict jump_buffer,
+	   RedBlackJumpBuffer jump_buffer,
 	   const void *const key,
 	   void **const restrict pluck_ptr);
 
@@ -45,7 +45,7 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
-	   RedBlackJumpBuffer *const restrict jump_buffer,
+	   RedBlackJumpBuffer jump_buffer,
 	   const void *const key,
 	   void **const restrict pluck_ptr)
 {
@@ -96,7 +96,7 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 	   struct RedBlackNode *const restrict parent,
 	   const RedBlackComparator comparator,
 	   struct RedBlackNodeFactory *const restrict factory,
-	   RedBlackJumpBuffer *const restrict jump_buffer,
+	   RedBlackJumpBuffer jump_buffer,
 	   const void *const key,
 	   void **const restrict pluck_ptr)
 {
@@ -148,7 +148,7 @@ void
 red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 		const RedBlackComparator comparator,
 		struct RedBlackNodeFactory *const restrict factory,
-		RedBlackJumpBuffer *const restrict jump_buffer,
+		RedBlackJumpBuffer jump_buffer,
 		const void *const key,
 		void **const restrict pluck_ptr)
 {
@@ -185,7 +185,7 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_pluck_min(struct RedBlackNode *restrict *const restrict tree,
 		    struct RedBlackNodeFactory *const restrict factory,
-		    RedBlackJumpBuffer *const restrict jump_buffer,
+		    RedBlackJumpBuffer jump_buffer,
 		    void **const restrict pluck_ptr)
 {
 	struct RedBlackNode *restrict node;
@@ -269,7 +269,7 @@ red_black_pluck_min(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_pluck_max(struct RedBlackNode *restrict *const restrict tree,
 		    struct RedBlackNodeFactory *const restrict factory,
-		    RedBlackJumpBuffer *const restrict jump_buffer,
+		    RedBlackJumpBuffer jump_buffer,
 		    void **const restrict pluck_ptr)
 {
 	struct RedBlackNode *restrict node;

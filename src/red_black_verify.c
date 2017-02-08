@@ -8,7 +8,7 @@ rb_verify(const struct RedBlackNode *const restrict node,
 		    const void *const max_key,
 		    const bool parent_is_red,
 		    unsigned int black_height,
-		    RedBlackJumpBuffer *const restrict jump_buffer)
+		    RedBlackJumpBuffer jump_buffer)
 {
 	if (node == NULL)
 		return black_height + 1;
@@ -58,7 +58,7 @@ rb_verify(const struct RedBlackNode *const restrict node,
 bool
 red_black_verify(const struct RedBlackNode *const restrict root,
 		 const RedBlackComparator comparator,
-		 RedBlackJumpBuffer *const restrict jump_buffer)
+		 RedBlackJumpBuffer jump_buffer)
 {
 	const struct RedBlackNode *restrict node;
 	const struct RedBlackNode *restrict next;

@@ -105,7 +105,7 @@ rbhm_reset_buckets(struct RedBlackHBucket *const restrict buckets,
 		/* add to bucket tree, may jump */
 		red_black_add(&bucket->root,
 			      &red_black_hkey_comparator,
-			      &jump_buffer,
+			      jump_buffer,
 			      head);
 
 NEXT_NODE:
@@ -232,7 +232,7 @@ red_black_hmap_insert(RedBlackHMap *const restrict map,
 		status = red_black_insert(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey); /* 1, 0 */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* return early to avoid decrementing count */
@@ -275,7 +275,7 @@ red_black_hmap_put(RedBlackHMap *const restrict map,
 		status = red_black_put(&bucket->root,
 				       &red_black_hkey_comparator,
 				       &bucket->node_factory,
-				       &jump_buffer,
+				       jump_buffer,
 				       (const void *) &hkey); /* 1, 0 */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* return early to avoid decrementing count */
@@ -320,7 +320,7 @@ red_black_hmap_update(RedBlackHMap *const restrict map,
 		status = red_black_update(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey,
 					  (void **) &old_hkey_ptr); /* 1, 0 */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
@@ -372,7 +372,7 @@ red_black_hmap_add(RedBlackHMap *const restrict map,
 		return (status != RED_BLACK_JUMP_VALUE_3_ERROR);
 
 	node = rbnf_allocate(&bucket->node_factory,
-			     &jump_buffer);
+			     jump_buffer);
 
 }
 
@@ -403,7 +403,7 @@ red_black_hmap_delete(RedBlackHMap *const restrict map,
 	       ? red_black_delete(&bucket->root,
 				  &red_black_hkey_comparator,
 				  &bucket->node_factory,
-				  &jump_buffer,
+				  jump_buffer,
 				  (const void *) &hkey) /* 1, 0 */
 	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 
@@ -441,7 +441,7 @@ red_black_hmap_remove(RedBlackHMap *const restrict map,
 	       ? red_black_remove(&bucket->root,
 				  &red_black_hkey_comparator,
 				  &bucket->node_factory,
-				  &jump_buffer,
+				  jump_buffer,
 				  (const void *) &hkey,
 				  (void **) &hkey_ptr) /* 1, 0 */
 	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
@@ -536,7 +536,7 @@ red_black_hmap_verify(RedBlackHMap *const restrict map)
 		do {
 			status = red_black_verify(bucket->root,
 						  &red_black_hkey_comparator,
-						  &jump_buffer);
+						  jump_buffer);
 
 			if (!status)
 				break; /* invalid bucket */

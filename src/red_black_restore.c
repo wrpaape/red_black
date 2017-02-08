@@ -832,7 +832,7 @@ void
 red_black_restore_node(struct RedBlackNode *restrict *const restrict tree,
 		       struct RedBlackNode *const restrict node,
 		       struct RedBlackNodeFactory *const restrict factory,
-		       RedBlackJumpBuffer *const restrict jump_buffer)
+		       RedBlackJumpBuffer jump_buffer)
 {
 	bool is_red;
 	struct RedBlackNode *restrict lchild;
@@ -862,7 +862,7 @@ void
 red_black_restore_min_node(struct RedBlackNode *restrict *const restrict tree,
 			   struct RedBlackNode *const restrict node,
 			   struct RedBlackNodeFactory *const restrict factory,
-			   RedBlackJumpBuffer *const restrict jump_buffer)
+			   RedBlackJumpBuffer jump_buffer)
 {
 	bool is_red;
 	struct RedBlackNode *restrict rchild;
@@ -890,7 +890,7 @@ void
 red_black_restore_max_node(struct RedBlackNode *restrict *const restrict tree,
 			   struct RedBlackNode *const restrict node,
 			   struct RedBlackNodeFactory *const restrict factory,
-			   RedBlackJumpBuffer *const restrict jump_buffer)
+			   RedBlackJumpBuffer jump_buffer)
 {
 	bool is_red;
 	struct RedBlackNode *restrict lchild;
@@ -1418,7 +1418,7 @@ rb_restore_r_mid_b(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_restore_l_bot(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer)
+			RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
 		rb_restore_l_bot_r(tree,
@@ -1433,7 +1433,7 @@ red_black_restore_l_bot(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_restore_r_bot(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer)
+			RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
 		rb_restore_r_bot_r(tree,
@@ -1448,7 +1448,7 @@ red_black_restore_r_bot(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_restore_l_mid(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer)
+			RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
 		rb_restore_l_mid_r(tree,
@@ -1463,7 +1463,7 @@ red_black_restore_l_mid(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_restore_r_mid(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,
-			RedBlackJumpBuffer *const restrict jump_buffer)
+			RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
 		rb_restore_r_mid_r(tree,

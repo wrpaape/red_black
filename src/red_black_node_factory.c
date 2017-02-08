@@ -124,7 +124,7 @@ rbnf_reset(struct RedBlackNodeFactory *const restrict factory)
 static inline struct RedBlackNode *
 rbnfb_allocate(struct RedBlackNodeFactoryBuffer *const restrict buffer,
 	       const size_t size_node,
-	       RedBlackJumpBuffer *const restrict jump_buffer)
+	       RedBlackJumpBuffer jump_buffer)
 {
 	char *restrict node;
 	struct RedBlackNodeFactoryBufferBlock *restrict block;
@@ -161,7 +161,7 @@ rbnfb_allocate(struct RedBlackNodeFactoryBuffer *const restrict buffer,
 
 struct RedBlackNode *
 rbnf_allocate(struct RedBlackNodeFactory *const restrict factory,
-	      RedBlackJumpBuffer *const restrict jump_buffer)
+	      RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackNode *restrict node;
 
@@ -211,7 +211,7 @@ rbnf_allocate_nodes(struct RedBlackNodeFactory *const restrict factory,
 
 struct RedBlackNode *
 rbnf_new(struct RedBlackNodeFactory *const restrict factory,
-	 RedBlackJumpBuffer *const restrict jump_buffer,
+	 RedBlackJumpBuffer jump_buffer,
 	 const void *const key,
 	 const bool is_red)
 {

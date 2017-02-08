@@ -12,7 +12,7 @@ int
 red_black_update(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackNodeFactory *const restrict factory,
-		 RedBlackJumpBuffer *const restrict jump_buffer,
+		 RedBlackJumpBuffer jump_buffer,
 		 const void *const key,
 		 void **const restrict old_ptr);
 

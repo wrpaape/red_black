@@ -12,7 +12,7 @@ typedef jmp_buf RedBlackJumpBuffer;
 
 /* must return 0 on 1st entry, nonzero on jump */
 #define RED_BLACK_SET_JUMP(BUFFER)		setjmp(BUFFER)
-#define RED_BLACK_LONG_JUMP(BUFFER_PTR, STATUS)	longjmp(*(BUFFER_PTR), STATUS)
+#define RED_BLACK_LONG_JUMP(BUFFER, STATUS)	longjmp(BUFFER, STATUS)
 
 
 /* status macros
@@ -34,30 +34,30 @@ typedef jmp_buf RedBlackJumpBuffer;
 /* jump macros
  * ────────────────────────────────────────────────────────────────────────── */
 /* jump w/ 3 possible return statuses */
-#define RED_BLACK_JUMP_3_TRUE(BUFFER_PTR)				\
-RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
+#define RED_BLACK_JUMP_3_TRUE(BUFFER)					\
+RED_BLACK_LONG_JUMP(BUFFER,						\
 		    RED_BLACK_JUMP_VALUE_3_TRUE)
 
-#define RED_BLACK_JUMP_3_FALSE(BUFFER_PTR)				\
-RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
+#define RED_BLACK_JUMP_3_FALSE(BUFFER)					\
+RED_BLACK_LONG_JUMP(BUFFER,						\
 		    RED_BLACK_JUMP_VALUE_3_FALSE)
 
-#define RED_BLACK_JUMP_3_ERROR(BUFFER_PTR)				\
-RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
+#define RED_BLACK_JUMP_3_ERROR(BUFFER)					\
+RED_BLACK_LONG_JUMP(BUFFER,						\
 		    RED_BLACK_JUMP_VALUE_3_ERROR)
 
 /* jump w/ 2 possible return statuses */
-#define RED_BLACK_JUMP_2_TRUE(BUFFER_PTR)				\
-RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
+#define RED_BLACK_JUMP_2_TRUE(BUFFER)					\
+RED_BLACK_LONG_JUMP(BUFFER,						\
 		    RED_BLACK_JUMP_VALUE_2_TRUE)
 
-#define RED_BLACK_JUMP_2_FALSE(BUFFER_PTR)				\
-RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
+#define RED_BLACK_JUMP_2_FALSE(BUFFER)					\
+RED_BLACK_LONG_JUMP(BUFFER,						\
 		    RED_BLACK_JUMP_VALUE_2_FALSE)
 
 /* jump w/ nonzero return status */
-#define RED_BLACK_JUMP_1(BUFFER_PTR)					\
-RED_BLACK_LONG_JUMP(BUFFER_PTR,						\
+#define RED_BLACK_JUMP_1(BUFFER)					\
+RED_BLACK_LONG_JUMP(BUFFER,						\
 		    1)
 
 #endif /* ifndef RED_BLACK_JUMP_H_ */

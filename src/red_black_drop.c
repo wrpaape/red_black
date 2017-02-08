@@ -10,7 +10,7 @@ typedef void
 		    struct RedBlackNode *const restrict parent,
 		    const RedBlackComparator comparator,
 		    struct RedBlackNodeFactory *const restrict factory,
-		    RedBlackJumpBuffer *const restrict jump_buffer,
+		    RedBlackJumpBuffer jump_buffer,
 		    const void *const key);
 
 /* drop state machine functions
@@ -27,14 +27,14 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  const void *const key);
 static void
 rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  const void *const key);
 
 static void
@@ -42,7 +42,7 @@ rb_drop_l(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  const void *const key)
 {
 	RedBlackDropNode next_drop;
@@ -89,7 +89,7 @@ rb_drop_r(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict parent,
 	  const RedBlackComparator comparator,
 	  struct RedBlackNodeFactory *const restrict factory,
-	  RedBlackJumpBuffer *const restrict jump_buffer,
+	  RedBlackJumpBuffer jump_buffer,
 	  const void *const key)
 {
 	RedBlackDropNode next_drop;
@@ -137,7 +137,7 @@ void
 red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 	       const RedBlackComparator comparator,
 	       struct RedBlackNodeFactory *const restrict factory,
-	       RedBlackJumpBuffer *const restrict jump_buffer,
+	       RedBlackJumpBuffer jump_buffer,
 	       const void *const key)
 {
 	RedBlackDropNode next_drop;
@@ -169,7 +169,7 @@ red_black_drop(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_drop_min(struct RedBlackNode *restrict *const restrict tree,
 		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer)
+		   RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict next;
@@ -248,7 +248,7 @@ red_black_drop_min(struct RedBlackNode *restrict *const restrict tree,
 void
 red_black_drop_max(struct RedBlackNode *restrict *const restrict tree,
 		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer *const restrict jump_buffer)
+		   RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict next;

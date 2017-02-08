@@ -97,7 +97,7 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		/* append to bucket tree, may jump */
 		red_black_add(&bucket->root,
 			      &red_black_hkey_comparator,
-			      &jump_buffer,
+			      jump_buffer,
 			      head);
 
 NEXT_NODE:
@@ -252,7 +252,7 @@ red_black_lhmap_insert(RedBlackLHMap *const restrict map,
 		status = red_black_insert(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey); /* 1, 0 */
 	} else {
 		/* jumped, fetch jump status */
@@ -315,7 +315,7 @@ red_black_lhmap_insert_u(RedBlackLHMap *const restrict map,
 		status = red_black_insert(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey); /* 1, 0 */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* return early to avoid decrementing count */
@@ -375,7 +375,7 @@ red_black_lhmap_update(RedBlackLHMap *const restrict map,
 		status = red_black_update(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey,
 					  (void **) &old_hkey_ptr); /* 1, 0 */
 	} else {
@@ -445,7 +445,7 @@ red_black_lhmap_update_u(RedBlackLHMap *const restrict map,
 		status = red_black_update(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey,
 					  (void **) &old_hkey_ptr); /* 1, 0 */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
@@ -513,7 +513,7 @@ red_black_lhmap_delete(RedBlackLHMap *const restrict map,
 		status = red_black_delete(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey); /* 1, 0 */
 	} else {
 		/* jumped, fetch jump status */
@@ -572,7 +572,7 @@ red_black_lhmap_delete_u(RedBlackLHMap *const restrict map,
 	       ? red_black_delete(&bucket->root,
 				  &red_black_hkey_comparator,
 				  &bucket->node_factory,
-				  &jump_buffer,
+				  jump_buffer,
 				  (const void *) &hkey) /* 1, 0 */
 	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 
@@ -625,7 +625,7 @@ red_black_lhmap_remove(RedBlackLHMap *const restrict map,
 		status = red_black_remove(&bucket->root,
 					  &red_black_hkey_comparator,
 					  &bucket->node_factory,
-					  &jump_buffer,
+					  jump_buffer,
 					  (const void *) &hkey,
 					  (void **) &hkey_ptr); /* 1, 0 */
 	} else {
@@ -691,7 +691,7 @@ red_black_lhmap_remove_u(RedBlackLHMap *const restrict map,
 	       ? red_black_remove(&bucket->root,
 				  &red_black_hkey_comparator,
 				  &bucket->node_factory,
-				  &jump_buffer,
+				  jump_buffer,
 				  (const void *) &hkey,
 				  (void **) &hkey_ptr) /* 1, 0 */
 	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
@@ -931,7 +931,7 @@ red_black_lhmap_verify(RedBlackLHMap *const restrict map)
 			status
 			= (int) red_black_verify(bucket->root,
 						 &red_black_hkey_comparator,
-						 &jump_buffer); /* 1, 0 */
+						 jump_buffer); /* 1, 0 */
 
 			/* release SHARED lock on bucket */
 			if (RBL_UNLOCK_READ(bucket_lock) != 0) {
@@ -983,7 +983,7 @@ red_black_lhmap_verify_u(RedBlackLHMap *const restrict map)
 		do {
 			status = red_black_verify(bucket->root,
 						  &red_black_hkey_comparator,
-						  &jump_buffer);
+						  jump_buffer);
 
 			if (!status)
 				break; /* invalid bucket */
