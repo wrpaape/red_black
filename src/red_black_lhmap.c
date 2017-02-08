@@ -72,7 +72,7 @@ rblhm_reset_buckets(struct RedBlackLHBucket *const restrict buckets,
 		++bucket;
 	} while (bucket < bucket_until);
 
-	bucket_until = bucket + old_count;
+	bucket_until += old_count;
 
 	/* initialize newly allocated second half */
 	do {

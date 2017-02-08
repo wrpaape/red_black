@@ -4,7 +4,7 @@
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node_factory.h" /* RedBlackNodeFactory */
-#include "red_black_hmap_count.h"   /* RedBlackHMapCount */
+/* #include "red_black_hmap_count.h"   /1* RedBlackHMapCount *1/ */
 #include "red_black_itor.h"	    /* RedBlackItor */
 
 
@@ -13,6 +13,12 @@
 struct RedBlackHBucket {
 	struct RedBlackNode *restrict root;
 	struct RedBlackNodeFactory node_factory;
+};
+
+struct RedBlackHMapCount {
+	unsigned int buckets_m1;
+	unsigned int entries;
+	unsigned int max_capacity;
 };
 
 struct _RedBlackHMap {

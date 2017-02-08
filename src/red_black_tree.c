@@ -15,7 +15,7 @@
 #include "red_black_set.h"	 /* red_black_set */
 #include "red_black_swap.h"	 /* red_black_swap */
 #include "red_black_count.h"	 /* red_black_count */
-#include "red_black_copy.h"	 /* red_black_verify */
+#include "red_black_copy.h"	 /* red_black_copy_nodes */
 #include "red_black_congruent.h" /* red_black_congruent */
 #include "red_black_print.h"	 /* red_black_print */
 #include "red_black_verify.h"	 /* red_black_verify */
@@ -174,7 +174,7 @@ red_black_tree_add(RedBlackTree *const restrict tree,
 		      &jump_buffer,
 		      node);
 
-	return true; /* successful attach */
+	return true; /* successful addition */
 }
 
 int
