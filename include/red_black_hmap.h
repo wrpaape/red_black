@@ -4,7 +4,6 @@
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_node_factory.h" /* RedBlackNodeFactory */
-/* #include "red_black_hmap_count.h"   /1* RedBlackHMapCount *1/ */
 #include "red_black_itor.h"	    /* RedBlackItor */
 
 

@@ -163,13 +163,8 @@ rbnf_new(struct RedBlackNodeFactory *const restrict factory,
 {
 	struct RedBlackNode *restrict node;
 
-	node = factory->free;
-
-	if (node == NULL)
-		node = rbnfb_allocate(&factory->buffer,
-				      jump_buffer);
-	else
-		factory->free = node->left;
+	node = rbnf_allocate(factory,
+			     jump_buffer);
 
 	/* initialize node */
 	node->key    = key;

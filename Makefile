@@ -800,23 +800,6 @@ TARGETS			+= $(HKEY_OBJ)					\
 			   $(HKEY_PIC_OBJ)
 
 
-# red_black_hmap_count
-# ──────────────────────────────────────────────────────────────────────────────
-HMAP_COUNT_SRC			:= $(call SOURCE_PATH,red_black_hmap_count)
-HMAP_COUNT_HDR			:= $(call HEADER_PATH,red_black_hmap_count)
-HMAP_COUNT_OBJ			:= $(call OBJECT_PATH,red_black_hmap_count)
-HMAP_COUNT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hmap_count)
-# ─────────────── target prequisites ───────────────────────────────────────────
-HMAP_COUNT_OBJ_PREQS		:= $(HMAP_COUNT_SRC)			\
-			   	   $(HMAP_COUNT_HDR)
-HMAP_COUNT_OBJ_GROUP		:= $(HMAP_COUNT_OBJ)
-HMAP_COUNT_PIC_OBJ_PREQS	:= $(HMAP_COUNT_OBJ_PREQS)
-HMAP_COUNT_PIC_OBJ_GROUP	:= $(HMAP_COUNT_PIC_OBJ)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS				+= $(HMAP_COUNT_OBJ)			\
-			   	   $(HMAP_COUNT_PIC_OBJ)
-
-
 # red_black_tree
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_SRC		:= $(call SOURCE_PATH,red_black_tree)
@@ -1397,11 +1380,6 @@ $(CONGRUENT_PIC_OBJ): $(CONGRUENT_PIC_OBJ_PREQS)
 $(HKEY_OBJ): $(HKEY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(HKEY_PIC_OBJ): $(HKEY_PIC_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-$(HMAP_COUNT_OBJ): $(HMAP_COUNT_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-$(HMAP_COUNT_PIC_OBJ): $(HMAP_COUNT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 
