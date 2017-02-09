@@ -2,18 +2,6 @@
 #include "red_black_correct.h" /* post-insertion correction functions */
 
 
-/* typedefs
- * ────────────────────────────────────────────────────────────────────────── */
-typedef bool
-(*RedBlackPutNode)(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNode *const restrict grandparent,
-		   struct RedBlackNode *const restrict parent,
-		   const RedBlackComparator comparator,
-		   struct RedBlackNodeFactory *const restrict factory,
-		   RedBlackJumpBuffer jump_buffer,
-		   const void *const key);
-
-
 /* put state machine functions
  *
  * JUMPS
@@ -67,7 +55,6 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 	      const void *const key)
 {
 	struct RedBlackNode *restrict parent;
-	RedBlackPutNode next_put;
 	int compare;
 	int status;
 
@@ -103,17 +90,22 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 				status = (compare != 0); /* 1, 0 */
 
 				if (status) {
-					next_put = (compare < 0)
-						 ? &rb_put_ll
-						 : &rb_put_lr;
-
-					(void) next_put(tree,
-							grandparent,
-							parent,
-							comparator,
-							factory,
-							jump_buffer,
-							key);
+					if (compare < 0)
+						(void) rb_put_ll(tree,
+								 grandparent,
+								 parent,
+								 comparator,
+								 factory,
+								 jump_buffer,
+								 key);
+					else
+						(void) rb_put_lr(tree,
+								 grandparent,
+								 parent,
+								 comparator,
+								 factory,
+								 jump_buffer,
+								 key);
 					/* if return, tree must have updated */
 
 				} else {
@@ -138,17 +130,22 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 				status = (compare != 0); /* 1, 0 */
 
 				if (status) {
-					next_put = (compare < 0)
-						 ? &rb_put_rl
-						 : &rb_put_rr;
-
-					(void) next_put(tree,
-							grandparent,
-							parent,
-							comparator,
-							factory,
-							jump_buffer,
-							key);
+					if (compare < 0)
+						(void) rb_put_rl(tree,
+								 grandparent,
+								 parent,
+								 comparator,
+								 factory,
+								 jump_buffer,
+								 key);
+					else
+						(void) rb_put_rr(tree,
+								 grandparent,
+								 parent,
+								 comparator,
+								 factory,
+								 jump_buffer,
+								 key);
 					/* if return, tree must have updated */
 
 				} else {
@@ -177,7 +174,7 @@ rb_put_ll(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	RedBlackPutNode next_put;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict node;
 
 	node = parent->left;
@@ -206,17 +203,23 @@ rb_put_ll(struct RedBlackNode *restrict *const restrict tree,
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
 
-		next_put = (compare < 0)
-			 ? &rb_put_ll
-			 : &rb_put_lr;
+		next_tree = &grandparent->left;
 
-		status = next_put(&grandparent->left,
-				  parent,
-				  node,
-				  comparator,
-				  factory,
-				  jump_buffer,
-				  key);
+		status = (compare < 0)
+		       ? rb_put_ll(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key)
+		       : rb_put_lr(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key);
 
 		if (status) /* need to correct */
 			red_black_correct_ll_mid(tree,
@@ -244,7 +247,7 @@ rb_put_lr(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	RedBlackPutNode next_put;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict node;
 
 	node = parent->right;
@@ -275,18 +278,23 @@ rb_put_lr(struct RedBlackNode *restrict *const restrict tree,
 
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
+		next_tree = &grandparent->left;
 
-		next_put = (compare < 0)
-			 ? &rb_put_rl
-			 : &rb_put_rr;
-
-		status = next_put(&grandparent->left,
-				  parent,
-				  node,
-				  comparator,
-				  factory,
-				  jump_buffer,
-				  key);
+		status = (compare < 0)
+		       ? rb_put_rl(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key)
+		       : rb_put_rr(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key);
 
 		if (status) /* need to correct */
 			red_black_correct_lr_mid(tree,
@@ -315,7 +323,7 @@ rb_put_rr(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	RedBlackPutNode next_put;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict node;
 
 	node = parent->right;
@@ -344,17 +352,23 @@ rb_put_rr(struct RedBlackNode *restrict *const restrict tree,
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
 
-		next_put = (compare < 0)
-			 ? &rb_put_rl
-			 : &rb_put_rr;
+		next_tree = &grandparent->right;
 
-		status = next_put(&grandparent->right,
-				  parent,
-				  node,
-				  comparator,
-				  factory,
-				  jump_buffer,
-				  key);
+		status = (compare < 0)
+		       ? rb_put_rl(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key)
+		       : rb_put_rr(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key);
 
 		if (status) /* need to correct */
 			red_black_correct_rr_mid(tree,
@@ -382,7 +396,7 @@ rb_put_rl(struct RedBlackNode *restrict *const restrict tree,
 {
 	bool status;
 	int compare;
-	RedBlackPutNode next_put;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict node;
 
 	node = parent->left;
@@ -414,17 +428,23 @@ rb_put_rl(struct RedBlackNode *restrict *const restrict tree,
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
 
-		next_put = (compare < 0)
-			 ? &rb_put_ll
-			 : &rb_put_lr;
+		next_tree = &grandparent->right;
 
-		status = next_put(&grandparent->right,
-				  parent,
-				  node,
-				  comparator,
-				  factory,
-				  jump_buffer,
-				  key);
+		status = (compare < 0)
+		       ? rb_put_ll(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key)
+		       : rb_put_lr(next_tree,
+				   parent,
+				   node,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key);
 
 		if (status) /* need to correct */
 			red_black_correct_rl_mid(tree,

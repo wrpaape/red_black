@@ -2,18 +2,6 @@
 #include "red_black_correct.h" /* post-insertion correction functions */
 
 
-/* typedefs
- * ────────────────────────────────────────────────────────────────────────── */
-typedef bool
-(*RedBlackInsertNode)(struct RedBlackNode *restrict *const restrict tree,
-		      struct RedBlackNode *const restrict grandparent,
-		      struct RedBlackNode *const restrict parent,
-		      const RedBlackComparator comparator,
-		      struct RedBlackNodeFactory *const restrict factory,
-		      RedBlackJumpBuffer jump_buffer,
-		      const void *const key);
-
-
 /* insert state machine functions
  *
  * JUMPS
@@ -67,7 +55,6 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 		 const void *const key)
 {
 	struct RedBlackNode *restrict parent;
-	RedBlackInsertNode next_insert;
 	int compare;
 	int status;
 
@@ -103,17 +90,22 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 				status = (compare != 0); /* 1, 0 */
 
 				if (status) {
-					next_insert = (compare < 0)
-						    ? &rb_insert_ll
-						    : &rb_insert_lr;
-
-					(void) next_insert(tree,
-                                                           grandparent,
-                                                           parent,
-                                                           comparator,
-                                                           factory,
-                                                           jump_buffer,
-                                                           key);
+					if (compare < 0)
+						(void) rb_insert_ll(tree,
+								    grandparent,
+								    parent,
+								    comparator,
+								    factory,
+								    jump_buffer,
+								    key);
+					else
+						(void) rb_insert_lr(tree,
+								    grandparent,
+								    parent,
+								    comparator,
+								    factory,
+								    jump_buffer,
+								    key);
 					/* if return, tree must have updated */
 				}
 			}
@@ -135,17 +127,22 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 				status = (compare != 0); /* 1, 0 */
 
 				if (status) {
-					next_insert = (compare < 0)
-						    ? &rb_insert_rl
-						    : &rb_insert_rr;
-
-					(void) next_insert(tree,
-                                                           grandparent,
-                                                           parent,
-                                                           comparator,
-                                                           factory,
-                                                           jump_buffer,
-                                                           key);
+					if (compare < 0)
+						(void) rb_insert_rl(tree,
+								    grandparent,
+								    parent,
+								    comparator,
+								    factory,
+								    jump_buffer,
+								    key);
+					else
+						(void) rb_insert_rr(tree,
+								    grandparent,
+								    parent,
+								    comparator,
+								    factory,
+								    jump_buffer,
+								    key);
 					/* if return, tree must have updated */
 				}
 			}
@@ -169,7 +166,7 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	struct RedBlackNode *restrict node;
-	RedBlackInsertNode next_insert;
+	struct RedBlackNode *restrict *restrict next_tree;
 
 	node = parent->left;
 
@@ -194,17 +191,23 @@ rb_insert_ll(struct RedBlackNode *restrict *const restrict tree,
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 
-		next_insert = (compare < 0)
-			    ? &rb_insert_ll
-			    : &rb_insert_lr;
+		next_tree = &grandparent->left;
 
-		status = next_insert(&grandparent->left,
-				     parent,
-				     node,
-				     comparator,
-				     factory,
-				     jump_buffer,
-				     key);
+		status = (compare < 0)
+		       ? rb_insert_ll(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key)
+		       : rb_insert_lr(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key);
 
 		if (status) /* need to correct */
 			red_black_correct_ll_mid(tree,
@@ -233,7 +236,7 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	struct RedBlackNode *restrict node;
-	RedBlackInsertNode next_insert;
+	struct RedBlackNode *restrict *restrict next_tree;
 
 	node = parent->right;
 
@@ -261,17 +264,23 @@ rb_insert_lr(struct RedBlackNode *restrict *const restrict tree,
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 
-		next_insert = (compare < 0)
-			    ? &rb_insert_rl
-			    : &rb_insert_rr;
+		next_tree = &grandparent->left;
 
-		status = next_insert(&grandparent->left,
-				     parent,
-				     node,
-				     comparator,
-				     factory,
-				     jump_buffer,
-				     key);
+		status = (compare < 0)
+		       ? rb_insert_rl(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key)
+		       : rb_insert_rr(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key);
 
 		if (status) /* need to correct */
 			red_black_correct_lr_mid(tree,
@@ -301,7 +310,7 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	struct RedBlackNode *restrict node;
-	RedBlackInsertNode next_insert;
+	struct RedBlackNode *restrict *restrict next_tree;
 
 	node = parent->right;
 
@@ -326,17 +335,23 @@ rb_insert_rr(struct RedBlackNode *restrict *const restrict tree,
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 
-		next_insert = (compare < 0)
-			    ? &rb_insert_rl
-			    : &rb_insert_rr;
+		next_tree = &grandparent->right;
 
-		status = next_insert(&grandparent->right,
-				     parent,
-				     node,
-				     comparator,
-				     factory,
-				     jump_buffer,
-				     key);
+		status = (compare < 0)
+		       ? rb_insert_rl(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key)
+		       : rb_insert_rr(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key);
 
 		if (status) /* need to correct */
 			red_black_correct_rr_mid(tree,
@@ -365,7 +380,7 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	struct RedBlackNode *restrict node;
-	RedBlackInsertNode next_insert;
+	struct RedBlackNode *restrict *restrict next_tree;
 
 	node = parent->left;
 
@@ -393,17 +408,23 @@ rb_insert_rl(struct RedBlackNode *restrict *const restrict tree,
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 
-		next_insert = (compare < 0)
-			    ? &rb_insert_ll
-			    : &rb_insert_lr;
+		next_tree = &grandparent->right;
 
-		status = next_insert(&grandparent->right,
-				     parent,
-				     node,
-				     comparator,
-				     factory,
-				     jump_buffer,
-				     key);
+		status = (compare < 0)
+		       ? rb_insert_ll(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key)
+		       : rb_insert_lr(next_tree,
+				      parent,
+				      node,
+				      comparator,
+				      factory,
+				      jump_buffer,
+				      key);
 
 		if (status) /* need to correct */
 			red_black_correct_rl_mid(tree,

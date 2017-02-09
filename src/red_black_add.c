@@ -3,17 +3,6 @@
 #include <stddef.h>	       /* NULL */
 
 
-/* typedefs
- * ────────────────────────────────────────────────────────────────────────── */
-typedef bool
-(*RedBlackAddNode)(struct RedBlackNode *restrict *const restrict tree,
-		   struct RedBlackNode *const restrict grandparent,
-		   struct RedBlackNode *const restrict parent,
-		   const RedBlackComparator comparator,
-		   RedBlackJumpBuffer jump_buffer,
-		   struct RedBlackNode *const restrict node);
-
-
 /* put state machine functions
  *
  * JUMPS
@@ -60,7 +49,6 @@ red_black_add(struct RedBlackNode *restrict *const restrict tree,
 	      struct RedBlackNode *const restrict node)
 {
 	struct RedBlackNode *restrict parent;
-	RedBlackAddNode next_add;
 
 	struct RedBlackNode *const restrict grandparent = *tree;
 
@@ -77,42 +65,44 @@ red_black_add(struct RedBlackNode *restrict *const restrict tree,
 			       grandparent->key) < 0) {
 			parent = grandparent->left;
 
-			if (parent == NULL) {
+			if (parent == NULL)
 				grandparent->left = node; /* put RED leaf */
-
-			} else {
-				next_add = (comparator(key,
-						       parent->key) < 0)
-					 ? &rb_add_ll
-					 : &rb_add_lr;
-
-				(void) next_add(tree,
-						grandparent,
-						parent,
-						comparator,
-						jump_buffer,
-						node);
-			}
+			else if (comparator(key,
+					    parent->key) < 0)
+				rb_add_ll(tree,
+					  grandparent,
+					  parent,
+					  comparator,
+					  jump_buffer,
+					  node);
+			else
+				rb_add_lr(tree,
+					  grandparent,
+					  parent,
+					  comparator,
+					  jump_buffer,
+					  node);
 
 		} else {
 			parent = grandparent->right;
 
-			if (parent == NULL) {
+			if (parent == NULL)
 				grandparent->right = node; /* put RED leaf */
-
-			} else {
-				next_add = (comparator(key,
-						       parent->key) < 0)
-					 ? &rb_add_rl
-					 : &rb_add_rr;
-
-				(void) next_add(tree,
-						grandparent,
-						parent,
-						comparator,
-						jump_buffer,
-						node);
-			}
+			else if (comparator(key,
+					    parent->key) < 0)
+				rb_add_rl(tree,
+					  grandparent,
+					  parent,
+					  comparator,
+					  jump_buffer,
+					  node);
+			else
+				rb_add_rr(tree,
+					  grandparent,
+					  parent,
+					  comparator,
+					  jump_buffer,
+					  node);
 		}
 
 	} else {
@@ -131,8 +121,8 @@ rb_add_ll(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict next;
-	RedBlackAddNode next_add;
 
 	next = parent->left;
 
@@ -148,17 +138,22 @@ rb_add_ll(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_add = (comparator(node->key,
-				       next->key) < 0)
-			 ? &rb_add_ll
-			 : &rb_add_lr;
+		next_tree = &grandparent->left;
 
-		status = next_add(&grandparent->left,
-				  parent,
-				  next,
-				  comparator,
-				  jump_buffer,
-				  node);
+		status = (comparator(node->key,
+				     next->key) < 0)
+		       ? rb_add_ll(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node)
+		       : rb_add_lr(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node);
 
 		if (status) /* need to correct */
 			red_black_correct_ll_mid(tree,
@@ -184,8 +179,8 @@ rb_add_lr(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict next;
-	RedBlackAddNode next_add;
 
 	next = parent->right;
 
@@ -202,17 +197,22 @@ rb_add_lr(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_add = (comparator(node->key,
-				       next->key) < 0)
-			 ? &rb_add_rl
-			 : &rb_add_rr;
+		next_tree = &grandparent->left;
 
-		status = next_add(&grandparent->left,
-				  parent,
-				  next,
-				  comparator,
-				  jump_buffer,
-				  node);
+		status = (comparator(node->key,
+				     next->key) < 0)
+		       ? rb_add_rl(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node)
+		       : rb_add_rr(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node);
 
 		if (status) /* need to correct */
 			red_black_correct_lr_mid(tree,
@@ -239,8 +239,8 @@ rb_add_rr(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict next;
-	RedBlackAddNode next_add;
 
 	next = parent->right;
 
@@ -256,17 +256,22 @@ rb_add_rr(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_add = (comparator(node->key,
-				       next->key) < 0)
-			 ? &rb_add_rl
-			 : &rb_add_rr;
+		next_tree = &grandparent->right;
 
-		status = next_add(&grandparent->right,
-				  parent,
-				  next,
-				  comparator,
-				  jump_buffer,
-				  node);
+		status = (comparator(node->key,
+				     next->key) < 0)
+		       ? rb_add_rl(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node)
+		       : rb_add_rr(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node);
 
 		if (status) /* need to correct */
 			red_black_correct_rr_mid(tree,
@@ -292,8 +297,8 @@ rb_add_rl(struct RedBlackNode *restrict *const restrict tree,
 	  struct RedBlackNode *const restrict node)
 {
 	bool status;
+	struct RedBlackNode *restrict *restrict next_tree;
 	struct RedBlackNode *restrict next;
-	RedBlackAddNode next_add;
 
 	next = parent->left;
 
@@ -310,17 +315,22 @@ rb_add_rl(struct RedBlackNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_add = (comparator(node->key,
-					  next->key) < 0)
-			 ? &rb_add_ll
-			 : &rb_add_lr;
+		next_tree = &grandparent->right;
 
-		status = next_add(&grandparent->right,
-				  parent,
-				  next,
-				  comparator,
-				  jump_buffer,
-				  node);
+		status = (comparator(node->key,
+				     next->key) < 0)
+		       ? rb_add_ll(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node)
+		       : rb_add_lr(next_tree,
+				   parent,
+				   next,
+				   comparator,
+				   jump_buffer,
+				   node);
 
 		if (status) /* need to correct */
 			red_black_correct_rl_mid(tree,
