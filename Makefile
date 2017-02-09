@@ -273,7 +273,6 @@ NODE_FACTORY_OBJ_PREQS		:= $(NODE_FACTORY_SRC)			\
 			   	   $(NODE_FACTORY_HDR)			\
 			   	   $(JUMP_HDR)				\
 			   	   $(NODE_HDR)				\
-			   	   $(HNODE_HDR)				\
 			   	   $(MALLOC_HDR)
 NODE_FACTORY_OBJ_GROUP		:= $(NODE_FACTORY_OBJ)
 NODE_FACTORY_PIC_OBJ_PREQS	:= $(NODE_FACTORY_OBJ_PREQS)

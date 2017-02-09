@@ -28,8 +28,7 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 	tree->root	 = NULL;
 	tree->comparator = comparator;
 
-	rbnf_init(&tree->node_factory,
-		  &node_factory_blueprint);
+	rbnf_init(&tree->node_factory);
 }
 
 bool
@@ -63,12 +62,10 @@ rb_tree_clone(RedBlackTree *const restrict dst_tree,
 	if (status) {
 		/* finish empty initialization */
 		*root_ptr = NULL;
-		rbnf_init(factory_ptr,
-			  &node_factory_blueprint);
+		rbnf_init(factory_ptr);
 
 	} else {
 		buffer = rbnf_init_w_nodes(factory_ptr,
-					   &node_factory_blueprint,
 					   count);
 
 		status = (buffer != NULL);
