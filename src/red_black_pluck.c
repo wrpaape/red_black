@@ -3,17 +3,6 @@
 #include "red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 
 
-/* typedefs
- * ────────────────────────────────────────────────────────────────────────── */
-typedef void
-(*RedBlackPluckNode)(struct RedBlackNode *restrict *const restrict tree,
-		     struct RedBlackNode *const restrict parent,
-		     const RedBlackComparator comparator,
-		     struct RedBlackNodeFactory *const restrict factory,
-		     RedBlackJumpBuffer jump_buffer,
-		     const void *const key,
-		     void **const restrict pluck_ptr);
-
 /* pluck state machine functions
  *
  * JUMPS
@@ -49,8 +38,6 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 	   const void *const key,
 	   void **const restrict pluck_ptr)
 {
-	RedBlackPluckNode next_pluck;
-
 	struct RedBlackNode *restrict *const restrict subtree = &parent->left;
 	struct RedBlackNode *const restrict lnode	      = *subtree;
 
@@ -71,17 +58,22 @@ rb_pluck_l(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		next_pluck = (compare < 0)
-			   ? &rb_pluck_l
-			   : &rb_pluck_r;
-
-		next_pluck(subtree,
-			   lnode,
-			   comparator,
-			   factory,
-			   jump_buffer,
-			   key,
-			   pluck_ptr);
+		if (compare < 0)
+			rb_pluck_l(subtree,
+				   lnode,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key,
+				   pluck_ptr);
+		else
+			rb_pluck_r(subtree,
+				   lnode,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key,
+				   pluck_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_l_mid(tree,
@@ -100,8 +92,6 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 	   const void *const key,
 	   void **const restrict pluck_ptr)
 {
-	RedBlackPluckNode next_pluck;
-
 	struct RedBlackNode *restrict *const restrict subtree = &parent->right;
 	struct RedBlackNode *const restrict rnode	      = *subtree;
 
@@ -122,17 +112,22 @@ rb_pluck_r(struct RedBlackNode *restrict *const restrict tree,
 					jump_buffer);
 
 	} else {
-		next_pluck = (compare < 0)
-			   ? &rb_pluck_l
-			   : &rb_pluck_r;
-
-		next_pluck(subtree,
-			   rnode,
-			   comparator,
-			   factory,
-			   jump_buffer,
-			   key,
-			   pluck_ptr);
+		if (compare < 0)
+			rb_pluck_l(subtree,
+				   rnode,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key,
+				   pluck_ptr);
+		else
+			rb_pluck_r(subtree,
+				   rnode,
+				   comparator,
+				   factory,
+				   jump_buffer,
+				   key,
+				   pluck_ptr);
 
 		/* if returned, need to restore */
 		red_black_restore_r_mid(tree,
@@ -152,8 +147,6 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 		const void *const key,
 		void **const restrict pluck_ptr)
 {
-	RedBlackPluckNode next_pluck;
-
 	struct RedBlackNode *const restrict root = *tree;
 
 	const int compare = comparator(key,
@@ -166,12 +159,17 @@ red_black_pluck(struct RedBlackNode *restrict *const restrict tree,
 				       root,
 				       factory);
 
-	} else {
-		next_pluck = (compare < 0)
-			   ? &rb_pluck_l
-			   : &rb_pluck_r;
+	} else if (compare < 0) {
+		rb_pluck_l(tree,
+			   root,
+			   comparator,
+			   factory,
+			   jump_buffer,
+			   key,
+			   pluck_ptr);
 
-		next_pluck(tree,
+	} else {
+		rb_pluck_r(tree,
 			   root,
 			   comparator,
 			   factory,
