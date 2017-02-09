@@ -3,15 +3,15 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_node_factory.h" /* RedBlackNodeFactory */
-#include "red_black_itor.h"	    /* RedBlackItor */
+#include "red_black_hnode_factory.h" /* RedBlackHNodeFactory */
+#include "red_black_hitor.h"	     /* RedBlackHItor */
 
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
 struct RedBlackHBucket {
-	struct RedBlackNode *restrict root;
-	struct RedBlackNodeFactory node_factory;
+	struct RedBlackHNode *restrict root;
+	struct RedBlackHNodeFactory node_factory;
 };
 
 struct RedBlackHMapCount {
@@ -27,7 +27,7 @@ struct _RedBlackHMap {
 typedef struct _RedBlackHMap RedBlackHMap;
 
 struct _RedBlackHMapItor {
-	struct RedBlackItor bucket_itor;
+	struct RedBlackHItor bucket_itor;
 	struct RedBlackHBucket *restrict bucket;
 	struct RedBlackHBucket *restrict last_bucket;
 };

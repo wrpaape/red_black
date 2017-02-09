@@ -39,6 +39,7 @@ red_black_restore_max_node(struct RedBlackNode *restrict *const restrict tree,
 			   struct RedBlackNodeFactory *const restrict factory,
 			   RedBlackJumpBuffer jump_buffer);
 
+/* unwind restore points */
 void
 red_black_restore_l_bot(struct RedBlackNode *restrict *const restrict tree,
 			struct RedBlackNode *const restrict parent,

@@ -1,16 +1,16 @@
-#ifndef RED_BLACK_RED_BLACK_TREE_RED_BLACK_COPY_H_
-#define RED_BLACK_RED_BLACK_TREE_RED_BLACK_COPY_H_
+#ifndef RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HCOPY_H_
+#define RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HCOPY_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_tree/red_black_node.h" /* RedBlackNode */
+#include "red_black_hmap/red_black_hnode.h" /* RedBlackHNode */
 
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
-struct RedBlackNode *
-red_black_copy(struct RedBlackNode *restrict *const restrict dst_tree,
-	       const struct RedBlackNode *const restrict src_root,
-	       struct RedBlackNode *restrict buffer);
+struct RedBlackHNode *
+red_black_hcopy(struct RedBlackHNode *restrict *const restrict dst_tree,
+		const struct RedBlackHNode *const restrict src_root,
+		struct RedBlackHNode *restrict buffer);
 
-#endif /* ifndef RED_BLACK_RED_BLACK_TREE_RED_BLACK_COPY_H_ */
+#endif /* ifndef RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HCOPY_H_ */

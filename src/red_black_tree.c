@@ -15,7 +15,7 @@
 #include "red_black_tree/red_black_set.h"	/* red_black_set */
 #include "red_black_tree/red_black_swap.h"	/* red_black_swap */
 #include "red_black_tree/red_black_count.h"	/* red_black_count */
-#include "red_black_tree/red_black_copy.h"	/* red_black_copy_nodes */
+#include "red_black_tree/red_black_copy.h"	/* red_black_copy */
 #include "red_black_tree/red_black_congruent.h" /* red_black_congruent */
 #include "red_black_tree/red_black_print.h"	/* red_black_print */
 #include "red_black_tree/red_black_verify.h"	/* red_black_verify */
@@ -71,9 +71,9 @@ rb_tree_clone(RedBlackTree *const restrict dst_tree,
 		status = (buffer != NULL);
 
 		if (status)
-			(void) red_black_copy_nodes(root_ptr,
-						    src_tree->root,
-						    buffer);
+			(void) red_black_copy(root_ptr,
+					      src_tree->root,
+					      buffer);
 	}
 
 	return status;
@@ -999,7 +999,7 @@ red_black_tree_print(const RedBlackTree *const restrict tree,
 
 void
 red_black_tree_asc_itor_init(RedBlackTreeItor *const restrict itor,
-				 const RedBlackTree *const restrict tree)
+			     const RedBlackTree *const restrict tree)
 {
 	red_black_asc_itor_init(itor,
 				tree->root);
@@ -1008,7 +1008,7 @@ red_black_tree_asc_itor_init(RedBlackTreeItor *const restrict itor,
 
 void
 red_black_tree_desc_itor_init(RedBlackTreeItor *const restrict itor,
-				  const RedBlackTree *const restrict tree)
+			      const RedBlackTree *const restrict tree)
 {
 	red_black_desc_itor_init(itor,
 				 tree->root);

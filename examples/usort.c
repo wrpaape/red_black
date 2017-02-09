@@ -1,14 +1,11 @@
 #include "red_black_tree.h" /* RedBlackTree|Itor */
 #include "str_key.h"        /* str_key_comparator */
-#include <stdio.h>          /* puts, perror, EOF */
+#include <stdio.h>          /* puts, fprintf, EOF */
 #include <stdlib.h>         /* exit, EXIT_FAILURE */
 
 /* failure macro */
-#define EXIT_ON_FAILURE(FAILURE)				\
-do {								\
-	perror(FAILURE);					\
-	exit(EXIT_FAILURE);					\
-} while (0)
+#define EXIT_ON_FAILURE(args...)					\
+(void) fprintf(stderr, args), exit(EXIT_FAILURE)
 
 
 int

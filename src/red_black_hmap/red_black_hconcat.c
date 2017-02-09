@@ -1,14 +1,14 @@
-#include "red_black_tree/red_black_concat.h"	    /* struct RedBlackNode */
+#include "red_black_hmap/red_black_hconcat.h"	    /* struct RedBlackHNode */
 #include "red_black_common/red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 #include <stddef.h>				    /* NULL */
 
-struct RedBlackNode *restrict *restrict
-red_black_concat(struct RedBlackNode *restrict node,
-		 struct RedBlackNode *restrict *restrict end_ptr)
+struct RedBlackHNode *restrict *restrict
+red_black_hconcat(struct RedBlackHNode *restrict node,
+		  struct RedBlackHNode *restrict *restrict end_ptr)
 {
-	struct RedBlackNode *restrict stack[RED_BLACK_STACK_COUNT];
-	struct RedBlackNode *restrict *restrict cursor;
-	struct RedBlackNode *restrict next;
+	struct RedBlackHNode *restrict stack[RED_BLACK_STACK_COUNT];
+	struct RedBlackHNode *restrict *restrict cursor;
+	struct RedBlackHNode *restrict next;
 
 	if (node == NULL)
 		return end_ptr;
@@ -35,8 +35,8 @@ red_black_concat(struct RedBlackNode *restrict node,
 
 	/* unwind stack, concatting right subtrees along the way */
 	while (1) {
-		end_ptr = red_black_concat(node->right,
-					   end_ptr);
+		end_ptr = red_black_hconcat(node->right,
+					    end_ptr);
 
 		node = *cursor;
 
@@ -45,5 +45,4 @@ red_black_concat(struct RedBlackNode *restrict node,
 
 		--cursor;
 	}
-
 }

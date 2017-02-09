@@ -1,5 +1,20 @@
-#include "red_black_hmap/red_black_hkey.h" /* RedBlackHKey, SIZE_MAX */
+#include "red_black_hmap/red_black_hkey.h" /* RedBlackHKey, SIZE_MAX, NULL */
 #include <limits.h>			   /* UINT_MAX, ULONG_MAX */
+
+
+/* global variables
+ * ────────────────────────────────────────────────────────────────────────── */
+const struct RedBlackHKey RED_BLACK_HKEY_MIN = {
+	.hash   = 0,
+	.key    = NULL,
+	.length = 0
+};
+
+const struct RedBlackHKey RED_BLACK_HKEY_MAX = {
+	.hash   = RED_BLACK_HASH_MAX,
+	.key    = (const unsigned char []) {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
+	.length = SIZE_MAX
+};
 
 
 #if (RED_BLACK_HASH_MAX == UINT32_MAX)
@@ -23,7 +38,7 @@ rbhk_hash(register const unsigned char *k,  /* the key */
 
 	/* Set up the internal state */
 	a = b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
-	c = 0xfedcba98ULL;  /* variable initialization of internal state */
+	c = 0xfedcba98;     /* variable initialization of internal state */
 
 	/*---------------------------------------- handle most of the key */
 	for (len = length; len >= 12; k += 12, len -= 12) {
@@ -248,60 +263,48 @@ rbhk_memory_compare(const unsigned char *restrict key1,
 }
 
 int
-red_black_hkey_comparator(const void *key1,
-			  const void *key2)
+red_black_hkey_comparator(const struct RedBlackHKey *const restrict hkey1,
+			  const struct RedBlackHKey *const restrict hkey2)
 {
-	const struct RedBlackHKey *hkey1;
-	const struct RedBlackHKey *hkey2;
-	RedBlackHash hk1_hash;
-	RedBlackHash hk2_hash;
-	const unsigned char *restrict hk1_key;
-	const unsigned char *restrict hk2_key;
-	size_t hk1_length;
-	size_t hk2_length;
-
-	hkey1 = (const struct RedBlackHKey *) key1;
-	hkey2 = (const struct RedBlackHKey *) key2;
-
-	hk1_hash = hkey1->hash;
-	hk2_hash = hkey2->hash;
+	const RedBlackHash hash1 = hkey1->hash;
+	const RedBlackHash hash2 = hkey2->hash;
 
 #if (RED_BLACK_HASH_MAX < UINT_MAX)
-	if (hk1_hash != hk2_hash)
-		return (int) (hk1_hash - hk2_hash);
+	if (hash1 != hash2)
+		return (int) (hash1 - hash2);
 
 #else
-	if (hk1_hash < hk2_hash)
+	if (hash1 < hash2)
 		return -1;
 
-	if (hk1_hash > hk2_hash)
+	if (hash1 > hash2)
 		return 1;
 #endif /* if (RED_BLACK_HASH_MAX < UINT_MAX) */
 
-	hk1_key = hkey1->key;
-	hk2_key = hkey2->key;
+	const unsigned char *const restrict key1 = hkey1->key;
+	const unsigned char *const restrict key2 = hkey2->key;
 
-	if (hk1_key == hk2_key)
+	if (key1 == key2)
 		return 0; /* ensure keys don't point to same memory */
 
-	hk1_length = hkey1->length;
-	hk2_length = hkey2->length;
+	const size_t length1 = hkey1->length;
+	const size_t length2 = hkey2->length;
 
 #if (SIZE_MAX < UINT_MAX)
-	if (hk1_length != hk2_length)
-		return (int) (hk1_length - hk2_length);
+	if (length1 != length2)
+		return (int) (length1 - length2);
 
 #else
-	if (hk1_length < hk2_length)
+	if (length1 < length2)
 		return -1;
 
-	if (hk1_length > hk2_length)
+	if (length1 > length2)
 		return 1;
 #endif /* if (RED_BLACK_HASH_MAX < UINT_MAX) */
 
 	/* unsigned memory compare */
-	return rbhk_memory_compare(hk1_key,
-				   hk2_key,
-				   hk1_length);
+	return rbhk_memory_compare(key1,
+				   key2,
+				   length1);
 }
 

@@ -1,0 +1,83 @@
+#ifndef RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HNODE_FACTORY_H_
+#define RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HNODE_FACTORY_H_
+
+/* external dependencies
+ * ────────────────────────────────────────────────────────────────────────── */
+#include "red_black_common/red_black_jump.h" /* JumpBuffer, JUMP_ERROR */
+#include "red_black_tree/red_black_hnode.h"  /* struct RedBlackHNode */
+#include <stddef.h>			     /* size_t */
+
+
+/* typedefs, struct declarations
+ * ────────────────────────────────────────────────────────────────────────── */
+struct RedBlackHNodeFactoryBufferBlock {
+	struct RedBlackHNodeFactoryBufferBlock *next;
+};
+
+struct RedBlackHNodeFactoryBuffer {
+	char *restrict cursor;
+	const char *restrict until;
+	size_t expand;
+	struct RedBlackHNodeFactoryBufferBlock *restrict blocks;
+};
+
+typedef void
+(*RedBlackHNodeFactoryInitializer)(struct RedBlackHNode *const restrict node,
+				   const void *const hkey,
+				   const bool is_red);
+
+struct RedBlackHNodeFactoryBlueprint {
+	const RedBlackHNodeFactoryInitializer initializer;
+	const size_t size_node;
+	const size_t init_expand;
+};
+
+struct RedBlackHNodeFactory {
+	struct RedBlackHNode *restrict free;
+	const struct RedBlackHNodeFactoryBlueprint *restrict blueprint;
+	struct RedBlackHNodeFactoryBuffer buffer;
+};
+
+
+/* global variabless
+ * ────────────────────────────────────────────────────────────────────────── */
+extern const struct RedBlackHNodeFactoryBlueprint node_factory_blueprint;
+extern const struct RedBlackHNodeFactoryBlueprint hnode_factory_blueprint;
+
+
+/* external API
+ * ────────────────────────────────────────────────────────────────────────── */
+void
+rbnf_init(struct RedBlackHNodeFactory *const restrict factory,
+	  const struct RedBlackHNodeFactoryBlueprint *const restrict bp);
+
+struct RedBlackHNode *
+rbnf_init_w_nodes(struct RedBlackHNodeFactory *const restrict factory,
+		  const struct RedBlackHNodeFactoryBlueprint *const restrict bp,
+		  const unsigned int count_nodes);
+
+void
+rbnf_reset(struct RedBlackHNodeFactory *const restrict factory);
+
+struct RedBlackHNode *
+rbnf_allocate(struct RedBlackHNodeFactory *const restrict factory,
+	      RedBlackJumpBuffer jump_buffer);
+
+struct RedBlackHNode *
+rbnf_allocate_nodes(struct RedBlackHNodeFactory *const restrict factory,
+		    const unsigned int count_nodes);
+
+struct RedBlackHNode *
+rbnf_new(struct RedBlackHNodeFactory *const restrict factory,
+	 RedBlackJumpBuffer jump_buffer,
+	 const void *const key,
+	 const bool is_red);
+
+void
+rbnf_free(struct RedBlackHNodeFactory *const restrict factory,
+	  struct RedBlackHNode *const restrict node);
+
+void
+rbnf_destroy(struct RedBlackHNodeFactory *const restrict factory);
+
+#endif /* ifndef RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HNODE_FACTORY_H_ */
