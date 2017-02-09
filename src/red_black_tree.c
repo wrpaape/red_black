@@ -162,7 +162,7 @@ red_black_tree_add(RedBlackTree *const restrict tree,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	if (status != 0)
-		return status != RED_BLACK_JUMP_VALUE_3_ERROR;
+		return (status != RED_BLACK_JUMP_VALUE_3_ERROR);
 
 	node = rbnf_allocate(node_factory_ptr,
 			     jump_buffer);
@@ -501,6 +501,7 @@ red_black_tree_set_min(const RedBlackTree *const restrict tree,
 	red_black_set_min(tree->root,
 			  key);
 }
+
 void
 red_black_tree_set_max(const RedBlackTree *const restrict tree,
 		       const void *const key)

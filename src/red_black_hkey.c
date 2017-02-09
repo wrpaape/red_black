@@ -25,7 +25,7 @@ rbhk_hash(register const unsigned char *k,  /* the key */
 	a = b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
 	c = 0xfedcba98ULL;  /* variable initialization of internal state */
 
-	/*---------------------------------------- handle most of the key */
+	/* --------------------------------------- handle most of the key */
 	for (len = length; len >= 12; k += 12, len -= 12) {
 		a += (   ((uint32_t) k[ 0])
 		      + (((uint32_t) k[ 1]) <<  8)
@@ -45,7 +45,7 @@ rbhk_hash(register const unsigned char *k,  /* the key */
 		mix32(a, b, c);
 	}
 
-	/*------------------------------------- handle the last 11 bytes */
+	/* ------------------------------------ handle the last 11 bytes */
 	c += length;
 
 	switch (len) {
@@ -67,7 +67,7 @@ rbhk_hash(register const unsigned char *k,  /* the key */
 
 	mix32(a, b, c);
 
-	/*-------------------------------------------- report the result */
+	/* ------------------------------------------- report the result */
 	return (RedBlackHash) c;
 }
 #undef mix32
@@ -96,7 +96,7 @@ rbhk_hash(register const unsigned char *k, /* the key */
 	a = b = 0xfedcba9876543210ULL; /* initialization of internal state */
 	c = 0x9e3779b97f4a7c13ULL;     /* the golden ratio; an arbitrary value */
 
-	/*---------------------------------------- handle most of the key */
+	/* --------------------------------------- handle most of the key */
 	for (len = length; len >= 24; k += 24, len -= 24) {
 		a += (   ((uint64_t) k[ 0])
 		      + (((uint64_t) k[ 1]) <<  8)
@@ -128,7 +128,7 @@ rbhk_hash(register const unsigned char *k, /* the key */
 		mix64(a, b, c);
 	}
 
-	/*------------------------------------- handle the last 23 bytes */
+	/* ------------------------------------ handle the last 23 bytes */
 	c += length;
 
 	switch (len) {
@@ -162,7 +162,7 @@ rbhk_hash(register const unsigned char *k, /* the key */
 
 	mix64(a, b, c);
 
-	/*-------------------------------------------- report the result */
+	/* ------------------------------------------- report the result */
 	return (RedBlackHash) c;
 }
 #undef mix64

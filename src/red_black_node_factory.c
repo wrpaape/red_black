@@ -25,19 +25,16 @@ rbnf_init_hnode(struct RedBlackNode *const restrict node,
 		const void *const key,
 		const bool is_red)
 {
-	struct RedBlackHNode *restrict hnode;
-	struct RedBlackHKey *restrict hkey;
+	struct RedBlackHKey *restrict hkey_ptr;
 
-	hnode = (struct RedBlackHNode *restrict) node;
-
-	hkey = &hnode->hkey;
+	hkey_ptr = &((struct RedBlackHNode *restrict) node)->hkey;
 
 	rbnf_init_node(node,
-		       (const void *) hkey,
+		       (const void *) hkey_ptr,
 		       is_red);
 
 	/* copy input hash key to node */
-	*hkey = *((const struct RedBlackHKey *restrict) key);
+	*hkey_ptr = *((const struct RedBlackHKey *restrict) key);
 }
 
 

@@ -24,8 +24,13 @@
  * ────────────────────────────────────────────────────────────────────────── */
 /* initial bucket count, MUST be power of 2 */
 #define RBHM_INIT_BUCKET_COUNT	8
+#if RBHM_VAR_EXPAND
+/* initial expand factor, MUST be > 0 */
+#define RBHM_INIT_EXPAND_FACTOR 1
+#endif /* if RBHM_VAR_EXPAND */
 /* maximum average collision count per bucket without requiring expansion */
 #define RBHM_MAX_AVG_COLLISIONS 8
+
 
 
 static inline void
@@ -57,11 +62,14 @@ rbhm_reset_buckets(struct RedBlackHBucket *const restrict buckets,
 	struct RedBlackNode *restrict head;
 	struct RedBlackNode *restrict *restrict end_ptr;
 	struct RedBlackHBucket *restrict bucket;
-	struct RedBlackHBucket *restrict bucket_until;
+	struct RedBlackHBucket *restrict first_new_bucket;
+	struct RedBlackHBucket *restrict last_new_bucket;
+
 	RedBlackJumpBuffer jump_buffer;
 
-	bucket       = buckets;
-	bucket_until = bucket + old_count;
+	first_new_bucket = buckets + old_count;
+	last_new_bucket  = buckets + new_count_m1;
+	bucket           = buckets;
 
 	end_ptr = &head; /* concat 1st list with itself, set head */
 
@@ -78,16 +86,14 @@ rbhm_reset_buckets(struct RedBlackHBucket *const restrict buckets,
 		rbnf_reset(&bucket->node_factory);
 
 		++bucket;
-	} while (bucket < bucket_until);
-
-	bucket_until += old_count;
+	} while (bucket < first_new_bucket);
 
 	/* initialize newly allocated second half */
 	do {
 		rbhb_init(bucket);
 
 		++bucket;
-	} while (bucket < bucket_until);
+	} while (bucket <= last_new_bucket);
 
 	/* dump node list into empty hash table */
 	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
@@ -120,7 +126,12 @@ static inline int
 rbhm_expand(RedBlackHMap *const restrict map)
 {
 	const unsigned int old_count = map->count.buckets_m1 + 1;
+#if RBHM_VAR_EXPAND
+	const unsigned int new_count = old_count << map->expand_factor;
+	++(map->expand_factor);
+#else
 	const unsigned int new_count = old_count * 2;
+#endif /* if RBHM_VAR_EXPAND */
 
 	/* double bucket capacity */
 	struct RedBlackHBucket *const restrict new_buckets
@@ -176,7 +187,11 @@ red_black_hmap_init(RedBlackHMap *const restrict map)
 		map->count.buckets_m1   = RBHM_INIT_BUCKET_COUNT - 1;
 		map->count.entries      = 0;
 		map->count.max_capacity = RBHM_INIT_BUCKET_COUNT
-				    * RBHM_MAX_AVG_COLLISIONS;
+					* RBHM_MAX_AVG_COLLISIONS;
+
+#if RBHM_VAR_EXPAND
+		map->expand_factor = RBHM_INIT_EXPAND_FACTOR;
+#endif /* if RBHM_VAR_EXPAND */
 	}
 
 	return status;
@@ -353,7 +368,8 @@ red_black_hmap_add(RedBlackHMap *const restrict map,
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHKey hkey;
-	struct RedBlackHKey *restrict hkey;
+	struct RedBlackHKey *restrict hkey_ptr;
+	struct RedBlackNode *restrict *restrict bucket_root;
 	struct RedBlackNode *restrict node;
 	struct RedBlackHBucket *restrict bucket;
 	int status;
@@ -371,9 +387,31 @@ red_black_hmap_add(RedBlackHMap *const restrict map,
 	if (status != 0)
 		return (status != RED_BLACK_JUMP_VALUE_3_ERROR);
 
+	bucket_root = &bucket->root;
+
+	/* allocate hash node */
 	node = rbnf_allocate(&bucket->node_factory,
 			     jump_buffer);
 
+
+	/* initialize hash node */
+	hkey_ptr = &((struct RedBlackHNode *restrict) node)->hkey;
+
+	node->key = (const void *) hkey_ptr;
+
+	*hkey_ptr = hkey;
+
+	/* add to bucket tree, may jump */
+	red_black_add(bucket_root,
+		      &red_black_hkey_comparator,
+		      jump_buffer,
+		      node);
+
+	++(map->count.entries);
+
+	/* expand if too many collisions */
+	return (map->count.entries <= map->count.max_capacity)
+	    || (rbhm_expand(map) >= 0);
 }
 
 
@@ -417,7 +455,7 @@ int
 red_black_hmap_remove(RedBlackHMap *const restrict map,
 		      const void *const key,
 		      const size_t length,
-		      void **const restrict key_ptr)
+		      void **const restrict remove_ptr)
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHKey hkey;
@@ -447,11 +485,67 @@ red_black_hmap_remove(RedBlackHMap *const restrict map,
 	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 
 	if (status == 0) /* hkey_ptr points to old hkey, retrieve key */
-		*key_ptr = (void *) hkey_ptr->key;
+		*remove_ptr = (void *) hkey_ptr->key;
 	else /* successfully removed hkey, decrement count.entries */
 		--(map->count.entries);
 
 	return status;
+}
+
+
+void
+red_black_hmap_drop(RedBlackHMap *const restrict map,
+		    const void *const key,
+		    const size_t length)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHKey hkey;
+	struct RedBlackHBucket *restrict bucket;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
+		red_black_drop(&bucket->root,
+			       &red_black_hkey_comparator,
+			       &bucket->node_factory,
+			       jump_buffer,
+			       (const void *) &hkey);
+}
+
+
+void *
+red_black_hmap_pluck(RedBlackHMap *const restrict map,
+		     const void *const key,
+		     const size_t length)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHKey hkey;
+	struct RedBlackHBucket *restrict bucket;
+	struct RedBlackHKey *volatile restrict plucked_hkey;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) == 0)
+		red_black_pluck(&bucket->root,
+				&red_black_hkey_comparator,
+				&bucket->node_factory,
+				jump_buffer,
+				(const void *) &hkey,
+				(void **) &plucked_hkey);
+
+	return plucked_hkey->key;
 }
 
 
@@ -482,7 +576,38 @@ bool
 red_black_hmap_fetch(RedBlackHMap *const restrict map,
 		     const void *const key,
 		     const size_t length,
-		     void **const restrict key_ptr)
+		     void **const restrict fetch_ptr)
+{
+	struct RedBlackHKey hkey;
+	struct RedBlackHKey *restrict hkey_ptr;
+	struct RedBlackHBucket *restrict bucket;
+	bool status;
+
+	/* initialize hash key */
+	red_black_hkey_init(&hkey,
+			    key,
+			    length);
+
+	/* fetch bucket */
+	bucket = &map->buckets[hkey.hash & map->count.buckets_m1];
+
+	/* perform binary search on bucket's tree */
+	status = red_black_fetch(bucket->root,
+				 &red_black_hkey_comparator,
+				 (const void *) &hkey,
+				 (void **) &hkey_ptr); /* true, false */
+
+	if (status) /* retrieve key from hkey_ptr */
+		*fetch_ptr = (void *) hkey_ptr->key;
+
+	return status; /* return found status */
+}
+
+
+bool
+red_black_hmap_replace(RedBlackHMap *const restrict map,
+		       const void *const key,
+		       const size_t length)
 {
 	struct RedBlackHKey hkey;
 	struct RedBlackHKey *restrict hkey_ptr;

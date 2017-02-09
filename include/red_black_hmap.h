@@ -21,9 +21,14 @@ struct RedBlackHMapCount {
 	unsigned int max_capacity;
 };
 
+#define RBHM_VAR_EXPAND 1
+
 struct _RedBlackHMap {
 	struct RedBlackHBucket *restrict buckets;
 	struct RedBlackHMapCount count;
+#if RBHM_VAR_EXPAND
+	unsigned int expand_factor;
+#endif /* if RBHM_VAR_EXPAND */
 };
 typedef struct _RedBlackHMap RedBlackHMap;
 
