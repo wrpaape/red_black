@@ -1,5 +1,5 @@
-#ifndef RED_BLACK_HMAP_H_
-#define RED_BLACK_HMAP_H_
+#ifndef RED_BLACK_RED_BLACK_HMAP_H_
+#define RED_BLACK_RED_BLACK_HMAP_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
@@ -90,4 +90,4 @@ bool
 red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
 			 void **const restrict key_ptr,
 			 size_t *const restrict length_ptr);
-#endif /* ifndef RED_BLACK_HMAP_H_ */
+#endif /* ifndef RED_BLACK_RED_BLACK_HMAP_H_ */

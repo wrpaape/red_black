@@ -1,9 +1,9 @@
-#include "unity.h"             /* UNITY testing framework */
-#include "red_black_tree.h"    /* RedBlackTree, struct RedBlackNode */
-#include "int_key.h"           /* int_key_comparator */
-#include "red_black_concat.h"  /* red_black_concat */
-#include "red_black_test.h"    /* keys */
-#include <stdint.h>	       /* intptr_t */
+#include "unity.h"                           /* UNITY testing framework */
+#include "red_black_tree/red_black_concat.h" /* red_black_concat */
+#include "red_black_tree.h"                  /* Tree, Node */
+#include "int_key.h"                         /* int_key_comparator */
+#include "red_black_test.h"		     /* keys */
+#include <stdint.h>			     /* intptr_t */
 
 static RedBlackTree tree;
 static bool key_set[KEYS_COUNT];

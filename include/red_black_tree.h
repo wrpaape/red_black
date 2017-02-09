@@ -1,12 +1,12 @@
-#ifndef RED_BLACK_TREE_H_
-#define RED_BLACK_TREE_H_
+#ifndef RED_BLACK_RED_BLACK_TREE_H_
+#define RED_BLACK_RED_BLACK_TREE_H_
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_comparator.h"   /* Comparator */
-#include "red_black_node_factory.h" /* Node, NodeFactory, JumpBuffer, bool */
-#include "red_black_itor.h"         /* RedBlackItor */
-#include "red_black_print_types.h"  /* KeySizer|Putter, size_t */
+#include "red_black_tree/red_black_comparator.h"   /* Comparator */
+#include "red_black_tree/red_black_node_factory.h" /* Node, NodeFactory, JUMP */
+#include "red_black_tree/red_black_itor.h"         /* RedBlackItor */
+#include "red_black_tree/red_black_print_types.h"  /* KeySizer|Putter, size_t */
 
 
 /* typedefs, struct declarations
@@ -250,4 +250,4 @@ bool
 red_black_tree_itor_next(RedBlackTreeItor *const restrict itor,
 			 void **const restrict key_ptr);
 
-#endif /* ifndef RED_BLACK_TREE_H_ */
+#endif /* ifndef RED_BLACK_RED_BLACK_TREE_H_ */
