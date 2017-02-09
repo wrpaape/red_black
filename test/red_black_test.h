@@ -30,52 +30,6 @@
 	      SIZE)
 #endif /* ifdef WIN32 */
 
-#define EXIT_ON_SYS_FAILURE(LITERAL)					\
-do {									\
-	(void) WRITE(STDERR_FILENO,					\
-		     "\n" LITERAL "\n",					\
-		     sizeof(LITERAL) + 1);				\
-	exit(EXIT_FAILURE);						\
-} while (0)
-
-#define WRITE_STDOUT(BUFFER,						\
-		     SIZE)						\
-do {									\
-	if (WRITE(STDOUT_FILENO,					\
-		  BUFFER,						\
-		  SIZE) != (SIZE))					\
-		EXIT_ON_SYS_FAILURE("write failure");			\
-} while (0)
-
-#define WRITE_LITERAL(LITERAL)						\
-WRITE_STDOUT(LITERAL,							\
-	     sizeof(LITERAL) - 1)
-
-
-#define EXIT_ON_TEST_FAILURE(PRINT_ARGS...)				\
-do {									\
-	if (fprintf(stderr, PRINT_ARGS) >= 0)				\
-	       exit(EXIT_SUCCESS);					\
-	else								\
-		EXIT_ON_SYS_FAILURE("fprintf failure");			\
-} while (0)
-#define TEST_FAILURE(MODE,						\
-		     FORMAT,						\
-		     ...)						\
-EXIT_ON_TEST_FAILURE("\nred_black_" MODE " test failure -- "	\
-		     FORMAT "\n", ##__VA_ARGS__)
-
-
-#define SYS_FAILURE(MODE,						\
-		    FORMAT,						\
-		    ...)						\
-EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
-		    FORMAT "\n", ##__VA_ARGS__)
-
-#define ENTER(NAME)	WRITE_LITERAL("entering       " NAME "\n")
-#define RETURN(NAME)	WRITE_LITERAL("returning from " NAME "\n")
-
-#define TEST_PASS(TEST) WRITE_LITERAL("---\ntest_" TEST " passed!\n---\n")
 
 
 /* global variables
@@ -85,31 +39,6 @@ EXIT_ON_SYS_FAILURE("\nred_black_" MODE " system failure -- "		\
 
 extern int keys[KEYS_COUNT];
 extern const int *const restrict keys_until;
-
-/* check validity after every potential modification ->
- * O(KEYS_COUNT²), set nonzero for small (upto ~10k) KEYS_COUNT */
-#define DO_VERIFY 0
-
-
-#define STR(X)  #X
-#define XSTR(X) STR(X)
-#define KC_STR  XSTR(KEYS_COUNT)
-
-#define ST_1 "---\nstarting tests for KEYS_COUNT = " KC_STR " and "
-
-#if DO_VERIFY
-#define ST_2 "WITH"
-#else
-#define ST_2 "WITHOUT"
-#endif /* if DO_VERIFY */
-
-#define ST_3 " step-by-step verification (O(n²))\n---\n"
-
-#define STARTING_TESTS()						\
-WRITE_LITERAL(ST_1 ST_2 ST_3)
-
-#define ALL_TESTS_PASSED()						\
-WRITE_LITERAL("---\nall tests passed!\n---\n")
 
 
 /* external API

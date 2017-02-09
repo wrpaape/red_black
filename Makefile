@@ -260,7 +260,6 @@ MALLOC_HDR      	  := $(call HEADER_PATH,red_black_malloc)
 NODE_HDR        	  := $(call HEADER_PATH,red_black_node)
 HNODE_HDR       	  := $(call HEADER_PATH,red_black_hnode)
 PRINT_TYPES_HDR 	  := $(call HEADER_PATH,red_black_print_types)
-RED_BLACK_HDR   	  := $(call HEADER_PATH,red_black)
 
 
 # red_black_node_factory
@@ -785,25 +784,6 @@ TARGETS			+= $(CONGRUENT_OBJ)				\
 			   $(CONGRUENT_PIC_OBJ)
 
 
-ifneq (T,$(SYSTEM_WINDOWS))
-# red_black_lock
-# ──────────────────────────────────────────────────────────────────────────────
-LOCK_SRC		:= $(call SOURCE_PATH,red_black_lock)
-LOCK_HDR		:= $(call HEADER_PATH,red_black_lock)
-LOCK_OBJ		:= $(call OBJECT_PATH,red_black_lock)
-LOCK_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_lock)
-# ─────────────── target prequisites ───────────────────────────────────────────
-LOCK_OBJ_PREQS		:= $(LOCK_SRC)					\
-			   $(LOCK_HDR)
-LOCK_OBJ_GROUP		:= $(LOCK_OBJ)
-LOCK_PIC_OBJ_PREQS	:= $(LOCK_OBJ_PREQS)
-LOCK_PIC_OBJ_GROUP	:= $(LOCK_PIC_OBJ)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(LOCK_OBJ)					\
-			   $(LOCK_PIC_OBJ)
-endif
-
-
 # red_black_hkey
 # ──────────────────────────────────────────────────────────────────────────────
 HKEY_SRC		:= $(call SOURCE_PATH,red_black_hkey)
@@ -930,76 +910,6 @@ TARGETS			+= $(TREE_OBJ)					\
 
 
 
-# red_black_lhmap
-# ──────────────────────────────────────────────────────────────────────────────
-LHMAP_SRC		:= $(call SOURCE_PATH,red_black_lhmap)
-LHMAP_HDR		:= $(call HEADER_PATH,red_black_lhmap)
-LHMAP_OBJ		:= $(call OBJECT_PATH,red_black_lhmap)
-LHMAP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_lhmap)
-LHMAP_ST_LIB		:= $(call STATIC_LIBRARY_PATH,red_black_lhmap)
-LHMAP_SH_LIB		:= $(call SHARED_LIBRARY_PATH,red_black_lhmap)
-# ─────────────── target prequisites ───────────────────────────────────────────
-LHMAP_OBJ_PREQS		:= $(LHMAP_SRC)					\
-			   $(LHMAP_HDR)					\
-			   $(LOCK_HDR)					\
-		   	   $(NODE_FACTORY_HDR)				\
-			   $(HMAP_COUNT_HDR)				\
-		   	   $(ITOR_HDR)					\
-		   	   $(HASH_NODE_HDR)				\
-		   	   $(INSERT_HDR)				\
-		   	   $(UPDATE_HDR)				\
-		   	   $(DELETE_HDR)				\
-		   	   $(REMOVE_HDR)				\
-		   	   $(DROP_HDR)					\
-		   	   $(FIND_HDR)					\
-		   	   $(FETCH_HDR)					\
-		   	   $(VERIFY_HDR)				\
-		   	   $(CONCAT_HDR)				\
-		   	   $(ADD_HDR)					\
-			   $(MALLOC_HDR)
-LHMAP_OBJ_GROUP		:= $(LHMAP_OBJ)					\
-			   $(LOCK_OBJ_GROUP)				\
-		   	   $(NODE_FACTORY_OBJ_GROUP)			\
-		   	   $(HMAP_COUNT_OBJ_GROUP)			\
-		   	   $(ITOR_OBJ_GROUP)				\
-		   	   $(HKEY_OBJ_GROUP)				\
-		   	   $(INSERT_OBJ_GROUP)				\
-		   	   $(UPDATE_OBJ_GROUP)				\
-		   	   $(DELETE_OBJ_GROUP)				\
-		   	   $(REMOVE_OBJ_GROUP)				\
-		   	   $(DROP_OBJ_GROUP)				\
-		   	   $(FIND_OBJ_GROUP)				\
-		   	   $(FETCH_OBJ_GROUP)				\
-		   	   $(VERIFY_OBJ_GROUP)				\
-		   	   $(CONCAT_OBJ_GROUP)				\
-		   	   $(ADD_OBJ_GROUP)
-LHMAP_PIC_OBJ_PREQS	:= $(LHMAP_OBJ_PREQS)
-LHMAP_PIC_OBJ_GROUP	:= $(LHMAP_PIC_OBJ)				\
-			   $(LOCK_PIC_OBJ_GROUP)			\
-		   	   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
-		   	   $(HMAP_COUNT_PIC_OBJ_GROUP)			\
-		   	   $(ITOR_PIC_OBJ_GROUP)			\
-		   	   $(HKEY_PIC_OBJ_GROUP)			\
-		   	   $(INSERT_PIC_OBJ_GROUP)			\
-		   	   $(UPDATE_PIC_OBJ_GROUP)			\
-		   	   $(DELETE_PIC_OBJ_GROUP)			\
-		   	   $(REMOVE_PIC_OBJ_GROUP)			\
-		   	   $(DROP_PIC_OBJ_GROUP)			\
-		   	   $(FIND_PIC_OBJ_GROUP)			\
-		   	   $(FETCH_PIC_OBJ_GROUP)			\
-		   	   $(VERIFY_PIC_OBJ_GROUP)			\
-		   	   $(CONCAT_PIC_OBJ_GROUP)			\
-		   	   $(ADD_PIC_OBJ_GROUP)
-LHMAP_ST_LIB_PREQS	:= $(LHMAP_OBJ_GROUP)
-LHMAP_SH_LIB_PREQS	:= $(LHMAP_PIC_OBJ_GROUP)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(LHMAP_OBJ)					\
-			   $(LHMAP_PIC_OBJ)				\
-			   $(LHMAP_ST_LIB)				\
-			   $(LHMAP_SH_LIB)
-
-
-
 # KEY_ACCESSOR MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
 # int_key
@@ -1042,21 +952,6 @@ TEST_OBJ_PREQS		:= $(TEST_SRC)					\
 TEST_OBJ_GROUP		:= $(TEST_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(TEST_OBJ)
-
-
-# red_black_mt_test
-# ──────────────────────────────────────────────────────────────────────────────
-MT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_mt)
-MT_TEST_HDR		:= $(call TEST_HEADER_PATH,red_black_mt)
-MT_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_mt)
-# ─────────────── target prequisites ───────────────────────────────────────────
-MT_TEST_OBJ_PREQS	:= $(MT_TEST_SRC)				\
-			   $(MT_TEST_HDR)				\
-			   $(TEST_HDR)
-MT_TEST_OBJ_GROUP	:= $(MT_TEST_OBJ)				\
-			   $(TEST_OBJ_GROUP)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(MT_TEST_OBJ)
 
 
 # red_black_tree_insertion_test
@@ -1211,25 +1106,6 @@ TARGETS			+= $(CONCAT_TRNR_SRC)				\
 			   $(CONCAT_TEST_BIN)
 
 
-# red_black_lhmap_test
-# ──────────────────────────────────────────────────────────────────────────────
-LHMAP_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_lhmap)
-LHMAP_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_lhmap)
-LHMAP_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_lhmap)
-# ─────────────── target prequisitTEST_es ───────────────────────────────────────────
-LHMAP_TEST_OBJ_PREQS	:= $(LHMAP_TEST_SRC)				\
-			   $(TEST_HDR)					\
-			   $(LHMAP_HDR)
-LHMAP_TEST_BIN_PREQS	:= $(LHMAP_TEST_OBJ)				\
-			   $(TEST_OBJ_GROUP)				\
-			   $(MT_TEST_OBJ_GROUP)				\
-			   $(LHMAP_SH_LIB)
-# ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(LHMAP_TEST_OBJ)				\
-			   $(LHMAP_TEST_BIN)
-
-
-
 # EXAMPLE MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
 # Independent Headers
@@ -1327,12 +1203,6 @@ $(CONTACTS_OBJ): $(CONTACTS_OBJ_PREQS)
 
 # TEST MODULES
 # ──────────────────────────────────────────────────────────────────────────────
-$(LHMAP_TEST_BIN): $(LHMAP_TEST_BIN_PREQS)
-	$(LD) $^ $(THREADS_LIB) $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(LHMAP_TEST_OBJ): $(LHMAP_TEST_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-
-
 $(TREE_INSERTION_TEST_BIN): $(TREE_INSERTION_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(TREE_INSERTION_TRNR_OBJ): $(TREE_INSERTION_TRNR_OBJ_PREQS)
@@ -1382,23 +1252,8 @@ $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
 $(CONCAT_TRNR_SRC): $(CONCAT_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
-$(MT_TEST_OBJ): $(MT_TEST_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-
 $(TEST_OBJ): $(TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-
-
-# RED_BLACK_LHMAP
-# ──────────────────────────────────────────────────────────────────────────────
-$(LHMAP_ST_LIB): $(LHMAP_ST_LIB_PREQS)
-	$(AR) $(AR_FLAGS) $@ $^
-$(LHMAP_SH_LIB): $(LHMAP_SH_LIB_PREQS)
-	$(LD) $^ $(THREADS_LIB) $(LD_LIBS) $(LD_FLAGS) $(LD_SH_FLAGS) -o $@
-$(LHMAP_OBJ): $(LHMAP_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-$(LHMAP_PIC_OBJ): $(LHMAP_PIC_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 
 # RED_BLACK_TREE
@@ -1549,13 +1404,6 @@ $(HMAP_COUNT_OBJ): $(HMAP_COUNT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(HMAP_COUNT_PIC_OBJ): $(HMAP_COUNT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
-ifneq (T,$(SYSTEM_WINDOWS))
-$(LOCK_OBJ): $(LOCK_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-$(LOCK_PIC_OBJ): $(LOCK_PIC_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-endif
 
 
 # KEY_ACCESSOR MODULES
