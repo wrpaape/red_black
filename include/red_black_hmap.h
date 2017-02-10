@@ -11,7 +11,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 struct RedBlackHBucket {
 	struct RedBlackHNode *restrict root;
-	struct RedBlackHNodeFactory node_factory;
+	struct RedBlackHNodeFactory factory;
 };
 
 struct RedBlackHMapCount {

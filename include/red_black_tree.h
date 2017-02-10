@@ -14,7 +14,7 @@
 struct _RedBlackTree {
 	struct RedBlackNode *restrict root;
 	RedBlackComparator comparator;
-	struct RedBlackNodeFactory node_factory;
+	struct RedBlackNodeFactory factory;
 };
 typedef struct _RedBlackTree RedBlackTree;
 

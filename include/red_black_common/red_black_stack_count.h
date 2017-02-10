@@ -3,21 +3,27 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include <limits.h> /* UINT_MAX */
-#include <stdint.h> /* UINT16|32_MAX */
+#include <limits.h> /* INT_MAX */
+#include <stdint.h> /* INT16|32_MAX */
 
 
-#if (UINT_MAX == UINT16_MAX)
-#	define _LOG_2_UINT_MAX 16
+#if (INT_MAX == INT16_MAX)
+	/*    INT_MAX = 2¹⁵ - 1
+	 * -> log₂(INT_MAX + 1) = 15 */
+#	define _LOG_2_OF_INT_MAX_P1 15
 
-#elif (UINT_MAX == UINT32_MAX)
-#	define _LOG_2_UINT_MAX 32
+#elif (INT_MAX == INT32_MAX)
+	/*    INT_MAX = 2³¹ - 1
+	 * -> log₂(INT_MAX + 1) = 31 */
+#	define _LOG_2_OF_INT_MAX_P1 31
 
-#else /* assume UINT_MAX == UINT64_MAX */
-#	define _LOG_2_UINT_MAX 64
-#endif /* if (UINT_MAX == UINT16_MAX) */
+#else /* assume INT_MAX == INT64_MAX */
+	/*    INT_MAX = 2⁶³ - 1
+	 * -> log₂(INT_MAX + 1) = 63 */
+#	define _LOG_2_OF_INT_MAX_P1 63
+#endif /* if (INT_MAX == INT16_MAX) */
 
-/* can handle trees of upto UINT_MAX nodes (+1 for NULL terminator) */
-#define RED_BLACK_STACK_COUNT ((2 * (_LOG_2_UINT_MAX + 1)) + 1)
+/* can handle trees of upto INT_MAX nodes (+1 for NULL terminator) */
+#define RED_BLACK_STACK_COUNT ((2 * _LOG_2_OF_INT_MAX_P1) + 1)
 
 #endif /* ifndef RED_BLACK_RED_BLACK_COMMON_STACK_COUNT_H_ */

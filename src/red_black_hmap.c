@@ -1,23 +1,23 @@
-#include "red_black_hmap/red_black_hmap.h"     /* HMap types */
-#include "red_black_hmap/red_black_hnode.h"    /* HNode|Key, initializer, comparator */
-#include "red_black_hmap/red_black_insert.h"   /* red_black_insert */
-#include "red_black_hmap/red_black_put.h"      /* red_black_put */
-#include "red_black_hmap/red_black_update.h"   /* red_black_update */
-#include "red_black_hmap/red_black_add.h"      /* red_black_add */
-#include "red_black_hmap/red_black_delete.h"   /* red_black_delete */
-#include "red_black_hmap/red_black_remove.h"   /* red_black_remove */
-#include "red_black_hmap/red_black_drop.h"     /* red_black_drop */
-#include "red_black_hmap/red_black_pluck.h"    /* red_black_pluck */
-#include "red_black_hmap/red_black_find.h"     /* red_black_find */
-#include "red_black_hmap/red_black_fetch.h"    /* red_black_fetch */
-#include "red_black_hmap/red_black_replace.h"  /* red_black_replace */
-#include "red_black_hmap/red_black_exchange.h" /* red_black_exchange */
-#include "red_black_hmap/red_black_get.h"      /* red_black_get */
-#include "red_black_hmap/red_black_set.h"      /* red_black_set */
-#include "red_black_hmap/red_black_swap.h"     /* red_black_swap */
-#include "red_black_hmap/red_black_verify.h"   /* red_black_verify */
-#include "red_black_hmap/red_black_concat.h"   /* red_black_concat */
-#include "red_black_hmap/red_black_malloc.h"   /* RED_BLACK_MALLOC|REALLOC|FREE */
+#include "red_black_hmap/red_black_hmap.h"      /* HMap types */
+#include "red_black_hmap/red_black_hnode.h"     /* HNode|Key, init, cmptor */
+#include "red_black_hmap/red_black_hinsert.h"   /* red_black_hinsert */
+#include "red_black_hmap/red_black_hput.h"      /* red_black_hput */
+#include "red_black_hmap/red_black_hupdate.h"   /* red_black_hupdate */
+#include "red_black_hmap/red_black_hadd.h"      /* red_black_hadd */
+#include "red_black_hmap/red_black_hdelete.h"   /* red_black_hdelete */
+#include "red_black_hmap/red_black_hremove.h"   /* red_black_hremove */
+#include "red_black_hmap/red_black_hdrop.h"     /* red_black_hdrop */
+#include "red_black_hmap/red_black_hpluck.h"    /* red_black_hpluck */
+#include "red_black_hmap/red_black_hfind.h"     /* red_black_hfind */
+#include "red_black_hmap/red_black_hfetch.h"    /* red_black_hfetch */
+#include "red_black_hmap/red_black_hreplace.h"  /* red_black_hreplace */
+#include "red_black_hmap/red_black_hexchange.h" /* red_black_hexchange */
+#include "red_black_hmap/red_black_hget.h"      /* red_black_hget */
+#include "red_black_hmap/red_black_hset.h"      /* red_black_hset */
+#include "red_black_hmap/red_black_hswap.h"     /* red_black_hswap */
+#include "red_black_hmap/red_black_hverify.h"   /* red_black_hverify */
+#include "red_black_hmap/red_black_hconcat.h"   /* red_black_hconcat */
+#include "red_black_common/red_black_malloc.h"  /* MALLOC|REALLOC|FREE */
 
 
 /* macro constants
@@ -33,7 +33,7 @@ rbhb_init(struct RedBlackHBucket *const restrict bucket)
 {
 	bucket->root = NULL;
 
-	rbnf_init(&bucket->node_factory,
+	rbnf_init(&bucket->factory,
 		  &hnode_factory_blueprint);
 }
 
@@ -41,7 +41,7 @@ rbhb_init(struct RedBlackHBucket *const restrict bucket)
 static inline void
 rbhb_destroy(struct RedBlackHBucket *const restrict bucket)
 {
-	rbnf_destroy(&bucket->node_factory);
+	rbnf_destroy(&bucket->factory);
 }
 
 
@@ -74,7 +74,7 @@ rbhm_reset_buckets(struct RedBlackHBucket *const restrict buckets,
 					   end_ptr);
 
 		/* reset expansion constant of node_factories */
-		rbnf_reset(&bucket->node_factory);
+		rbnf_reset(&bucket->factory);
 
 		++bucket;
 	} while (bucket < bucket_until);
@@ -230,7 +230,7 @@ red_black_hmap_insert(RedBlackHMap *const restrict map,
 	if (status == 0)
 		status = red_black_insert(&bucket->root,
 					  &red_black_hkey_comparator,
-					  &bucket->node_factory,
+					  &bucket->factory,
 					  jump_buffer,
 					  (const void *) &hkey); /* 1, 0 */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
@@ -273,7 +273,7 @@ red_black_hmap_put(RedBlackHMap *const restrict map,
 	if (status == 0)
 		status = red_black_put(&bucket->root,
 				       &red_black_hkey_comparator,
-				       &bucket->node_factory,
+				       &bucket->factory,
 				       jump_buffer,
 				       (const void *) &hkey); /* 1, 0 */
 	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
@@ -318,7 +318,7 @@ red_black_hmap_update(RedBlackHMap *const restrict map,
 	if (status == 0)
 		status = red_black_update(&bucket->root,
 					  &red_black_hkey_comparator,
-					  &bucket->node_factory,
+					  &bucket->factory,
 					  jump_buffer,
 					  (const void *) &hkey,
 					  (void **) &old_hkey_ptr); /* 1, 0 */
@@ -370,7 +370,7 @@ red_black_hmap_add(RedBlackHMap *const restrict map,
 	if (status != 0)
 		return (status != RED_BLACK_JUMP_VALUE_3_ERROR);
 
-	node = rbnf_allocate(&bucket->node_factory,
+	node = rbnf_allocate(&bucket->factory,
 			     jump_buffer);
 
 }
@@ -401,7 +401,7 @@ red_black_hmap_delete(RedBlackHMap *const restrict map,
 	status = (status == 0)
 	       ? red_black_delete(&bucket->root,
 				  &red_black_hkey_comparator,
-				  &bucket->node_factory,
+				  &bucket->factory,
 				  jump_buffer,
 				  (const void *) &hkey) /* 1, 0 */
 	       : RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
@@ -439,7 +439,7 @@ red_black_hmap_remove(RedBlackHMap *const restrict map,
 	status = (status == 0)
 	       ? red_black_remove(&bucket->root,
 				  &red_black_hkey_comparator,
-				  &bucket->node_factory,
+				  &bucket->factory,
 				  jump_buffer,
 				  (const void *) &hkey,
 				  (void **) &hkey_ptr) /* 1, 0 */
