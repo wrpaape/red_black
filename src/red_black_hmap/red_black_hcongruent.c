@@ -1,6 +1,4 @@
-#include "red_black_hmap/red_black_hcongruent.h" /* RedBlackHNode, JUMP */
-#include "red_black_hmap/red_black_hkey.h"	 /* red_black_hkey_comparator */
-#include <stddef.h>				 /* NULL */
+#include "red_black_hmap/red_black_hcongruent.h" /* HNode, comparator, JUMP */
 
 
 void

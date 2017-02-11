@@ -1,7 +1,5 @@
 #include "red_black_hmap/red_black_hadd.h"     /* types, JUMP API */
 #include "red_black_hmap/red_black_hcorrect.h" /* post-insertion correction */
-#include "red_black_hmap/red_black_hkey.h"     /* red_black_hkey_comparator */
-#include <stddef.h>			       /* NULL */
 
 
 /* typedefs

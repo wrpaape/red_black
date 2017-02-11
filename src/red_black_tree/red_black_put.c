@@ -121,7 +121,6 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 				}
 			}
 
-
 		} else {
 			parent = grandparent->right;
 
@@ -168,12 +167,12 @@ red_black_put(struct RedBlackNode *restrict *const restrict tree,
 
 static bool
 rb_put_ll(struct RedBlackNode *restrict *const restrict tree,
-	     struct RedBlackNode *const restrict grandparent,
-	     struct RedBlackNode *const restrict parent,
-	     const RedBlackComparator comparator,
-	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer jump_buffer,
-	     const void *const key)
+	  struct RedBlackNode *const restrict grandparent,
+	  struct RedBlackNode *const restrict parent,
+	  const RedBlackComparator comparator,
+	  struct RedBlackNodeFactory *const restrict factory,
+	  RedBlackJumpBuffer jump_buffer,
+	  const void *const key)
 {
 	bool status;
 	int compare;
@@ -235,12 +234,12 @@ rb_put_ll(struct RedBlackNode *restrict *const restrict tree,
 
 static bool
 rb_put_lr(struct RedBlackNode *restrict *const restrict tree,
-	     struct RedBlackNode *const restrict grandparent,
-	     struct RedBlackNode *const restrict parent,
-	     const RedBlackComparator comparator,
-	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer jump_buffer,
-	     const void *const key)
+	  struct RedBlackNode *const restrict grandparent,
+	  struct RedBlackNode *const restrict parent,
+	  const RedBlackComparator comparator,
+	  struct RedBlackNodeFactory *const restrict factory,
+	  RedBlackJumpBuffer jump_buffer,
+	  const void *const key)
 {
 	bool status;
 	int compare;
@@ -306,12 +305,12 @@ rb_put_lr(struct RedBlackNode *restrict *const restrict tree,
 
 static bool
 rb_put_rr(struct RedBlackNode *restrict *const restrict tree,
-	     struct RedBlackNode *const restrict grandparent,
-	     struct RedBlackNode *const restrict parent,
-	     const RedBlackComparator comparator,
-	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer jump_buffer,
-	     const void *const key)
+	  struct RedBlackNode *const restrict grandparent,
+	  struct RedBlackNode *const restrict parent,
+	  const RedBlackComparator comparator,
+	  struct RedBlackNodeFactory *const restrict factory,
+	  RedBlackJumpBuffer jump_buffer,
+	  const void *const key)
 {
 	bool status;
 	int compare;
@@ -373,12 +372,12 @@ rb_put_rr(struct RedBlackNode *restrict *const restrict tree,
 
 static bool
 rb_put_rl(struct RedBlackNode *restrict *const restrict tree,
-	     struct RedBlackNode *const restrict grandparent,
-	     struct RedBlackNode *const restrict parent,
-	     const RedBlackComparator comparator,
-	     struct RedBlackNodeFactory *const restrict factory,
-	     RedBlackJumpBuffer jump_buffer,
-	     const void *const key)
+	  struct RedBlackNode *const restrict grandparent,
+	  struct RedBlackNode *const restrict parent,
+	  const RedBlackComparator comparator,
+	  struct RedBlackNodeFactory *const restrict factory,
+	  RedBlackJumpBuffer jump_buffer,
+	  const void *const key)
 {
 	bool status;
 	int compare;

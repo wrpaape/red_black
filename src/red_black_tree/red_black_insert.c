@@ -118,7 +118,6 @@ red_black_insert(struct RedBlackNode *restrict *const restrict tree,
 				}
 			}
 
-
 		} else {
 			parent = grandparent->right;
 

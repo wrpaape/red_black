@@ -3,12 +3,12 @@
 
 unsigned int
 rb_verify(const struct RedBlackNode *const restrict node,
-		    const RedBlackComparator comparator,
-		    const void *const min_key,
-		    const void *const max_key,
-		    const bool parent_is_red,
-		    unsigned int black_height,
-		    RedBlackJumpBuffer jump_buffer)
+	  const RedBlackComparator comparator,
+	  const void *const min_key,
+	  const void *const max_key,
+	  const bool parent_is_red,
+	  unsigned int black_height,
+	  RedBlackJumpBuffer jump_buffer)
 {
 	if (node == NULL)
 		return black_height + 1;

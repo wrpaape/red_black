@@ -1,9 +1,8 @@
-#include "red_black_hmap/red_black_hexchange.h" /* HNode, hkey_comparator, NULL */
+#include "red_black_hmap/red_black_hreplace.h" /* HNode, hkey_comparator, NULL */
 
 bool
-red_black_hexchange(struct RedBlackHNode *restrict node,
-		    const struct RedBlackHKey *const restrict hkey,
-		    void **const restrict old_ptr)
+red_black_hreplace(struct RedBlackHNode *restrict node,
+		   const struct RedBlackHKey *const restrict hkey)
 {
 	int compare;
 
@@ -12,7 +11,6 @@ red_black_hexchange(struct RedBlackHNode *restrict node,
 						    &node->hkey);
 
 		if (compare == 0) {
-			*old_ptr       = (void *) node->hkey.key;
 			node->hkey.key = hkey->key;
 			return true;
 		}

@@ -977,7 +977,7 @@ rb_restore_l_bot_r(struct RedBlackNode *restrict *const restrict tree,
  * r   - parent is red */
 static inline void
 rb_restore_r_bot_r(struct RedBlackNode *restrict *const restrict tree,
-			  struct RedBlackNode *const restrict parent)
+		   struct RedBlackNode *const restrict parent)
 {
 	struct RedBlackNode *restrict lnode;
 	struct RedBlackNode *restrict llchild;
@@ -1024,7 +1024,7 @@ rb_restore_r_bot_r(struct RedBlackNode *restrict *const restrict tree,
  * r   - parent is red */
 static inline void
 rb_restore_l_mid_r(struct RedBlackNode *restrict *const restrict tree,
-			  struct RedBlackNode *const restrict parent)
+		   struct RedBlackNode *const restrict parent)
 {
 	struct RedBlackNode *restrict rnode;
 	struct RedBlackNode *restrict rrchild;
@@ -1474,5 +1474,3 @@ red_black_restore_r_mid(struct RedBlackNode *restrict *const restrict tree,
 
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
-
-

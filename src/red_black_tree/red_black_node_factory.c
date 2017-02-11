@@ -3,7 +3,7 @@
 
 /* factory macros
  * ────────────────────────────────────────────────────────────────────────── */
-#define RBNF_INIT_EXPAND_COUNT	8
+#define RBNF_INIT_EXPAND_COUNT 8
 #define RBNF_INIT_EXPAND (sizeof(struct RedBlackNode) * RBNF_INIT_EXPAND_COUNT)
 
 

@@ -1,4 +1,4 @@
-#include "red_black_hmap/red_black_hdelete.h"	    /* types, JUMP API */
+#include "red_black_hmap/red_black_hremove.h"	    /* types, JUMP API */
 #include "red_black_hmap/red_black_hrestore.h"	    /* hrestore API */
 #include "red_black_common/red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 
@@ -6,13 +6,14 @@
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef void
-(*RedBlackHDeleteNode)(struct RedBlackHNode *restrict *const restrict tree,
-		       struct RedBlackHNode *const restrict parent,
-		       struct RedBlackHNodeFactory *const restrict factory,
-		       RedBlackJumpBuffer jump_buffer,
-		       const struct RedBlackHKey *const restrict hkey);
+(*RedBlackHRemoveHNode)(struct RedBlackHNode *restrict *const restrict tree,
+			struct RedBlackHNode *const restrict parent,
+			struct RedBlackHNodeFactory *const restrict factory,
+			RedBlackJumpBuffer jump_buffer,
+			const struct RedBlackHKey *const restrict hkey,
+			void **const restrict remove_ptr);
 
-/* delete state machine functions
+/* remove state machine functions
  *
  * JUMPS
  *	RED_BLACK_JUMP_VALUE_2_TRUE	OK, successful deletion, tree updated
@@ -22,26 +23,29 @@ typedef void
  *	need to restore (check if can rotate, recolor) in THIS frame
  * ────────────────────────────────────────────────────────────────────────── */
 static void
-rb_hdelete_l(struct RedBlackHNode *restrict *const restrict tree,
+rb_hremove_l(struct RedBlackHNode *restrict *const restrict tree,
 	     struct RedBlackHNode *const restrict parent,
 	     struct RedBlackHNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer jump_buffer,
-	     const struct RedBlackHKey *const restrict hkey);
+	     const struct RedBlackHKey *const restrict hkey,
+	     void **const restrict remove_ptr);
 static void
-rb_hdelete_r(struct RedBlackHNode *restrict *const restrict tree,
+rb_hremove_r(struct RedBlackHNode *restrict *const restrict tree,
 	     struct RedBlackHNode *const restrict parent,
 	     struct RedBlackHNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer jump_buffer,
-	     const struct RedBlackHKey *const restrict hkey);
+	     const struct RedBlackHKey *const restrict hkey,
+	     void **const restrict remove_ptr);
 
 static void
-rb_hdelete_l(struct RedBlackHNode *restrict *const restrict tree,
+rb_hremove_l(struct RedBlackHNode *restrict *const restrict tree,
 	     struct RedBlackHNode *const restrict parent,
 	     struct RedBlackHNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer jump_buffer,
-	     const struct RedBlackHKey *const restrict hkey)
+	     const struct RedBlackHKey *const restrict hkey,
+	     void **const restrict remove_ptr)
 {
-	RedBlackHDeleteNode next_hdelete;
+	RedBlackHRemoveHNode next_hremove;
 
 	struct RedBlackHNode *const restrict lnode = parent->left;
 
@@ -54,6 +58,8 @@ rb_hdelete_l(struct RedBlackHNode *restrict *const restrict tree,
 						      &lnode->hkey);
 
 	if (compare == 0) {
+		*remove_ptr = (void *) lnode->hkey;
+
 		red_black_hrestore_node(subtree,
 					lnode,
 					factory,
@@ -65,15 +71,16 @@ rb_hdelete_l(struct RedBlackHNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_hdelete = (compare < 0)
-			     ? &rb_hdelete_l
-			     : &rb_hdelete_r;
+		next_hremove = (compare < 0)
+			     ? &rb_hremove_l
+			     : &rb_hremove_r;
 
-		next_hdelete(subtree,
+		next_hremove(subtree,
 			     lnode,
 			     factory,
 			     jump_buffer,
-			     hkey);
+			     hkey,
+			     remove_ptr);
 
 		/* if returned, need to restore */
 		red_black_hrestore_l_mid(tree,
@@ -84,13 +91,14 @@ rb_hdelete_l(struct RedBlackHNode *restrict *const restrict tree,
 }
 
 static void
-rb_hdelete_r(struct RedBlackHNode *restrict *const restrict tree,
+rb_hremove_r(struct RedBlackHNode *restrict *const restrict tree,
 	     struct RedBlackHNode *const restrict parent,
 	     struct RedBlackHNodeFactory *const restrict factory,
 	     RedBlackJumpBuffer jump_buffer,
-	     const struct RedBlackHKey *const restrict hkey)
+	     const struct RedBlackHKey *const restrict hkey,
+	     void **const restrict remove_ptr)
 {
-	RedBlackHDeleteNode next_hdelete;
+	RedBlackHRemoveHNode next_hremove;
 
 	struct RedBlackHNode *const restrict rnode = parent->right;
 
@@ -103,6 +111,8 @@ rb_hdelete_r(struct RedBlackHNode *restrict *const restrict tree,
 						      &rnode->hkey);
 
 	if (compare == 0) {
+		*remove_ptr = (void *) rnode->hkey.key;
+
 		red_black_hrestore_node(subtree,
 					rnode,
 					factory,
@@ -114,16 +124,16 @@ rb_hdelete_r(struct RedBlackHNode *restrict *const restrict tree,
 					 jump_buffer);
 
 	} else {
-		next_hdelete = (compare < 0)
-			     ? &rb_hdelete_l
-			     : &rb_hdelete_r;
+		next_hremove = (compare < 0)
+			     ? &rb_hremove_l
+			     : &rb_hremove_r;
 
-		next_hdelete(subtree,
+		next_hremove(subtree,
 			     rnode,
-			     comparator,
 			     factory,
 			     jump_buffer,
-			     hkey);
+			     hkey,
+			     remove_ptr);
 
 		/* if returned, need to restore */
 		red_black_hrestore_r_mid(tree,
@@ -136,13 +146,14 @@ rb_hdelete_r(struct RedBlackHNode *restrict *const restrict tree,
 
 
 int
-red_black_hdelete(struct RedBlackHNode *restrict *const restrict tree,
+red_black_hremove(struct RedBlackHNode *restrict *const restrict tree,
 		  struct RedBlackHNodeFactory *const restrict factory,
 		  RedBlackJumpBuffer jump_buffer,
-		  const struct RedBlackHKey *const restrict hkey)
+		  const struct RedBlackHKey *const restrict hkey,
+		  void **const restrict remove_ptr)
 {
 	int status;
-	RedBlackHDeleteNode next_hdelete;
+	RedBlackHRemoveHNode next_hremove;
 
 	struct RedBlackHNode *const restrict root = *tree;
 
@@ -155,20 +166,23 @@ red_black_hdelete(struct RedBlackHNode *restrict *const restrict tree,
 		status = (compare == 0);
 
 		if (status) {
+			*remove_ptr = (void *) root->hkey.key;
+
 			red_black_hrestore_root(tree,
-						root,
-						factory);
+					       root,
+					       factory);
 
 		} else {
-			next_hdelete = (compare < 0)
-				     ? &rb_hdelete_l
-				     : &rb_hdelete_r;
+			next_hremove = (compare < 0)
+				     ? &rb_hremove_l
+				     : &rb_hremove_r;
 
-			next_hdelete(tree,
+			next_hremove(tree,
 				     root,
 				     factory,
 				     jump_buffer,
-				     hkey);
+				     hkey,
+				     remove_ptr);
 
 			return 1; /* updated */
 		}

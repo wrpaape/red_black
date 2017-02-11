@@ -12,7 +12,7 @@ const struct RedBlackHKey RED_BLACK_HKEY_MIN = {
 
 const struct RedBlackHKey RED_BLACK_HKEY_MAX = {
 	.hash   = RED_BLACK_HASH_MAX,
-	.key    = (const unsigned char []) {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
+	.key    = "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
 	.length = SIZE_MAX
 };
 

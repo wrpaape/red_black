@@ -43,7 +43,7 @@ rbi_reset(const struct RedBlackNode *restrict *restrict cursor,
 {
 	size_t offset;
 
-	/* set cursors to most prev (least/left for asc, greatest/right for
+	/* set cursor to most prev (least/left for asc, greatest/right for
 	 * desc) node, keep track of stack */
 	if (node != NULL) {
 		offset = controller->prev;
@@ -125,14 +125,16 @@ bool
 red_black_itor_next(struct RedBlackItor *const restrict itor,
 		    void **const restrict key_ptr)
 {
+	const struct RedBlackHNode *restrict *restrict cursor;
 	const struct RedBlackNode *restrict node;
 	bool has_next;
 
-	node     = *(itor->cursor);
+	cursor   = itor->cursor;
+	node     = *cursor;
 	has_next = (node != NULL);
 
 	if (has_next) {
-		itor->cursor = rbi_update(itor->cursor,
+		itor->cursor = rbi_update(cursor,
 					  itor->controller,
 					  node);
 

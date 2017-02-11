@@ -1,14 +1,14 @@
-#include "red_black_tree/red_black_node_factory.h" /* stddef included -> NULL */
-#include "red_black_common/red_black_malloc.h"	   /* RED_BLACK_MALLOC|FREE */
+#include "red_black_hmap/red_black_hnode_factory.h" /* stddef included -> NULL */
+#include "red_black_common/red_black_malloc.h"	    /* RED_BLACK_MALLOC|FREE */
 
 /* factory macros
  * ────────────────────────────────────────────────────────────────────────── */
-#define RBNF_INIT_EXPAND_COUNT	8
+#define RBNF_INIT_EXPAND_COUNT 8
 #define RBNF_INIT_EXPAND (sizeof(struct RedBlackHNode) * RBNF_INIT_EXPAND_COUNT)
 
 
 static inline void
-rbnfb_init(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
+rbhnfb_init(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
 	   struct RedBlackHNodeFactoryBufferBlock *const restrict first_block)
 
 {
@@ -19,26 +19,26 @@ rbnfb_init(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
 }
 
 static inline void
-rbnf_do_init(struct RedBlackHNodeFactory *const restrict factory,
+rbhnf_do_init(struct RedBlackHNodeFactory *const restrict factory,
 	     struct RedBlackHNodeFactoryBufferBlock *const restrict first_block)
 {
 	factory->free = NULL;
 
-	rbnfb_init(&factory->buffer,
-		   first_block);
+	rbhnfb_init(&factory->buffer,
+		    first_block);
 }
 
 
 void
-rbnf_init(struct RedBlackHNodeFactory *const restrict factory)
+rbhnf_init(struct RedBlackHNodeFactory *const restrict factory)
 {
-	rbnf_do_init(factory,
-		     NULL);
+	rbhnf_do_init(factory,
+		      NULL);
 }
 
 
 struct RedBlackHNode *
-rbnf_init_w_nodes(struct RedBlackHNodeFactory *const restrict factory,
+rbhnf_init_w_nodes(struct RedBlackHNodeFactory *const restrict factory,
 		  const unsigned int count_nodes)
 {
 	struct RedBlackHNodeFactoryBufferBlock *restrict first_block;
@@ -52,15 +52,15 @@ rbnf_init_w_nodes(struct RedBlackHNodeFactory *const restrict factory,
 	if (first_block == NULL)
 		return NULL;
 
-	rbnf_do_init(factory,
-		     first_block);
+	rbhnf_do_init(factory,
+		      first_block);
 
 	return (struct RedBlackHNode *) (first_block + 1);
 }
 
 
 static inline struct RedBlackHNode *
-rbnfb_allocate(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
+rbhnfb_allocate(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
 	       RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackHNode *restrict node;
@@ -101,16 +101,16 @@ rbnfb_allocate(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
 }
 
 struct RedBlackHNode *
-rbnf_allocate(struct RedBlackHNodeFactory *const restrict factory,
-	      RedBlackJumpBuffer jump_buffer)
+rbhnf_allocate(struct RedBlackHNodeFactory *const restrict factory,
+	       RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackHNode *restrict node;
 
 	node = factory->free;
 
 	if (node == NULL)
-		node = rbnfb_allocate(&factory->buffer,
-				      jump_buffer);
+		node = rbhnfb_allocate(&factory->buffer,
+				       jump_buffer);
 	else
 		factory->free = node->left;
 
@@ -119,8 +119,8 @@ rbnf_allocate(struct RedBlackHNodeFactory *const restrict factory,
 
 
 static inline struct RedBlackHNode *
-rbnfb_allocate_nodes(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
-		     const unsigned int count_nodes)
+rbhnfb_allocate_nodes(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
+		      const unsigned int count_nodes)
 {
 	struct RedBlackHNodeFactoryBufferBlock *restrict block;
 	size_t allocate_size;
@@ -141,27 +141,27 @@ rbnfb_allocate_nodes(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
 
 
 struct RedBlackHNode *
-rbnf_allocate_nodes(struct RedBlackHNodeFactory *const restrict factory,
-		    const unsigned int count_nodes)
+rbhnf_allocate_nodes(struct RedBlackHNodeFactory *const restrict factory,
+		     const unsigned int count_nodes)
 {
-	return rbnfb_allocate_nodes(&factory->buffer,
-				    count_nodes);
+	return rbhnfb_allocate_nodes(&factory->buffer,
+				     count_nodes);
 }
 
 
 struct RedBlackHNode *
-rbnf_new(struct RedBlackHNodeFactory *const restrict factory,
-	 RedBlackJumpBuffer jump_buffer,
-	 const void *const key,
-	 const bool is_red)
+rbhnf_new(struct RedBlackHNodeFactory *const restrict factory,
+	  RedBlackJumpBuffer jump_buffer,
+	  const struct RedBlackHKey *const restrict hkey,
+	  const bool is_red)
 {
 	struct RedBlackHNode *restrict node;
 
-	node = rbnf_allocate(factory,
-			     jump_buffer);
+	node = rbhnf_allocate(factory,
+			      jump_buffer);
 
 	/* initialize node */
-	node->key    = key;
+	node->hkey   = *hkey;
 	node->is_red = is_red;
 	node->left   = NULL;
 	node->right  = NULL;
@@ -171,8 +171,8 @@ rbnf_new(struct RedBlackHNodeFactory *const restrict factory,
 
 
 void
-rbnf_free(struct RedBlackHNodeFactory *const restrict factory,
-	  struct RedBlackHNode *const restrict node)
+rbhnf_free(struct RedBlackHNodeFactory *const restrict factory,
+	   struct RedBlackHNode *const restrict node)
 {
 	node->left    = factory->free;
 	factory->free = node;
@@ -180,7 +180,7 @@ rbnf_free(struct RedBlackHNodeFactory *const restrict factory,
 
 
 void
-rbnf_destroy(struct RedBlackHNodeFactory *const restrict factory)
+rbhnf_destroy(struct RedBlackHNodeFactory *const restrict factory)
 {
 	struct RedBlackHNodeFactoryBufferBlock *restrict block;
 	struct RedBlackHNodeFactoryBufferBlock *restrict next;

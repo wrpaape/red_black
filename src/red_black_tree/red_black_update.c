@@ -134,7 +134,6 @@ red_black_update(struct RedBlackNode *restrict *const restrict tree,
 				}
 			}
 
-
 		} else {
 			parent = grandparent->right;
 

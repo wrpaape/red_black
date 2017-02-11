@@ -1,6 +1,5 @@
 #include "red_black_hmap/red_black_hdrop.h"	    /* types, JUMP API */
 #include "red_black_hmap/red_black_hrestore.h"	    /* hrestore API */
-#include "red_black_hmap/red_black_hkey.h"	    /* cmptr */
 #include "red_black_common/red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
 
 

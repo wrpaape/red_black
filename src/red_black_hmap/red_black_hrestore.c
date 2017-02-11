@@ -1,12 +1,11 @@
-#include "red_black_tree/red_black_restore.h"       /* HNode, HNodeFactory */
+#include "red_black_hmap/red_black_hrestore.h"      /* HNode, HNodeFactory */
 #include "red_black_common/red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
-#include <stddef.h>				    /* NULL */
 
 
 static inline bool
-rb_restore_black_shallow(struct RedBlackHNode *restrict *const restrict tree,
-			 struct RedBlackHNode *const restrict lnode,
-			 struct RedBlackHNode *const restrict rnode)
+rb_hrestore_black_shallow(struct RedBlackHNode *restrict *const restrict tree,
+			  struct RedBlackHNode *const restrict lnode,
+			  struct RedBlackHNode *const restrict rnode)
 {
 	struct RedBlackHNode *restrict llchild;
 	struct RedBlackHNode *restrict lrchild;
@@ -101,9 +100,9 @@ rb_restore_black_shallow(struct RedBlackHNode *restrict *const restrict tree,
 
 
 static inline void
-rb_restore_red_shallow(struct RedBlackHNode *restrict *const restrict tree,
-		       struct RedBlackHNode *const restrict lnode,
-		       struct RedBlackHNode *const restrict rnode)
+rb_hrestore_red_shallow(struct RedBlackHNode *restrict *const restrict tree,
+			struct RedBlackHNode *const restrict lnode,
+			struct RedBlackHNode *const restrict rnode)
 {
 	struct RedBlackHNode *restrict lrchild;
 	struct RedBlackHNode *restrict rrchild;
@@ -143,9 +142,9 @@ rb_restore_red_shallow(struct RedBlackHNode *restrict *const restrict tree,
 /* unwind min successor stack to attempt to restore black height and balance
  * if black height cannot be restored, retore balance and return false */
 static inline bool
-rb_restore_rtree_unwind(struct RedBlackHNode *restrict *restrict root,
-			struct RedBlackHNode *const restrict *restrict cursor,
-			struct RedBlackHNode *restrict parent)
+rb_hrestore_rtree_unwind(struct RedBlackHNode *restrict *restrict root,
+			 struct RedBlackHNode *const restrict *restrict cursor,
+			 struct RedBlackHNode *restrict parent)
 {
 	struct RedBlackHNode *restrict grandparent;
 	struct RedBlackHNode *restrict rnode;
@@ -287,9 +286,9 @@ rb_restore_rtree_unwind(struct RedBlackHNode *restrict *restrict root,
 
 
 static inline bool
-rb_restore_rtree(struct RedBlackHNode *restrict *restrict root,
-		 struct RedBlackHNode *const restrict *restrict cursor,
-		 struct RedBlackHNode *restrict parent)
+rb_hrestore_rtree(struct RedBlackHNode *restrict *restrict root,
+		  struct RedBlackHNode *const restrict *restrict cursor,
+		  struct RedBlackHNode *restrict parent)
 {
 	struct RedBlackHNode *restrict grandparent;
 	struct RedBlackHNode *restrict rnode;
@@ -375,9 +374,9 @@ rb_restore_rtree(struct RedBlackHNode *restrict *restrict root,
 			 * deficient 1 black height -> unwind stack to
 			 * look for opportunity to correct
 			 * ────────────────────────────────────────── */
-			return rb_restore_rtree_unwind(root,
-						       cursor,
-						       grandparent);
+			return rb_hrestore_rtree_unwind(root,
+							cursor,
+							grandparent);
 		}
 
 		/* rrchild must be RED leaf */
@@ -417,39 +416,39 @@ rb_restore_rtree(struct RedBlackHNode *restrict *restrict root,
  *
  * if can't, restore balance and return false */
 static inline bool
-rb_restore_black_rtree(struct RedBlackHNode *restrict *restrict root,
-		       struct RedBlackHNode *const restrict *restrict cursor,
-		       struct RedBlackHNode *restrict parent,
-		       struct RedBlackHNode *const restrict lnode,
-		       struct RedBlackHNode *const restrict lrchild)
+rb_hrestore_black_rtree(struct RedBlackHNode *restrict *restrict root,
+			struct RedBlackHNode *const restrict *restrict cursor,
+			struct RedBlackHNode *restrict parent,
+			struct RedBlackHNode *const restrict lnode,
+			struct RedBlackHNode *const restrict lrchild)
 {
 	if (lrchild != NULL) /* replacement is BLACK, child is RED leaf */
 		lrchild->is_red = false;
 	else if (lnode->is_red) /* ensure replacement BLACK */
 		lnode->is_red   = false;
 	else
-		return rb_restore_rtree(root,
-					cursor,
-					parent);
+		return rb_hrestore_rtree(root,
+					 cursor,
+					 parent);
 
 	return true; /* completely restored */
 }
 
 static inline bool
-rb_restore_red_rtree(struct RedBlackHNode *restrict *restrict root,
-		     struct RedBlackHNode *const restrict *restrict cursor,
-		     struct RedBlackHNode *restrict parent,
-		     struct RedBlackHNode *const restrict lnode,
-		     struct RedBlackHNode *const restrict lrchild)
+rb_hrestore_red_rtree(struct RedBlackHNode *restrict *restrict root,
+		      struct RedBlackHNode *const restrict *restrict cursor,
+		      struct RedBlackHNode *restrict parent,
+		      struct RedBlackHNode *const restrict lnode,
+		      struct RedBlackHNode *const restrict lrchild)
 {
 
 	if (!lnode->is_red) {
 		lnode->is_red = true;
 
 		if (lrchild == NULL)
-			return rb_restore_rtree(root,
-						cursor,
-						parent);
+			return rb_hrestore_rtree(root,
+						 cursor,
+						 parent);
 
 		lrchild->is_red = false;
 	}
@@ -460,11 +459,11 @@ rb_restore_red_rtree(struct RedBlackHNode *restrict *restrict root,
 
 /* search upto 2 nodes deep into left subtree of deleted node
  * for RED nodes -> opportunity to restored balance and black height
- * after call to rb_restore_black_rtree */
+ * after call to rb_hrestore_black_rtree */
 static inline bool
-rb_restore_black_ltree(struct RedBlackHNode *restrict *const restrict tree,
-		       struct RedBlackHNode *const restrict lnode,
-		       struct RedBlackHNode *const restrict rnode)
+rb_hrestore_black_ltree(struct RedBlackHNode *restrict *const restrict tree,
+			struct RedBlackHNode *const restrict lnode,
+			struct RedBlackHNode *const restrict rnode)
 {
 	struct RedBlackHNode *restrict llchild;
 	struct RedBlackHNode *restrict lrchild;
@@ -570,9 +569,9 @@ rb_restore_black_ltree(struct RedBlackHNode *restrict *const restrict tree,
 
 
 static inline void
-rb_restore_red_ltree(struct RedBlackHNode *restrict *const restrict tree,
-		     struct RedBlackHNode *const restrict lnode,
-		     struct RedBlackHNode *const restrict rnode)
+rb_hrestore_red_ltree(struct RedBlackHNode *restrict *const restrict tree,
+		      struct RedBlackHNode *const restrict lnode,
+		      struct RedBlackHNode *const restrict rnode)
 {
 	struct RedBlackHNode *restrict lrchild;
 
@@ -600,9 +599,9 @@ rb_restore_red_ltree(struct RedBlackHNode *restrict *const restrict tree,
 
 
 static inline bool
-rb_restore_black(struct RedBlackHNode *restrict *const restrict tree,
-		 struct RedBlackHNode *const restrict lchild,
-		 struct RedBlackHNode *restrict rchild)
+rb_hrestore_black(struct RedBlackHNode *restrict *const restrict tree,
+		  struct RedBlackHNode *const restrict lchild,
+		  struct RedBlackHNode *restrict rchild)
 {
 	struct RedBlackHNode *restrict replacement_parent;
 	struct RedBlackHNode *restrict replacement_child;
@@ -633,9 +632,9 @@ rb_restore_black(struct RedBlackHNode *restrict *const restrict tree,
 	replacement = rchild->left;
 
 	if (replacement == NULL) /* black height of 1 or 2 */
-		return rb_restore_black_shallow(tree,
-						lchild,
-						rchild);
+		return rb_hrestore_black_shallow(tree,
+						 lchild,
+						 rchild);
 
 	replacement_cursor  = &replacement_stack[0];
 	*replacement_cursor = NULL;
@@ -657,11 +656,11 @@ rb_restore_black(struct RedBlackHNode *restrict *const restrict tree,
 	replacement_child	 = replacement->right;
 	replacement_parent->left = replacement_child; /* pop replacement */
 
-	restored = rb_restore_black_rtree(&rchild,
-					  replacement_cursor,
-					  replacement_parent,
-					  replacement,
-					  replacement_child);
+	restored = rb_hrestore_black_rtree(&rchild,
+					   replacement_cursor,
+					   replacement_parent,
+					   replacement,
+					   replacement_child);
 
 	replacement->right = rchild; /* set right subtree of replacement */
 
@@ -685,15 +684,15 @@ rb_restore_black(struct RedBlackHNode *restrict *const restrict tree,
 	 *
 	 * lchild has black height of AT LEAST 3 (inclusive)
 	 * ────────────────────────────────────────────────────────────────── */
-	return rb_restore_black_ltree(tree,
-				      lchild,
-				      replacement);
+	return rb_hrestore_black_ltree(tree,
+				       lchild,
+				       replacement);
 }
 
 void
-rb_restore_red(struct RedBlackHNode *restrict *const restrict tree,
-	       struct RedBlackHNode *const restrict lchild,
-	       struct RedBlackHNode *restrict rchild)
+rb_hrestore_red(struct RedBlackHNode *restrict *const restrict tree,
+		struct RedBlackHNode *const restrict lchild,
+		struct RedBlackHNode *restrict rchild)
 {
 	struct RedBlackHNode *restrict replacement_parent;
 	struct RedBlackHNode *restrict replacement_child;
@@ -714,9 +713,9 @@ rb_restore_red(struct RedBlackHNode *restrict *const restrict tree,
 	replacement = rchild->left;
 
 	if (replacement == NULL) {
-		rb_restore_red_shallow(tree,
-				       lchild,
-				       rchild);
+		rb_hrestore_red_shallow(tree,
+					lchild,
+					rchild);
 		return;
 	}
 
@@ -740,11 +739,11 @@ rb_restore_red(struct RedBlackHNode *restrict *const restrict tree,
 	replacement_child	 = replacement->right;
 	replacement_parent->left = replacement_child; /* pop replacement */
 
-	restored = rb_restore_red_rtree(&rchild,
-					replacement_cursor,
-					replacement_parent,
-					replacement,
-					replacement_child);
+	restored = rb_hrestore_red_rtree(&rchild,
+					 replacement_cursor,
+					 replacement_parent,
+					 replacement,
+					 replacement_child);
 
 	replacement->right = rchild; /* set right subtree of replacement */
 
@@ -757,9 +756,9 @@ rb_restore_red(struct RedBlackHNode *restrict *const restrict tree,
 		replacement->left = lchild;
 
 	} else {
-		rb_restore_red_ltree(tree,
-				     lchild,
-				     replacement);
+		rb_hrestore_red_ltree(tree,
+				      lchild,
+				      replacement);
 	}
 }
 
@@ -770,9 +769,9 @@ rb_restore_red(struct RedBlackHNode *restrict *const restrict tree,
  * free node then attempt to restore
  * ────────────────────────────────────────────────────────────────────────── */
 void
-red_black_restore_root(struct RedBlackHNode *restrict *const restrict tree,
-		       struct RedBlackHNode *const restrict root,
-		       struct RedBlackHNodeFactory *const restrict factory)
+red_black_hrestore_root(struct RedBlackHNode *restrict *const restrict tree,
+			struct RedBlackHNode *const restrict root,
+			struct RedBlackHNodeFactory *const restrict factory)
 {
 	struct RedBlackHNode *restrict lchild;
 	struct RedBlackHNode *restrict rchild;
@@ -784,55 +783,17 @@ red_black_restore_root(struct RedBlackHNode *restrict *const restrict tree,
 	rbnf_free(factory,
 		  root);
 
-	(void) rb_restore_black(tree,
-				lchild,
-				rchild);
-}
-
-void
-red_black_restore_min_root(struct RedBlackHNode *restrict *const restrict tree,
-			   struct RedBlackHNode *const restrict root,
-			   struct RedBlackHNodeFactory *const restrict factory)
-{
-	struct RedBlackHNode *restrict rchild;
-
-	rchild = root->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	*tree = rchild;
-
-	if (rchild != NULL)
-		rchild->is_red = false; /* RED leaf -> restore */
-}
-
-void
-red_black_restore_max_root(struct RedBlackHNode *restrict *const restrict tree,
-			   struct RedBlackHNode *const restrict root,
-			   struct RedBlackHNodeFactory *const restrict factory)
-{
-	struct RedBlackHNode *restrict lchild;
-
-	lchild = root->left;
-
-	/* free node */
-	rbnf_free(factory,
-		  root);
-
-	*tree = lchild;
-
-	if (lchild != NULL)
-		lchild->is_red = false; /* RED leaf -> restore */
+	(void) rb_hrestore_black(tree,
+				 lchild,
+				 rchild);
 }
 
 
 void
-red_black_restore_node(struct RedBlackHNode *restrict *const restrict tree,
-		       struct RedBlackHNode *const restrict node,
-		       struct RedBlackHNodeFactory *const restrict factory,
-		       RedBlackJumpBuffer jump_buffer)
+red_black_hrestore_node(struct RedBlackHNode *restrict *const restrict tree,
+			struct RedBlackHNode *const restrict node,
+			struct RedBlackHNodeFactory *const restrict factory,
+			RedBlackJumpBuffer jump_buffer)
 {
 	bool is_red;
 	struct RedBlackHNode *restrict lchild;
@@ -847,69 +808,13 @@ red_black_restore_node(struct RedBlackHNode *restrict *const restrict tree,
 		  node);
 
 	if (is_red)
-		rb_restore_red(tree, /* always restorable if node is RED */
-			       lchild,
-			       rchild);
-	else if (!rb_restore_black(tree,
-				   lchild,
-				   rchild))
+		rb_hrestore_red(tree, /* always restorable if node is RED */
+				lchild,
+				rchild);
+	else if (!rb_hrestore_black(tree,
+				    lchild,
+				    rchild))
 		return; /* need to restore */
-
-	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
-}
-
-void
-red_black_restore_min_node(struct RedBlackHNode *restrict *const restrict tree,
-			   struct RedBlackHNode *const restrict node,
-			   struct RedBlackHNodeFactory *const restrict factory,
-			   RedBlackJumpBuffer jump_buffer)
-{
-	bool is_red;
-	struct RedBlackHNode *restrict rchild;
-
-	is_red = node->is_red;
-	rchild = node->right;
-
-	/* free node */
-	rbnf_free(factory,
-		  node);
-
-	*tree = rchild;
-
-	if (!is_red) {
-		if (rchild == NULL)
-			return; /* still need to restore */
-
-		rchild->is_red = false; /* RED leaf -> restore */
-	}
-
-	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
-}
-
-void
-red_black_restore_max_node(struct RedBlackHNode *restrict *const restrict tree,
-			   struct RedBlackHNode *const restrict node,
-			   struct RedBlackHNodeFactory *const restrict factory,
-			   RedBlackJumpBuffer jump_buffer)
-{
-	bool is_red;
-	struct RedBlackHNode *restrict lchild;
-
-	is_red = node->is_red;
-	lchild = node->left;
-
-	/* free node */
-	rbnf_free(factory,
-		  node);
-
-	*tree = lchild;
-
-	if (!is_red) {
-		if (lchild == NULL)
-			return; /* still need to restore */
-
-		lchild->is_red = false; /* RED leaf -> restore */
-	}
 
 	RED_BLACK_JUMP_2_TRUE(jump_buffer); /* all done */
 }
@@ -929,8 +834,8 @@ red_black_restore_max_node(struct RedBlackHNode *restrict *const restrict tree,
  * bot - nodes at deletion subtree black height may be NULL
  * r   - parent is red */
 static inline void
-rb_restore_l_bot_r(struct RedBlackHNode *restrict *const restrict tree,
-		   struct RedBlackHNode *const restrict parent)
+rb_hrestore_l_bot_r(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict rnode;
 	struct RedBlackHNode *restrict rrchild;
@@ -976,8 +881,8 @@ rb_restore_l_bot_r(struct RedBlackHNode *restrict *const restrict tree,
  * bot - nodes at deletion subtree black height may be NULL,
  * r   - parent is red */
 static inline void
-rb_restore_r_bot_r(struct RedBlackHNode *restrict *const restrict tree,
-			  struct RedBlackHNode *const restrict parent)
+rb_hrestore_r_bot_r(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict lnode;
 	struct RedBlackHNode *restrict llchild;
@@ -1023,8 +928,8 @@ rb_restore_r_bot_r(struct RedBlackHNode *restrict *const restrict tree,
  * mid - nodes at deletion subtree black height are not NULL,
  * r   - parent is red */
 static inline void
-rb_restore_l_mid_r(struct RedBlackHNode *restrict *const restrict tree,
-			  struct RedBlackHNode *const restrict parent)
+rb_hrestore_l_mid_r(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict rnode;
 	struct RedBlackHNode *restrict rrchild;
@@ -1070,8 +975,8 @@ rb_restore_l_mid_r(struct RedBlackHNode *restrict *const restrict tree,
  * mid - nodes at deletion subtree black height are not NULL,
  * r   - parent is red */
 static inline void
-rb_restore_r_mid_r(struct RedBlackHNode *restrict *const restrict tree,
-		   struct RedBlackHNode *const restrict parent)
+rb_hrestore_r_mid_r(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict lnode;
 	struct RedBlackHNode *restrict llchild;
@@ -1116,9 +1021,9 @@ rb_restore_r_mid_r(struct RedBlackHNode *restrict *const restrict tree,
 /* l   - deletion in left subtree,
  * bot - nodes at deletion subtree black height may be NULL,
  * b   - parent is black */
-bool
-rb_restore_l_bot_b(struct RedBlackHNode *restrict *const restrict tree,
-		   struct RedBlackHNode *const restrict parent)
+static inline bool
+rb_hrestore_l_bot_b(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict rnode;
 	struct RedBlackHNode *restrict rrchild;
@@ -1199,9 +1104,9 @@ rb_restore_l_bot_b(struct RedBlackHNode *restrict *const restrict tree,
 /* r   - deletion in right subtree,
  * bot - nodes at deletion subtree black height may be NULL,
  * b   - parent is black */
-bool
-rb_restore_r_bot_b(struct RedBlackHNode *restrict *const restrict tree,
-		   struct RedBlackHNode *const restrict parent)
+static inline bool
+rb_hrestore_r_bot_b(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict lnode;
 	struct RedBlackHNode *restrict llchild;
@@ -1282,9 +1187,9 @@ rb_restore_r_bot_b(struct RedBlackHNode *restrict *const restrict tree,
 /* l   - deletion in left subtree,
  * mid - nodes at deletion subtree black height are not NULL,
  * b   - parent is black */
-bool
-rb_restore_l_mid_b(struct RedBlackHNode *restrict *const restrict tree,
-		   struct RedBlackHNode *const restrict parent)
+static inline bool
+rb_hrestore_l_mid_b(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict rnode;
 	struct RedBlackHNode *restrict rrchild;
@@ -1350,9 +1255,9 @@ rb_restore_l_mid_b(struct RedBlackHNode *restrict *const restrict tree,
 /* r   - deletion in right subtree,
  * mid - nodes at deletion subtree black height are not NULL,
  * b   - parent is black */
-bool
-rb_restore_r_mid_b(struct RedBlackHNode *restrict *const restrict tree,
-		   struct RedBlackHNode *const restrict parent)
+static inline bool
+rb_hrestore_r_mid_b(struct RedBlackHNode *restrict *const restrict tree,
+		    struct RedBlackHNode *const restrict parent)
 {
 	struct RedBlackHNode *restrict lnode;
 	struct RedBlackHNode *restrict llchild;
@@ -1416,63 +1321,61 @@ rb_restore_r_mid_b(struct RedBlackHNode *restrict *const restrict tree,
 }
 
 void
-red_black_restore_l_bot(struct RedBlackHNode *restrict *const restrict tree,
-			struct RedBlackHNode *const restrict parent,
-			RedBlackJumpBuffer jump_buffer)
+red_black_hrestore_l_bot(struct RedBlackHNode *restrict *const restrict tree,
+			 struct RedBlackHNode *const restrict parent,
+			 RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
-		rb_restore_l_bot_r(tree,
-				   parent);
-	else if (!rb_restore_l_bot_b(tree,
-				     parent))
+		rb_hrestore_l_bot_r(tree,
+				    parent);
+	else if (!rb_hrestore_l_bot_b(tree,
+				      parent))
 		return; /* still need to correct */
 
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
 
 void
-red_black_restore_r_bot(struct RedBlackHNode *restrict *const restrict tree,
-			struct RedBlackHNode *const restrict parent,
-			RedBlackJumpBuffer jump_buffer)
+red_black_hrestore_r_bot(struct RedBlackHNode *restrict *const restrict tree,
+			 struct RedBlackHNode *const restrict parent,
+			 RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
-		rb_restore_r_bot_r(tree,
-				   parent);
-	else if (!rb_restore_r_bot_b(tree,
-				     parent))
+		rb_hrestore_r_bot_r(tree,
+				    parent);
+	else if (!rb_hrestore_r_bot_b(tree,
+				      parent))
 		return; /* still need to correct */
 
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
 
 void
-red_black_restore_l_mid(struct RedBlackHNode *restrict *const restrict tree,
-			struct RedBlackHNode *const restrict parent,
-			RedBlackJumpBuffer jump_buffer)
+red_black_hrestore_l_mid(struct RedBlackHNode *restrict *const restrict tree,
+			 struct RedBlackHNode *const restrict parent,
+			 RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
-		rb_restore_l_mid_r(tree,
-				   parent);
-	else if (!rb_restore_l_mid_b(tree,
-				     parent))
+		rb_hrestore_l_mid_r(tree,
+				    parent);
+	else if (!rb_hrestore_l_mid_b(tree,
+				      parent))
 		return; /* still need to correct */
 
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
 
 void
-red_black_restore_r_mid(struct RedBlackHNode *restrict *const restrict tree,
-			struct RedBlackHNode *const restrict parent,
-			RedBlackJumpBuffer jump_buffer)
+red_black_hrestore_r_mid(struct RedBlackHNode *restrict *const restrict tree,
+			 struct RedBlackHNode *const restrict parent,
+			 RedBlackJumpBuffer jump_buffer)
 {
 	if (parent->is_red)
-		rb_restore_r_mid_r(tree,
-				   parent);
-	else if (!rb_restore_r_mid_b(tree,
-				     parent))
+		rb_hrestore_r_mid_r(tree,
+				    parent);
+	else if (!rb_hrestore_r_mid_b(tree,
+				      parent))
 		return; /* still need to correct */
 
 	RED_BLACK_JUMP_2_TRUE(jump_buffer);
 }
-
-

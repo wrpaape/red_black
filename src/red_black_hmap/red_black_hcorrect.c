@@ -1,5 +1,4 @@
-#include "red_black_hmap/red_black_hcorrect.h" /* RedBlackHNode, JumpBuffer */
-#include <stddef.h>			       /* NULL */
+#include "red_black_hmap/red_black_hcorrect.h" /* HNode, JumpBuffer, NULL */
 
 
 void

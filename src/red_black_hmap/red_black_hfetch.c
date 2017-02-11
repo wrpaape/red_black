@@ -1,6 +1,4 @@
-#include "red_black_hmap/red_black_hfetch.h" /* HNode, Comparator */
-#include "red_black_hmap/red_black_hkey.h"   /* red_black_hkey_comparator */
-#include <stddef.h>			     /* NULL */
+#include "red_black_hmap/red_black_hfetch.h" /* HNode, hkey_comparator, NULL */
 
 bool
 red_black_hfetch(const struct RedBlackHNode *restrict node,
