@@ -1111,6 +1111,36 @@ TARGETS			     += $(TREE_DELETION_TRNR_SRC)		\
 			        $(TREE_DELETION_TEST_BIN)
 
 
+# red_black_tree_set_operations_test
+# ──────────────────────────────────────────────────────────────────────────────
+TREE_SET_OPERATIONS_TEST_SRC	   := $(call TEST_SOURCE_PATH,red_black_tree_set_operations)
+TREE_SET_OPERATIONS_TRNR_SRC	   := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_set_operations)
+TREE_SET_OPERATIONS_TRNR_OBJ	   := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_set_operations)
+TREE_SET_OPERATIONS_TEST_OBJ	   := $(call TEST_OBJECT_PATH,red_black_tree_set_operations)
+TREE_SET_OPERATIONS_TEST_BIN       := $(call TEST_BINARY_PATH,red_black_tree_set_operations)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREE_SET_OPERATIONS_TRNR_SRC_PREQS := $(TREE_SET_OPERATIONS_TEST_SRC)
+TREE_SET_OPERATIONS_TEST_OBJ_PREQS := $(TREE_SET_OPERATIONS_TEST_SRC)	\
+			   	      $(TREE_HDR)			\
+			   	      $(INT_KEY_HDR)			\
+			   	      $(TEST_HDR)			\
+			   	      $(UNITY_HDR)
+TREE_SET_OPERATIONS_TRNR_OBJ_PREQS := $(TREE_SET_OPERATIONS_TRNR_SRC)	\
+			   	$(TREE_SET_OPERATIONS_TEST_OBJ_PREQS)
+TREE_SET_OPERATIONS_TEST_BIN_PREQS := $(TREE_SET_OPERATIONS_TRNR_OBJ)	\
+			   	      $(TREE_SET_OPERATIONS_TEST_OBJ)	\
+				      $(INT_KEY_OBJ_GROUP)		\
+				      $(TREE_SH_LIB)			\
+				      $(TEST_OBJ)			\
+				      $(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES		     	   += $(TREE_SET_OPERATIONS_TEST_BIN)
+TARGETS			     	   += $(TREE_SET_OPERATIONS_TRNR_SRC)	\
+			              $(TREE_SET_OPERATIONS_TRNR_OBJ)	\
+			              $(TREE_SET_OPERATIONS_TEST_OBJ)	\
+			              $(TREE_SET_OPERATIONS_TEST_BIN)
+
+
 # # red_black_concat_test
 # # ──────────────────────────────────────────────────────────────────────────────
 # CONCAT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_concat)
@@ -1287,6 +1317,16 @@ $(TREE_DELETION_TRNR_OBJ): $(TREE_DELETION_TRNR_OBJ_PREQS)
 $(TREE_DELETION_TEST_OBJ): $(TREE_DELETION_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(TREE_DELETION_TRNR_SRC): $(TREE_DELETION_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+
+
+$(TREE_SET_OPERATIONS_TEST_BIN): $(TREE_SET_OPERATIONS_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(TREE_SET_OPERATIONS_TRNR_OBJ): $(TREE_SET_OPERATIONS_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_SET_OPERATIONS_TEST_OBJ): $(TREE_SET_OPERATIONS_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_SET_OPERATIONS_TRNR_SRC): $(TREE_SET_OPERATIONS_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 

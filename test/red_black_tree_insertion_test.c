@@ -36,7 +36,6 @@ setUp(void)
 	shuffle_keys();
 }
 
-
 void
 tearDown(void)
 {

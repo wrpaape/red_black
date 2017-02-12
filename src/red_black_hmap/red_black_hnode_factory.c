@@ -52,6 +52,8 @@ rbhnf_init_w_nodes(struct RedBlackHNodeFactory *const restrict factory,
 	if (first_block == NULL)
 		return NULL;
 
+	first_block->next = NULL;
+
 	rbhnf_do_init(factory,
 		      first_block);
 
