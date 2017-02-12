@@ -12,7 +12,7 @@ const struct RedBlackHKey RED_BLACK_HKEY_MIN = {
 
 const struct RedBlackHKey RED_BLACK_HKEY_MAX = {
 	.hash   = RED_BLACK_HASH_MAX,
-	.key    = "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
+	.key    = (const unsigned char *) "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
 	.length = SIZE_MAX
 };
 
@@ -100,7 +100,7 @@ red_black_hkey_hash(register const unsigned char *k,  /* the key */
 	b -= c;  b -= a;  b ^= (a << 18); c -= a;  c -= b;  c ^= (b >> 22); \
 }
 
-static inline RedBlackHash
+RedBlackHash
 red_black_hkey_hash(register const unsigned char *k, /* the key */
 		    register const size_t length)    /* num bytes of key */
 {

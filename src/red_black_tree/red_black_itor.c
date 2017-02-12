@@ -125,7 +125,7 @@ bool
 red_black_itor_next(struct RedBlackItor *const restrict itor,
 		    void **const restrict key_ptr)
 {
-	const struct RedBlackHNode *restrict *restrict cursor;
+	const struct RedBlackNode *restrict *restrict cursor;
 	const struct RedBlackNode *restrict node;
 	bool has_next;
 

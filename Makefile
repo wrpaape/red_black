@@ -991,6 +991,36 @@ TARGETS			      += $(TREE_INSERTION_TRNR_SRC)		\
 			         $(TREE_INSERTION_TEST_BIN)
 
 
+# red_black_tree_comparison_test
+# ──────────────────────────────────────────────────────────────────────────────
+TREE_COMPARISON_TEST_SRC      := $(call TEST_SOURCE_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TRNR_SRC      := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TRNR_OBJ      := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TEST_OBJ      := $(call TEST_OBJECT_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TEST_BIN      := $(call TEST_BINARY_PATH,red_black_tree_comparison)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREE_COMPARISON_TRNR_SRC_PREQS := $(TREE_COMPARISON_TEST_SRC)
+TREE_COMPARISON_TEST_OBJ_PREQS := $(TREE_COMPARISON_TEST_SRC)		\
+			   	  $(TREE_HDR)				\
+			   	  $(INT_KEY_HDR)			\
+			   	  $(TEST_HDR)				\
+			   	  $(UNITY_HDR)
+TREE_COMPARISON_TRNR_OBJ_PREQS := $(TREE_COMPARISON_TRNR_SRC)		\
+			   	  $(TREE_COMPARISON_TEST_OBJ_PREQS)
+TREE_COMPARISON_TEST_BIN_PREQS := $(TREE_COMPARISON_TRNR_OBJ)		\
+			   	  $(TREE_COMPARISON_TEST_OBJ)		\
+				  $(INT_KEY_OBJ_GROUP)			\
+				  $(TREE_SH_LIB)			\
+				  $(TEST_OBJ)				\
+				  $(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES		      += $(TREE_COMPARISON_TEST_BIN)
+TARGETS			      += $(TREE_COMPARISON_TRNR_SRC)		\
+			         $(TREE_COMPARISON_TRNR_OBJ)		\
+			         $(TREE_COMPARISON_TEST_OBJ)		\
+			         $(TREE_COMPARISON_TEST_BIN)
+
+
 # red_black_tree_access_test
 # ──────────────────────────────────────────────────────────────────────────────
 TREE_ACCESS_TEST_SRC	     := $(call TEST_SOURCE_PATH,red_black_tree_access)
@@ -1217,6 +1247,16 @@ $(TREE_INSERTION_TRNR_OBJ): $(TREE_INSERTION_TRNR_OBJ_PREQS)
 $(TREE_INSERTION_TEST_OBJ): $(TREE_INSERTION_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(TREE_INSERTION_TRNR_SRC): $(TREE_INSERTION_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+
+
+$(TREE_COMPARISON_TEST_BIN): $(TREE_COMPARISON_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(TREE_COMPARISON_TRNR_OBJ): $(TREE_COMPARISON_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_COMPARISON_TEST_OBJ): $(TREE_COMPARISON_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(TREE_COMPARISON_TRNR_SRC): $(TREE_COMPARISON_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 

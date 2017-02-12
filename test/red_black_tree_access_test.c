@@ -79,7 +79,6 @@ void
 tearDown(void)
 {
 	red_black_tree_destroy(&tree_copy);
-
 	red_black_tree_destroy(&tree);
 }
 
