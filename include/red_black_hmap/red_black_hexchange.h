@@ -10,7 +10,6 @@
  * ────────────────────────────────────────────────────────────────────────── */
 bool
 red_black_hexchange(struct RedBlackHNode *restrict node,
-		    const RedBlackComparator comparator,
 		    const struct RedBlackHKey *const restrict hkey,
 		    void **const restrict old_ptr);
 

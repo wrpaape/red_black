@@ -6,6 +6,7 @@
 #include "red_black_hnode_factory.h" /* RedBlackHNodeFactory */
 #include "red_black_hitor.h"	     /* RedBlackHItor */
 
+#define RED_BLACK_HMAP_VAR_EXPAND 1
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
@@ -23,6 +24,9 @@ struct RedBlackHMapCount {
 struct _RedBlackHMap {
 	struct RedBlackHBucket *restrict buckets;
 	struct RedBlackHMapCount count;
+#if RED_BLACK_HMAP_VAR_EXPAND
+	unsigned int expand_factor;
+#endif /* if RED_BLACK_HMAP_VAR_EXPAND */
 };
 typedef struct _RedBlackHMap RedBlackHMap;
 
@@ -53,6 +57,11 @@ red_black_hmap_update(RedBlackHMap *const restrict map,
 		      const size_t length,
 		      void **const restrict old_ptr);
 
+bool
+red_black_hmap_add(RedBlackHMap *const restrict map,
+		   const void *const key,
+		   const size_t length);
+
 int
 red_black_hmap_delete(RedBlackHMap *const restrict map,
 		      const void *const key,
@@ -62,18 +71,54 @@ int
 red_black_hmap_remove(RedBlackHMap *const restrict map,
 		      const void *const key,
 		      const size_t length,
-		      void **const restrict key_ptr);
+		      void **const restrict remove_ptr);
+
+void
+red_black_hmap_drop(RedBlackHMap *const restrict map,
+		    const void *const key,
+		    const size_t length);
+
+void *
+red_black_hmap_pluck(RedBlackHMap *const restrict map,
+		     const void *const key,
+		     const size_t length);
 
 bool
-red_black_hmap_find(RedBlackHMap *const restrict map,
+red_black_hmap_find(const RedBlackHMap *const restrict map,
 		    const void *const key,
 		    const size_t length);
 
 bool
-red_black_hmap_fetch(RedBlackHMap *const restrict map,
+red_black_hmap_fetch(const RedBlackHMap *const restrict map,
 		     const void *const key,
 		     const size_t length,
-		     void **const restrict key_ptr);
+		     void **const restrict fetch_ptr);
+
+bool
+red_black_hmap_replace(const RedBlackHMap *const restrict map,
+		       const void *const key,
+		       const size_t length);
+
+bool
+red_black_hmap_exchange(const RedBlackHMap *const restrict map,
+			const void *const key,
+			const size_t length,
+			void **const restrict old_ptr);
+
+void *
+red_black_hmap_get(const RedBlackHMap *const restrict map,
+		   const void *const key,
+		   const size_t length);
+
+void
+red_black_hmap_set(const RedBlackHMap *const restrict map,
+		   const void *const key,
+		   const size_t length);
+
+void *
+red_black_hmap_swap(const RedBlackHMap *const restrict map,
+		    const void *const key,
+		    const size_t length);
 
 unsigned int
 red_black_hmap_count(RedBlackHMap *const restrict map);

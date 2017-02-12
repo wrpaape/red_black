@@ -29,9 +29,9 @@ const struct RedBlackHKey RED_BLACK_HKEY_MAX = {
 	c -= a;  c -= b;  c ^= (b >> 15);				    \
 }
 
-static inline RedBlackHash
-rbhk_hash(register const unsigned char *k,  /* the key */
-	  register const size_t length)     /* length of the key in bytes */
+RedBlackHash
+red_black_hkey_hash(register const unsigned char *k,  /* the key */
+		    register const size_t length)     /* length of bytes */
 {
 	register uint32_t a, b, c; /* the internal state */
 	register size_t len;	   /* how many key bytes still need mixing */
@@ -101,8 +101,8 @@ rbhk_hash(register const unsigned char *k,  /* the key */
 }
 
 static inline RedBlackHash
-rbhk_hash(register const unsigned char *k, /* the key */
-	  register const size_t length)    /* num bytes of key */
+red_black_hkey_hash(register const unsigned char *k, /* the key */
+		    register const size_t length)    /* num bytes of key */
 {
 	register uint64_t a, b, c; /* the internal state */
 	register size_t len;	   /* how many key bytes still need mixing */
@@ -189,8 +189,8 @@ red_black_hkey_init(struct RedBlackHKey *const restrict hkey,
 		    const void *const key,
 		    const size_t length)
 {
-	hkey->hash   = rbhk_hash((const unsigned char *) key,
-				 length);
+	hkey->hash   = red_black_hkey_hash((const unsigned char *) key,
+					   length);
 
 	hkey->key    = (const unsigned char *) key;
 	hkey->length = length;

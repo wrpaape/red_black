@@ -33,6 +33,10 @@ extern const struct RedBlackHKey RED_BLACK_HKEY_MAX;
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
+RedBlackHash
+red_black_hkey_hash(register const unsigned char *k,
+		    register const size_t length);
+
 void
 red_black_hkey_init(struct RedBlackHKey *const restrict hkey,
 		    const void *const key,

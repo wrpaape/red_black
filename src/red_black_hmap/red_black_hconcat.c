@@ -1,6 +1,5 @@
-#include "red_black_hmap/red_black_hconcat.h"	    /* struct RedBlackHNode */
+#include "red_black_hmap/red_black_hconcat.h"	    /* RedBlackHNode, NULL */
 #include "red_black_common/red_black_stack_count.h" /* RED_BLACK_STACK_COUNT */
-#include <stddef.h>				    /* NULL */
 
 struct RedBlackHNode *restrict *restrict
 red_black_hconcat(struct RedBlackHNode *restrict node,
