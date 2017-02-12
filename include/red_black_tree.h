@@ -216,19 +216,19 @@ rb_tree_union(RedBlackTree *const restrict union_tree,
 	      const unsigned int count1);
 
 int
-red_black_tree_intersect(RedBlackTree *const restrict intersect_tree,
-			 const RedBlackTree *const restrict tree1,
-			 const RedBlackTree *const restrict tree2);
+red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
+			    const RedBlackTree *const restrict tree1,
+			    const RedBlackTree *const restrict tree2);
 
 int
-red_black_tree_except(RedBlackTree *const restrict except_tree,
-		      const RedBlackTree *const restrict tree1,
-		      const RedBlackTree *const restrict tree2);
+red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
+			      const RedBlackTree *const restrict tree1,
+			      const RedBlackTree *const restrict tree2);
 int
-rb_tree_except(RedBlackTree *const restrict except_tree,
-	       const RedBlackTree *const restrict tree1,
-	       const RedBlackTree *const restrict tree2,
-	       const unsigned int count1);
+rb_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
+		       const RedBlackTree *const restrict tree1,
+		       const RedBlackTree *const restrict tree2,
+		       const unsigned int count1);
 
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,

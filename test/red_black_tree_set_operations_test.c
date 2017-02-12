@@ -11,14 +11,14 @@ static RedBlackTree fizz;	 /* keys divisible by 3 */
 static RedBlackTree buzz;	 /* keys divisible by 5 */
 static RedBlackTree fizz_buzz_u; /* union of fizz and buzz */
 static RedBlackTree fizz_buzz_i; /* intersection of fizz and buzz */
-static RedBlackTree fizz_buzz_e; /* distinct keys of fizz and buzz */
+static RedBlackTree fizz_buzz_d; /* distinct keys of fizz and buzz */
 static RedBlackTree other;	 /* keys not divisible by 3 or 5 */
 
 static int fizz_count;
 static int buzz_count;
 static int fizz_buzz_u_count;
 static int fizz_buzz_i_count;
-static int fizz_buzz_e_count;
+static int fizz_buzz_d_count;
 static int other_count;
 
 
@@ -48,7 +48,7 @@ setUp(void)
 	init_int_tree(&buzz);
 	init_int_tree(&fizz_buzz_u);
 	init_int_tree(&fizz_buzz_i);
-	init_int_tree(&fizz_buzz_e);
+	init_int_tree(&fizz_buzz_d);
 	init_int_tree(&other);
 
 	shuffle_keys();
@@ -76,14 +76,14 @@ setUp(void)
 						    (void *) (intptr_t) key)
 			      && red_black_tree_add(&fizz_buzz_u,
 						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_e,
+			      && red_black_tree_add(&fizz_buzz_d,
 						    (void *) (intptr_t) key);
 		else if ((key % 5) == 0)
 			status = red_black_tree_add(&buzz,
 						    (void *) (intptr_t) key)
 			      && red_black_tree_add(&fizz_buzz_u,
 						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_e,
+			      && red_black_tree_add(&fizz_buzz_d,
 						    (void *) (intptr_t) key);
 		else
 			status = red_black_tree_add(&other,
@@ -97,7 +97,7 @@ setUp(void)
 	buzz_count	  = (int) red_black_tree_count(&buzz);
 	fizz_buzz_u_count = (int) red_black_tree_count(&fizz_buzz_u);
 	fizz_buzz_i_count = (int) red_black_tree_count(&fizz_buzz_i);
-	fizz_buzz_e_count = (int) red_black_tree_count(&fizz_buzz_e);
+	fizz_buzz_d_count = (int) red_black_tree_count(&fizz_buzz_d);
 	other_count	  = (int) red_black_tree_count(&other);
 }
 
@@ -109,7 +109,7 @@ tearDown(void)
 	red_black_tree_destroy(&buzz);
 	red_black_tree_destroy(&fizz_buzz_u);
 	red_black_tree_destroy(&fizz_buzz_i);
-	red_black_tree_destroy(&fizz_buzz_e);
+	red_black_tree_destroy(&fizz_buzz_d);
 	red_black_tree_destroy(&other);
 }
 
@@ -283,7 +283,7 @@ test_red_black_tree_drop_all(void)
 
 	/* drop distinct keys from fizz buzz union */
 	red_black_tree_drop_all(&fizz_buzz_u,
-				&fizz_buzz_e);
+				&fizz_buzz_d);
 
 	status = red_black_tree_similar(&fizz_buzz_u,
 					&fizz_buzz_i);
@@ -335,3 +335,88 @@ test_red_black_tree_union(void)
 
 	red_black_tree_destroy(&union_tree);
 }
+
+
+void
+test_red_black_tree_intersection(void)
+{
+	bool status;
+	int count_intersection;
+	RedBlackTree intersection_tree;
+
+	/* test intersection of fizz and buzz */
+	count_intersection = red_black_tree_intersection(&intersection_tree,
+							 &fizz,
+							 &buzz);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(fizz_buzz_i_count,
+				      count_intersection,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	status = red_black_tree_similar(&intersection_tree,
+					&fizz_buzz_i);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "TREE NOT SIMILAR TO 'FIZZ_BUZZ_I' TREE");
+
+	red_black_tree_destroy(&intersection_tree);
+
+	/* test intersection of fizz buzz keys and other keys */
+	count_intersection = red_black_tree_intersection(&intersection_tree,
+							 &fizz_buzz_u,
+							 &other);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      count_intersection,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	status = red_black_tree_empty(&intersection_tree);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "TREE NOT EMPTY");
+}
+
+
+/* void */
+/* test_red_black_tree_disjoint_union(void) */
+/* { */
+/* 	bool status; */
+/* 	int count_disjoint_union; */
+/* 	RedBlackTree disjoint_union_tree; */
+
+/* 	/1* test disjoint_union of fizz and buzz *1/ */
+/* 	count_disjoint_union */
+/* 	= red_black_tree_disjoint_union(&disjoint_union_tree, */
+/* 					&fizz, */
+/* 					&buzz); */
+
+/* 	TEST_ASSERT_EQUAL_INT_MESSAGE(fizz_buzz_d_count, */
+/* 				      count_disjoint_union, */
+/* 				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)"); */
+
+/* 	status = red_black_tree_similar(&disjoint_union_tree, */
+/* 					&fizz_buzz_d); */
+
+/* 	TEST_ASSERT_TRUE_MESSAGE(status, */
+/* 				 "TREE NOT SIMILAR TO 'FIZZ_BUZZ_I' TREE"); */
+
+/* 	red_black_tree_destroy(&disjoint_union_tree); */
+
+/* 	/1* test disjoint_union of fizz buzz keys and other keys *1/ */
+/* 	count_disjoint_union */
+/* 	= red_black_tree_disjoint_union(&disjoint_union_tree, */
+/* 					&fizz_buzz_u, */
+/* 					&other); */
+
+/* 	TEST_ASSERT_EQUAL_INT_MESSAGE(KEYS_COUNT, */
+/* 				      count_disjoint_union, */
+/* 				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)"); */
+
+/* 	status = red_black_tree_similar(&disjoint_union_tree, */
+/* 					&all); */
+
+/* 	TEST_ASSERT_TRUE_MESSAGE(status, */
+/* 				 "TREE NOT SIMILAR TO 'ALL' TREE"); */
+
+/* 	red_black_tree_destroy(&disjoint_union_tree); */
+/* } */
