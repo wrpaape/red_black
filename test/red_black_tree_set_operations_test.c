@@ -377,46 +377,46 @@ test_red_black_tree_intersection(void)
 }
 
 
-/* void */
-/* test_red_black_tree_disjoint_union(void) */
-/* { */
-/* 	bool status; */
-/* 	int count_disjoint_union; */
-/* 	RedBlackTree disjoint_union_tree; */
+void
+test_red_black_tree_disjoint_union(void)
+{
+	bool status;
+	int count_disjoint_union;
+	RedBlackTree disjoint_union_tree;
 
-/* 	/1* test disjoint_union of fizz and buzz *1/ */
-/* 	count_disjoint_union */
-/* 	= red_black_tree_disjoint_union(&disjoint_union_tree, */
-/* 					&fizz, */
-/* 					&buzz); */
+	/* test disjoint_union of fizz and buzz */
+	count_disjoint_union
+	= red_black_tree_disjoint_union(&disjoint_union_tree,
+					&fizz,
+					&buzz);
 
-/* 	TEST_ASSERT_EQUAL_INT_MESSAGE(fizz_buzz_d_count, */
-/* 				      count_disjoint_union, */
-/* 				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)"); */
+	TEST_ASSERT_EQUAL_INT_MESSAGE(fizz_buzz_d_count,
+				      count_disjoint_union,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
 
-/* 	status = red_black_tree_similar(&disjoint_union_tree, */
-/* 					&fizz_buzz_d); */
+	status = red_black_tree_similar(&disjoint_union_tree,
+					&fizz_buzz_d);
 
-/* 	TEST_ASSERT_TRUE_MESSAGE(status, */
-/* 				 "TREE NOT SIMILAR TO 'FIZZ_BUZZ_I' TREE"); */
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "TREE NOT SIMILAR TO 'FIZZ_BUZZ_I' TREE");
 
-/* 	red_black_tree_destroy(&disjoint_union_tree); */
+	red_black_tree_destroy(&disjoint_union_tree);
 
-/* 	/1* test disjoint_union of fizz buzz keys and other keys *1/ */
-/* 	count_disjoint_union */
-/* 	= red_black_tree_disjoint_union(&disjoint_union_tree, */
-/* 					&fizz_buzz_u, */
-/* 					&other); */
+	/* test disjoint_union of fizz buzz keys and other keys */
+	count_disjoint_union
+	= red_black_tree_disjoint_union(&disjoint_union_tree,
+					&fizz_buzz_u,
+					&other);
 
-/* 	TEST_ASSERT_EQUAL_INT_MESSAGE(KEYS_COUNT, */
-/* 				      count_disjoint_union, */
-/* 				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)"); */
+	TEST_ASSERT_EQUAL_INT_MESSAGE(KEYS_COUNT,
+				      count_disjoint_union,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
 
-/* 	status = red_black_tree_similar(&disjoint_union_tree, */
-/* 					&all); */
+	status = red_black_tree_similar(&disjoint_union_tree,
+					&all);
 
-/* 	TEST_ASSERT_TRUE_MESSAGE(status, */
-/* 				 "TREE NOT SIMILAR TO 'ALL' TREE"); */
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "TREE NOT SIMILAR TO 'ALL' TREE");
 
-/* 	red_black_tree_destroy(&disjoint_union_tree); */
-/* } */
+	red_black_tree_destroy(&disjoint_union_tree);
+}

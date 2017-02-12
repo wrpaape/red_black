@@ -224,11 +224,6 @@ int
 red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
 			      const RedBlackTree *const restrict tree1,
 			      const RedBlackTree *const restrict tree2);
-int
-rb_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
-		       const RedBlackTree *const restrict tree1,
-		       const RedBlackTree *const restrict tree2,
-		       const unsigned int count1);
 
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,
