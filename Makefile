@@ -1141,36 +1141,36 @@ TARGETS			     	   += $(TREE_SET_OPERATIONS_TRNR_SRC)	\
 			              $(TREE_SET_OPERATIONS_TEST_BIN)
 
 
-# # red_black_concat_test
-# # ──────────────────────────────────────────────────────────────────────────────
-# CONCAT_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_concat)
-# CONCAT_TRNR_SRC		:= $(call TEST_RUNNER_SOURCE_PATH,red_black_concat)
-# CONCAT_TRNR_OBJ		:= $(call TEST_RUNNER_OBJECT_PATH,red_black_concat)
-# CONCAT_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_concat)
-# CONCAT_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_concat)
-# # ─────────────── target prequisites ───────────────────────────────────────────
-# CONCAT_TRNR_SRC_PREQS	:= $(CONCAT_TEST_SRC)
-# CONCAT_TEST_OBJ_PREQS	:= $(CONCAT_TEST_SRC)				\
-# 			   $(CONCAT_HDR)				\
-# 			   $(TREE_HDR)					\
-# 			   $(INT_KEY_HDR)				\
-# 			   $(TEST_HDR)					\
-# 			   $(UNITY_HDR)
-# CONCAT_TRNR_OBJ_PREQS   := $(CONCAT_TRNR_SRC)				\
-# 			   $(CONCAT_TEST_OBJ_PREQS)
-# CONCAT_TEST_BIN_PREQS	:= $(CONCAT_TRNR_OBJ)				\
-# 			   $(CONCAT_TEST_OBJ)				\
-# 			   $(CONCAT_OBJ_GROUP)				\
-# 			   $(INT_KEY_OBJ_GROUP)				\
-# 			   $(TREE_SH_LIB)				\
-# 			   $(TEST_OBJ)					\
-# 			   $(UNITY_OBJ)
-# # ─────────────── targets ──────────────────────────────────────────────────────
-# TEST_BINARIES		+= $(CONCAT_TEST_BIN)
-# TARGETS			+= $(CONCAT_TRNR_SRC)				\
-# 			   $(CONCAT_TRNR_OBJ)				\
-# 			   $(CONCAT_TEST_OBJ)				\
-# 			   $(CONCAT_TEST_BIN)
+# red_black_internals_test
+# ──────────────────────────────────────────────────────────────────────────────
+INTERNALS_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_internals)
+INTERNALS_TRNR_SRC		:= $(call TEST_RUNNER_SOURCE_PATH,red_black_internals)
+INTERNALS_TRNR_OBJ		:= $(call TEST_RUNNER_OBJECT_PATH,red_black_internals)
+INTERNALS_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_internals)
+INTERNALS_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_internals)
+# ─────────────── target prequisites ───────────────────────────────────────────
+INTERNALS_TRNR_SRC_PREQS	:= $(INTERNALS_TEST_SRC)
+INTERNALS_TEST_OBJ_PREQS	:= $(INTERNALS_TEST_SRC)		\
+			   	   $(INTERNALS_HDR)			\
+			   	   $(TREE_HDR)				\
+			   	   $(INT_KEY_HDR)			\
+			   	   $(TEST_HDR)				\
+			   	   $(UNITY_HDR)
+INTERNALS_TRNR_OBJ_PREQS   	:= $(INTERNALS_TRNR_SRC)		\
+			   	   $(INTERNALS_TEST_OBJ_PREQS)
+INTERNALS_TEST_BIN_PREQS	:= $(INTERNALS_TRNR_OBJ)		\
+			   	   $(INTERNALS_TEST_OBJ)		\
+			   	   $(INTERNALS_OBJ_GROUP)		\
+			   	   $(INT_KEY_OBJ_GROUP)			\
+				   $(TREE_SH_LIB)			\
+				   $(TEST_OBJ)				\
+				   $(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES			+= $(INTERNALS_TEST_BIN)
+TARGETS				+= $(INTERNALS_TRNR_SRC)		\
+			   	   $(INTERNALS_TRNR_OBJ)		\
+			   	   $(INTERNALS_TEST_OBJ)		\
+			   	   $(INTERNALS_TEST_BIN)
 
 
 # EXAMPLE MODULESS
@@ -1330,14 +1330,14 @@ $(TREE_SET_OPERATIONS_TRNR_SRC): $(TREE_SET_OPERATIONS_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 
-# $(CONCAT_TEST_BIN): $(CONCAT_TEST_BIN_PREQS)
-# 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-# $(CONCAT_TRNR_OBJ): $(CONCAT_TRNR_OBJ_PREQS)
-# 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-# $(CONCAT_TEST_OBJ): $(CONCAT_TEST_OBJ_PREQS)
-# 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-# $(CONCAT_TRNR_SRC): $(CONCAT_TRNR_SRC_PREQS)
-# 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+$(INTERNALS_TEST_BIN): $(INTERNALS_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(INTERNALS_TRNR_OBJ): $(INTERNALS_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(INTERNALS_TEST_OBJ): $(INTERNALS_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(INTERNALS_TRNR_SRC): $(INTERNALS_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 $(TEST_OBJ): $(TEST_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@

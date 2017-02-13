@@ -1039,6 +1039,8 @@ rbtdu_add_rem_p1(struct RedBlackNode *restrict *restrict du_root_ptr,
 	if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
 		return -1; /* RED_BLACK_MALLOC failure */
 
+	/* first entry */
+
 	do {
 		++count;
 
@@ -1075,7 +1077,7 @@ red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
 	struct RedBlackItor *volatile restrict greater_itor_ptr;
 	struct RedBlackItor *restrict tmp_itor_ptr;
 	volatile int count;
-	void *volatile lesser_key;
+	void *lesser_key;
 	void *volatile greater_key;
 	int compare;
 
@@ -1093,6 +1095,7 @@ red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
 	red_black_tree_init(disjoint_union_tree,
 			    comparator);
 
+	/* set greater key */
 	if (!red_black_itor_next(&itor2,
 				 (void **) &greater_key))
 		return rbtdu_add_rem(du_root_ptr,
@@ -1113,7 +1116,7 @@ red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
 	while (1) {
 		/* fetch next key from lesser itor */
 		if (!red_black_itor_next(lesser_itor_ptr,
-					 (void **) &lesser_key))
+					 &lesser_key))
 			return rbtdu_add_rem_p1(du_root_ptr,
 						du_factory_ptr,
 						comparator,
@@ -1135,6 +1138,7 @@ red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
 						     count);
 
 		} else {
+			/* distinct key found, insert */
 			++count;
 
 			node = rbnf_allocate(du_factory_ptr,
@@ -1144,7 +1148,7 @@ red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
 				node->key = lesser_key;
 
 			} else {
-				/* need to swap lesser with greater */
+				/* itors out of order, need to swap */
 				node->key   = greater_key;
 				greater_key = lesser_key;
 
