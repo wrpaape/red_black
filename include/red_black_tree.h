@@ -221,7 +221,12 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 			    const RedBlackTree *const restrict tree2);
 
 int
-red_black_tree_disjoint_union(RedBlackTree *const restrict disjoint_union_tree,
+red_black_tree_difference(RedBlackTree *const restrict difference_tree,
+			  const RedBlackTree *const restrict tree1,
+			  const RedBlackTree *const restrict tree2);
+
+int
+red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
 			      const RedBlackTree *const restrict tree1,
 			      const RedBlackTree *const restrict tree2);
 
