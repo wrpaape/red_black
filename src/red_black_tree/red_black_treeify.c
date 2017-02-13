@@ -4,8 +4,8 @@
 
 struct RedBlackNode *restrict
 red_black_treeify(struct RedBlackNode *const restrict head,
-		  const bool is_red,
-		  const int length)
+		  const int length,
+		  const bool is_red)
 {
 	int rem_nodes;
 	struct RedBlackNode *restrict node;
@@ -33,12 +33,12 @@ red_black_treeify(struct RedBlackNode *const restrict head,
 	struct RedBlackNode *const restrict next_head = node->left;
 
 	node->left  = red_black_treeify(head,
-					next_is_red,
-					length_left);
+					length_left,
+					next_is_red);
 
 	node->right = red_black_treeify(next_head,
-					next_is_red,
-					length_right);
+					length_right,
+					next_is_red);
 
 	return node;
 }

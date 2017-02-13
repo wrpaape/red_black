@@ -725,6 +725,24 @@ TARGETS			+= $(PRINT_OBJ)					\
 			   $(PRINT_PIC_OBJ)
 
 
+# red_black_treeify
+# ──────────────────────────────────────────────────────────────────────────────
+TREEIFY_SRC		:= $(call TREE_SOURCE_PATH,red_black_treeify)
+TREEIFY_HDR		:= $(call TREE_HEADER_PATH,red_black_treeify)
+TREEIFY_OBJ		:= $(call OBJECT_PATH,red_black_treeify)
+TREEIFY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_treeify)
+# ─────────────── target prequisites ───────────────────────────────────────────
+TREEIFY_OBJ_PREQS	:= $(TREEIFY_SRC)				\
+			   $(TREEIFY_HDR)				\
+			   $(NODE_HDR)
+TREEIFY_OBJ_GROUP	:= $(TREEIFY_OBJ)
+TREEIFY_PIC_OBJ_PREQS	:= $(TREEIFY_OBJ_PREQS)
+TREEIFY_PIC_OBJ_GROUP	:= $(TREEIFY_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(TREEIFY_OBJ)				\
+			   $(TREEIFY_PIC_OBJ)
+
+
 # red_black_verify
 # ──────────────────────────────────────────────────────────────────────────────
 VERIFY_SRC		:= $(call TREE_SOURCE_PATH,red_black_verify)
@@ -831,6 +849,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(COUNT_HDR)					\
 		   	   $(COPY_HDR)					\
 		   	   $(VERIFY_HDR)				\
+		   	   $(TREEIFY_HDR)				\
 		   	   $(PRINT_HDR)
 TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(NODE_FACTORY_OBJ_GROUP)			\
@@ -854,6 +873,7 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 		   	   $(COPY_OBJ_GROUP)				\
 			   $(CONGRUENT_OBJ_GROUP)			\
 			   $(VERIFY_OBJ_GROUP)				\
+		   	   $(TREEIFY_OBJ_GROUP)				\
 			   $(PRINT_OBJ_GROUP)
 TREE_PIC_OBJ_PREQS	:= $(TREE_OBJ_PREQS)
 TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
@@ -879,6 +899,7 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(CONGRUENT_PIC_OBJ_GROUP)			\
 			   $(VERIFY_PIC_OBJ_GROUP)			\
 			   $(VERIFY_PIC_OBJ_GROUP)			\
+		   	   $(TREEIFY_PIC_OBJ_GROUP)			\
 			   $(PRINT_PIC_OBJ_GROUP)
 TREE_ST_LIB_PREQS	:= $(TREE_OBJ_GROUP)
 TREE_SH_LIB_PREQS	:= $(TREE_PIC_OBJ_GROUP)
@@ -1141,36 +1162,37 @@ TARGETS			     	   += $(TREE_SET_OPERATIONS_TRNR_SRC)	\
 			              $(TREE_SET_OPERATIONS_TEST_BIN)
 
 
-# red_black_internals_test
+# red_black_tree_internals_test
 # ──────────────────────────────────────────────────────────────────────────────
-INTERNALS_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_internals)
-INTERNALS_TRNR_SRC		:= $(call TEST_RUNNER_SOURCE_PATH,red_black_internals)
-INTERNALS_TRNR_OBJ		:= $(call TEST_RUNNER_OBJECT_PATH,red_black_internals)
-INTERNALS_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_internals)
-INTERNALS_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_internals)
+TREE_INTERNALS_TEST_SRC		:= $(call TEST_SOURCE_PATH,red_black_tree_internals)
+TREE_INTERNALS_TRNR_SRC		:= $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_internals)
+TREE_INTERNALS_TRNR_OBJ		:= $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_internals)
+TREE_INTERNALS_TEST_OBJ		:= $(call TEST_OBJECT_PATH,red_black_tree_internals)
+TREE_INTERNALS_TEST_BIN		:= $(call TEST_BINARY_PATH,red_black_tree_internals)
 # ─────────────── target prequisites ───────────────────────────────────────────
-INTERNALS_TRNR_SRC_PREQS	:= $(INTERNALS_TEST_SRC)
-INTERNALS_TEST_OBJ_PREQS	:= $(INTERNALS_TEST_SRC)		\
-			   	   $(INTERNALS_HDR)			\
-			   	   $(TREE_HDR)				\
+TREE_INTERNALS_TRNR_SRC_PREQS	:= $(TREE_INTERNALS_TEST_SRC)
+TREE_INTERNALS_TEST_OBJ_PREQS	:= $(TREE_INTERNALS_TEST_SRC)		\
+			   	   $(TREE_INTERNALS_HDR)		\
+			   	   $(TREEIFY_HDR)			\
+			   	   $(VERIFY_HDR)			\
 			   	   $(INT_KEY_HDR)			\
 			   	   $(TEST_HDR)				\
 			   	   $(UNITY_HDR)
-INTERNALS_TRNR_OBJ_PREQS   	:= $(INTERNALS_TRNR_SRC)		\
-			   	   $(INTERNALS_TEST_OBJ_PREQS)
-INTERNALS_TEST_BIN_PREQS	:= $(INTERNALS_TRNR_OBJ)		\
-			   	   $(INTERNALS_TEST_OBJ)		\
-			   	   $(INTERNALS_OBJ_GROUP)		\
+TREE_INTERNALS_TRNR_OBJ_PREQS   := $(TREE_INTERNALS_TRNR_SRC)		\
+			   	   $(TREE_INTERNALS_TEST_OBJ_PREQS)
+TREE_INTERNALS_TEST_BIN_PREQS	:= $(TREE_INTERNALS_TRNR_OBJ)		\
+			   	   $(TREE_INTERNALS_TEST_OBJ)		\
+			   	   $(TREE_INTERNALS_OBJ_GROUP)		\
 			   	   $(INT_KEY_OBJ_GROUP)			\
-				   $(TREE_SH_LIB)			\
-				   $(TEST_OBJ)				\
+				   $(TREEIFY_OBJ_GROUP)			\
+				   $(VERIFY_OBJ_GROUP)			\
 				   $(UNITY_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TEST_BINARIES			+= $(INTERNALS_TEST_BIN)
-TARGETS				+= $(INTERNALS_TRNR_SRC)		\
-			   	   $(INTERNALS_TRNR_OBJ)		\
-			   	   $(INTERNALS_TEST_OBJ)		\
-			   	   $(INTERNALS_TEST_BIN)
+TEST_BINARIES			+= $(TREE_INTERNALS_TEST_BIN)
+TARGETS				+= $(TREE_INTERNALS_TRNR_SRC)		\
+			   	   $(TREE_INTERNALS_TRNR_OBJ)		\
+			   	   $(TREE_INTERNALS_TEST_OBJ)		\
+			   	   $(TREE_INTERNALS_TEST_BIN)
 
 
 # EXAMPLE MODULESS
@@ -1330,13 +1352,13 @@ $(TREE_SET_OPERATIONS_TRNR_SRC): $(TREE_SET_OPERATIONS_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 
-$(INTERNALS_TEST_BIN): $(INTERNALS_TEST_BIN_PREQS)
+$(TREE_INTERNALS_TEST_BIN): $(TREE_INTERNALS_TEST_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(INTERNALS_TRNR_OBJ): $(INTERNALS_TRNR_OBJ_PREQS)
+$(TREE_INTERNALS_TRNR_OBJ): $(TREE_INTERNALS_TRNR_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-$(INTERNALS_TEST_OBJ): $(INTERNALS_TEST_OBJ_PREQS)
+$(TREE_INTERNALS_TEST_OBJ): $(TREE_INTERNALS_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
-$(INTERNALS_TRNR_SRC): $(INTERNALS_TRNR_SRC_PREQS)
+$(TREE_INTERNALS_TRNR_SRC): $(TREE_INTERNALS_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 $(TEST_OBJ): $(TEST_OBJ_PREQS)
@@ -1465,6 +1487,11 @@ $(PRINT_PIC_OBJ): $(PRINT_PIC_OBJ_PREQS)
 $(VERIFY_OBJ): $(VERIFY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(VERIFY_PIC_OBJ): $(VERIFY_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(TREEIFY_OBJ): $(TREEIFY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(TREEIFY_PIC_OBJ): $(TREEIFY_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 # $(CONCAT_OBJ): $(CONCAT_OBJ_PREQS)
