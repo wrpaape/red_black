@@ -59,6 +59,9 @@ rbhnf_free(struct RedBlackHNodeFactory *const restrict factory,
 	   struct RedBlackHNode *const restrict node);
 
 void
+rbhnf_reset(struct RedBlackHNodeFactory *const restrict factory);
+
+void
 rbhnf_destroy(struct RedBlackHNodeFactory *const restrict factory);
 
 #endif /* ifndef RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HNODE_FACTORY_H_ */

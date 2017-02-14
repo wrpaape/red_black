@@ -1,4 +1,4 @@
-#include "red_black_hmap/red_black_hmap.h"       /* HMap, HMapItor, HNode */
+#include "red_black_hmap.h"			 /* HMap, HMapItor, HNode */
 #include "red_black_hmap/red_black_hinsert.h"    /* red_black_hinsert */
 #include "red_black_hmap/red_black_hput.h"       /* red_black_hput */
 #include "red_black_hmap/red_black_hupdate.h"    /* red_black_hupdate */
@@ -107,10 +107,9 @@ rbhm_reset_buckets(struct RedBlackHBucket *const restrict buckets,
 		bucket = &buckets[hash & new_count_m1];
 
 		/* add to bucket tree, may jump */
-		red_black_add(&bucket->root,
-			      &red_black_hkey_comparator,
-			      jump_buffer,
-			      head);
+		red_black_hadd(&bucket->root,
+			       jump_buffer,
+			       head);
 
 NEXT_NODE:
 		if (next == NULL)
@@ -159,7 +158,7 @@ rbhm_expand(RedBlackHMap *const restrict map)
 
 /* inline expansion, return only on error */
 #if RED_BLACK_HMAP_VAR_EXPAND
-#define RBHM_EXPAND(MAP)
+#define RBHM_EXPAND(MAP)						\
 do {									\
 	const unsigned int old_count = MAP->count.buckets_m1 + 1;	\
 	const unsigned int new_count = old_count << MAP->expand_factor;	\
@@ -177,7 +176,7 @@ do {									\
 			   new_count_m1);				\
 } while (0)
 #else /* double capacity on expansion */
-#define RBHM_EXPAND(MAP)
+#define RBHM_EXPAND(MAP)						\
 do {									\
 	const unsigned int old_count = MAP->count.buckets_m1 + 1;	\
 	const unsigned int new_count = old_count * 2;			\
@@ -222,8 +221,6 @@ red_black_hmap_init(RedBlackHMap *const restrict map)
 		} while (bucket < bucket_until);
 
 		map->buckets = buckets;
-
-		red_black_hmap_count_init(&map->count);
 
 		map->count.buckets_m1   = RBHM_INIT_BUCKET_COUNT - 1;
 		map->count.entries      = 0;
@@ -834,7 +831,7 @@ rb_hmap_similar_walk_both(const struct RedBlackHBucket *restrict bucket1,
 {
 	struct RedBlackHItor bucket_itor1;
 	struct RedBlackHItor bucket_itor2;
-	struct RedBlackHBucket *restrict last_bucket1;
+	const struct RedBlackHBucket *restrict last_bucket1;
 	const struct RedBlackHKey *restrict hkey1;
 	const struct RedBlackHKey *restrict hkey2;
 
@@ -872,7 +869,7 @@ rb_hmap_similar_walk_both(const struct RedBlackHBucket *restrict bucket1,
 			++bucket2; /* no need to check for last */
 
 			red_black_hitor_reset(&bucket_itor2,
-					      bucket2);
+					      bucket2->root);
 		}
 
 		if (red_black_hkey_comparator(hkey1,
@@ -887,11 +884,11 @@ rb_hmap_similar_walk_find(const struct RedBlackHBucket *restrict buckets1,
 			  const unsigned int count_buckets1_m1,
 			  const unsigned int count_buckets2_m1)
 {
-	struct RedBlackHItor bucket_itor;
-	struct RedBlackHBucket *restrict walk_bucket;
-	struct RedBlackHBucket *restrict last_walk_bucket;
-	struct RedBlackHBucket *restrict find_buckets;
-	struct RedBlackHBucket *restrict find_bucket;
+	struct RedBlackHItor walk_bucket_itor;
+	const struct RedBlackHBucket *restrict walk_bucket;
+	const struct RedBlackHBucket *restrict last_walk_bucket;
+	const struct RedBlackHBucket *restrict find_buckets;
+	const struct RedBlackHBucket *restrict find_bucket;
 	unsigned int count_find_buckets_m1;
 	const struct RedBlackHKey *restrict hkey;
 
@@ -912,12 +909,12 @@ rb_hmap_similar_walk_find(const struct RedBlackHBucket *restrict buckets1,
 		count_find_buckets_m1 = count_buckets1_m1;
 	}
 
-	red_black_hitor_init(&bucket_itor,
+	red_black_hitor_init(&walk_bucket_itor,
 			     walk_bucket->root);
 
 	do {
 		while (1) {
-			hkey = red_black_hitor_next_hkey(&bucket_itor1);
+			hkey = red_black_hitor_next_hkey(&walk_bucket_itor);
 
 			if (hkey != NULL)
 				break;
@@ -927,7 +924,7 @@ rb_hmap_similar_walk_find(const struct RedBlackHBucket *restrict buckets1,
 
 			++walk_bucket;
 
-			red_black_hitor_reset(&bucket_itor,
+			red_black_hitor_reset(&walk_bucket_itor,
 					      walk_bucket->root);
 		}
 
@@ -994,7 +991,7 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 
 
 	src_bucket      = src_map->buckets;
-	last_src_bucket = src_bucket + src_map->count.count_buckets_m1;
+	last_src_bucket = src_bucket + src_map->count.buckets_m1;
 
 	red_black_hitor_init(&src_bucket_itor,
 			     src_bucket->root);
@@ -1040,8 +1037,8 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 
 		dst_map->count.entries += status;
 CHECK_EXPAND:
-		if (map->count.entries > map->count.max_capacity)
-			RBHM_EXPAND(map);
+		if (dst_map->count.entries > dst_map->count.max_capacity)
+			RBHM_EXPAND(dst_map);
 	}
 
 }

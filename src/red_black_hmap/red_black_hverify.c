@@ -52,8 +52,8 @@ rb_hverify(const struct RedBlackHNode *const restrict node,
 
 
 void
-red_black_verify(const struct RedBlackHNode *const restrict root,
-		 RedBlackJumpBuffer jump_buffer)
+red_black_hverify(const struct RedBlackHNode *const restrict root,
+		  RedBlackJumpBuffer jump_buffer)
 {
 
 	(void) rb_hverify(root,

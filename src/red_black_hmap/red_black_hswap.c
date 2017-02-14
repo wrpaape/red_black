@@ -1,8 +1,8 @@
 #include "red_black_hmap/red_black_hswap.h" /* HNode, comparator, NULL */
 
 void *
-red_black_swap(struct RedBlackHNode *restrict node,
-	       const struct RedBlackHKey *const restrict hkey)
+red_black_hswap(struct RedBlackHNode *restrict node,
+		const struct RedBlackHKey *const restrict hkey)
 {
 	int compare;
 	const void *node_key;

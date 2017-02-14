@@ -3,8 +3,9 @@
 
 /* factory macros
  * ────────────────────────────────────────────────────────────────────────── */
-#define RBNF_INIT_EXPAND_COUNT 8
-#define RBNF_INIT_EXPAND (sizeof(struct RedBlackHNode) * RBNF_INIT_EXPAND_COUNT)
+#define RBHNF_INIT_EXPAND_COUNT 8
+#define RBHNF_INIT_EXPAND						\
+(sizeof(struct RedBlackHNode) * RBHNF_INIT_EXPAND_COUNT)
 
 
 static inline void
@@ -14,7 +15,7 @@ rbhnfb_init(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
 {
 	buffer->cursor.current = NULL;
 	buffer->cursor.until   = NULL;
-	buffer->expand         = RBNF_INIT_EXPAND;
+	buffer->expand         = RBHNF_INIT_EXPAND;
 	buffer->blocks         = first_block;
 }
 
@@ -178,6 +179,13 @@ rbhnf_free(struct RedBlackHNodeFactory *const restrict factory,
 {
 	node->left    = factory->free;
 	factory->free = node;
+}
+
+
+void
+rbhnf_reset(struct RedBlackHNodeFactory *const restrict factory)
+{
+	factory->buffer.expand = RBHNF_INIT_EXPAND;
 }
 
 

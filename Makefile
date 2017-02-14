@@ -834,6 +834,7 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(SWAP_HDR)					\
 		   	   $(COUNT_HDR)					\
 		   	   $(COPY_HDR)					\
+		   	   $(CONGRUENT_HDR)				\
 		   	   $(VERIFY_HDR)				\
 		   	   $(TREEIFY_HDR)				\
 		   	   $(PRINT_HDR)
@@ -1448,6 +1449,94 @@ TARGETS			+= $(HCONCAT_OBJ)				\
 			   $(HCONCAT_PIC_OBJ)
 
 
+# red_black_hmap
+# ──────────────────────────────────────────────────────────────────────────────
+HMAP_SRC		:= $(call SOURCE_PATH,red_black_hmap)
+HMAP_HDR		:= $(call HEADER_PATH,red_black_hmap)
+HMAP_OBJ		:= $(call OBJECT_PATH,red_black_hmap)
+HMAP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hmap)
+HMAP_ST_LIB		:= $(call STATIC_LIBRARY_PATH,red_black_hmap)
+HMAP_SH_LIB		:= $(call SHARED_LIBRARY_PATH,red_black_hmap)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HMAP_OBJ_PREQS		:= $(HMAP_SRC)					\
+			   $(HMAP_HDR)					\
+		   	   $(HNODE_FACTORY_HDR)				\
+		   	   $(HITOR_HDR)					\
+		   	   $(HINSERT_HDR)				\
+		   	   $(HPUT_HDR)					\
+		   	   $(HUPDATE_HDR)				\
+		   	   $(HADD_HDR)					\
+		   	   $(HDELETE_HDR)				\
+		   	   $(HREMOVE_HDR)				\
+		   	   $(HDROP_HDR)					\
+		   	   $(HPLUCK_HDR)				\
+		   	   $(HFIND_HDR)					\
+		   	   $(HFETCH_HDR)				\
+		   	   $(HREPLACE_HDR)				\
+		   	   $(HEXCHANGE_HDR)				\
+		   	   $(HGET_HDR)					\
+		   	   $(HSET_HDR)					\
+		   	   $(HSWAP_HDR)					\
+		   	   $(HCOPY_HDR)					\
+		   	   $(HCONGRUENT_HDR)				\
+		   	   $(HVERIFY_HDR)				\
+		   	   $(HCONCAT_HDR)				\
+			   $(MALLOC_HDR)
+HMAP_OBJ_GROUP		:= $(HMAP_OBJ)					\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HITOR_OBJ_GROUP)				\
+			   $(HINSERT_OBJ_GROUP)				\
+			   $(HPUT_OBJ_GROUP)				\
+			   $(HUPDATE_OBJ_GROUP)				\
+			   $(HADD_OBJ_GROUP)				\
+			   $(HDELETE_OBJ_GROUP)				\
+			   $(HREMOVE_OBJ_GROUP)				\
+		   	   $(HDROP_OBJ_GROUP)				\
+		   	   $(HPLUCK_OBJ_GROUP)				\
+			   $(HFIND_OBJ_GROUP)				\
+			   $(HFETCH_OBJ_GROUP)				\
+			   $(HREPLACE_OBJ_GROUP)			\
+			   $(HEXCHANGE_OBJ_GROUP)			\
+			   $(HGET_OBJ_GROUP)				\
+			   $(HSET_OBJ_GROUP)				\
+			   $(HSWAP_OBJ_GROUP)				\
+		   	   $(HCOPY_OBJ_GROUP)				\
+			   $(HCONGRUENT_OBJ_GROUP)			\
+			   $(HVERIFY_OBJ_GROUP)				\
+			   $(HCONCAT_OBJ_GROUP)
+HMAP_PIC_OBJ_PREQS	:= $(HMAP_OBJ_PREQS)
+HMAP_PIC_OBJ_GROUP	:= $(HMAP_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HITOR_PIC_OBJ_GROUP)			\
+			   $(HINSERT_PIC_OBJ_GROUP)			\
+			   $(HPUT_PIC_OBJ_GROUP)			\
+			   $(HUPDATE_PIC_OBJ_GROUP)			\
+			   $(HADD_PIC_OBJ_GROUP)			\
+			   $(HDELETE_PIC_OBJ_GROUP)			\
+			   $(HREMOVE_PIC_OBJ_GROUP)			\
+		   	   $(HDROP_PIC_OBJ_GROUP)			\
+		   	   $(HPLUCK_PIC_OBJ_GROUP)			\
+			   $(HFIND_PIC_OBJ_GROUP)			\
+			   $(HFETCH_PIC_OBJ_GROUP)			\
+			   $(HREPLACE_PIC_OBJ_GROUP)			\
+			   $(HEXCHANGE_PIC_OBJ_GROUP)			\
+			   $(HGET_PIC_OBJ_GROUP)			\
+			   $(HSET_PIC_OBJ_GROUP)			\
+			   $(HSWAP_PIC_OBJ_GROUP)			\
+		   	   $(HCOPY_PIC_OBJ_GROUP)			\
+			   $(HCONGRUENT_PIC_OBJ_GROUP)			\
+			   $(HVERIFY_PIC_OBJ_GROUP)			\
+			   $(HCONCAT_PIC_OBJ_GROUP)
+HMAP_ST_LIB_PREQS	:= $(HMAP_OBJ_GROUP)
+HMAP_SH_LIB_PREQS	:= $(HMAP_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HMAP_OBJ)					\
+			   $(HMAP_PIC_OBJ)				\
+			   $(HMAP_ST_LIB)				\
+			   $(HMAP_SH_LIB)
+
+
+
 # KEY_ACCESSOR MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
 # int_key
@@ -2017,7 +2106,14 @@ $(CONGRUENT_PIC_OBJ): $(CONGRUENT_PIC_OBJ_PREQS)
 
 # RED_BLACK_HMAP
 # ──────────────────────────────────────────────────────────────────────────────
-
+$(HMAP_ST_LIB): $(HMAP_ST_LIB_PREQS)
+	$(AR) $(AR_FLAGS) $@ $^
+$(HMAP_SH_LIB): $(HMAP_SH_LIB_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_SH_FLAGS) -o $@
+$(HMAP_OBJ): $(HMAP_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HMAP_PIC_OBJ): $(HMAP_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 
 # RED_BLACK_HMAP MODULES

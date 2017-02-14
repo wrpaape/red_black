@@ -3,8 +3,8 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_hnode_factory.h" /* RedBlackHNodeFactory, HNode */
-#include "red_black_hitor.h"	     /* RedBlackHItor */
+#include "red_black_hmap/red_black_hnode_factory.h" /* HNodeFactory, HNode */
+#include "red_black_hmap/red_black_hitor.h"	    /* HItor */
 
 #define RED_BLACK_HMAP_VAR_EXPAND 1
 
@@ -136,7 +136,7 @@ red_black_hmap_congruent(const RedBlackHMap *const map1,
 
 bool
 red_black_hmap_similar(const RedBlackHMap *const map1,
-		       const RedBlackHMap *const map2)
+		       const RedBlackHMap *const map2);
 
 bool
 rb_hmap_similar(const RedBlackHMap *const restrict map1,
