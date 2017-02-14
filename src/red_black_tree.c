@@ -560,17 +560,7 @@ red_black_tree_verify(const RedBlackTree *const restrict tree)
 }
 
 
-bool
-red_black_tree_congruent(const RedBlackTree *const tree1,
-			 const RedBlackTree *const tree2)
-{
-	return (tree1 == tree2)
-	    || (   (tree1->comparator == tree2->comparator)
-		&& rb_tree_congruent(tree1,
-				     tree2));
-}
-
-bool
+static inline bool
 rb_tree_congruent(const RedBlackTree *const restrict tree1,
 		  const RedBlackTree *const restrict tree2)
 {
@@ -589,18 +579,18 @@ rb_tree_congruent(const RedBlackTree *const restrict tree1,
 	return status;
 }
 
-
 bool
-red_black_tree_similar(const RedBlackTree *const tree1,
-		       const RedBlackTree *const tree2)
+red_black_tree_congruent(const RedBlackTree *const tree1,
+			 const RedBlackTree *const tree2)
 {
 	return (tree1 == tree2)
 	    || (   (tree1->comparator == tree2->comparator)
-		&& rb_tree_similar(tree1,
-				   tree2));
+		&& rb_tree_congruent(tree1,
+				     tree2));
 }
 
-bool
+
+static inline bool
 rb_tree_similar(const RedBlackTree *const restrict tree1,
 		const RedBlackTree *const restrict tree2)
 {
@@ -637,6 +627,16 @@ rb_tree_similar(const RedBlackTree *const restrict tree1,
 			       key2) != 0)
 			return false;
 	}
+}
+
+bool
+red_black_tree_similar(const RedBlackTree *const tree1,
+		       const RedBlackTree *const tree2)
+{
+	return (tree1 == tree2)
+	    || (   (tree1->comparator == tree2->comparator)
+		&& rb_tree_similar(tree1,
+				   tree2));
 }
 
 

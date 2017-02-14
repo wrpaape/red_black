@@ -133,9 +133,15 @@ red_black_hmap_verify(const RedBlackHMap *const restrict map);
 bool
 red_black_hmap_congruent(const RedBlackHMap *const map1,
 			 const RedBlackHMap *const map2);
+
 bool
-rb_hmap_congruent(const RedBlackHMap *const restrict map1,
-		  const RedBlackHMap *const restrict map2);
+red_black_hmap_similar(const RedBlackHMap *const map1,
+		       const RedBlackHMap *const map2)
+
+bool
+rb_hmap_similar(const RedBlackHMap *const restrict map1,
+		const RedBlackHMap *const restrict map2,
+		const unsigned int count_entries);
 
 void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,

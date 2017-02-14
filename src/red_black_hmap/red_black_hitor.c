@@ -100,6 +100,9 @@ red_black_hitor_next_hkey(struct RedBlackHItor *const restrict itor)
 	cursor = itor->cursor;
 	node   = *cursor;
 
+	if (node == NULL)
+		return NULL;
+
 	itor->cursor = rbhi_update(cursor,
 				   node);
 

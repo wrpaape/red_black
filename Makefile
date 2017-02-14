@@ -308,6 +308,7 @@ ITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_itor)
 # ─────────────── target prequisites ───────────────────────────────────────────
 ITOR_OBJ_PREQS		:= $(ITOR_SRC)					\
 			   $(ITOR_HDR)					\
+			   $(NODE_HDR)					\
 			   $(STACK_COUNT_HDR)
 ITOR_OBJ_GROUP		:= $(ITOR_OBJ)
 ITOR_PIC_OBJ_PREQS	:= $(ITOR_OBJ_PREQS)
@@ -654,7 +655,7 @@ SET_SRC			:= $(call TREE_SOURCE_PATH,red_black_set)
 SET_HDR			:= $(call TREE_HEADER_PATH,red_black_set)
 SET_OBJ			:= $(call OBJECT_PATH,red_black_set)
 SET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_set)
-# ─────────────── tarset prequisites ───────────────────────────────────────────
+# ─────────────── target prequisites ───────────────────────────────────────────
 SET_OBJ_PREQS		:= $(SET_SRC)					\
 			   $(SET_HDR)					\
 			   $(NODE_HDR)					\
@@ -662,7 +663,7 @@ SET_OBJ_PREQS		:= $(SET_SRC)					\
 SET_OBJ_GROUP		:= $(SET_OBJ)
 SET_PIC_OBJ_PREQS	:= $(SET_OBJ_PREQS)
 SET_PIC_OBJ_GROUP	:= $(SET_PIC_OBJ)
-# ─────────────── tarsets ──────────────────────────────────────────────────────
+# ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(SET_OBJ)					\
 			   $(SET_PIC_OBJ)
 
@@ -673,7 +674,7 @@ SWAP_SRC		:= $(call TREE_SOURCE_PATH,red_black_swap)
 SWAP_HDR		:= $(call TREE_HEADER_PATH,red_black_swap)
 SWAP_OBJ		:= $(call OBJECT_PATH,red_black_swap)
 SWAP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_swap)
-# ─────────────── tarswap prequisites ───────────────────────────────────────────
+# ─────────────── target prequisites ───────────────────────────────────────────
 SWAP_OBJ_PREQS		:= $(SWAP_SRC)					\
 			   $(SWAP_HDR)					\
 			   $(NODE_HDR)					\
@@ -681,7 +682,7 @@ SWAP_OBJ_PREQS		:= $(SWAP_SRC)					\
 SWAP_OBJ_GROUP		:= $(SWAP_OBJ)
 SWAP_PIC_OBJ_PREQS	:= $(SWAP_OBJ_PREQS)
 SWAP_PIC_OBJ_GROUP	:= $(SWAP_PIC_OBJ)
-# ─────────────── tarswaps ──────────────────────────────────────────────────────
+# ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(SWAP_OBJ)					\
 			   $(SWAP_PIC_OBJ)
 
@@ -753,6 +754,7 @@ VERIFY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_verify)
 VERIFY_OBJ_PREQS	:= $(VERIFY_SRC)				\
 			   $(VERIFY_HDR)				\
 			   $(NODE_HDR)					\
+			   $(JUMP_HDR)					\
 			   $(COMPARATOR_HDR)
 VERIFY_OBJ_GROUP	:= $(VERIFY_OBJ)
 VERIFY_PIC_OBJ_PREQS	:= $(VERIFY_OBJ_PREQS)
@@ -760,24 +762,6 @@ VERIFY_PIC_OBJ_GROUP	:= $(VERIFY_PIC_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS			+= $(VERIFY_OBJ)				\
 			   $(VERIFY_PIC_OBJ)
-
-
-# # red_black_concat
-# # ──────────────────────────────────────────────────────────────────────────────
-# CONCAT_SRC		:= $(call TREE_SOURCE_PATH,red_black_concat)
-# CONCAT_HDR		:= $(call TREE_HEADER_PATH,red_black_concat)
-# CONCAT_OBJ		:= $(call OBJECT_PATH,red_black_concat)
-# CONCAT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_concat)
-# # ─────────────── target prequisites ───────────────────────────────────────────
-# CONCAT_OBJ_PREQS	:= $(CONCAT_SRC)				\
-# 			   $(CONCAT_HDR)				\
-# 			   $(NODE_HDR)
-# CONCAT_OBJ_GROUP	:= $(CONCAT_OBJ)
-# CONCAT_PIC_OBJ_PREQS	:= $(CONCAT_OBJ_PREQS)
-# CONCAT_PIC_OBJ_GROUP	:= $(CONCAT_PIC_OBJ)
-# # ─────────────── targets ──────────────────────────────────────────────────────
-# TARGETS			+= $(CONCAT_OBJ)				\
-# 			   $(CONCAT_PIC_OBJ)
 
 
 # red_black_copy
@@ -807,7 +791,9 @@ CONGRUENT_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_congruent)
 # ─────────────── target prequisites ───────────────────────────────────────────
 CONGRUENT_OBJ_PREQS	:= $(CONGRUENT_SRC)				\
 			   $(CONGRUENT_HDR)				\
-			   $(NODE_HDR)
+			   $(NODE_HDR)					\
+			   $(COMPARATOR_HDR)				\
+			   $(JUMP_HDR)
 CONGRUENT_OBJ_GROUP	:= $(CONGRUENT_OBJ)
 CONGRUENT_PIC_OBJ_PREQS	:= $(CONGRUENT_OBJ_PREQS)
 CONGRUENT_PIC_OBJ_GROUP	:= $(CONGRUENT_PIC_OBJ)
@@ -935,8 +921,513 @@ TARGETS			+= $(HKEY_OBJ)					\
 			   $(HKEY_PIC_OBJ)
 
 
+# red_black_hnode_factory
+# ──────────────────────────────────────────────────────────────────────────────
+HNODE_FACTORY_SRC		:= $(call TREE_SOURCE_PATH,red_black_hnode_factory)
+HNODE_FACTORY_HDR		:= $(call TREE_HEADER_PATH,red_black_hnode_factory)
+HNODE_FACTORY_OBJ		:= $(call OBJECT_PATH,red_black_hnode_factory)
+HNODE_FACTORY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hnode_factory)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HNODE_FACTORY_OBJ_PREQS		:= $(HNODE_FACTORY_SRC)			\
+			   	   $(HNODE_FACTORY_HDR)			\
+			   	   $(JUMP_HDR)				\
+			   	   $(HNODE_HDR)				\
+			   	   $(MALLOC_HDR)
+HNODE_FACTORY_OBJ_GROUP		:= $(HNODE_FACTORY_OBJ)
+HNODE_FACTORY_PIC_OBJ_PREQS	:= $(HNODE_FACTORY_OBJ_PREQS)
+HNODE_FACTORY_PIC_OBJ_GROUP 	:= $(HNODE_FACTORY_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS				+= $(HNODE_FACTORY_OBJ)			\
+			   	   $(HNODE_FACTORY_PIC_OBJ)
 
 
+# red_black_hitor
+# ──────────────────────────────────────────────────────────────────────────────
+HITOR_SRC		:= $(call TREE_SOURCE_PATH,red_black_hitor)
+HITOR_HDR		:= $(call TREE_HEADER_PATH,red_black_hitor)
+HITOR_OBJ		:= $(call OBJECT_PATH,red_black_hitor)
+HITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hitor)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HITOR_OBJ_PREQS		:= $(HITOR_SRC)					\
+			   $(HITOR_HDR)					\
+			   $(HNODE_HDR)					\
+			   $(STACK_COUNT_HDR)
+HITOR_OBJ_GROUP		:= $(HITOR_OBJ)
+HITOR_PIC_OBJ_PREQS	:= $(HITOR_OBJ_PREQS)
+HITOR_PIC_OBJ_GROUP	:= $(HITOR_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HITOR_OBJ)					\
+			   $(HITOR_PIC_OBJ)
+
+
+# red_black_hcorrect
+# ──────────────────────────────────────────────────────────────────────────────
+HCORRECT_SRC		:= $(call TREE_SOURCE_PATH,red_black_hcorrect)
+HCORRECT_HDR		:= $(call TREE_HEADER_PATH,red_black_hcorrect)
+HCORRECT_OBJ		:= $(call OBJECT_PATH,red_black_hcorrect)
+HCORRECT_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hcorrect)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HCORRECT_OBJ_PREQS	:= $(HCORRECT_SRC)				\
+			   $(HCORRECT_HDR)				\
+			   $(HNODE_HDR)					\
+			   $(JUMP_HDR)
+HCORRECT_OBJ_GROUP	:= $(HCORRECT_OBJ)
+HCORRECT_PIC_OBJ_PREQS  := $(HCORRECT_OBJ_PREQS)
+HCORRECT_PIC_OBJ_GROUP  := $(HCORRECT_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HCORRECT_OBJ)				\
+			   $(HCORRECT_PIC_OBJ)
+
+
+# red_black_hinsert
+# ──────────────────────────────────────────────────────────────────────────────
+HINSERT_SRC		:= $(call TREE_SOURCE_PATH,red_black_hinsert)
+HINSERT_HDR		:= $(call TREE_HEADER_PATH,red_black_hinsert)
+HINSERT_OBJ		:= $(call OBJECT_PATH,red_black_hinsert)
+HINSERT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hinsert)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HINSERT_OBJ_PREQS	:= $(HINSERT_SRC)				\
+			   $(HINSERT_HDR)				\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HCORRECT_HDR)
+HINSERT_OBJ_GROUP	:= $(HINSERT_OBJ)				\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HCORRECT_OBJ_GROUP)
+HINSERT_PIC_OBJ_PREQS	:= $(HINSERT_OBJ_PREQS)
+HINSERT_PIC_OBJ_GROUP	:= $(HINSERT_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HCORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HINSERT_OBJ)				\
+			   $(HINSERT_PIC_OBJ)
+
+
+# red_black_hput
+# ──────────────────────────────────────────────────────────────────────────────
+HPUT_SRC		:= $(call TREE_SOURCE_PATH,red_black_hput)
+HPUT_HDR		:= $(call TREE_HEADER_PATH,red_black_hput)
+HPUT_OBJ		:= $(call OBJECT_PATH,red_black_hput)
+HPUT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hput)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HPUT_OBJ_PREQS		:= $(HPUT_SRC)					\
+			   $(HPUT_HDR)					\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HCORRECT_HDR)
+HPUT_OBJ_GROUP		:= $(HPUT_OBJ)					\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HCORRECT_OBJ_GROUP)
+HPUT_PIC_OBJ_PREQS	:= $(HPUT_OBJ_PREQS)
+HPUT_PIC_OBJ_GROUP	:= $(HPUT_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HCORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HPUT_OBJ)					\
+			   $(HPUT_PIC_OBJ)
+
+
+# red_black_hupdate
+# ──────────────────────────────────────────────────────────────────────────────
+HUPDATE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hupdate)
+HUPDATE_HDR		:= $(call TREE_HEADER_PATH,red_black_hupdate)
+HUPDATE_OBJ		:= $(call OBJECT_PATH,red_black_hupdate)
+HUPDATE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hupdate)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HUPDATE_OBJ_PREQS	:= $(HUPDATE_SRC)				\
+			   $(HUPDATE_HDR)				\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HCORRECT_HDR)
+HUPDATE_OBJ_GROUP	:= $(HUPDATE_OBJ)				\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HCORRECT_OBJ_GROUP)
+HUPDATE_PIC_OBJ_PREQS	:= $(HUPDATE_OBJ_PREQS)
+HUPDATE_PIC_OBJ_GROUP	:= $(HUPDATE_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HCORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HUPDATE_OBJ)				\
+			   $(HUPDATE_PIC_OBJ)
+
+
+# red_black_hadd
+# ──────────────────────────────────────────────────────────────────────────────
+HADD_SRC		:= $(call TREE_SOURCE_PATH,red_black_hadd)
+HADD_HDR		:= $(call TREE_HEADER_PATH,red_black_hadd)
+HADD_OBJ		:= $(call OBJECT_PATH,red_black_hadd)
+HADD_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hadd)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HADD_OBJ_PREQS		:= $(HADD_SRC)					\
+			   $(HADD_HDR)					\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HCORRECT_HDR)
+HADD_OBJ_GROUP		:= $(HADD_OBJ)					\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HCORRECT_OBJ_GROUP)
+HADD_PIC_OBJ_PREQS	:= $(HADD_OBJ_PREQS)
+HADD_PIC_OBJ_GROUP	:= $(HADD_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HCORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HADD_OBJ)					\
+			   $(HADD_PIC_OBJ)
+
+
+# red_black_hrestore
+# ──────────────────────────────────────────────────────────────────────────────
+HRESTORE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hrestore)
+HRESTORE_HDR		:= $(call TREE_HEADER_PATH,red_black_hrestore)
+HRESTORE_OBJ		:= $(call OBJECT_PATH,red_black_hrestore)
+HRESTORE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hrestore)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HRESTORE_OBJ_PREQS	:= $(HRESTORE_SRC)				\
+			   $(HRESTORE_HDR)				\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(JUMP_HDR)					\
+			   $(STACK_COUNT_HDR)
+HRESTORE_OBJ_GROUP	:= $(HRESTORE_OBJ)				\
+			   $(HNODE_FACTORY_OBJ_GROUP)
+HRESTORE_PIC_OBJ_PREQS	:= $(HRESTORE_OBJ_PREQS)
+HRESTORE_PIC_OBJ_GROUP	:= $(HRESTORE_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HRESTORE_OBJ)				\
+			   $(HRESTORE_PIC_OBJ)
+
+
+# red_black_hdelete
+# ──────────────────────────────────────────────────────────────────────────────
+HDELETE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hdelete)
+HDELETE_HDR		:= $(call TREE_HEADER_PATH,red_black_hdelete)
+HDELETE_OBJ		:= $(call OBJECT_PATH,red_black_hdelete)
+HDELETE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hdelete)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HDELETE_OBJ_PREQS	:= $(HDELETE_SRC)				\
+			   $(HDELETE_HDR)				\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HRESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
+HDELETE_OBJ_GROUP	:= $(HDELETE_OBJ)				\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HRESTORE_OBJ_GROUP)
+HDELETE_PIC_OBJ_PREQS	:= $(HDELETE_OBJ_PREQS)
+HDELETE_PIC_OBJ_GROUP	:= $(HDELETE_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HRESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HDELETE_OBJ)				\
+			   $(HDELETE_PIC_OBJ)
+
+
+# red_black_hdelete
+# ──────────────────────────────────────────────────────────────────────────────
+HDELETE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hdelete)
+HDELETE_HDR		:= $(call TREE_HEADER_PATH,red_black_hdelete)
+HDELETE_OBJ		:= $(call OBJECT_PATH,red_black_hdelete)
+HDELETE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hdelete)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HDELETE_OBJ_PREQS	:= $(HDELETE_SRC)				\
+			   $(HDELETE_HDR)				\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HRESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
+HDELETE_OBJ_GROUP	:= $(HDELETE_OBJ)				\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HRESTORE_OBJ_GROUP)
+HDELETE_PIC_OBJ_PREQS	:= $(HDELETE_OBJ_PREQS)
+HDELETE_PIC_OBJ_GROUP	:= $(HDELETE_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HRESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HDELETE_OBJ)				\
+			   $(HDELETE_PIC_OBJ)
+
+
+# red_black_hremove
+# ──────────────────────────────────────────────────────────────────────────────
+HREMOVE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hremove)
+HREMOVE_HDR		:= $(call TREE_HEADER_PATH,red_black_hremove)
+HREMOVE_OBJ		:= $(call OBJECT_PATH,red_black_hremove)
+HREMOVE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hremove)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HREMOVE_OBJ_PREQS	:= $(HREMOVE_SRC)				\
+			   $(HREMOVE_HDR)				\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HRESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
+HREMOVE_OBJ_GROUP	:= $(HREMOVE_OBJ)				\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HRESTORE_OBJ_GROUP)
+HREMOVE_PIC_OBJ_PREQS	:= $(HREMOVE_OBJ_PREQS)
+HREMOVE_PIC_OBJ_GROUP	:= $(HREMOVE_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HRESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HREMOVE_OBJ)				\
+			   $(HREMOVE_PIC_OBJ)
+
+
+# red_black_hdrop
+# ──────────────────────────────────────────────────────────────────────────────
+HDROP_SRC		:= $(call TREE_SOURCE_PATH,red_black_hdrop)
+HDROP_HDR		:= $(call TREE_HEADER_PATH,red_black_hdrop)
+HDROP_OBJ		:= $(call OBJECT_PATH,red_black_hdrop)
+HDROP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hdrop)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HDROP_OBJ_PREQS		:= $(HDROP_SRC)					\
+			   $(HDROP_HDR)					\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HRESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
+HDROP_OBJ_GROUP		:= $(HDROP_OBJ)					\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HRESTORE_OBJ_GROUP)
+HDROP_PIC_OBJ_PREQS	:= $(HDROP_OBJ_PREQS)
+HDROP_PIC_OBJ_GROUP	:= $(HDROP_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HRESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HDROP_OBJ)					\
+			   $(HDROP_PIC_OBJ)
+
+
+# red_black_hpluck
+# ──────────────────────────────────────────────────────────────────────────────
+HPLUCK_SRC		:= $(call TREE_SOURCE_PATH,red_black_hpluck)
+HPLUCK_HDR		:= $(call TREE_HEADER_PATH,red_black_hpluck)
+HPLUCK_OBJ		:= $(call OBJECT_PATH,red_black_hpluck)
+HPLUCK_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hpluck)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HPLUCK_OBJ_PREQS	:= $(HPLUCK_SRC)				\
+			   $(HPLUCK_HDR)				\
+			   $(HNODE_FACTORY_HDR)				\
+			   $(HRESTORE_HDR)				\
+			   $(STACK_COUNT_HDR)
+HPLUCK_OBJ_GROUP	:= $(HPLUCK_OBJ)				\
+			   $(HNODE_FACTORY_OBJ_GROUP)			\
+			   $(HKEY_OBJ_GROUP)				\
+			   $(HRESTORE_OBJ_GROUP)
+HPLUCK_PIC_OBJ_PREQS	:= $(HPLUCK_OBJ_PREQS)
+HPLUCK_PIC_OBJ_GROUP	:= $(HPLUCK_PIC_OBJ)				\
+			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
+			   $(HKEY_PIC_OBJ_GROUP)			\
+			   $(HRESTORE_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HPLUCK_OBJ)				\
+			   $(HPLUCK_PIC_OBJ)
+
+
+# red_black_hfind
+# ──────────────────────────────────────────────────────────────────────────────
+HFIND_SRC		:= $(call TREE_SOURCE_PATH,red_black_hfind)
+HFIND_HDR		:= $(call TREE_HEADER_PATH,red_black_hfind)
+HFIND_OBJ		:= $(call OBJECT_PATH,red_black_hfind)
+HFIND_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hfind)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HFIND_OBJ_PREQS		:= $(HFIND_SRC)					\
+			   $(HFIND_HDR)					\
+			   $(HNODE_HDR)
+HFIND_OBJ_GROUP		:= $(HFIND_OBJ)					\
+			   $(HKEY_OBJ_GROUP)
+HFIND_PIC_OBJ_PREQS	:= $(HFIND_OBJ_PREQS)
+HFIND_PIC_OBJ_GROUP	:= $(HFIND_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HFIND_OBJ)					\
+			   $(HFIND_PIC_OBJ)
+
+
+# red_black_hfetch
+# ──────────────────────────────────────────────────────────────────────────────
+HFETCH_SRC		:= $(call TREE_SOURCE_PATH,red_black_hfetch)
+HFETCH_HDR		:= $(call TREE_HEADER_PATH,red_black_hfetch)
+HFETCH_OBJ		:= $(call OBJECT_PATH,red_black_hfetch)
+HFETCH_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hfetch)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HFETCH_OBJ_PREQS	:= $(HFETCH_SRC)				\
+			   $(HFETCH_HDR)				\
+			   $(HNODE_HDR)
+HFETCH_OBJ_GROUP	:= $(HFETCH_OBJ)				\
+			   $(HKEY_OBJ_GROUP)
+HFETCH_PIC_OBJ_PREQS	:= $(HFETCH_OBJ_PREQS)
+HFETCH_PIC_OBJ_GROUP	:= $(HFETCH_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HFETCH_OBJ)				\
+			   $(HFETCH_PIC_OBJ)
+
+
+# red_black_hreplace
+# ──────────────────────────────────────────────────────────────────────────────
+HREPLACE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hreplace)
+HREPLACE_HDR		:= $(call TREE_HEADER_PATH,red_black_hreplace)
+HREPLACE_OBJ		:= $(call OBJECT_PATH,red_black_hreplace)
+HREPLACE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hreplace)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HREPLACE_OBJ_PREQS	:= $(HREPLACE_SRC)				\
+			   $(HREPLACE_HDR)				\
+			   $(HNODE_HDR)
+HREPLACE_OBJ_GROUP	:= $(HREPLACE_OBJ)				\
+			   $(HKEY_OBJ_GROUP)
+HREPLACE_PIC_OBJ_PREQS	:= $(HREPLACE_OBJ_PREQS)
+HREPLACE_PIC_OBJ_GROUP	:= $(HREPLACE_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HREPLACE_OBJ)				\
+			   $(HREPLACE_PIC_OBJ)
+
+
+# red_black_hexchange
+# ──────────────────────────────────────────────────────────────────────────────
+HEXCHANGE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hexchange)
+HEXCHANGE_HDR		:= $(call TREE_HEADER_PATH,red_black_hexchange)
+HEXCHANGE_OBJ		:= $(call OBJECT_PATH,red_black_hexchange)
+HEXCHANGE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hexchange)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HEXCHANGE_OBJ_PREQS	:= $(HEXCHANGE_SRC)				\
+			   $(HEXCHANGE_HDR)				\
+			   $(HNODE_HDR)
+HEXCHANGE_OBJ_GROUP	:= $(HEXCHANGE_OBJ)				\
+			   $(HKEY_OBJ_GROUP)
+HEXCHANGE_PIC_OBJ_PREQS	:= $(HEXCHANGE_OBJ_PREQS)
+HEXCHANGE_PIC_OBJ_GROUP	:= $(HEXCHANGE_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HEXCHANGE_OBJ)				\
+			   $(HEXCHANGE_PIC_OBJ)
+
+
+# red_black_hget
+# ──────────────────────────────────────────────────────────────────────────────
+HGET_SRC		:= $(call TREE_SOURCE_PATH,red_black_hget)
+HGET_HDR		:= $(call TREE_HEADER_PATH,red_black_hget)
+HGET_OBJ		:= $(call OBJECT_PATH,red_black_hget)
+HGET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hget)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HGET_OBJ_PREQS		:= $(HGET_SRC)					\
+			   $(HGET_HDR)					\
+			   $(HNODE_HDR)
+HGET_OBJ_GROUP		:= $(HGET_OBJ)					\
+			   $(HKEY_OBJ_GROUP)
+HGET_PIC_OBJ_PREQS	:= $(HGET_OBJ_PREQS)
+HGET_PIC_OBJ_GROUP	:= $(HGET_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HGET_OBJ)					\
+			   $(HGET_PIC_OBJ)
+
+
+# red_black_hset
+# ──────────────────────────────────────────────────────────────────────────────
+HSET_SRC		:= $(call TREE_SOURCE_PATH,red_black_hset)
+HSET_HDR		:= $(call TREE_HEADER_PATH,red_black_hset)
+HSET_OBJ		:= $(call OBJECT_PATH,red_black_hset)
+HSET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hset)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HSET_OBJ_PREQS		:= $(HSET_SRC)					\
+			   $(HSET_HDR)					\
+			   $(HNODE_HDR)
+HSET_OBJ_GROUP		:= $(HSET_OBJ)					\
+			   $(HKEY_OBJ_GROUP)
+HSET_PIC_OBJ_PREQS	:= $(HSET_OBJ_PREQS)
+HSET_PIC_OBJ_GROUP	:= $(HSET_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HSET_OBJ)					\
+			   $(HSET_PIC_OBJ)
+
+# red_black_hswap
+# ──────────────────────────────────────────────────────────────────────────────
+HSWAP_SRC		:= $(call TREE_SOURCE_PATH,red_black_hswap)
+HSWAP_HDR		:= $(call TREE_HEADER_PATH,red_black_hswap)
+HSWAP_OBJ		:= $(call OBJECT_PATH,red_black_hswap)
+HSWAP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hswap)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HSWAP_OBJ_PREQS		:= $(HSWAP_SRC)					\
+			   $(HSWAP_HDR)					\
+			   $(HNODE_HDR)
+HSWAP_OBJ_GROUP		:= $(HSWAP_OBJ)					\
+			   $(HKEY_OBJ_GROUP)
+HSWAP_PIC_OBJ_PREQS	:= $(HSWAP_OBJ_PREQS)
+HSWAP_PIC_OBJ_GROUP	:= $(HSWAP_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HSWAP_OBJ)					\
+			   $(HSWAP_PIC_OBJ)
+
+
+# red_black_hverify
+# ──────────────────────────────────────────────────────────────────────────────
+HVERIFY_SRC		:= $(call TREE_SOURCE_PATH,red_black_hverify)
+HVERIFY_HDR		:= $(call TREE_HEADER_PATH,red_black_hverify)
+HVERIFY_OBJ		:= $(call OBJECT_PATH,red_black_hverify)
+HVERIFY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hverify)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HVERIFY_OBJ_PREQS	:= $(HVERIFY_SRC)				\
+			   $(HVERIFY_HDR)				\
+			   $(HNODE_HDR)					\
+			   $(JUMP_HDR)
+HVERIFY_OBJ_GROUP	:= $(HVERIFY_OBJ)				\
+			   $(HKEY_OBJ_GROUP)
+HVERIFY_PIC_OBJ_PREQS	:= $(HVERIFY_OBJ_PREQS)
+HVERIFY_PIC_OBJ_GROUP	:= $(HVERIFY_PIC_OBJ)				\
+			   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HVERIFY_OBJ)				\
+			   $(HVERIFY_PIC_OBJ)
+
+
+# red_black_hcopy
+# ──────────────────────────────────────────────────────────────────────────────
+HCOPY_SRC		:= $(call TREE_SOURCE_PATH,red_black_hcopy)
+HCOPY_HDR		:= $(call TREE_HEADER_PATH,red_black_hcopy)
+HCOPY_OBJ		:= $(call OBJECT_PATH,red_black_hcopy)
+HCOPY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hcopy)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HCOPY_OBJ_PREQS		:= $(HCOPY_SRC)					\
+			   $(HCOPY_HDR)					\
+			   $(HNODE_HDR)
+HCOPY_OBJ_GROUP		:= $(HCOPY_OBJ)
+HCOPY_PIC_OBJ_PREQS	:= $(HCOPY_OBJ_PREQS)
+HCOPY_PIC_OBJ_GROUP	:= $(HCOPY_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HCOPY_OBJ)					\
+			   $(HCOPY_PIC_OBJ)
+
+
+# red_black_hcongruent
+# ──────────────────────────────────────────────────────────────────────────────
+HCONGRUENT_SRC			:= $(call TREE_SOURCE_PATH,red_black_hcongruent)
+HCONGRUENT_HDR			:= $(call TREE_HEADER_PATH,red_black_hcongruent)
+HCONGRUENT_OBJ			:= $(call OBJECT_PATH,red_black_hcongruent)
+HCONGRUENT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hcongruent)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HCONGRUENT_OBJ_PREQS		:= $(HCONGRUENT_SRC)			\
+			   	   $(HCONGRUENT_HDR)			\
+			   	   $(HNODE_HDR)				\
+			   	   $(JUMP_HDR)
+HCONGRUENT_OBJ_GROUP		:= $(HCONGRUENT_OBJ)			\
+				   $(HKEY_OBJ_GROUP)
+HCONGRUENT_PIC_OBJ_PREQS	:= $(HCONGRUENT_OBJ_PREQS)
+HCONGRUENT_PIC_OBJ_GROUP	:= $(HCONGRUENT_PIC_OBJ)		\
+				   $(HKEY_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS				+= $(HCONGRUENT_OBJ)			\
+				   $(HCONGRUENT_PIC_OBJ)
 
 # KEY_ACCESSOR MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1377,7 +1868,7 @@ $(TREE_PIC_OBJ): $(TREE_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 
-# RED_BLACK MODULES
+# RED_BLACK_TREE MODULES
 # ──────────────────────────────────────────────────────────────────────────────
 $(NODE_FACTORY_OBJ): $(NODE_FACTORY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
@@ -1494,11 +1985,6 @@ $(TREEIFY_OBJ): $(TREEIFY_OBJ_PREQS)
 $(TREEIFY_PIC_OBJ): $(TREEIFY_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-# $(CONCAT_OBJ): $(CONCAT_OBJ_PREQS)
-# 	$(CC) $(CC_FLAGS) $< -o $@
-# $(CONCAT_PIC_OBJ): $(CONCAT_PIC_OBJ_PREQS)
-# 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
 $(COPY_OBJ): $(COPY_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(COPY_PIC_OBJ): $(COPY_PIC_OBJ_PREQS)
@@ -1507,6 +1993,134 @@ $(COPY_PIC_OBJ): $(COPY_PIC_OBJ_PREQS)
 $(CONGRUENT_OBJ): $(CONGRUENT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(CONGRUENT_PIC_OBJ): $(CONGRUENT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HKEY_OBJ): $(HKEY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HKEY_PIC_OBJ): $(HKEY_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+
+# RED_BLACK_HMAP
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+
+# RED_BLACK_HMAP MODULES
+# ──────────────────────────────────────────────────────────────────────────────
+$(HNODE_FACTORY_OBJ): $(HNODE_FACTORY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HNODE_FACTORY_PIC_OBJ): $(HNODE_FACTORY_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HITOR_OBJ): $(HITOR_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HITOR_PIC_OBJ): $(HITOR_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HINSERT_OBJ): $(HINSERT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HINSERT_PIC_OBJ): $(HINSERT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HPUT_OBJ): $(HPUT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HPUT_PIC_OBJ): $(HPUT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HUPDATE_OBJ): $(HUPDATE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HUPDATE_PIC_OBJ): $(HUPDATE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HADD_OBJ): $(HADD_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HADD_PIC_OBJ): $(HADD_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HCORRECT_OBJ): $(HCORRECT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HCORRECT_PIC_OBJ): $(HCORRECT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HDELETE_OBJ): $(HDELETE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HDELETE_PIC_OBJ): $(HDELETE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HREMOVE_OBJ): $(HREMOVE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HREMOVE_PIC_OBJ): $(HREMOVE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HDROP_OBJ): $(HDROP_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HDROP_PIC_OBJ): $(HDROP_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HPLUCK_OBJ): $(HPLUCK_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HPLUCK_PIC_OBJ): $(HPLUCK_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HRESTORE_OBJ): $(HRESTORE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HRESTORE_PIC_OBJ): $(HRESTORE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HFIND_OBJ): $(HFIND_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HFIND_PIC_OBJ): $(HFIND_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HFETCH_OBJ): $(HFETCH_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HFETCH_PIC_OBJ): $(HFETCH_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HREPLACE_OBJ): $(HREPLACE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HREPLACE_PIC_OBJ): $(HREPLACE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HEXCHANGE_OBJ): $(HEXCHANGE_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HEXCHANGE_PIC_OBJ): $(HEXCHANGE_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HGET_OBJ): $(HGET_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HGET_PIC_OBJ): $(HGET_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HSET_OBJ): $(HSET_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HSET_PIC_OBJ): $(HSET_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HSWAP_OBJ): $(HSWAP_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HSWAP_PIC_OBJ): $(HSWAP_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HCOUNT_OBJ): $(HCOUNT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HCOUNT_PIC_OBJ): $(HCOUNT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HVERIFY_OBJ): $(HVERIFY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HVERIFY_PIC_OBJ): $(HVERIFY_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HCOPY_OBJ): $(HCOPY_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HCOPY_PIC_OBJ): $(HCOPY_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HCONGRUENT_OBJ): $(HCONGRUENT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HCONGRUENT_PIC_OBJ): $(HCONGRUENT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(HKEY_OBJ): $(HKEY_OBJ_PREQS)
