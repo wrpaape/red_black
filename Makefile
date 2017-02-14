@@ -243,12 +243,12 @@ UNITY_GEN_TRNR_SCRIPT	:= $(call UNITY_SCRIPT_PATH,generate_test_runner)
 UNITY_ENV_FLAGS 	:= -DUNITY_INCLUDE_CONFIG_H
 UNITY_CC_FLAGS		:= $(CC_FLAGS) $(UNITY_ENV_FLAGS) -I$(UNITY_HEADER_DIR) -I$(TEST_DIR)
 # ─────────────── run all tests ────────────────────────────────────────────────
-TEST_FILES_GLOB		:= $(call BINARY_FILE_PATH,$(BINARY_DIR),*_test)
 ifeq (T,$(SYSTEM_WINDOWS))
+TEST_FILES_GLOB		:= $(call BINARY_FILE_PATH,$(BINARY_DIR),*_test)
 RUN_TESTS		:= FORFILES /M $(TEST_FILES_GLOB) /C "cmd /c @file"
 
 else
-RUN_TESTS		:= for test in $(TEST_FILES_GLOB); do "./$$test"; done
+RUN_TESTS		 = for test in $^; do "./$$test"; done
 endif
 # ─────────────── target prequisites ───────────────────────────────────────────
 UNITY_OBJ_PREQS		:= $(UNITY_SRC)					\

@@ -888,7 +888,7 @@ rb_tree_union(RedBlackTree *const restrict union_tree,
 	return -1; /* RED_BLACK_MALLOC failure */
 }
 
-
+#if 0 /* toggle on/off list building pushing/appending */
 int
 red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 			    const RedBlackTree *const restrict tree1,
@@ -993,10 +993,10 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackItor itor1;
 	struct RedBlackItor itor2;
-	int count;
 	void *key1;
 	void *key2;
 	int compare;
+	int count;
 
 	/* 1. build up list of keys unique to tree1 in ascending order
 	 * 2. treeify list */
@@ -1087,11 +1087,11 @@ red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
 	struct RedBlackItor *restrict lesser_itor_ptr;
 	struct RedBlackItor *restrict tmp_itor_ptr;
 	struct RedBlackItor *restrict rem_itor_ptr;
-	int count;
 	void *rem_key;
 	void *greater_key;
 	void *lesser_key;
 	int compare;
+	int count;
 
 	/* 1. build up list of non-overlapping keys in ascending order
 	 * 2. treeify list */
@@ -1116,9 +1116,6 @@ red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
 		rbnf_destroy(sym_difference_factory_ptr);
 		return -1; /* RED_BLACK_MALLOC failure */
 	}
-
-	red_black_tree_init(sym_difference_tree,
-			    comparator);
 
 	/* head  = NULL; */
 	count = 0;
@@ -1192,6 +1189,312 @@ DO_LISTIFY_REMAINDER:
 
 	return count;
 }
+#else /* build list by appending to end */
+int
+red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
+			    const RedBlackTree *const restrict tree1,
+			    const RedBlackTree *const restrict tree2)
+{
+	struct RedBlackNodeFactory *restrict intersection_factory_ptr;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict head;
+	struct RedBlackNode *restrict *restrict end_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackItor itor1;
+	struct RedBlackItor itor2;
+	void *key1;
+	void *key2;
+	int compare;
+	int count;
+
+	/* 1. build up list of overlapping keys in ascending order
+	 * 2. treeify list */
+
+	red_black_asc_itor_init(&itor1,
+				tree1->root);
+
+	red_black_asc_itor_init(&itor2,
+				tree2->root);
+
+	comparator = tree2->comparator;
+
+	intersection_tree->comparator = comparator;
+
+	intersection_factory_ptr = &intersection_tree->factory;
+
+	rbnf_init(intersection_factory_ptr);
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
+		rbnf_destroy(intersection_factory_ptr);
+		return -1; /* RED_BLACK_MALLOC failure */
+	}
+
+
+	end_ptr = &head;
+	count   = 0;
+
+	while (1) {
+		if (!red_black_itor_next(&itor1,
+					 &key1))
+			break;
+
+		if (!red_black_itor_next(&itor2,
+					 &key2))
+			break;
+
+
+		while (1) {
+			compare = comparator(key1,
+					     key2);
+
+			if (compare < 0) {
+				if (!red_black_itor_next(&itor1,
+							 &key1))
+					goto TREEIFY;
+
+			} else if (compare > 0) {
+				if (!red_black_itor_next(&itor2,
+							 &key2))
+					goto TREEIFY;
+
+			} else {
+				break; /* add overlapping keys */
+			}
+		}
+
+		node = rbnf_allocate(intersection_factory_ptr,
+				     jump_buffer);
+
+		*end_ptr  = node;
+		end_ptr   = &node->left;
+		node->key = key1;
+
+		++count;
+	}
+
+TREEIFY:
+	intersection_tree->root = red_black_treeify(head,
+						    count,
+						    false); /* BLACK */
+
+	return count;
+}
+
+
+int
+red_black_tree_difference(RedBlackTree *const restrict difference_tree,
+			  const RedBlackTree *const restrict tree1,
+			  const RedBlackTree *const restrict tree2)
+{
+	struct RedBlackNodeFactory *restrict difference_factory_ptr;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict root1;
+	struct RedBlackNode *restrict head;
+	struct RedBlackNode *restrict *restrict end_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackItor itor1;
+	struct RedBlackItor itor2;
+	void *key1;
+	void *key2;
+	int compare;
+	int count;
+
+	/* 1. build up list of keys unique to tree1 in ascending order
+	 * 2. treeify list */
+
+	root1 = tree1->root;
+
+	red_black_asc_itor_init(&itor1,
+				root1);
+
+	red_black_asc_itor_init(&itor2,
+				tree2->root);
+
+	comparator = tree2->comparator;
+
+	difference_tree->comparator = comparator;
+
+	difference_factory_ptr = &difference_tree->factory;
+
+	rbnf_init(difference_factory_ptr);
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
+		rbnf_destroy(difference_factory_ptr);
+		return -1; /* RED_BLACK_MALLOC failure */
+	}
+
+	end_ptr = &head;
+	count   = 0;
+
+	while (red_black_itor_next(&itor2,
+				   &key2)) {
+		while (1) {
+			if (!red_black_itor_next(&itor1,
+						 &key1))
+				goto TREEIFY;
+
+			compare = comparator(key1,
+					     key2);
+
+			if (compare >= 0)
+				break;
+
+			node = rbnf_allocate(difference_factory_ptr,
+					     jump_buffer);
+
+			*end_ptr  = node;
+			end_ptr   = &node->left;
+			node->key = key1;
+
+			++count;
+		}
+	}
+
+	/* tree2 exhausted, add remainder of tree1 */
+	while (red_black_itor_next(&itor1,
+				   &key1)) {
+		node = rbnf_allocate(difference_factory_ptr,
+				     jump_buffer);
+
+		*end_ptr  = node;
+		end_ptr   = &node->left;
+		node->key = key1;
+
+		++count;
+	}
+
+TREEIFY:
+	difference_tree->root = red_black_treeify(head,
+						  count,
+						  false); /* BLACK */
+
+	return count;
+}
+
+
+int
+red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
+			      const RedBlackTree *const restrict tree1,
+			      const RedBlackTree *const restrict tree2)
+{
+	struct RedBlackNodeFactory *restrict sym_difference_factory_ptr;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict head;
+	struct RedBlackNode *restrict *restrict end_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackItor itor1;
+	struct RedBlackItor itor2;
+	struct RedBlackItor *restrict lesser_itor_ptr;
+	struct RedBlackItor *restrict greater_itor_ptr;
+	struct RedBlackItor *restrict tmp_itor_ptr;
+	struct RedBlackItor *restrict rem_itor_ptr;
+	int count;
+	void *rem_key;
+	void *lesser_key;
+	void *greater_key;
+	int compare;
+
+	/* 1. build up list of non-overlapping keys in ascending order
+	 * 2. treeify list */
+
+	lesser_itor_ptr = &itor1;
+	red_black_asc_itor_init(lesser_itor_ptr,
+				tree1->root);
+
+	greater_itor_ptr = &itor2;
+	red_black_asc_itor_init(greater_itor_ptr,
+				tree2->root);
+
+	comparator = tree2->comparator;
+
+	sym_difference_tree->comparator = comparator;
+
+	sym_difference_factory_ptr = &sym_difference_tree->factory;
+
+	rbnf_init(sym_difference_factory_ptr);
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
+		rbnf_destroy(sym_difference_factory_ptr);
+		return -1; /* RED_BLACK_MALLOC failure */
+	}
+
+	end_ptr = &head;
+	count   = 0;
+
+	while (1) {
+		/* set greater key */
+		if (!red_black_itor_next(greater_itor_ptr,
+					 &greater_key)) {
+			rem_itor_ptr = lesser_itor_ptr;
+			break;
+		}
+
+		while (1) {
+			/* fetch next key from lesser itor */
+			if (!red_black_itor_next(lesser_itor_ptr,
+						 &lesser_key)) {
+				rem_itor_ptr = greater_itor_ptr;
+				rem_key	     = greater_key;
+				/* greater_key is unique, ensure it is added */
+				goto DO_LISTIFY_REMAINDER;
+			}
+
+			compare = comparator(lesser_key,
+					     greater_key);
+
+			if (compare == 0)
+				break; /* do not add overlapping keys */
+
+			node = rbnf_allocate(sym_difference_factory_ptr,
+					     jump_buffer);
+
+			/* append node to list and update count */
+			*end_ptr = node;
+			end_ptr  = &node->left;
+
+			++count;
+
+			if (compare < 0) {
+				/* continue fetching from lesser itor */
+				node->key = lesser_key;
+
+			} else {
+				/* itors out of order, need to swap */
+				node->key   = greater_key;
+				greater_key = lesser_key;
+
+				tmp_itor_ptr	 = greater_itor_ptr;
+				greater_itor_ptr = lesser_itor_ptr;
+				lesser_itor_ptr  = tmp_itor_ptr;
+			}
+		}
+	}
+
+	while (red_black_itor_next(rem_itor_ptr,
+				   &rem_key)) {
+DO_LISTIFY_REMAINDER:
+		node = rbnf_allocate(sym_difference_factory_ptr,
+				     jump_buffer);
+
+		*end_ptr   = node;
+		end_ptr    = &node->left;
+		node->key  = rem_key;
+
+		++count;
+	}
+
+	/* treeify list (no need to NULL terminate) */
+	sym_difference_tree->root = red_black_treeify(head,
+						      count,
+						      false); /* BLACK */
+
+	return count;
+}
+
+#endif
 
 
 bool

@@ -100,7 +100,8 @@ rbhm_reset_buckets(struct RedBlackHBucket *const restrict buckets,
 		/* fetch hash key hash */
 		hash = head->hkey.hash;
 
-		next = head->left; /* must fetch next before NULLed in add */
+		/* must fetch next before NULLed in add */
+		next = head->left;
 
 		/* fetch new bucket */
 		bucket = &buckets[hash & new_count_m1];
