@@ -88,3 +88,20 @@ red_black_hitor_next(struct RedBlackHItor *const restrict itor,
 
 	return has_next;
 }
+
+
+/* internal use, will only be called if more keys available */
+const struct Hkey *restrict
+red_black_hitor_next_hkey(struct RedBlackHItor *const restrict itor)
+{
+	const struct RedBlackHNode *restrict *restrict cursor;
+	const struct RedBlackHNode *restrict node;
+
+	cursor = itor->cursor;
+	node   = *cursor;
+
+	itor->cursor = rbhi_update(cursor,
+				   node);
+
+	return &node->hkey;
+}

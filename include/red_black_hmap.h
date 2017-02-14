@@ -120,12 +120,22 @@ red_black_hmap_swap(const RedBlackHMap *const restrict map,
 		    const void *const key,
 		    const size_t length);
 
+bool
+red_black_hmap_empty(RedBlackHMap *const restrict map);
+
 unsigned int
-red_black_hmap_count(RedBlackHMap *const restrict map);
+red_black_hmap_count(const RedBlackHMap *const restrict map);
 
 
 bool
-red_black_hmap_verify(RedBlackHMap *const restrict map);
+red_black_hmap_verify(const RedBlackHMap *const restrict map);
+
+bool
+red_black_hmap_congruent(const RedBlackHMap *const map1,
+			 const RedBlackHMap *const map2);
+bool
+rb_hmap_congruent(const RedBlackHMap *const restrict map1,
+		  const RedBlackHMap *const restrict map2);
 
 void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,

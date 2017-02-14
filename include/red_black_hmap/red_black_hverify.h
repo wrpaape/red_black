@@ -9,8 +9,11 @@
 
 /* external API
  * ────────────────────────────────────────────────────────────────────────── */
-bool
+void
 red_black_hverify(const struct RedBlackHNode *const restrict root,
 		  RedBlackJumpBuffer jump_buffer);
+
+/* returns if valid, jumps otherwise
+ * ────────────────────────────────────────────────────────────────────────── */
 
 #endif /* ifndef RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HVERIFY_H_ */

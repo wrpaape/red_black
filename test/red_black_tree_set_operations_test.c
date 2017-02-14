@@ -27,7 +27,7 @@ static int other_count;
 
 
 static inline void
-init_int_tree(RedBlackTree *const restrict tree)
+init_tree(RedBlackTree *const restrict tree)
 {
 	red_black_tree_init(tree,
 			    &int_key_comparator);
@@ -40,85 +40,62 @@ init_int_tree(RedBlackTree *const restrict tree)
 				       "NON-EMPTY TREE");
 }
 
+static inline void
+add_key(RedBlackTree *const restrict tree,
+	const int key)
+{
+	const bool status = red_black_tree_add(tree,
+					       (void *) (intptr_t) key);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "OUT OF MEMORY");
+}
+
+
 void
 setUp(void)
 {
 	int i;
 	int key;
-	bool status;
 
-	init_int_tree(&all);
-	init_int_tree(&fizz);
-	init_int_tree(&fizz_only);
-	init_int_tree(&buzz);
-	init_int_tree(&buzz_only);
-	init_int_tree(&fizz_buzz_u);
-	init_int_tree(&fizz_buzz_i);
-	init_int_tree(&fizz_buzz_s);
-	init_int_tree(&other);
+	init_tree(&all);
+	init_tree(&fizz);	 fizz_count        = 0;
+	init_tree(&fizz_only);   fizz_only_count   = 0;
+	init_tree(&buzz);	 buzz_count        = 0;
+	init_tree(&buzz_only);   buzz_only_count   = 0;
+	init_tree(&fizz_buzz_u); fizz_buzz_u_count = 0;
+	init_tree(&fizz_buzz_i); fizz_buzz_i_count = 0;
+	init_tree(&fizz_buzz_s); fizz_buzz_s_count = 0;
+	init_tree(&other);	 other_count       = 0;
 
 	shuffle_keys();
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = keys[i];
 
-		status = red_black_tree_add(&all,
-					    (void *) (intptr_t) key);
-
-		TEST_ASSERT_TRUE_MESSAGE(status,
-					 "OUT OF MEMORY");
+		add_key(&all, key);
 
 		if ((key % 15) == 0) {
-			++fizz_count;
-			++buzz_count;
-			++fizz_buzz_u_count;
-			++fizz_buzz_i_count;
+			add_key(&fizz,	      key); ++fizz_count;
+			add_key(&buzz,	      key); ++buzz_count;
+			add_key(&fizz_buzz_u, key); ++fizz_buzz_u_count;
+			add_key(&fizz_buzz_i, key); ++fizz_buzz_i_count;
 
-			status = red_black_tree_add(&fizz,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&buzz,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_u,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_i,
-						    (void *) (intptr_t) key);
 		} else if ((key % 3) == 0) {
-			++fizz_count;
-			++fizz_only_count;
-			++fizz_buzz_u_count;
-			++fizz_buzz_s_count;
+			add_key(&fizz,	      key); ++fizz_count;
+			add_key(&fizz_only,   key); ++fizz_only_count;
+			add_key(&fizz_buzz_u, key); ++fizz_buzz_u_count;
+			add_key(&fizz_buzz_s, key); ++fizz_buzz_s_count;
 
-			status = red_black_tree_add(&fizz,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_only,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_u,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_s,
-						    (void *) (intptr_t) key);
 		} else if ((key % 5) == 0) {
-			++buzz_count;
-			++buzz_only_count;
-			++fizz_buzz_u_count;
-			++fizz_buzz_s_count;
+			add_key(&buzz,	      key); ++buzz_count;
+			add_key(&buzz_only,   key); ++buzz_only_count;
+			add_key(&fizz_buzz_u, key); ++fizz_buzz_u_count;
+			add_key(&fizz_buzz_s, key); ++fizz_buzz_s_count;
 
-			status = red_black_tree_add(&buzz,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&buzz_only,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_u,
-						    (void *) (intptr_t) key)
-			      && red_black_tree_add(&fizz_buzz_s,
-						    (void *) (intptr_t) key);
 		} else {
-			++other_count;
-
-			status = red_black_tree_add(&other,
-						    (void *) (intptr_t) key);
+			add_key(&other,	      key); ++other_count;
 		}
-
-		TEST_ASSERT_TRUE_MESSAGE(status,
-					 "OUT OF MEMORY");
 	}
 }
 
@@ -134,15 +111,6 @@ tearDown(void)
 	red_black_tree_destroy(&fizz_buzz_i);
 	red_black_tree_destroy(&fizz_buzz_s);
 	red_black_tree_destroy(&other);
-
-	fizz_count        = 0;
-	fizz_only_count   = 0;
-	buzz_count        = 0;
-	buzz_only_count   = 0;
-	fizz_buzz_u_count = 0;
-	fizz_buzz_i_count = 0;
-	fizz_buzz_s_count = 0;
-	other_count       = 0;
 }
 
 
@@ -153,7 +121,7 @@ test_red_black_tree_insert_all(void)
 	int count_inserted;
 	RedBlackTree tree;
 
-	init_int_tree(&tree);
+	init_tree(&tree);
 
 	count_inserted = red_black_tree_insert_all(&tree,
 						   &fizz);
@@ -213,7 +181,7 @@ test_red_black_tree_add_all(void)
 	int count_inserted;
 	RedBlackTree tree;
 
-	init_int_tree(&tree);
+	init_tree(&tree);
 
 	status = red_black_tree_add_all(&tree,
 					&fizz);

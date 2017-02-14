@@ -51,15 +51,15 @@ rb_hverify(const struct RedBlackHNode *const restrict node,
 }
 
 
-bool
+void
 red_black_verify(const struct RedBlackHNode *const restrict root,
 		 RedBlackJumpBuffer jump_buffer)
 {
 
-	return rb_hverify(root,
+	(void) rb_hverify(root,
 			  &RED_BLACK_HKEY_MIN,
 			  &RED_BLACK_HKEY_MAX,
 			  false,
 			  0,
-			  jump_buffer) >= 0;
+			  jump_buffer); /* valid if didn't jump */
 }

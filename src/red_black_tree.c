@@ -1,4 +1,4 @@
-#include "red_black_tree.h"			/* types */
+#include "red_black_tree.h"			/* Tree, TreeItor */
 #include "red_black_tree/red_black_insert.h"	/* red_black_insert */
 #include "red_black_tree/red_black_put.h"	/* red_black_put */
 #include "red_black_tree/red_black_update.h"	/* red_black_update */
@@ -551,17 +551,12 @@ red_black_tree_count(const RedBlackTree *const restrict tree)
 bool
 red_black_tree_verify(const RedBlackTree *const restrict tree)
 {
-	bool status;
 	RedBlackJumpBuffer jump_buffer;
 
-	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
-
-	if (status)
-		status = red_black_verify(tree->root,
-					  tree->comparator,
-					  jump_buffer);
-
-	return status;
+	return (RED_BLACK_SET_JUMP(jump_buffer) == 0)
+	    && red_black_verify(tree->root,
+				tree->comparator,
+				jump_buffer);
 }
 
 
@@ -569,20 +564,10 @@ bool
 red_black_tree_congruent(const RedBlackTree *const tree1,
 			 const RedBlackTree *const tree2)
 {
-	bool status;
-
-	status = (tree1 == tree2);
-
-	if (!status) {
-		status = (tree1->comparator == tree2->comparator);
-
-		if (status)
-			status = rb_tree_congruent(tree1,
-						   tree2);
-	}
-
-	return status;
-
+	return (tree1 == tree2)
+	    || (   (tree1->comparator == tree2->comparator)
+		&& rb_tree_congruent(tree1,
+				     tree2));
 }
 
 bool
@@ -609,19 +594,10 @@ bool
 red_black_tree_similar(const RedBlackTree *const tree1,
 		       const RedBlackTree *const tree2)
 {
-	bool status;
-
-	status = (tree1 == tree2);
-
-	if (!status) {
-		status = (tree1->comparator == tree2->comparator);
-
-		if (status)
-			status = rb_tree_similar(tree1,
-						 tree2);
-	}
-
-	return status;
+	return (tree1 == tree2)
+	    || (   (tree1->comparator == tree2->comparator)
+		&& rb_tree_similar(tree1,
+				   tree2));
 }
 
 bool
@@ -752,7 +728,7 @@ red_black_tree_add_all(RedBlackTree *const restrict dst_tree,
 {
 	return rb_tree_add_all(dst_tree,
 			       src_tree,
-			       red_black_tree_count(src_tree));
+			       red_black_count(src_tree->root));
 }
 
 bool
@@ -930,6 +906,9 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 	int compare;
 	int count;
 
+	/* 1. build up list of overlapping keys in ascending order
+	 * 2. treeify list */
+
 	red_black_desc_itor_init(&itor1,
 				 tree1->root);
 
@@ -1006,7 +985,7 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 			  const RedBlackTree *const restrict tree1,
 			  const RedBlackTree *const restrict tree2)
 {
-	struct RedBlackNodeFactory *restrict diff_factory_ptr;
+	struct RedBlackNodeFactory *restrict difference_factory_ptr;
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict root1;
 	struct RedBlackNode *restrict head;
@@ -1034,12 +1013,12 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 
 	difference_tree->comparator = comparator;
 
-	diff_factory_ptr = &difference_tree->factory;
+	difference_factory_ptr = &difference_tree->factory;
 
-	rbnf_init(diff_factory_ptr);
+	rbnf_init(difference_factory_ptr);
 
 	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
-		rbnf_destroy(diff_factory_ptr);
+		rbnf_destroy(difference_factory_ptr);
 		return -1; /* RED_BLACK_MALLOC failure */
 	}
 
@@ -1059,7 +1038,7 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 			if (compare >= 0)
 				break;
 
-			node = rbnf_allocate(diff_factory_ptr,
+			node = rbnf_allocate(difference_factory_ptr,
 					     jump_buffer);
 
 			node->key  = key1;
@@ -1070,9 +1049,10 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 		}
 	}
 
+	/* tree2 exhausted, add remainder of tree1 */
 	while (red_black_itor_next(&itor1,
 				   &key1)) {
-		node = rbnf_allocate(diff_factory_ptr,
+		node = rbnf_allocate(difference_factory_ptr,
 				     jump_buffer);
 
 		node->key  = key1;
