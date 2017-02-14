@@ -3,7 +3,7 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_hmap/red_black_node.h" /* struct RedBlackHNode */
+#include "red_black_hmap/red_black_hnode.h" /* struct RedBlackHNode */
 
 
 /* external API

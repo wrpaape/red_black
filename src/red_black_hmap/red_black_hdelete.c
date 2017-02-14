@@ -120,7 +120,6 @@ rb_hdelete_r(struct RedBlackHNode *restrict *const restrict tree,
 
 		next_hdelete(subtree,
 			     rnode,
-			     comparator,
 			     factory,
 			     jump_buffer,
 			     hkey);

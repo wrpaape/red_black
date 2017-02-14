@@ -58,7 +58,7 @@ rb_hremove_l(struct RedBlackHNode *restrict *const restrict tree,
 						      &lnode->hkey);
 
 	if (compare == 0) {
-		*remove_ptr = (void *) lnode->hkey;
+		*remove_ptr = (void *) lnode->hkey.key;
 
 		red_black_hrestore_node(subtree,
 					lnode,

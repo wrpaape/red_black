@@ -1,5 +1,4 @@
-#include "red_black_hmap/red_black_hmap.h"       /* HMap, HMapItor */
-#include "red_black_hmap/red_black_hnode.h"      /* HNode|Key, init, cmptor */
+#include "red_black_hmap/red_black_hmap.h"       /* HMap, HMapItor, HNode */
 #include "red_black_hmap/red_black_hinsert.h"    /* red_black_hinsert */
 #include "red_black_hmap/red_black_hput.h"       /* red_black_hput */
 #include "red_black_hmap/red_black_hupdate.h"    /* red_black_hupdate */
@@ -15,8 +14,9 @@
 #include "red_black_hmap/red_black_hget.h"       /* red_black_hget */
 #include "red_black_hmap/red_black_hset.h"       /* red_black_hset */
 #include "red_black_hmap/red_black_hswap.h"      /* red_black_hswap */
-#include "red_black_tree/red_black_hcongruent.h" /* red_black_hcongruent */
+#include "red_black_hmap/red_black_hcongruent.h" /* red_black_hcongruent */
 #include "red_black_hmap/red_black_hverify.h"    /* red_black_hverify */
+#include "red_black_hmap/red_black_hcopy.h"      /* red_black_hcopy */
 #include "red_black_hmap/red_black_hconcat.h"    /* red_black_hconcat */
 #include "red_black_common/red_black_malloc.h"   /* MALLOC|REALLOC|FREE */
 

@@ -3,7 +3,7 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_hmap/red_black_node_factory.h" /* HNode, Factory, JUMP */
+#include "red_black_hmap/red_black_hnode_factory.h" /* HNode, Factory, JUMP */
 
 
 /* external API

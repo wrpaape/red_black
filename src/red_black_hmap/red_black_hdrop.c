@@ -10,7 +10,7 @@ typedef void
 		     struct RedBlackHNode *const restrict parent,
 		     struct RedBlackHNodeFactory *const restrict factory,
 		     RedBlackJumpBuffer jump_buffer,
-		     const void *const hkey);
+		     const struct RedBlackHKey *const restrict hkey);
 
 /* drop state machine functions
  *
@@ -26,39 +26,39 @@ rb_hdrop_l(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey);
+	   const struct RedBlackHKey *const restrict hkey);
 static void
 rb_hdrop_r(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey);
+	   const struct RedBlackHKey *const restrict hkey);
 
 static void
 rb_hdrop_l(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey)
+	   const struct RedBlackHKey *const restrict hkey)
 {
 	RedBlackHDropNode next_hdrop;
 
 	struct RedBlackHNode *restrict *const restrict subtree = &parent->left;
 	struct RedBlackHNode *const restrict lnode	       = *subtree;
 
-	const int compare = red_black_hkey_comparator(key,
+	const int compare = red_black_hkey_comparator(hkey,
 						      &lnode->hkey);
 
 	if (compare == 0) {
-		red_black_restore_node(subtree,
-				       lnode,
-				       factory,
-				       jump_buffer);
+		red_black_hrestore_node(subtree,
+					lnode,
+					factory,
+					jump_buffer);
 
 		/* if returned, need to restore */
-		red_black_restore_l_bot(tree,
-					parent,
-					jump_buffer);
+		red_black_hrestore_l_bot(tree,
+					 parent,
+					 jump_buffer);
 
 	} else {
 		next_hdrop = (compare < 0)
@@ -72,9 +72,9 @@ rb_hdrop_l(struct RedBlackHNode *restrict *const restrict tree,
 			   hkey);
 
 		/* if returned, need to restore */
-		red_black_restore_l_mid(tree,
-					parent,
-					jump_buffer);
+		red_black_hrestore_l_mid(tree,
+					 parent,
+					 jump_buffer);
 	}
 	/* if returned, previous frame needs to restore */
 }
@@ -84,26 +84,26 @@ rb_hdrop_r(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey)
+	   const struct RedBlackHKey *const restrict hkey)
 {
 	RedBlackHDropNode next_hdrop;
 
 	struct RedBlackHNode *restrict *const restrict subtree = &parent->right;
 	struct RedBlackHNode *const restrict rnode	       = *subtree;
 
-	const int compare = red_black_hkey_comparator(key,
+	const int compare = red_black_hkey_comparator(hkey,
 						      &rnode->hkey);
 
 	if (compare == 0) {
-		red_black_restore_node(subtree,
-				       rnode,
-				       factory,
-				       jump_buffer);
+		red_black_hrestore_node(subtree,
+					rnode,
+					factory,
+					jump_buffer);
 
 		/* if returned, need to restore */
-		red_black_restore_r_bot(tree,
-					parent,
-					jump_buffer);
+		red_black_hrestore_r_bot(tree,
+					 parent,
+					 jump_buffer);
 
 	} else {
 		next_hdrop = (compare < 0)
@@ -117,9 +117,9 @@ rb_hdrop_r(struct RedBlackHNode *restrict *const restrict tree,
 			   hkey);
 
 		/* if returned, need to restore */
-		red_black_restore_r_mid(tree,
-					parent,
-					jump_buffer);
+		red_black_hrestore_r_mid(tree,
+					 parent,
+					 jump_buffer);
 	}
 	/* if returned, previous frame needs to restore */
 }
@@ -130,18 +130,18 @@ void
 red_black_hdrop(struct RedBlackHNode *restrict *const restrict tree,
 		struct RedBlackHNodeFactory *const restrict factory,
 		RedBlackJumpBuffer jump_buffer,
-		const void *const hkey)
+		const struct RedBlackHKey *const restrict hkey)
 {
 	RedBlackHDropNode next_hdrop;
 	struct RedBlackHNode *const restrict root = *tree;
 
-	const int compare = red_black_hkey_comparator(key,
+	const int compare = red_black_hkey_comparator(hkey,
 						      &root->hkey);
 
 	if (compare == 0) {
-		red_black_restore_root(tree,
-				       root,
-				       factory);
+		red_black_hrestore_root(tree,
+					root,
+					factory);
 
 	} else {
 		next_hdrop = (compare < 0)

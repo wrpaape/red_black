@@ -923,8 +923,8 @@ TARGETS			+= $(HKEY_OBJ)					\
 
 # red_black_hnode_factory
 # ──────────────────────────────────────────────────────────────────────────────
-HNODE_FACTORY_SRC		:= $(call TREE_SOURCE_PATH,red_black_hnode_factory)
-HNODE_FACTORY_HDR		:= $(call TREE_HEADER_PATH,red_black_hnode_factory)
+HNODE_FACTORY_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hnode_factory)
+HNODE_FACTORY_HDR		:= $(call HMAP_HEADER_PATH,red_black_hnode_factory)
 HNODE_FACTORY_OBJ		:= $(call OBJECT_PATH,red_black_hnode_factory)
 HNODE_FACTORY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hnode_factory)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -943,8 +943,8 @@ TARGETS				+= $(HNODE_FACTORY_OBJ)			\
 
 # red_black_hitor
 # ──────────────────────────────────────────────────────────────────────────────
-HITOR_SRC		:= $(call TREE_SOURCE_PATH,red_black_hitor)
-HITOR_HDR		:= $(call TREE_HEADER_PATH,red_black_hitor)
+HITOR_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hitor)
+HITOR_HDR		:= $(call HMAP_HEADER_PATH,red_black_hitor)
 HITOR_OBJ		:= $(call OBJECT_PATH,red_black_hitor)
 HITOR_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hitor)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -962,8 +962,8 @@ TARGETS			+= $(HITOR_OBJ)					\
 
 # red_black_hcorrect
 # ──────────────────────────────────────────────────────────────────────────────
-HCORRECT_SRC		:= $(call TREE_SOURCE_PATH,red_black_hcorrect)
-HCORRECT_HDR		:= $(call TREE_HEADER_PATH,red_black_hcorrect)
+HCORRECT_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hcorrect)
+HCORRECT_HDR		:= $(call HMAP_HEADER_PATH,red_black_hcorrect)
 HCORRECT_OBJ		:= $(call OBJECT_PATH,red_black_hcorrect)
 HCORRECT_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hcorrect)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -981,8 +981,8 @@ TARGETS			+= $(HCORRECT_OBJ)				\
 
 # red_black_hinsert
 # ──────────────────────────────────────────────────────────────────────────────
-HINSERT_SRC		:= $(call TREE_SOURCE_PATH,red_black_hinsert)
-HINSERT_HDR		:= $(call TREE_HEADER_PATH,red_black_hinsert)
+HINSERT_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hinsert)
+HINSERT_HDR		:= $(call HMAP_HEADER_PATH,red_black_hinsert)
 HINSERT_OBJ		:= $(call OBJECT_PATH,red_black_hinsert)
 HINSERT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hinsert)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1006,8 +1006,8 @@ TARGETS			+= $(HINSERT_OBJ)				\
 
 # red_black_hput
 # ──────────────────────────────────────────────────────────────────────────────
-HPUT_SRC		:= $(call TREE_SOURCE_PATH,red_black_hput)
-HPUT_HDR		:= $(call TREE_HEADER_PATH,red_black_hput)
+HPUT_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hput)
+HPUT_HDR		:= $(call HMAP_HEADER_PATH,red_black_hput)
 HPUT_OBJ		:= $(call OBJECT_PATH,red_black_hput)
 HPUT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hput)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1031,8 +1031,8 @@ TARGETS			+= $(HPUT_OBJ)					\
 
 # red_black_hupdate
 # ──────────────────────────────────────────────────────────────────────────────
-HUPDATE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hupdate)
-HUPDATE_HDR		:= $(call TREE_HEADER_PATH,red_black_hupdate)
+HUPDATE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hupdate)
+HUPDATE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hupdate)
 HUPDATE_OBJ		:= $(call OBJECT_PATH,red_black_hupdate)
 HUPDATE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hupdate)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1056,22 +1056,21 @@ TARGETS			+= $(HUPDATE_OBJ)				\
 
 # red_black_hadd
 # ──────────────────────────────────────────────────────────────────────────────
-HADD_SRC		:= $(call TREE_SOURCE_PATH,red_black_hadd)
-HADD_HDR		:= $(call TREE_HEADER_PATH,red_black_hadd)
+HADD_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hadd)
+HADD_HDR		:= $(call HMAP_HEADER_PATH,red_black_hadd)
 HADD_OBJ		:= $(call OBJECT_PATH,red_black_hadd)
 HADD_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hadd)
 # ─────────────── target prequisites ───────────────────────────────────────────
 HADD_OBJ_PREQS		:= $(HADD_SRC)					\
 			   $(HADD_HDR)					\
-			   $(HNODE_FACTORY_HDR)				\
+			   $(HNODE_HDR)					\
+			   $(JUMP_HDR)					\
 			   $(HCORRECT_HDR)
 HADD_OBJ_GROUP		:= $(HADD_OBJ)					\
-			   $(HNODE_FACTORY_OBJ_GROUP)			\
 			   $(HKEY_OBJ_GROUP)				\
 			   $(HCORRECT_OBJ_GROUP)
 HADD_PIC_OBJ_PREQS	:= $(HADD_OBJ_PREQS)
 HADD_PIC_OBJ_GROUP	:= $(HADD_PIC_OBJ)				\
-			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
 			   $(HKEY_PIC_OBJ_GROUP)			\
 			   $(HCORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
@@ -1081,8 +1080,8 @@ TARGETS			+= $(HADD_OBJ)					\
 
 # red_black_hrestore
 # ──────────────────────────────────────────────────────────────────────────────
-HRESTORE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hrestore)
-HRESTORE_HDR		:= $(call TREE_HEADER_PATH,red_black_hrestore)
+HRESTORE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hrestore)
+HRESTORE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hrestore)
 HRESTORE_OBJ		:= $(call OBJECT_PATH,red_black_hrestore)
 HRESTORE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hrestore)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1103,8 +1102,8 @@ TARGETS			+= $(HRESTORE_OBJ)				\
 
 # red_black_hdelete
 # ──────────────────────────────────────────────────────────────────────────────
-HDELETE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hdelete)
-HDELETE_HDR		:= $(call TREE_HEADER_PATH,red_black_hdelete)
+HDELETE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hdelete)
+HDELETE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hdelete)
 HDELETE_OBJ		:= $(call OBJECT_PATH,red_black_hdelete)
 HDELETE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hdelete)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1129,8 +1128,8 @@ TARGETS			+= $(HDELETE_OBJ)				\
 
 # red_black_hdelete
 # ──────────────────────────────────────────────────────────────────────────────
-HDELETE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hdelete)
-HDELETE_HDR		:= $(call TREE_HEADER_PATH,red_black_hdelete)
+HDELETE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hdelete)
+HDELETE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hdelete)
 HDELETE_OBJ		:= $(call OBJECT_PATH,red_black_hdelete)
 HDELETE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hdelete)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1155,8 +1154,8 @@ TARGETS			+= $(HDELETE_OBJ)				\
 
 # red_black_hremove
 # ──────────────────────────────────────────────────────────────────────────────
-HREMOVE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hremove)
-HREMOVE_HDR		:= $(call TREE_HEADER_PATH,red_black_hremove)
+HREMOVE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hremove)
+HREMOVE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hremove)
 HREMOVE_OBJ		:= $(call OBJECT_PATH,red_black_hremove)
 HREMOVE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hremove)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1181,8 +1180,8 @@ TARGETS			+= $(HREMOVE_OBJ)				\
 
 # red_black_hdrop
 # ──────────────────────────────────────────────────────────────────────────────
-HDROP_SRC		:= $(call TREE_SOURCE_PATH,red_black_hdrop)
-HDROP_HDR		:= $(call TREE_HEADER_PATH,red_black_hdrop)
+HDROP_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hdrop)
+HDROP_HDR		:= $(call HMAP_HEADER_PATH,red_black_hdrop)
 HDROP_OBJ		:= $(call OBJECT_PATH,red_black_hdrop)
 HDROP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hdrop)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1207,8 +1206,8 @@ TARGETS			+= $(HDROP_OBJ)					\
 
 # red_black_hpluck
 # ──────────────────────────────────────────────────────────────────────────────
-HPLUCK_SRC		:= $(call TREE_SOURCE_PATH,red_black_hpluck)
-HPLUCK_HDR		:= $(call TREE_HEADER_PATH,red_black_hpluck)
+HPLUCK_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hpluck)
+HPLUCK_HDR		:= $(call HMAP_HEADER_PATH,red_black_hpluck)
 HPLUCK_OBJ		:= $(call OBJECT_PATH,red_black_hpluck)
 HPLUCK_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hpluck)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1233,8 +1232,8 @@ TARGETS			+= $(HPLUCK_OBJ)				\
 
 # red_black_hfind
 # ──────────────────────────────────────────────────────────────────────────────
-HFIND_SRC		:= $(call TREE_SOURCE_PATH,red_black_hfind)
-HFIND_HDR		:= $(call TREE_HEADER_PATH,red_black_hfind)
+HFIND_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hfind)
+HFIND_HDR		:= $(call HMAP_HEADER_PATH,red_black_hfind)
 HFIND_OBJ		:= $(call OBJECT_PATH,red_black_hfind)
 HFIND_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hfind)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1253,8 +1252,8 @@ TARGETS			+= $(HFIND_OBJ)					\
 
 # red_black_hfetch
 # ──────────────────────────────────────────────────────────────────────────────
-HFETCH_SRC		:= $(call TREE_SOURCE_PATH,red_black_hfetch)
-HFETCH_HDR		:= $(call TREE_HEADER_PATH,red_black_hfetch)
+HFETCH_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hfetch)
+HFETCH_HDR		:= $(call HMAP_HEADER_PATH,red_black_hfetch)
 HFETCH_OBJ		:= $(call OBJECT_PATH,red_black_hfetch)
 HFETCH_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hfetch)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1273,8 +1272,8 @@ TARGETS			+= $(HFETCH_OBJ)				\
 
 # red_black_hreplace
 # ──────────────────────────────────────────────────────────────────────────────
-HREPLACE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hreplace)
-HREPLACE_HDR		:= $(call TREE_HEADER_PATH,red_black_hreplace)
+HREPLACE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hreplace)
+HREPLACE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hreplace)
 HREPLACE_OBJ		:= $(call OBJECT_PATH,red_black_hreplace)
 HREPLACE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hreplace)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1293,8 +1292,8 @@ TARGETS			+= $(HREPLACE_OBJ)				\
 
 # red_black_hexchange
 # ──────────────────────────────────────────────────────────────────────────────
-HEXCHANGE_SRC		:= $(call TREE_SOURCE_PATH,red_black_hexchange)
-HEXCHANGE_HDR		:= $(call TREE_HEADER_PATH,red_black_hexchange)
+HEXCHANGE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hexchange)
+HEXCHANGE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hexchange)
 HEXCHANGE_OBJ		:= $(call OBJECT_PATH,red_black_hexchange)
 HEXCHANGE_PIC_OBJ	:= $(call PIC_OBJECT_PATH,red_black_hexchange)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1313,8 +1312,8 @@ TARGETS			+= $(HEXCHANGE_OBJ)				\
 
 # red_black_hget
 # ──────────────────────────────────────────────────────────────────────────────
-HGET_SRC		:= $(call TREE_SOURCE_PATH,red_black_hget)
-HGET_HDR		:= $(call TREE_HEADER_PATH,red_black_hget)
+HGET_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hget)
+HGET_HDR		:= $(call HMAP_HEADER_PATH,red_black_hget)
 HGET_OBJ		:= $(call OBJECT_PATH,red_black_hget)
 HGET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hget)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1333,8 +1332,8 @@ TARGETS			+= $(HGET_OBJ)					\
 
 # red_black_hset
 # ──────────────────────────────────────────────────────────────────────────────
-HSET_SRC		:= $(call TREE_SOURCE_PATH,red_black_hset)
-HSET_HDR		:= $(call TREE_HEADER_PATH,red_black_hset)
+HSET_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hset)
+HSET_HDR		:= $(call HMAP_HEADER_PATH,red_black_hset)
 HSET_OBJ		:= $(call OBJECT_PATH,red_black_hset)
 HSET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hset)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1352,8 +1351,8 @@ TARGETS			+= $(HSET_OBJ)					\
 
 # red_black_hswap
 # ──────────────────────────────────────────────────────────────────────────────
-HSWAP_SRC		:= $(call TREE_SOURCE_PATH,red_black_hswap)
-HSWAP_HDR		:= $(call TREE_HEADER_PATH,red_black_hswap)
+HSWAP_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hswap)
+HSWAP_HDR		:= $(call HMAP_HEADER_PATH,red_black_hswap)
 HSWAP_OBJ		:= $(call OBJECT_PATH,red_black_hswap)
 HSWAP_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hswap)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1372,8 +1371,8 @@ TARGETS			+= $(HSWAP_OBJ)					\
 
 # red_black_hverify
 # ──────────────────────────────────────────────────────────────────────────────
-HVERIFY_SRC		:= $(call TREE_SOURCE_PATH,red_black_hverify)
-HVERIFY_HDR		:= $(call TREE_HEADER_PATH,red_black_hverify)
+HVERIFY_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hverify)
+HVERIFY_HDR		:= $(call HMAP_HEADER_PATH,red_black_hverify)
 HVERIFY_OBJ		:= $(call OBJECT_PATH,red_black_hverify)
 HVERIFY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hverify)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1393,8 +1392,8 @@ TARGETS			+= $(HVERIFY_OBJ)				\
 
 # red_black_hcopy
 # ──────────────────────────────────────────────────────────────────────────────
-HCOPY_SRC		:= $(call TREE_SOURCE_PATH,red_black_hcopy)
-HCOPY_HDR		:= $(call TREE_HEADER_PATH,red_black_hcopy)
+HCOPY_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hcopy)
+HCOPY_HDR		:= $(call HMAP_HEADER_PATH,red_black_hcopy)
 HCOPY_OBJ		:= $(call OBJECT_PATH,red_black_hcopy)
 HCOPY_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hcopy)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1411,8 +1410,8 @@ TARGETS			+= $(HCOPY_OBJ)					\
 
 # red_black_hcongruent
 # ──────────────────────────────────────────────────────────────────────────────
-HCONGRUENT_SRC			:= $(call TREE_SOURCE_PATH,red_black_hcongruent)
-HCONGRUENT_HDR			:= $(call TREE_HEADER_PATH,red_black_hcongruent)
+HCONGRUENT_SRC			:= $(call HMAP_SOURCE_PATH,red_black_hcongruent)
+HCONGRUENT_HDR			:= $(call HMAP_HEADER_PATH,red_black_hcongruent)
 HCONGRUENT_OBJ			:= $(call OBJECT_PATH,red_black_hcongruent)
 HCONGRUENT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hcongruent)
 # ─────────────── target prequisites ───────────────────────────────────────────
@@ -1428,6 +1427,26 @@ HCONGRUENT_PIC_OBJ_GROUP	:= $(HCONGRUENT_PIC_OBJ)		\
 # ─────────────── targets ──────────────────────────────────────────────────────
 TARGETS				+= $(HCONGRUENT_OBJ)			\
 				   $(HCONGRUENT_PIC_OBJ)
+
+
+# red_black_hconcat
+# ──────────────────────────────────────────────────────────────────────────────
+HCONCAT_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hconcat)
+HCONCAT_HDR		:= $(call HMAP_HEADER_PATH,red_black_hconcat)
+HCONCAT_OBJ		:= $(call OBJECT_PATH,red_black_hconcat)
+HCONCAT_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hconcat)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HCONCAT_OBJ_PREQS	:= $(HCONCAT_SRC)				\
+			   $(HCONCAT_HDR)				\
+			   $(HNODE_HDR)					\
+			   $(STACK_COUNT_HDR)
+HCONCAT_OBJ_GROUP	:= $(HCONCAT_OBJ)
+HCONCAT_PIC_OBJ_PREQS	:= $(HCONCAT_OBJ_PREQS)
+HCONCAT_PIC_OBJ_GROUP	:= $(HCONCAT_PIC_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS			+= $(HCONCAT_OBJ)				\
+			   $(HCONCAT_PIC_OBJ)
+
 
 # KEY_ACCESSOR MODULESS
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1995,11 +2014,6 @@ $(CONGRUENT_OBJ): $(CONGRUENT_OBJ_PREQS)
 $(CONGRUENT_PIC_OBJ): $(CONGRUENT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(HKEY_OBJ): $(HKEY_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
-$(HKEY_PIC_OBJ): $(HKEY_PIC_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
-
 
 # RED_BLACK_HMAP
 # ──────────────────────────────────────────────────────────────────────────────
@@ -2121,6 +2135,11 @@ $(HCOPY_PIC_OBJ): $(HCOPY_PIC_OBJ_PREQS)
 $(HCONGRUENT_OBJ): $(HCONGRUENT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 $(HCONGRUENT_PIC_OBJ): $(HCONGRUENT_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HCONCAT_OBJ): $(HCONCAT_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HCONCAT_PIC_OBJ): $(HCONCAT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(HKEY_OBJ): $(HKEY_OBJ_PREQS)

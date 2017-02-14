@@ -165,7 +165,7 @@ rb_hput_ll(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey)
+	   const struct RedBlackHKey *const restrict hkey)
 {
 	bool status;
 	int compare;
@@ -230,7 +230,7 @@ rb_hput_lr(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey)
+	   const struct RedBlackHKey *const restrict hkey)
 {
 	bool status;
 	int compare;
@@ -299,7 +299,7 @@ rb_hput_rr(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey)
+	   const struct RedBlackHKey *const restrict hkey)
 {
 	bool status;
 	int compare;
@@ -364,7 +364,7 @@ rb_hput_rl(struct RedBlackHNode *restrict *const restrict tree,
 	   struct RedBlackHNode *const restrict parent,
 	   struct RedBlackHNodeFactory *const restrict factory,
 	   RedBlackJumpBuffer jump_buffer,
-	   const void *const hkey)
+	   const struct RedBlackHKey *const restrict hkey)
 {
 	bool status;
 	int compare;

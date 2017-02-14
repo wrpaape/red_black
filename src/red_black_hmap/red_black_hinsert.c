@@ -181,7 +181,7 @@ rb_hinsert_ll(struct RedBlackHNode *restrict *const restrict tree,
 
 	} else {
 		compare = red_black_hkey_comparator(hkey,
-						    node->hkey);
+						    &node->hkey);
 
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
@@ -246,7 +246,7 @@ rb_hinsert_lr(struct RedBlackHNode *restrict *const restrict tree,
 
 	} else {
 		compare = red_black_hkey_comparator(hkey,
-						    node->hkey);
+						    &node->hkey);
 
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
@@ -309,7 +309,7 @@ rb_hinsert_rr(struct RedBlackHNode *restrict *const restrict tree,
 
 	} else {
 		compare = red_black_hkey_comparator(hkey,
-						    node->hkey);
+						    &node->hkey);
 
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
@@ -374,7 +374,7 @@ rb_hinsert_rl(struct RedBlackHNode *restrict *const restrict tree,
 
 	} else {
 		compare = red_black_hkey_comparator(hkey,
-						    node->hkey);
+						    &node->hkey);
 
 		if (compare == 0)
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */

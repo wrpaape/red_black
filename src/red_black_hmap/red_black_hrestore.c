@@ -780,8 +780,8 @@ red_black_hrestore_root(struct RedBlackHNode *restrict *const restrict tree,
 	rchild = root->right;
 
 	/* free node */
-	rbnf_free(factory,
-		  root);
+	rbhnf_free(factory,
+		   root);
 
 	(void) rb_hrestore_black(tree,
 				 lchild,
@@ -804,8 +804,8 @@ red_black_hrestore_node(struct RedBlackHNode *restrict *const restrict tree,
 	rchild = node->right;
 
 	/* free node */
-	rbnf_free(factory,
-		  node);
+	rbhnf_free(factory,
+		   node);
 
 	if (is_red)
 		rb_hrestore_red(tree, /* always restorable if node is RED */

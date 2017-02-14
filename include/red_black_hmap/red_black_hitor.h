@@ -31,7 +31,7 @@ red_black_hitor_next(struct RedBlackHItor *const restrict itor,
 		     void **const restrict key_ptr,
 		     size_t *const restrict length_ptr);
 
-const struct Hkey *restrict
+const struct RedBlackHKey *restrict
 red_black_hitor_next_hkey(struct RedBlackHItor *const restrict itor);
 
 #endif /* ifndef RED_BLACK_RED_BLACK_HMAP_RED_BLACK_HITOR_H_ */

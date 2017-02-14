@@ -1,5 +1,5 @@
-#include "red_black_lhmap/red_black_hcopy.h" /* RedBlackHNode */
-#include <stddef.h>			     /* NULL */
+#include "red_black_hmap/red_black_hcopy.h" /* RedBlackHNode */
+#include <stddef.h>			    /* NULL */
 
 
 struct RedBlackHNode *

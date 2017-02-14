@@ -3,7 +3,7 @@
 
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_hnode_factory.h" /* RedBlackHNodeFactory */
+#include "red_black_hnode_factory.h" /* RedBlackHNodeFactory, HNode */
 #include "red_black_hitor.h"	     /* RedBlackHItor */
 
 #define RED_BLACK_HMAP_VAR_EXPAND 1

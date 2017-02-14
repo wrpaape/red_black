@@ -1,4 +1,4 @@
-#include "red_black_hmap/red_black_itor.h" /* Itor, HNode, NULL */
+#include "red_black_hmap/red_black_hitor.h" /* HItor, HNode, NULL */
 
 
 static inline const struct RedBlackHNode *restrict *restrict
@@ -68,7 +68,7 @@ red_black_hitor_reset(struct RedBlackHItor *const restrict itor,
 bool
 red_black_hitor_next(struct RedBlackHItor *const restrict itor,
 		     void **const restrict key_ptr,
-		     size_t *const restrict length_ptr);
+		     size_t *const restrict length_ptr)
 {
 	const struct RedBlackHNode *restrict *restrict cursor;
 	const struct RedBlackHNode *restrict node;
@@ -91,7 +91,7 @@ red_black_hitor_next(struct RedBlackHItor *const restrict itor,
 
 
 /* internal use, will only be called if more keys available */
-const struct Hkey *restrict
+const struct RedBlackHKey *restrict
 red_black_hitor_next_hkey(struct RedBlackHItor *const restrict itor)
 {
 	const struct RedBlackHNode *restrict *restrict cursor;

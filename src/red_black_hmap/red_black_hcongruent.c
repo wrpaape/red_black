@@ -14,16 +14,16 @@ red_black_hcongruent(const struct RedBlackHNode *const restrict node1,
 	}
 
 	if (   (node2 == NULL)
-	    || (red_black_hkey_comparator(&node1->key,
-					  &node2->key) != 0))
+	    || (red_black_hkey_comparator(&node1->hkey,
+					  &node2->hkey) != 0))
 		RED_BLACK_JUMP_1(jump_buffer);
 
 
-	red_black_congruent(node1->left,
-			    node2->left,
-			    jump_buffer);
+	red_black_hcongruent(node1->left,
+			     node2->left,
+			     jump_buffer);
 
-	red_black_congruent(node1->right,
-			    node2->right,
-			    jump_buffer);
+	red_black_hcongruent(node1->right,
+			     node2->right,
+			     jump_buffer);
 }
