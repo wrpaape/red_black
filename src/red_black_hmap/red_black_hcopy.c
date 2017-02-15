@@ -1,5 +1,4 @@
-#include "red_black_hmap/red_black_hcopy.h" /* RedBlackHNode */
-#include <stddef.h>			    /* NULL */
+#include "red_black_hmap/red_black_hcopy.h" /* RedBlackHNode, NULL */
 
 
 struct RedBlackHNode *
@@ -15,10 +14,10 @@ red_black_hcopy(struct RedBlackHNode *restrict *const restrict dst_tree,
 	} else {
 		dst_node = buffer++;
 
+		*dst_tree = dst_node;
+
 		dst_node->hkey   = src_node->hkey;
 		dst_node->is_red = src_node->is_red;
-
-		*dst_node = *src_node;
 
 		buffer = red_black_hcopy(&dst_node->left,
 					 src_node->left,

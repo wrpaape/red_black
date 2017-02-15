@@ -6,7 +6,6 @@
 #include "red_black_hmap/red_black_hnode_factory.h" /* HNodeFactory, HNode */
 #include "red_black_hmap/red_black_hitor.h"	    /* HItor */
 
-#define RED_BLACK_HMAP_VAR_EXPAND 1
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
@@ -24,9 +23,7 @@ struct RedBlackHMapCount {
 struct _RedBlackHMap {
 	struct RedBlackHBucket *restrict buckets;
 	struct RedBlackHMapCount count;
-#if RED_BLACK_HMAP_VAR_EXPAND
 	unsigned int expand_factor;
-#endif /* if RED_BLACK_HMAP_VAR_EXPAND */
 };
 typedef struct _RedBlackHMap RedBlackHMap;
 
@@ -42,6 +39,10 @@ typedef struct _RedBlackHMapItor RedBlackHMapItor;
  * ────────────────────────────────────────────────────────────────────────── */
 bool
 red_black_hmap_init(RedBlackHMap *const restrict map);
+
+bool
+red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
+		     const RedBlackHMap *const restrict src_map);
 
 void
 red_black_hmap_destroy(RedBlackHMap *const restrict map);

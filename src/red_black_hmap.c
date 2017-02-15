@@ -24,14 +24,14 @@
 
 /* macro constants
  * ────────────────────────────────────────────────────────────────────────── */
-/* initial bucket count, MUST be power of 2 */
+/* initial bucket count, MUST be power of 2 (and at LEAST 2) */
 #define RBHM_INIT_BUCKET_COUNT	8
 /* maximum average collision count per bucket without requiring expansion */
 #define RBHM_MAX_AVG_COLLISIONS 8
-#if RED_BLACK_HMAP_VAR_EXPAND
 /* initial expansion factor (left shift of bucket count), must be > 0 */
-#define RBHM_INIT_EXPAND_FACTOR 1
-#endif /* if RED_BLACK_HMAP_VAR_EXPAND */
+#define RBHM_INIT_EXPAND_FACTOR	1
+/* increment applied to expand factor on each expand (double->quadruple->...) */
+#define RBHM_EXPAND_FACTOR_INC	1
 
 
 static inline void
@@ -126,12 +126,9 @@ NEXT_NODE:
 static inline int
 rbhm_expand(RedBlackHMap *const restrict map)
 {
-	const unsigned int old_count = map->count.buckets_m1 + 1;
-#if RED_BLACK_HMAP_VAR_EXPAND
-	const unsigned int new_count = old_count << map->expand_factor;
-#else
-	const unsigned int new_count = old_count * 2;
-#endif /* if RED_BLACK_HMAP_VAR_EXPAND */
+	const unsigned int old_count	     = map->count.buckets_m1 + 1;
+	const unsigned int old_expand_factor = map->expand_factor;
+	const unsigned int new_count	     = old_count << old_expand_factor;
 
 	/* double bucket capacity */
 	struct RedBlackHBucket *const restrict new_buckets
@@ -145,11 +142,8 @@ rbhm_expand(RedBlackHMap *const restrict map)
 
 	map->buckets              = new_buckets;
 	map->count.buckets_m1     = new_count_m1;
-#if RED_BLACK_HMAP_VAR_EXPAND
-	map->count.max_capacity <<= (map->expand_factor)++;
-#else
-	map->count.max_capacity  *= 2;
-#endif /* if RED_BLACK_HMAP_VAR_EXPAND */
+	map->count.max_capacity <<= old_expand_factor;
+	map->expand_factor        = old_expand_factor + RBHM_EXPAND_FACTOR_INC;
 
 	/* take care of initialization of new memory, re-insert nodes */
 	rbhm_reset_buckets(new_buckets,
@@ -160,11 +154,11 @@ rbhm_expand(RedBlackHMap *const restrict map)
 }
 
 /* inline expansion, return only on error */
-#if RED_BLACK_HMAP_VAR_EXPAND
 #define RBHM_EXPAND(MAP)						\
 do {									\
 	const unsigned int old_count = MAP->count.buckets_m1 + 1;	\
-	const unsigned int new_count = old_count << MAP->expand_factor;	\
+	const unsigned int old_expand_factor = MAP->expand_factor;	\
+	const unsigned int new_count = old_count << old_expand_factor;	\
 	struct RedBlackHBucket *const restrict new_buckets		\
 	= RED_BLACK_REALLOC(MAP->buckets,				\
 			    sizeof(*new_buckets) * new_count);		\
@@ -173,30 +167,12 @@ do {									\
 	const unsigned int new_count_m1 = new_count - 1;		\
 	MAP->buckets		  = new_buckets;			\
 	MAP->count.buckets_m1     = new_count_m1;			\
-	MAP->count.max_capacity <<= (MAP->expand_factor)++;		\
+	MAP->count.max_capacity <<= old_expand_factor;			\
+	MAP->expand_factor = old_expand_factor + RBHM_EXPAND_FACTOR_INC;\
 	rbhm_reset_buckets(new_buckets,					\
 			   old_count,					\
 			   new_count_m1);				\
 } while (0)
-#else /* double capacity on expansion */
-#define RBHM_EXPAND(MAP)						\
-do {									\
-	const unsigned int old_count = MAP->count.buckets_m1 + 1;	\
-	const unsigned int new_count = old_count * 2;			\
-	struct RedBlackHBucket *const restrict new_buckets		\
-	= RED_BLACK_REALLOC(MAP->buckets,				\
-			    sizeof(*new_buckets) * new_count);		\
-	if (new_buckets == NULL)					\
-		return -1;						\
-	const unsigned int new_count_m1 = new_count - 1;		\
-	MAP->buckets		 = new_buckets;				\
-	MAP->count.buckets_m1    = new_count_m1;			\
-	MAP->count.max_capacity *= 2;					\
-	rbhm_reset_buckets(new_buckets,					\
-			   old_count,					\
-			   new_count_m1);				\
-} while (0)
-#endif /* if RED_BLACK_HMAP_VAR_EXPAND */
 
 
 bool
@@ -229,12 +205,84 @@ red_black_hmap_init(RedBlackHMap *const restrict map)
 		map->count.entries      = 0;
 		map->count.max_capacity = RBHM_INIT_BUCKET_COUNT
 					* RBHM_MAX_AVG_COLLISIONS;
-#if RED_BLACK_HMAP_VAR_EXPAND
+
 		map->expand_factor = RBHM_INIT_EXPAND_FACTOR;
-#endif /* if RED_BLACK_HMAP_VAR_EXPAND */
 	}
 
 	return status;
+}
+
+
+bool
+red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
+		     const RedBlackHMap *const restrict src_map)
+{
+	struct RedBlackHNode *restrict buffer;
+	struct RedBlackHBucket *restrict dst_buckets;
+	struct RedBlackHBucket *restrict dst_bucket;
+	struct RedBlackHBucket *restrict last_dst_bucket;
+	struct RedBlackHBucket *restrict src_bucket;
+	unsigned int count_entries;
+	unsigned int count_buckets_m1;
+
+	count_buckets_m1 = src_map->count.buckets_m1;
+
+	dst_buckets = RED_BLACK_MALLOC(  sizeof(*dst_buckets)
+				       * (count_buckets_m1 + 1));
+
+	if (dst_buckets == NULL)
+		return false;
+
+	last_dst_bucket = dst_buckets + count_buckets_m1;
+	dst_bucket      = dst_buckets;
+
+	count_entries = src_map->count.entries;
+
+	if (count_entries == 0) {
+		/* finish empty initialization */
+		do {
+			rbhb_init(dst_bucket);
+
+			++dst_bucket;
+		} while (dst_bucket <= last_dst_bucket);
+
+	} else {
+		/* copy src_map buckets,
+		 * allocate nodes from first bucket factory */
+		buffer = rbhnf_init_w_nodes(&dst_bucket->factory,
+					    count_entries);
+
+		if (buffer == NULL) {
+			RED_BLACK_FREE(dst_buckets);
+			return false;
+		}
+
+		src_bucket = src_map->buckets;
+
+		buffer = red_black_hcopy(&dst_bucket->root,
+					 src_bucket->root,
+					 buffer);
+
+		do {
+			++src_bucket;
+			++dst_bucket;
+
+			buffer
+			= red_black_hcopy(&dst_bucket->root,
+					  src_bucket->root,
+					  buffer);
+
+			rbhnf_init(&dst_bucket->factory);
+		} while (dst_bucket < last_dst_bucket);
+	}
+
+	dst_map->buckets	    = dst_buckets;
+	dst_map->count.buckets_m1   = count_buckets_m1;
+	dst_map->count.entries      = count_entries;
+	dst_map->count.max_capacity = src_map->count.max_capacity;
+	dst_map->expand_factor      = src_map->expand_factor;
+
+	return true;
 }
 
 
