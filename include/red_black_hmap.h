@@ -127,7 +127,7 @@ red_black_hmap_swap(const RedBlackHMap *const restrict map,
 		    const size_t length);
 
 bool
-red_black_hmap_empty(RedBlackHMap *const restrict map);
+red_black_hmap_empty(const RedBlackHMap *const restrict map);
 
 unsigned int
 red_black_hmap_count(const RedBlackHMap *const restrict map);

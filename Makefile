@@ -1616,11 +1616,11 @@ TARGETS			      += $(TREE_INSERTION_TRNR_SRC)		\
 
 # red_black_tree_comparison_test
 # ──────────────────────────────────────────────────────────────────────────────
-TREE_COMPARISON_TEST_SRC      := $(call TEST_SOURCE_PATH,red_black_tree_comparison)
-TREE_COMPARISON_TRNR_SRC      := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_comparison)
-TREE_COMPARISON_TRNR_OBJ      := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_comparison)
-TREE_COMPARISON_TEST_OBJ      := $(call TEST_OBJECT_PATH,red_black_tree_comparison)
-TREE_COMPARISON_TEST_BIN      := $(call TEST_BINARY_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TEST_SRC       := $(call TEST_SOURCE_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TRNR_SRC       := $(call TEST_RUNNER_SOURCE_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TRNR_OBJ       := $(call TEST_RUNNER_OBJECT_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TEST_OBJ       := $(call TEST_OBJECT_PATH,red_black_tree_comparison)
+TREE_COMPARISON_TEST_BIN       := $(call TEST_BINARY_PATH,red_black_tree_comparison)
 # ─────────────── target prequisites ───────────────────────────────────────────
 TREE_COMPARISON_TRNR_SRC_PREQS := $(TREE_COMPARISON_TEST_SRC)
 TREE_COMPARISON_TEST_OBJ_PREQS := $(TREE_COMPARISON_TEST_SRC)		\
@@ -1826,6 +1826,34 @@ TARGETS			      += $(HMAP_INSERTION_TRNR_SRC)		\
 			         $(HMAP_INSERTION_TRNR_OBJ)		\
 			         $(HMAP_INSERTION_TEST_OBJ)		\
 			         $(HMAP_INSERTION_TEST_BIN)
+
+
+# red_black_hmap_comparison_test
+# ──────────────────────────────────────────────────────────────────────────────
+HMAP_COMPARISON_TEST_SRC       := $(call TEST_SOURCE_PATH,red_black_hmap_comparison)
+HMAP_COMPARISON_TRNR_SRC       := $(call TEST_RUNNER_SOURCE_PATH,red_black_hmap_comparison)
+HMAP_COMPARISON_TRNR_OBJ       := $(call TEST_RUNNER_OBJECT_PATH,red_black_hmap_comparison)
+HMAP_COMPARISON_TEST_OBJ       := $(call TEST_OBJECT_PATH,red_black_hmap_comparison)
+HMAP_COMPARISON_TEST_BIN       := $(call TEST_BINARY_PATH,red_black_hmap_comparison)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HMAP_COMPARISON_TRNR_SRC_PREQS := $(HMAP_COMPARISON_TEST_SRC)
+HMAP_COMPARISON_TEST_OBJ_PREQS := $(HMAP_COMPARISON_TEST_SRC)		\
+			   	  $(HMAP_HDR)				\
+			   	  $(TEST_HDR)				\
+			   	  $(UNITY_HDR)
+HMAP_COMPARISON_TRNR_OBJ_PREQS := $(HMAP_COMPARISON_TRNR_SRC)		\
+			   	  $(HMAP_COMPARISON_TEST_OBJ_PREQS)
+HMAP_COMPARISON_TEST_BIN_PREQS := $(HMAP_COMPARISON_TRNR_OBJ)		\
+			   	  $(HMAP_COMPARISON_TEST_OBJ)		\
+				  $(HMAP_SH_LIB)			\
+				  $(TEST_OBJ)				\
+				  $(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES		      += $(HMAP_COMPARISON_TEST_BIN)
+TARGETS			      += $(HMAP_COMPARISON_TRNR_SRC)		\
+			         $(HMAP_COMPARISON_TRNR_OBJ)		\
+			         $(HMAP_COMPARISON_TEST_OBJ)		\
+			         $(HMAP_COMPARISON_TEST_BIN)
 
 
 # EXAMPLE MODULESS
@@ -2268,6 +2296,15 @@ $(HMAP_INSERTION_TRNR_OBJ): $(HMAP_INSERTION_TRNR_OBJ_PREQS)
 $(HMAP_INSERTION_TEST_OBJ): $(HMAP_INSERTION_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(HMAP_INSERTION_TRNR_SRC): $(HMAP_INSERTION_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+
+$(HMAP_COMPARISON_TEST_BIN): $(HMAP_COMPARISON_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(HMAP_COMPARISON_TRNR_OBJ): $(HMAP_COMPARISON_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(HMAP_COMPARISON_TEST_OBJ): $(HMAP_COMPARISON_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(HMAP_COMPARISON_TRNR_SRC): $(HMAP_COMPARISON_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 

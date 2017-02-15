@@ -778,7 +778,7 @@ red_black_hmap_swap(const RedBlackHMap *const restrict map,
 }
 
 bool
-red_black_hmap_empty(RedBlackHMap *const restrict map)
+red_black_hmap_empty(const RedBlackHMap *const restrict map)
 {
 	return (map->count.entries == 0);
 }
