@@ -21,6 +21,7 @@
 #include "red_black_common/red_black_malloc.h"   /* MALLOC|REALLOC|FREE */
 
 
+
 /* macro constants
  * ────────────────────────────────────────────────────────────────────────── */
 /* initial bucket count, MUST be power of 2 */
@@ -47,6 +48,8 @@ rbhb_destroy(struct RedBlackHBucket *const restrict bucket)
 {
 	rbhnf_destroy(&bucket->factory);
 }
+
+
 
 
 static inline void
@@ -90,7 +93,7 @@ rbhm_reset_buckets(struct RedBlackHBucket *const restrict buckets,
 		rbhb_init(bucket);
 
 		++bucket;
-	} while (bucket < last_new_bucket);
+	} while (bucket <= last_new_bucket);
 
 	/* dump node list into empty hash table */
 	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)

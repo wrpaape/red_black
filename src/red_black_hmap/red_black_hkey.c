@@ -262,6 +262,7 @@ rbhk_memory_compare(const unsigned char *restrict key1,
 	return 0; /* compared equal */
 }
 
+
 int
 red_black_hkey_comparator(const struct RedBlackHKey *const restrict hkey1,
 			  const struct RedBlackHKey *const restrict hkey2)
@@ -307,4 +308,3 @@ red_black_hkey_comparator(const struct RedBlackHKey *const restrict hkey1,
 				   key2,
 				   length1);
 }
-
