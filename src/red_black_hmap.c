@@ -241,18 +241,17 @@ red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
 
 		src_bucket = src_map->buckets;
 
-		buffer = red_black_hcopy(dst_bucket,
-					 *src_bucket,
-					 buffer);
-
-		do {
-			++dst_bucket;
-			++src_bucket;
-
+		while (1) {
 			buffer = red_black_hcopy(dst_bucket,
 						 *src_bucket,
 						 buffer);
-		} while (dst_bucket < last_dst_bucket);
+			++dst_bucket;
+
+			if (dst_bucket > last_dst_bucket)
+				break;
+
+			++src_bucket;
+		}
 	}
 
 	return true;
