@@ -165,6 +165,10 @@ bool
 red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
 		       const RedBlackHMap *const restrict src_map);
 
+int
+red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
+			  const RedBlackHMap *const restrict src_map);
+
 bool
 red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
 			 void **const restrict key_ptr,
