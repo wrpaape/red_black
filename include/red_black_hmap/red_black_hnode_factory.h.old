@@ -56,9 +56,6 @@ rbnf_init_w_nodes(struct RedBlackHNodeFactory *const restrict factory,
 		  const struct RedBlackHNodeFactoryBlueprint *const restrict bp,
 		  const unsigned int count_nodes);
 
-void
-rbnf_reset(struct RedBlackHNodeFactory *const restrict factory);
-
 struct RedBlackHNode *
 rbnf_allocate(struct RedBlackHNodeFactory *const restrict factory,
 	      RedBlackJumpBuffer jump_buffer);

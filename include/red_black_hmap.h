@@ -9,11 +9,6 @@
 
 /* typedefs, struct declarations
  * ────────────────────────────────────────────────────────────────────────── */
-struct RedBlackHBucket {
-	struct RedBlackHNode *restrict root;
-	struct RedBlackHNodeFactory factory;
-};
-
 struct RedBlackHMapCount {
 	unsigned int buckets_m1;
 	unsigned int entries;
@@ -21,16 +16,17 @@ struct RedBlackHMapCount {
 };
 
 struct _RedBlackHMap {
-	struct RedBlackHBucket *restrict buckets;
+	struct RedBlackHNode *restrict *restrict buckets;
 	struct RedBlackHMapCount count;
 	unsigned int expand_factor;
+	struct RedBlackHNodeFactory factory;
 };
 typedef struct _RedBlackHMap RedBlackHMap;
 
 struct _RedBlackHMapItor {
 	struct RedBlackHItor bucket_itor;
-	struct RedBlackHBucket *restrict bucket;
-	struct RedBlackHBucket *restrict last_bucket;
+	struct RedBlackHNode *restrict *restrict bucket;
+	struct RedBlackHNode *restrict *restrict last_bucket;
 };
 typedef struct _RedBlackHMapItor RedBlackHMapItor;
 

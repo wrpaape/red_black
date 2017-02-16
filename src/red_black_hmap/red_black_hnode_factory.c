@@ -183,13 +183,6 @@ rbhnf_free(struct RedBlackHNodeFactory *const restrict factory,
 
 
 void
-rbhnf_reset(struct RedBlackHNodeFactory *const restrict factory)
-{
-	factory->buffer.expand = RBHNF_INIT_EXPAND;
-}
-
-
-void
 rbhnf_destroy(struct RedBlackHNodeFactory *const restrict factory)
 {
 	struct RedBlackHNodeFactoryBufferBlock *restrict block;
