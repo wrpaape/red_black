@@ -62,9 +62,9 @@ rbhnf_init_w_nodes(struct RedBlackHNodeFactory *const restrict factory,
 }
 
 
-static inline struct RedBlackHNode *
+struct RedBlackHNode *
 rbhnfb_allocate(struct RedBlackHNodeFactoryBuffer *const restrict buffer,
-	       RedBlackJumpBuffer jump_buffer)
+		RedBlackJumpBuffer jump_buffer)
 {
 	struct RedBlackHNode *restrict node;
 	struct RedBlackHNodeFactoryBufferBlock *restrict block;

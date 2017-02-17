@@ -41,6 +41,10 @@ rbnf_init_w_nodes(struct RedBlackNodeFactory *const restrict factory,
 		  const unsigned int count_nodes);
 
 struct RedBlackNode *
+rbnfb_allocate(struct RedBlackNodeFactoryBuffer *const restrict buffer,
+	       RedBlackJumpBuffer jump_buffer);
+
+struct RedBlackNode *
 rbnf_allocate(struct RedBlackNodeFactory *const restrict factory,
 	      RedBlackJumpBuffer jump_buffer);
 
