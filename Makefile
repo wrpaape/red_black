@@ -2456,6 +2456,7 @@ $(HMAP_INTERNALS_TRNR_SRC): $(HMAP_INTERNALS_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 
+
 # RED_BLACK_TEST OBJECT
 # ──────────────────────────────────────────────────────────────────────────────
 $(TEST_OBJ): $(TEST_OBJ_PREQS)
@@ -2486,4 +2487,3 @@ $(CONTACTS_BIN): $(CONTACTS_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(CONTACTS_OBJ): $(CONTACTS_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-

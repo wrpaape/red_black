@@ -134,8 +134,9 @@ rbhm_expand(RedBlackHMap *const restrict map)
 	return 1; /* return successful insertion status */
 }
 
-/* inline expansion, return only on error */
-#define RBHM_EXPAND(MAP)						\
+/* inline expansion, optional cleanup as second argument before returning */
+#define RBHM_EXPAND(MAP,						\
+		    ...)						\
 do {									\
 	const unsigned int old_count = MAP->count.buckets_m1 + 1;	\
 	const unsigned int old_expand_factor = MAP->expand_factor;	\
@@ -143,8 +144,10 @@ do {									\
 	struct RedBlackHNode *restrict *const restrict new_buckets	\
 	= RED_BLACK_REALLOC((void *) MAP->buckets,			\
 			    sizeof(*new_buckets) * new_count);		\
-	if (new_buckets == NULL)					\
+	if (new_buckets == NULL) {					\
+		__VA_ARGS__;						\
 		return -1;						\
+	}								\
 	const unsigned int new_count_m1 = new_count - 1;		\
 	MAP->buckets		  = new_buckets;			\
 	MAP->count.buckets_m1     = new_count_m1;			\
@@ -216,7 +219,7 @@ red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
 	dst_map->count.buckets_m1   = count_buckets_m1;
 	dst_map->count.entries      = count_entries;
 	dst_map->count.max_capacity = src_map->count.max_capacity;
-	dst_map->expand_factor      = src_map->expand_factor;
+	dst_map->expand_factor      = RBHM_INIT_EXPAND_FACTOR;
 
 	last_dst_bucket = dst_bucket + count_buckets_m1;
 
@@ -847,41 +850,34 @@ rb_hmap_similar_walk(struct RedBlackHNode *const restrict *restrict bucket1,
 
 	red_black_hitor_init(&bucket_itor1,
 			     *bucket1);
-
 	last_bucket1 = bucket1 + count_buckets_m1;
 
 	while (1) {
-		while (1) {
-			hkey1 = red_black_hitor_next_hkey(&bucket_itor1);
+		/* fetch next hkeys, sequence of hkeys must match exactly if
+		 * maps are similar and have same number of buckets */
+		hkey1 = red_black_hitor_next_hkey(&bucket_itor1);
+		hkey2 = red_black_hitor_next_hkey(&bucket_itor2);
 
-			if (hkey1 != NULL)
-				break;
+		if (hkey1 == NULL) {
+			if (hkey2 != NULL)
+				return false; /* out of sync */
 
 			if (bucket1 == last_bucket1)
-				return true; /* all hkeys equal */
+				return true; /* done, all hkeys matched */
 
+			/* advance to next buckets */
 			++bucket1;
-
 			red_black_hitor_reset(&bucket_itor1,
 					      *bucket1);
-		}
-
-
-		while (1) {
-			hkey2 = red_black_hitor_next_hkey(&bucket_itor2);
-
-			if (hkey2 != NULL)
-				break;
-
-			++bucket2; /* no need to check for last */
-
+			++bucket2;
 			red_black_hitor_reset(&bucket_itor2,
 					      *bucket2);
-		}
 
-		if (red_black_hkey_comparator(hkey1,
-					      hkey2) != 0)
-			return false;
+		} else if (   (hkey2 == NULL)
+			   || (red_black_hkey_comparator(hkey1,
+							 hkey2) != 0)) {
+			return false; /* out of sync */
+		}
 	}
 }
 
@@ -998,7 +994,6 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 	struct RedBlackHNode *const restrict *restrict last_src_bucket;
 	int status;
 
-
 	src_bucket      = src_map->buckets;
 	last_src_bucket = src_bucket + src_map->count.buckets_m1;
 
@@ -1014,7 +1009,7 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 		goto CHECK_EXPAND;
 
 	} else if (status < 0) {
-		return -1;
+		return -1; /* RED_BLACK_MALLOC ERROR */
 	}
 
 	/* first entry or attempted to insert duplicate (no insertion) */
@@ -1397,6 +1392,138 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 	}
 }
 
+int
+red_black_hmap_union(RedBlackHMap *const restrict union_map,
+		     const RedBlackHMap *const restrict map1,
+		     const RedBlackHMap *const restrict map2)
+{
+
+	return (   red_black_hmap_clone(union_map,
+					map1)
+		&& (red_black_hmap_insert_all(union_map,
+					      map2) >= 0))
+	     ? union_map->count.entries
+	     : -1; /* RED_BLACK_MALLOC failure */
+}
+
+
+int
+red_black_hmap_intersection(RedBlackHMap *const restrict i_map,
+			    const RedBlackHMap *const restrict map1,
+			    const RedBlackHMap *const restrict map2)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHItor walk_bucket_itor;
+	struct RedBlackHNode *const restrict *volatile restrict walk_bucket;
+	struct RedBlackHNode *const restrict *restrict walk_buckets;
+	struct RedBlackHNode *const restrict *restrict last_walk_bucket;
+	struct RedBlackHNode *const restrict *restrict find_buckets;
+	struct RedBlackHNode *restrict find_bucket_root;
+	struct RedBlackHNode *restrict node;
+	struct RedBlackHNode *restrict *restrict i_bucket;
+	struct RedBlackHNode *restrict *restrict i_buckets;
+	struct RedBlackHNodeFactory *restrict i_factory_ptr;
+	const struct RedBlackHKey *restrict hkey;
+	RedBlackHash hash;
+	unsigned int count_find_buckets_m1;
+
+	/* init intersection map */
+	i_buckets = RED_BLACK_MALLOC(  sizeof(*i_buckets)
+				     * RBHM_INIT_BUCKET_COUNT);
+
+	if (i_buckets == NULL)
+		return -1; /* RED_BLACK_MALLOC failure */
+
+	i_map->buckets		  = i_buckets;
+	i_map->count.buckets_m1   = RBHM_INIT_BUCKET_COUNT - 1;
+	i_map->count.entries      = 0;
+	i_map->count.max_capacity = RBHM_INIT_BUCKET_COUNT
+				  * RBHM_MAX_AVG_COLLISIONS;
+	i_map->expand_factor      = RBHM_INIT_EXPAND_FACTOR;
+
+	i_factory_ptr = &i_map->factory;
+
+	rbhnf_init(i_factory_ptr);
+
+	/* ensure buckets being traversed have fewer entries */
+	if (map1->count.entries < map2->count.entries) {
+		find_buckets	      = map2->buckets;
+		count_find_buckets_m1 = map2->count.buckets_m1;
+
+		walk_buckets	 = map1->buckets;
+		last_walk_bucket = walk_buckets + map1->count.buckets_m1;
+
+	} else {
+		find_buckets	      = map1->buckets;
+		count_find_buckets_m1 = map1->count.buckets_m1;
+
+		walk_buckets	 = map2->buckets;
+		last_walk_bucket = walk_buckets + map2->count.buckets_m1;
+	}
+
+	red_black_hitor_init(&walk_bucket_itor,
+			     *walk_buckets);
+
+	walk_bucket = walk_buckets;
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) < 0) {
+		rbhnf_destroy(i_factory_ptr);
+		return -1; /* RED_BLACK_MALLOC ERROR */
+	}
+
+	/* first entry or jumped from red_black_hadd */
+
+	while (1) {
+		/* fetch next hkey from 'walk' map */
+		while (1) {
+			hkey = red_black_hitor_next_hkey(&walk_bucket_itor);
+
+			if (hkey != NULL)
+				break;
+
+			if (walk_bucket == last_walk_bucket) /* done */
+				return i_map->count.entries;
+
+			++walk_bucket;
+
+			red_black_hitor_reset(&walk_bucket_itor,
+					      *walk_bucket);
+		}
+
+		/* check if hkey is in 'find' map */
+		hash = hkey->hash;
+
+		find_bucket_root = find_buckets[hash & count_find_buckets_m1];
+
+		if (red_black_hfind(find_bucket_root,
+				    hkey)) {
+			/* need to add hkey to intersection */
+			++(i_map->count.entries);
+
+			/* check if need expansion, destroy intersection if
+			 * expansion fails */
+			if (i_map->count.entries > i_map->count.max_capacity)
+				RBHM_EXPAND(i_map,
+					    rbhnf_destroy(i_factory_ptr));
+
+			/* allocate node */
+			node = rbhnf_allocate(i_factory_ptr,
+					      jump_buffer);
+
+			/* fetch bucket */
+			i_bucket
+			= &i_map->buckets[hash & i_map->count.buckets_m1];
+
+			/* init HNode's HKey */
+			node->hkey = *hkey;
+
+			/* add node to intersection bucket */
+			red_black_hadd(i_bucket,
+				       jump_buffer,
+				       node);
+		}
+	}
+}
 
 void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
