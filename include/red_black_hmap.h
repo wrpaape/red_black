@@ -145,10 +145,6 @@ rb_hmap_similar(const RedBlackHMap *const restrict map1,
 		const RedBlackHMap *const restrict map2,
 		const unsigned int count_entries);
 
-void
-red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
-			 RedBlackHMap *const restrict map);
-
 int
 red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 			  const RedBlackHMap *const restrict src_map);
@@ -164,6 +160,14 @@ red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
 int
 red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
 			  const RedBlackHMap *const restrict src_map);
+
+void
+red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
+			const RedBlackHMap *const restrict src_map);
+
+void
+red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
+			 RedBlackHMap *const restrict map);
 
 bool
 red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,

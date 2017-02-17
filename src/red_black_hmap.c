@@ -295,7 +295,7 @@ red_black_hmap_insert(RedBlackHMap *const restrict map,
 					   &map->factory,
 					   jump_buffer,
 					   &hkey); /* 1, 0 */
-	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+	else if (status < 0)
 		return -1; /* return early to avoid decrementing count */
 	else
 		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0 */
@@ -337,7 +337,7 @@ red_black_hmap_put(RedBlackHMap *const restrict map,
 					&map->factory,
 					jump_buffer,
 					&hkey); /* 1, 0 */
-	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+	else if (status < 0)
 		return -1; /* return early to avoid decrementing count */
 	else
 		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0 */
@@ -381,7 +381,7 @@ red_black_hmap_update(RedBlackHMap *const restrict map,
 					   jump_buffer,
 					   &hkey,
 					   old_ptr); /* 1, 0 */
-	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+	else if (status < 0)
 		return -1; /* return early to avoid decrementing count */
 	else
 		status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0 */
@@ -417,9 +417,10 @@ red_black_hmap_add(RedBlackHMap *const restrict map,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	if (status != 0) {
-		status = (status == RED_BLACK_JUMP_VALUE_3_TRUE); /* 1, 0 */
+		/* increment count entires if no RED_BLACK_MALLOC error */
+		status = (status > 0);
 
-		map->count.entries += status; /* if no ERROR, increment */
+		map->count.entries += status;
 
 		return (bool) status;
 	}
@@ -1012,7 +1013,7 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 		++(dst_map->count.entries);
 		goto CHECK_EXPAND;
 
-	} else if (status == RED_BLACK_JUMP_VALUE_3_ERROR) {
+	} else if (status < 0) {
 		return -1;
 	}
 
@@ -1080,7 +1081,7 @@ red_black_hmap_put_all(RedBlackHMap *const restrict dst_map,
 		++(dst_map->count.entries);
 		goto CHECK_EXPAND;
 
-	} else if (status == RED_BLACK_JUMP_VALUE_3_ERROR) {
+	} else if (status < 0) {
 		return -1;
 	}
 
@@ -1130,8 +1131,8 @@ rbhm_add_all_dump(struct RedBlackHNode *restrict *const restrict dst_buckets,
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHItor src_bucket_itor;
 	struct RedBlackHNode *const restrict *volatile restrict src_bucket;
-	struct RedBlackHNode *const restrict *restrict last_src_bucket;
 	struct RedBlackHNode *const restrict *restrict src_buckets;
+	struct RedBlackHNode *const restrict *restrict last_src_bucket;
 	const struct RedBlackHKey *restrict src_hkey;
 	struct RedBlackHNode *restrict *restrict dst_bucket;
 	struct RedBlackHNode *restrict dst_node;
@@ -1139,6 +1140,9 @@ rbhm_add_all_dump(struct RedBlackHNode *restrict *const restrict dst_buckets,
 	src_buckets     = src_map->buckets;
 	last_src_bucket = src_buckets + src_map->count.buckets_m1;
 	src_bucket      = src_buckets;
+
+	red_black_hitor_init(&src_bucket_itor,
+			     *src_buckets);
 
 	(void) RED_BLACK_SET_JUMP(jump_buffer);
 
@@ -1269,7 +1273,128 @@ int
 red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
 			  const RedBlackHMap *const restrict src_map)
 {
-	return 0;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHNode *restrict *restrict dst_buckets;
+	struct RedBlackHNode *restrict *restrict dst_bucket;
+	struct RedBlackHNodeFactory *restrict dst_factory_ptr;
+	struct RedBlackHItor src_bucket_itor;
+	struct RedBlackHNode *const restrict *volatile restrict src_bucket;
+	struct RedBlackHNode *const restrict *restrict src_buckets;
+	struct RedBlackHNode *const restrict *restrict last_src_bucket;
+	const struct RedBlackHKey *restrict src_hkey;
+	unsigned int dst_cnt_buckets_m1;
+	volatile int count;
+	int status;
+	int count_deleted;
+
+	dst_buckets	   = dst_map->buckets;
+	dst_cnt_buckets_m1 = dst_map->count.buckets_m1;
+	dst_factory_ptr    = &dst_map->factory;
+
+	src_buckets     = src_map->buckets;
+	last_src_bucket = src_buckets + src_map->count.buckets_m1;
+	src_bucket      = src_buckets;
+
+	red_black_hitor_init(&src_bucket_itor,
+			     *src_buckets);
+
+	count = 0;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	/* add 1 if jumped and deletion was made */
+	count += RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
+
+	while (1) {
+		/* fetch next hkey */
+		while (1) {
+			src_hkey = red_black_hitor_next_hkey(&src_bucket_itor);
+
+			if (src_hkey != NULL)
+				break;
+
+			if (src_bucket == last_src_bucket) {
+				/* traversed all hkeys, update map count and
+				 * report total deleted */
+				count_deleted = count;
+
+				dst_map->count.entries -= count_deleted;
+
+				return count_deleted;
+			}
+
+			++src_bucket;
+
+			red_black_hitor_reset(&src_bucket_itor,
+					      *src_bucket);
+		}
+
+		/* fetch destination bucket */
+		dst_bucket = &dst_buckets[src_hkey->hash & dst_cnt_buckets_m1];
+
+		/* delete hkey from bucket */
+		count += red_black_hdelete(dst_bucket,
+					   dst_factory_ptr,
+					   jump_buffer,
+					   src_hkey);
+	}
+}
+
+
+void
+red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
+			const RedBlackHMap *const restrict src_map)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHNode *restrict *restrict dst_buckets;
+	struct RedBlackHNode *restrict *restrict dst_bucket;
+	struct RedBlackHNodeFactory *restrict dst_factory_ptr;
+	struct RedBlackHItor src_bucket_itor;
+	struct RedBlackHNode *const restrict *volatile restrict src_bucket;
+	struct RedBlackHNode *const restrict *restrict src_buckets;
+	struct RedBlackHNode *const restrict *restrict last_src_bucket;
+	const struct RedBlackHKey *restrict src_hkey;
+	unsigned int dst_cnt_buckets_m1;
+
+	dst_buckets	   = dst_map->buckets;
+	dst_cnt_buckets_m1 = dst_map->count.buckets_m1;
+	dst_factory_ptr    = &dst_map->factory;
+
+	src_buckets     = src_map->buckets;
+	last_src_bucket = src_buckets + src_map->count.buckets_m1;
+	src_bucket      = src_buckets;
+
+	red_black_hitor_init(&src_bucket_itor,
+			     *src_buckets);
+
+	(void) RED_BLACK_SET_JUMP(jump_buffer);
+
+	while (1) {
+		/* fetch next hkey */
+		while (1) {
+			src_hkey = red_black_hitor_next_hkey(&src_bucket_itor);
+
+			if (src_hkey != NULL)
+				break;
+
+			if (src_bucket == last_src_bucket)
+				return; /* dropped all hkeys */
+
+			++src_bucket;
+
+			red_black_hitor_reset(&src_bucket_itor,
+					      *src_bucket);
+		}
+
+		/* fetch destination bucket */
+		dst_bucket = &dst_buckets[src_hkey->hash & dst_cnt_buckets_m1];
+
+		/* drop node from bucket */
+		red_black_hdrop(dst_bucket,
+				dst_factory_ptr,
+				jump_buffer,
+				src_hkey);
+	}
 }
 
 

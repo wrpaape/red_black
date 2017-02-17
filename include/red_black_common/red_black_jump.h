@@ -18,17 +18,17 @@ typedef jmp_buf RedBlackJumpBuffer;
 /* status macros
  * map nonzero setjmp return values unconditionally to a domain including zero
  * ────────────────────────────────────────────────────────────────────────── */
-#define RED_BLACK_JUMP_VALUE_3_TRUE	4	/* ->  1 */
-#define RED_BLACK_JUMP_VALUE_3_FALSE	2	/* ->  0 */
-#define RED_BLACK_JUMP_VALUE_3_ERROR	1	/* -> -1 */
+#define RED_BLACK_JUMP_VALUE_3_TRUE	 2	/* ->  1 */
+#define RED_BLACK_JUMP_VALUE_3_FALSE	 1	/* ->  0 */
+#define RED_BLACK_JUMP_VALUE_3_ERROR	-2	/* -> -1 */
 
-#define RED_BLACK_JUMP_3_STATUS(VALUE) (((VALUE) / 2) - 1)
+#define RED_BLACK_JUMP_3_STATUS(VALUE) ((VALUE) / 2)
 
 
-#define RED_BLACK_JUMP_VALUE_2_TRUE	2	/* ->  1  */
-#define RED_BLACK_JUMP_VALUE_2_FALSE	1	/* ->  0 */
+#define RED_BLACK_JUMP_VALUE_2_TRUE	-1	/* ->  1  */
+#define RED_BLACK_JUMP_VALUE_2_FALSE	 1	/* ->  0 */
 
-#define RED_BLACK_JUMP_2_STATUS(VALUE) (VALUE - 1)
+#define RED_BLACK_JUMP_2_STATUS(VALUE) ((VALUE) < 0)
 
 
 /* jump macros

@@ -160,7 +160,7 @@ red_black_tree_add(RedBlackTree *const restrict tree,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	if (status != 0)
-		return status != RED_BLACK_JUMP_VALUE_3_ERROR;
+		return (status > 0); /* true if no error */
 
 	node = rbnf_allocate(factory_ptr,
 			     jump_buffer);
@@ -664,10 +664,11 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
-	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
-		++count; /* successful insertion */
-	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+	if (status < 0)
 		return -1; /* RED_BLACK_MALLOC failure */
+
+	/* increment count if insertion was made */
+	count += (status == RED_BLACK_JUMP_VALUE_3_TRUE);
 
 	while (red_black_itor_next(&itor,
 				   &key))
@@ -705,10 +706,11 @@ red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
-	if (status == RED_BLACK_JUMP_VALUE_3_TRUE)
-		++count; /* successful insertion */
-	else if (status == RED_BLACK_JUMP_VALUE_3_ERROR)
+	if (status < 0)
 		return -1; /* RED_BLACK_MALLOC failure */
+
+	/* increment count if insertion was made */
+	count += (status == RED_BLACK_JUMP_VALUE_3_TRUE);
 
 	while (red_black_itor_next(&itor,
 				   &key))
@@ -740,17 +742,19 @@ rb_tree_add_all(RedBlackTree *const restrict dst_tree,
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackItor itor;
-	struct RedBlackNode *volatile restrict node;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict nodes;
+	struct RedBlackNode *volatile restrict buffer;
 	bool status;
 	void *key;
 
 	status = (count_src == 0);
 
 	if (!status) {
-		node = rbnf_allocate_nodes(&dst_tree->factory,
-					   count_src);
+		nodes = rbnf_allocate_nodes(&dst_tree->factory,
+					    count_src);
 
-		status = (node != NULL);
+		status = (nodes != NULL);
 
 		if (status) {
 			dst_root_ptr = &dst_tree->root;
@@ -759,26 +763,20 @@ rb_tree_add_all(RedBlackTree *const restrict dst_tree,
 			red_black_asc_itor_init(&itor,
 						src_tree->root);
 
-			(void) red_black_itor_next(&itor,
-						   &key);
+			buffer = nodes;
 
-			if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
-				goto NEXT_KEY;
+			(void) RED_BLACK_SET_JUMP(jump_buffer);
 
-			while (1) {
+			while (red_black_itor_next(&itor,
+						   &key)) {
+				node = buffer++;
+
 				node->key = key;
 
 				red_black_add(dst_root_ptr,
 					      comparator,
 					      jump_buffer,
 					      node);
-
-NEXT_KEY:
-				if (!red_black_itor_next(&itor,
-							 &key))
-					break;
-
-				++node;
 			}
 		}
 	}
@@ -811,8 +809,8 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
-	if (status == RED_BLACK_JUMP_VALUE_2_TRUE)
-		++count; /* successful deletion */
+	/* add 1 if jumped and deletion was made */
+	count += RED_BLACK_JUMP_2_STATUS(status); /* 1, 0 */
 
 	while (red_black_itor_next(&itor,
 				   &key))

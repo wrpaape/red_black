@@ -43,8 +43,8 @@ test_red_black_hkey(void)
 						      &static_hkey);
 
 	printf("hkeys compared:\n"
-	       "   {%lu, %p: %d, %zu}\n"
-	       "%s {%lu, %p: %d, %zu}\n",
+	       "   {hash: %lu, key: %p (%d), length: %zu}\n"
+	       "%s {hash: %lu, key: %p (%d), length: %zu}\n",
 	       (unsigned long) auto_hkey.hash,
 	       auto_hkey.key,
 	       *((int *) auto_hkey.key),
