@@ -65,6 +65,7 @@ test_red_black_hmap_delete(void)
 {
 	int status;
 	int *restrict key;
+	int key_value;
 
 	for (key = &keys[0]; key < keys_until; ++key) {
 		status = red_black_hmap_delete(&hmap,
@@ -73,8 +74,18 @@ test_red_black_hmap_delete(void)
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
 					      status,
-					      "DELETED KEY TWICE (0)");
+					      "FAILED TO DELETE KEY (0)");
 	}
+
+	key_value = (int) random_upto(KEYS_COUNT - 1);
+
+	status = red_black_hmap_delete(&hmap,
+				       (void *) &key_value,
+				       sizeof(key_value));
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      status,
+				      "RE-DELETED KEY");
 }
 
 

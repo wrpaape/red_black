@@ -50,7 +50,7 @@ setUp(void)
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = keys[i];
 
-		status = red_black_tree_put(&tree,
+		status = red_black_tree_add(&tree,
 					    (void *) (intptr_t) key);
 
 		TEST_ASSERT_TRUE_MESSAGE(status,
@@ -95,7 +95,7 @@ test_red_black_tree_asc_itor(void)
 	bool status;
 
 	red_black_tree_asc_itor_init(&itor,
-					 &tree);
+				     &tree);
 
 	for (i = 0; i < 2; ++i) {
 		for (j = 0; j < KEYS_COUNT; ++j) {

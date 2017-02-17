@@ -78,8 +78,17 @@ test_red_black_tree_delete(void)
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
 					      status,
-					      "DELETED KEY TWICE (0)");
+					      "FAILED TO DELETE KEY (0)");
 	}
+
+	key = (int) random_upto(KEYS_COUNT - 1);
+
+	status = red_black_tree_delete(&tree,
+				       (void *) (intptr_t) key);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      status,
+				      "RE-DELETED KEY");
 }
 
 void

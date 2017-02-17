@@ -25,8 +25,8 @@ typedef struct _RedBlackHMap RedBlackHMap;
 
 struct _RedBlackHMapItor {
 	struct RedBlackHItor bucket_itor;
-	struct RedBlackHNode *restrict *restrict bucket;
-	struct RedBlackHNode *restrict *restrict last_bucket;
+	struct RedBlackHNode *const restrict *restrict bucket;
+	struct RedBlackHNode *const restrict *restrict last_bucket;
 };
 typedef struct _RedBlackHMapItor RedBlackHMapItor;
 
@@ -167,7 +167,11 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 
 void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
-			 RedBlackHMap *const restrict map);
+			 const RedBlackHMap *const restrict map);
+
+void
+red_black_hmap_itor_reset(RedBlackHMapItor *const restrict itor,
+			  const RedBlackHMap *const restrict map);
 
 bool
 red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,

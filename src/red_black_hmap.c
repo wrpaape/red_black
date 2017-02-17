@@ -1400,9 +1400,9 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 
 void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
-			 RedBlackHMap *const restrict map)
+			 const RedBlackHMap *const restrict map)
 {
-	struct RedBlackHNode *restrict *restrict first_bucket;
+	struct RedBlackHNode *const restrict *restrict first_bucket;
 
 	first_bucket = map->buckets;
 
@@ -1415,14 +1415,31 @@ red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
 }
 
 
+void
+red_black_hmap_itor_reset(RedBlackHMapItor *const restrict itor,
+			  const RedBlackHMap *const restrict map)
+{
+	struct RedBlackHNode *const restrict *restrict first_bucket;
+
+	first_bucket = map->buckets;
+
+	/* initialize first bucket itor */
+	red_black_hitor_reset(&itor->bucket_itor,
+			      *first_bucket);
+
+	itor->bucket      = first_bucket;
+	itor->last_bucket = first_bucket + map->count.buckets_m1;
+}
+
+
 bool
 red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
 			 void **const restrict key_ptr,
 			 size_t *const restrict length_ptr)
 {
 	struct RedBlackHItor *restrict bucket_itor;
-	struct RedBlackHNode *restrict *restrict bucket;
-	struct RedBlackHNode *restrict *restrict last_bucket;
+	struct RedBlackHNode *const restrict *restrict bucket;
+	struct RedBlackHNode *const restrict *restrict last_bucket;
 
 	bucket_itor = &itor->bucket_itor;
 
@@ -1451,6 +1468,5 @@ red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
 		}
 	}
 
-	/* itor->bucket = last_bucket; /1* ensure subsequent calls return false *1/ */
 	return false; /* all buckets traversed, no keys left */
 }
