@@ -994,26 +994,34 @@ red_black_hmap_similar(const RedBlackHMap *const map1,
 	return status;
 }
 
+#include <stdio.h>
+#define DEBUG(...) printf(__VA_ARGS__), fflush(stdout)
 
 int
-red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
+red_black_hmap_insert_all(volatile RedBlackHMap *const restrict dst_map,
 			  const RedBlackHMap *const restrict src_map)
 {
 	RedBlackJumpBuffer jump_buffer;
 	const struct RedBlackHKey *restrict src_hkey;
 	struct RedBlackHItor src_bucket_itor;
 	struct RedBlackHNode *restrict *restrict dst_bucket;
-	struct RedBlackHNode *const restrict *restrict src_bucket;
+	struct RedBlackHNodeFactory *restrict dst_factory_ptr;
+	struct RedBlackHNode *const restrict *volatile restrict src_bucket;
+	struct RedBlackHNode *const restrict *restrict src_buckets;
 	struct RedBlackHNode *const restrict *restrict last_src_bucket;
 	int status;
 
-	src_bucket      = src_map->buckets;
-	last_src_bucket = src_bucket + src_map->count.buckets_m1;
+	src_buckets     = src_map->buckets;
+	last_src_bucket = src_buckets + src_map->count.buckets_m1;
 
 	red_black_hitor_init(&src_bucket_itor,
-			     *src_bucket);
+			     *src_buckets);
+
+	src_bucket = src_buckets;
 
 	const unsigned int init_dst_count_entries = dst_map->count.entries;
+
+	dst_factory_ptr = &dst_map->factory;
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
@@ -1028,6 +1036,8 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 	/* first entry or attempted to insert duplicate (no insertion) */
 
 	while (1) {
+		DEBUG("LOOPED (status = %d, count = %u, initial_count = %u)\n",
+		      status, dst_map->count.entries, init_dst_count_entries);
 		while (1) {
 			src_hkey = red_black_hitor_next_hkey(&src_bucket_itor);
 
@@ -1050,7 +1060,7 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 		= &dst_map->buckets[src_hkey->hash & dst_map->count.buckets_m1];
 
 		status = red_black_hinsert(dst_bucket,
-					   &dst_map->factory,
+					   dst_factory_ptr,
 					   jump_buffer,
 					   src_hkey); /* 1, 0 */
 

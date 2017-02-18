@@ -1940,6 +1940,34 @@ TARGETS			     += $(HMAP_DELETION_TRNR_SRC)		\
 			        $(HMAP_DELETION_TEST_BIN)
 
 
+# red_black_hmap_set_operations_test
+# ──────────────────────────────────────────────────────────────────────────────
+HMAP_SET_OPERATIONS_TEST_SRC       := $(call TEST_SOURCE_PATH,red_black_hmap_set_operations)
+HMAP_SET_OPERATIONS_TRNR_SRC       := $(call TEST_RUNNER_SOURCE_PATH,red_black_hmap_set_operations)
+HMAP_SET_OPERATIONS_TRNR_OBJ       := $(call TEST_RUNNER_OBJECT_PATH,red_black_hmap_set_operations)
+HMAP_SET_OPERATIONS_TEST_OBJ       := $(call TEST_OBJECT_PATH,red_black_hmap_set_operations)
+HMAP_SET_OPERATIONS_TEST_BIN       := $(call TEST_BINARY_PATH,red_black_hmap_set_operations)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HMAP_SET_OPERATIONS_TRNR_SRC_PREQS := $(HMAP_SET_OPERATIONS_TEST_SRC)
+HMAP_SET_OPERATIONS_TEST_OBJ_PREQS := $(HMAP_SET_OPERATIONS_TEST_SRC)	\
+			              $(HMAP_HDR)			\
+			              $(TEST_HDR)			\
+			              $(UNITY_HDR)
+HMAP_SET_OPERATIONS_TRNR_OBJ_PREQS := $(HMAP_SET_OPERATIONS_TRNR_SRC)	\
+			              $(HMAP_SET_OPERATIONS_TEST_OBJ_PREQS)
+HMAP_SET_OPERATIONS_TEST_BIN_PREQS := $(HMAP_SET_OPERATIONS_TRNR_OBJ)	\
+			      	      $(HMAP_SET_OPERATIONS_TEST_OBJ)	\
+			      	      $(HMAP_SH_LIB)			\
+			      	      $(TEST_OBJ)			\
+			      	      $(UNITY_OBJ)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TEST_BINARIES		     	   += $(HMAP_SET_OPERATIONS_TEST_BIN)
+TARGETS			     	   += $(HMAP_SET_OPERATIONS_TRNR_SRC)	\
+			              $(HMAP_SET_OPERATIONS_TRNR_OBJ)	\
+			              $(HMAP_SET_OPERATIONS_TEST_OBJ)	\
+			              $(HMAP_SET_OPERATIONS_TEST_BIN)
+
+
 # red_black_hmap_internals_test
 # ──────────────────────────────────────────────────────────────────────────────
 HMAP_INTERNALS_TEST_SRC       := $(call TEST_SOURCE_PATH,red_black_hmap_internals)
@@ -2444,6 +2472,15 @@ $(HMAP_DELETION_TRNR_OBJ): $(HMAP_DELETION_TRNR_OBJ_PREQS)
 $(HMAP_DELETION_TEST_OBJ): $(HMAP_DELETION_TEST_OBJ_PREQS)
 	$(CC) $(UNITY_CC_FLAGS) $< -o $@
 $(HMAP_DELETION_TRNR_SRC): $(HMAP_DELETION_TRNR_SRC_PREQS)
+	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
+
+$(HMAP_SET_OPERATIONS_TEST_BIN): $(HMAP_SET_OPERATIONS_TEST_BIN_PREQS)
+	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
+$(HMAP_SET_OPERATIONS_TRNR_OBJ): $(HMAP_SET_OPERATIONS_TRNR_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(HMAP_SET_OPERATIONS_TEST_OBJ): $(HMAP_SET_OPERATIONS_TEST_OBJ_PREQS)
+	$(CC) $(UNITY_CC_FLAGS) $< -o $@
+$(HMAP_SET_OPERATIONS_TRNR_SRC): $(HMAP_SET_OPERATIONS_TRNR_SRC_PREQS)
 	$(RUBY) $(RUBY_FLAGS) $(UNITY_GEN_TRNR_SCRIPT) $< $@
 
 $(HMAP_INTERNALS_TEST_BIN): $(HMAP_INTERNALS_TEST_BIN_PREQS)
