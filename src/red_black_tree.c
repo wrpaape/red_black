@@ -656,47 +656,42 @@ rbt_intersect(const struct RedBlackNode *const restrict root1,
 {
 	struct RedBlackItor itor1;
 	struct RedBlackItor itor2;
-	struct RedBlackItor *restrict lesser_itor_ptr;
-	struct RedBlackItor *restrict greater_itor_ptr;
-	struct RedBlackItor *restrict tmp_itor_ptr;
-	void *greater_key;
-	void *lesser_key;
+	void *key1;
+	void *key2;
 	int compare;
 
-	/* init greater itor */
-	greater_itor_ptr = &itor1;
-	red_black_asc_itor_init(greater_itor_ptr,
+	red_black_asc_itor_init(&itor1,
 				root1);
 
-	/* set greater key */
-	if (!red_black_itor_next(greater_itor_ptr,
-				 &greater_key))
-		return false; /* tree1 empty, no intersection */
+	if (!red_black_itor_next(&itor1,
+				 &key1))
+		return false; /* tree1 empty */
 
-	/* init lesser itor */
-	lesser_itor_ptr = &itor2;
-	red_black_asc_itor_init(lesser_itor_ptr,
+	red_black_asc_itor_init(&itor2,
 				root2);
 
+	if (!red_black_itor_next(&itor2,
+				 &key2))
+		return false; /* tree2 empty */
+
 	while (1) {
-		/* fetch next key from lesser itor */
-		if (!red_black_itor_next(lesser_itor_ptr,
-					 &lesser_key))
-			return false;
+		compare = comparator(key1,
+				     key2);
 
-		compare = comparator(lesser_key,
-				     greater_key);
+		if (compare < 0) {
+			/* need to advance itor1 */
+			if (!red_black_itor_next(&itor1,
+						 &key1))
+				return false; /* tree1 exhausted */
 
-		if (compare == 0)
+		} else if (compare > 0) {
+			/* need to advance itor2 */
+			if (!red_black_itor_next(&itor2,
+						 &key2))
+				return false; /* tree2 exhausted */
+
+		} else {
 			return true; /* intersection found */
-
-		if (compare > 0) {
-			/* itors out of order, need to swap */
-			greater_key = lesser_key;
-
-			tmp_itor_ptr	 = greater_itor_ptr;
-			greater_itor_ptr = lesser_itor_ptr;
-			lesser_itor_ptr  = tmp_itor_ptr;
 		}
 	}
 }
@@ -715,6 +710,7 @@ red_black_tree_intersect(const RedBlackTree *const tree1,
 				 tree2->root,
 				 comparator));
 }
+
 
 static inline bool
 rbt_subset(const struct RedBlackNode *const restrict root1,
@@ -1085,11 +1081,13 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 					     key2);
 
 			if (compare < 0) {
+				/* need to advance itor1 */
 				if (!red_black_itor_next(&itor1,
 							 &key1))
 					goto TREEIFY;
 
 			} else if (compare > 0) {
+				/* need to advance itor2 */
 				if (!red_black_itor_next(&itor2,
 							 &key2))
 					goto TREEIFY;

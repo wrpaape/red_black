@@ -94,8 +94,9 @@ test_red_black_tree_compare(void)
 	bool status;
 	int i;
 	int key;
+	int even_key;
+	int odd_key;
 	RedBlackTree *restrict tree_ptr;
-	RedBlackTree positive_tree;
 
 	status = red_black_tree_similar(&asc_tree,
 					&desc_tree);
@@ -109,130 +110,21 @@ test_red_black_tree_compare(void)
 	TEST_ASSERT_FALSE_MESSAGE(status,
 				  "ASC/DESC TREES UNEXPECTEDLY CONGRUENT");
 
-	red_black_tree_init(&positive_tree,
-			    &int_key_comparator);
-
-	verify_empty_tree(&positive_tree);
-
 	/* delete ODD  keys from asc_tree
-	 * delete EVEN keys from desc_tree
-	 * add    ALL  keys to   positive_tree */
+	 * delete EVEN keys from desc_tree */
 
 	shuffle_keys();
 
 	for (i = 0; i < KEYS_COUNT; ++i) {
 		key = keys[i];
 
-		status = red_black_tree_add(&positive_tree,
-					    (void *) (intptr_t) key);
-
-		TEST_ASSERT_TRUE_MESSAGE(status,
-					 "OUT OF MEMORY")
 		tree_ptr = (key & 1)
 			 ? &asc_tree
 			 : &desc_tree;
-
-		red_black_tree_drop(tree_ptr,
-				    (void *) (intptr_t) key);
-
 	}
 
-	/* asc_tree	 contains only EVEN keys
-	 * desc_tree	 contains only ODD  keys
-	 * positive_tree contains ALL       keys */
-
-	/* compare EVEN tree to POSITIVE tree */
-	status = red_black_tree_intersect(&positive_tree,
-					  &asc_tree)
-	      && red_black_tree_intersect(&asc_tree,
-					  &positive_tree);
-
-	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "EVEN TREE DOES NOT INTERSECT WITH "
-				 "POSITIVE TREE");
-
-	status = red_black_tree_subset(&positive_tree,
-				       &asc_tree);
-
-	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "EVEN TREE IS NOT A SUBSET OF POSITIVE TREE");
-
-	status = red_black_tree_subset(&asc_tree,
-				       &positive_tree);
-
-	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "POSITIVE TREE IS A SUBSET OF EVEN TREE");
-
-	status = red_black_tree_add(&asc_tree,
-				    (void *) (intptr_t) -2);
-
-	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "OUT OF MEMORY");
-
-	status = red_black_tree_subset(&positive_tree,
-				       &asc_tree);
-
-	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "EVEN TREE WITH NEGATIVE KEY IS A SUBSET OF "
-				  "POSITIVE TREE");
-
-	/* compare ODD tree to POSITIVE tree */
-	status = red_black_tree_intersect(&positive_tree,
-					  &desc_tree)
-	      && red_black_tree_intersect(&desc_tree,
-					  &positive_tree);
-
-	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "ODD TREE DOES NOT INTERSECT WITH "
-				 "POSITIVE TREE");
-
-	status = red_black_tree_subset(&positive_tree,
-				       &desc_tree);
-
-	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "ODD TREE IS NOT A SUBSET OF POSITIVE TREE");
-
-	status = red_black_tree_subset(&desc_tree,
-				       &positive_tree);
-
-	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "POSITIVE TREE IS A SUBSET OF ODD TREE");
-
-	status = red_black_tree_add(&desc_tree,
-				    (void *) (intptr_t) -1);
-
-	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "OUT OF MEMORY");
-
-	status = red_black_tree_subset(&positive_tree,
-				       &desc_tree);
-
-	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "ODD TREE WITH NEGATIVE KEY IS A SUBSET OF "
-				  "POSITIVE TREE");
-
-	red_black_tree_destroy(&positive_tree); /* done with positive tree */
-
-	/* compare EVEN tree to ODD tree */
-	status = red_black_tree_intersect(&asc_tree,
-					  &desc_tree)
-	      || red_black_tree_intersect(&desc_tree,
-					  &asc_tree);
-
-	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "EVEN TREE INTERSECTS WITH ODD TREE");
-
-	status = red_black_tree_subset(&asc_tree,
-				       &desc_tree);
-
-	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "EVEN TREE IS A SUBSET OF ODD TREE");
-
-	status = red_black_tree_subset(&asc_tree,
-				       &desc_tree);
-
-	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "ODD TREE IS A SUBSET OF EVEN TREE");
+	/* asc_tree  contains only EVEN keys
+	 * desc_tree contains only ODD  keys */
 }
 
 
