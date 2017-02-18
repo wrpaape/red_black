@@ -146,7 +146,7 @@ rb_hmap_similar(const RedBlackHMap *const restrict map1,
 		const unsigned int count_entries);
 
 int
-red_black_hmap_insert_all(volatile RedBlackHMap *const restrict dst_map,
+red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 			  const RedBlackHMap *const restrict src_map);
 
 int

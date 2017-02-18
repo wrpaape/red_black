@@ -561,8 +561,9 @@ red_black_tree_verify(const RedBlackTree *const restrict tree)
 
 
 static inline bool
-rb_tree_congruent(const RedBlackTree *const restrict tree1,
-		  const RedBlackTree *const restrict tree2)
+rbt_congruent(const struct RedBlackNode *const restrict root1,
+	      const struct RedBlackNode *const restrict root2,
+	      const RedBlackComparator comparator)
 {
 	bool status;
 	RedBlackJumpBuffer jump_buffer;
@@ -570,9 +571,9 @@ rb_tree_congruent(const RedBlackTree *const restrict tree1,
 	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0);
 
 	if (status)
-		red_black_congruent(tree1->root,
-				    tree2->root,
-				    tree1->comparator,
+		red_black_congruent(root1,
+				    root2,
+				    comparator,
 				    jump_buffer);
 		/* if returned w/o jump, status is true */
 
@@ -583,32 +584,35 @@ bool
 red_black_tree_congruent(const RedBlackTree *const tree1,
 			 const RedBlackTree *const tree2)
 {
-	return (tree1 == tree2)
-	    || (   (tree1->comparator == tree2->comparator)
-		&& rb_tree_congruent(tree1,
-				     tree2));
+	if (tree1 == tree2)
+		return true;
+
+	const RedBlackComparator comparator = tree1->comparator;
+
+	return (   (comparator == tree2->comparator)
+		&& rbt_congruent(tree1->root,
+				 tree2->root,
+				 comparator));
 }
 
 
 static inline bool
-rb_tree_similar(const RedBlackTree *const restrict tree1,
-		const RedBlackTree *const restrict tree2)
+rbt_similar(const struct RedBlackNode *const restrict root1,
+	    const struct RedBlackNode *const restrict root2,
+	    const RedBlackComparator comparator)
 {
 	bool status1;
 	bool status2;
 	struct RedBlackItor itor1;
 	struct RedBlackItor itor2;
-	RedBlackComparator comparator;
 	void *key1;
 	void *key2;
 
 	red_black_asc_itor_init(&itor1,
-				tree1->root);
-
-	comparator = tree1->comparator;
+				root1);
 
 	red_black_asc_itor_init(&itor2,
-				tree2->root);
+				root2);
 
 	while (1) {
 		status1 = red_black_itor_next(&itor1,
@@ -633,10 +637,144 @@ bool
 red_black_tree_similar(const RedBlackTree *const tree1,
 		       const RedBlackTree *const tree2)
 {
-	return (tree1 == tree2)
-	    || (   (tree1->comparator == tree2->comparator)
-		&& rb_tree_similar(tree1,
-				   tree2));
+	if (tree1 == tree2)
+		return true;
+
+	const RedBlackComparator comparator = tree1->comparator;
+
+	return (   (comparator == tree2->comparator)
+		&& rbt_similar(tree1->root,
+			       tree2->root,
+			       comparator));
+}
+
+
+static inline bool
+rbt_intersect(const struct RedBlackNode *const restrict root1,
+	      const struct RedBlackNode *const restrict root2,
+	      const RedBlackComparator comparator)
+{
+	struct RedBlackItor itor1;
+	struct RedBlackItor itor2;
+	struct RedBlackItor *restrict lesser_itor_ptr;
+	struct RedBlackItor *restrict greater_itor_ptr;
+	struct RedBlackItor *restrict tmp_itor_ptr;
+	void *greater_key;
+	void *lesser_key;
+	int compare;
+
+	/* init greater itor */
+	greater_itor_ptr = &itor1;
+	red_black_asc_itor_init(greater_itor_ptr,
+				root1);
+
+	/* set greater key */
+	if (!red_black_itor_next(greater_itor_ptr,
+				 &greater_key))
+		return false; /* tree1 empty, no intersection */
+
+	/* init lesser itor */
+	lesser_itor_ptr = &itor2;
+	red_black_asc_itor_init(lesser_itor_ptr,
+				root2);
+
+	while (1) {
+		/* fetch next key from lesser itor */
+		if (!red_black_itor_next(lesser_itor_ptr,
+					 &lesser_key))
+			return false;
+
+		compare = comparator(lesser_key,
+				     greater_key);
+
+		if (compare == 0)
+			return true; /* intersection found */
+
+		if (compare > 0) {
+			/* itors out of order, need to swap */
+			greater_key = lesser_key;
+
+			tmp_itor_ptr	 = greater_itor_ptr;
+			greater_itor_ptr = lesser_itor_ptr;
+			lesser_itor_ptr  = tmp_itor_ptr;
+		}
+	}
+}
+
+bool
+red_black_tree_intersect(const RedBlackTree *const tree1,
+			 const RedBlackTree *const tree2)
+{
+	if (tree1 == tree2)
+		return true;
+
+	const RedBlackComparator comparator = tree1->comparator;
+
+	return (   (comparator == tree2->comparator)
+		&& rbt_intersect(tree1->root,
+				 tree2->root,
+				 comparator));
+}
+
+static inline bool
+rbt_subset(const struct RedBlackNode *const restrict root1,
+	   const struct RedBlackNode *const restrict root2,
+	   const RedBlackComparator comparator)
+{
+	struct RedBlackItor itor1;
+	struct RedBlackItor itor2;
+	void *key1;
+	void *key2;
+	int compare;
+
+	/* emit keys from itor1 while they are less than itor2
+	 *
+	 * if key1 == key2, advance both itors
+	 *
+	 * if key1 > key2, tree1 is missing key2 -> not a subset */
+
+	red_black_asc_itor_init(&itor2,
+				root2);
+
+	red_black_asc_itor_init(&itor1,
+				root1);
+
+	while (1) {
+		/* set key2 */
+		if (!red_black_itor_next(&itor2,
+					 &key2))
+			return true; /* all of tree2 contained by tree1 */
+
+		while (1) {
+			if (!red_black_itor_next(&itor1,
+						 &key1))
+				return false; /* tree1 exhausted before tree2 */
+
+			compare = comparator(key2,
+					     key1);
+
+			if (compare == 0)
+				break; /* advance both itors */
+
+			if (compare < 0)
+				return false; /* tree2 has keys < tree1 keys */
+		}
+	}
+}
+
+bool
+red_black_tree_subset(const RedBlackTree *const tree1,
+		      const RedBlackTree *const tree2)
+{
+	if (tree1 == tree2)
+		return true;
+
+	const RedBlackComparator comparator = tree1->comparator;
+
+	return (   (comparator == tree2->comparator)
+		&& rbt_subset(tree1->root,
+			      tree2->root,
+			      comparator));
 }
 
 

@@ -997,8 +997,9 @@ red_black_hmap_similar(const RedBlackHMap *const map1,
 #include <stdio.h>
 #define DEBUG(...) printf(__VA_ARGS__), fflush(stdout)
 
+/* TODO: fix volatile dst_map workaround */
 int
-red_black_hmap_insert_all(volatile RedBlackHMap *const restrict dst_map,
+red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 			  const RedBlackHMap *const restrict src_map)
 {
 	RedBlackJumpBuffer jump_buffer;

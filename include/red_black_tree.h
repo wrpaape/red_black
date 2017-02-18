@@ -174,6 +174,14 @@ bool
 red_black_tree_similar(const RedBlackTree *const tree1,
 		       const RedBlackTree *const tree2);
 
+bool
+red_black_tree_intersect(const RedBlackTree *const tree1,
+			 const RedBlackTree *const tree2);
+
+bool
+red_black_tree_subset(const RedBlackTree *const tree1,
+		      const RedBlackTree *const tree2);
+
 int
 red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 			  const RedBlackTree *const restrict src_tree);
