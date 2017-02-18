@@ -153,8 +153,8 @@ red_black_tree_add(RedBlackTree *const restrict tree,
 	RedBlackComparator comparator;
 	int status;
 
-	root_ptr	 = &tree->root;
-	comparator       = tree->comparator;
+	root_ptr    = &tree->root;
+	comparator  = tree->comparator;
 	factory_ptr = &tree->factory;
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);

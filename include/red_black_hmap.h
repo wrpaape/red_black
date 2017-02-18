@@ -180,6 +180,11 @@ red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
 			  const RedBlackHMap *const restrict map1,
 			  const RedBlackHMap *const restrict map2);
 
+int
+red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
+			      const RedBlackHMap *const restrict map1,
+			      const RedBlackHMap *const restrict map2);
+
 void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
 			 const RedBlackHMap *const restrict map);

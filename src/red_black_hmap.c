@@ -792,9 +792,9 @@ red_black_hmap_verify(const RedBlackHMap *const restrict map)
 
 
 static inline bool
-rb_hmap_congruent(const RedBlackHMap *const restrict map1,
-		  const RedBlackHMap *const restrict map2,
-		  const unsigned int count_buckets_m1)
+rbhm_congruent(const RedBlackHMap *const restrict map1,
+	       const RedBlackHMap *const restrict map2,
+	       const unsigned int count_buckets_m1)
 {
 	struct RedBlackHNode *restrict *restrict bucket1;
 	struct RedBlackHNode *restrict *restrict bucket2;
@@ -836,11 +836,11 @@ red_black_hmap_congruent(const RedBlackHMap *const map1,
 	if (!status) {
 		const unsigned int count_buckets_m1 = map1->count.buckets_m1;
 
-		status = (count_buckets_m1     == map2->count.buckets_m1)
-		      && (map1->count.entries  == map2->count.entries)
-		      && rb_hmap_congruent(map1,
-					   map2,
-					   count_buckets_m1);
+		status = (count_buckets_m1    == map2->count.buckets_m1)
+		      && (map1->count.entries == map2->count.entries)
+		      && rbhm_congruent(map1,
+					map2,
+					count_buckets_m1);
 	}
 
 	return status;
@@ -848,9 +848,9 @@ red_black_hmap_congruent(const RedBlackHMap *const map1,
 
 
 static inline bool
-rb_hmap_similar_walk(struct RedBlackHNode *const restrict *restrict bucket1,
-		     struct RedBlackHNode *const restrict *restrict bucket2,
-		     const unsigned int count_buckets_m1)
+rbhm_similar_walk(struct RedBlackHNode *const restrict *restrict bucket1,
+		  struct RedBlackHNode *const restrict *restrict bucket2,
+		  const unsigned int count_buckets_m1)
 {
 	struct RedBlackHItor bucket_itor1;
 	struct RedBlackHItor bucket_itor2;
@@ -895,10 +895,10 @@ rb_hmap_similar_walk(struct RedBlackHNode *const restrict *restrict bucket1,
 }
 
 static inline bool
-rb_hmap_similar_find(struct RedBlackHNode *const restrict *restrict buckets1,
-		     struct RedBlackHNode *const restrict *restrict buckets2,
-		     const unsigned int count_buckets1_m1,
-		     const unsigned int count_buckets2_m1)
+rbhm_similar_find(struct RedBlackHNode *const restrict *restrict buckets1,
+		  struct RedBlackHNode *const restrict *restrict buckets2,
+		  const unsigned int count_buckets1_m1,
+		  const unsigned int count_buckets2_m1)
 {
 	struct RedBlackHItor walk_bucket_itor;
 	struct RedBlackHNode *const restrict *restrict walk_bucket;
@@ -981,13 +981,13 @@ red_black_hmap_similar(const RedBlackHMap *const map1,
 			 * parallel for O(N) comparisons, otherwise must walk
 			 * one and find from the other (O(NlogN) comparisons) */
 			status = (count_buckets1_m1 == count_buckets2_m1)
-			       ? rb_hmap_similar_walk(buckets1,
-						      buckets2,
-						      count_buckets1_m1)
-			       : rb_hmap_similar_find(buckets1,
-						      buckets2,
-						      count_buckets1_m1,
-						      count_buckets2_m1);
+			       ? rbhm_similar_walk(buckets1,
+						   buckets2,
+						   count_buckets1_m1)
+			       : rbhm_similar_find(buckets1,
+						   buckets2,
+						   count_buckets1_m1,
+						   count_buckets2_m1);
 		}
 	}
 
@@ -1405,6 +1405,7 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 }
 
 
+/* build a map from a list of nodes */
 static inline int
 rbhm_from_list(RedBlackHMap *const restrict map,
 	       struct RedBlackHNode *volatile restrict head,
@@ -1691,6 +1692,146 @@ red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
 			++count_entries;
 		}
 	}
+}
+
+
+int
+red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
+			      const RedBlackHMap *const restrict map1,
+			      const RedBlackHMap *const restrict map2)
+{
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHItor bucket_itor;
+	struct RedBlackHNode *const restrict *restrict bucket;
+	struct RedBlackHNode *const restrict *restrict last_bucket;
+	struct RedBlackHNode *const restrict *restrict buckets1;
+	struct RedBlackHNode *const restrict *restrict buckets2;
+	struct RedBlackHNode *restrict bucket_root;
+	struct RedBlackHNode *restrict node;
+	struct RedBlackHNode *restrict head;
+	struct RedBlackHNode *restrict *restrict end_ptr;
+	struct RedBlackHNodeFactory *restrict sym_diff_factory_ptr;
+	struct RedBlackHNodeFactoryBuffer *restrict factory_buffer_ptr;
+	const struct RedBlackHKey *restrict hkey;
+	unsigned int count_buckets1_m1;
+	unsigned int count_buckets2_m1;
+	unsigned int count_entries;
+
+	/* init sym_difference factory
+	 * nodes will be allocated from here, joined into a list, and finally
+	 * dumped all at once into difference_map to avoid intermediate
+	 * expansions */
+
+	sym_diff_factory_ptr = &sym_difference_map->factory;
+
+	rbhnf_init(sym_diff_factory_ptr);
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
+		rbhnf_destroy(sym_diff_factory_ptr);
+		return -1; /* RED_BLACK_MALLOC failure */
+	}
+
+	factory_buffer_ptr = &sym_diff_factory_ptr->buffer;
+
+	buckets2	  = map2->buckets;
+	count_buckets2_m1 = map2->count.buckets_m1;
+
+	buckets1	  = map1->buckets;
+	count_buckets1_m1 = map1->count.buckets_m1;
+
+	/* traverse map1 */
+	last_bucket = buckets1 + count_buckets1_m1;
+	bucket	    = buckets1;
+
+	red_black_hitor_init(&bucket_itor,
+			     *bucket);
+
+	end_ptr       = &head; /* first entry will set 'head' */
+	count_entries = 0;
+
+	while (1) {
+		/* fetch next hkey */
+		while (1) {
+			hkey = red_black_hitor_next_hkey(&bucket_itor);
+
+			if (hkey != NULL)
+				break;
+
+			if (bucket == last_bucket) /* done traversing map1 */
+				goto TRAVERSE_MAP2;
+
+			++bucket;
+
+			red_black_hitor_reset(&bucket_itor,
+					      *bucket);
+		}
+
+		/* fetch bucket */
+		bucket_root = buckets2[hkey->hash & count_buckets2_m1];
+
+		if (!red_black_hfind(bucket_root,
+				     hkey)) {
+			/* hkey unique to map1 found, append node to list */
+			node = rbhnfb_allocate(factory_buffer_ptr,
+					       jump_buffer);
+
+			*end_ptr   = node;
+			end_ptr    = &node->left;
+			node->hkey = *hkey;
+
+			++count_entries;
+		}
+	}
+
+TRAVERSE_MAP2:
+	last_bucket = buckets2 + count_buckets1_m1;
+	bucket	    = buckets2;
+
+	red_black_hitor_init(&bucket_itor,
+			     *bucket);
+
+	while (1) {
+		/* fetch next hkey */
+		while (1) {
+			hkey = red_black_hitor_next_hkey(&bucket_itor);
+
+			if (hkey != NULL)
+				break;
+
+			if (bucket == last_bucket) {
+				/* done, terminate list and dump into
+				 * sym_difference_map */
+				*end_ptr = NULL;
+
+				return rbhm_from_list(sym_difference_map,
+						      head,
+						      count_entries,
+						      sym_diff_factory_ptr);
+			}
+
+			++bucket;
+
+			red_black_hitor_reset(&bucket_itor,
+					      *bucket);
+		}
+
+		/* fetch bucket */
+		bucket_root = buckets1[hkey->hash & count_buckets1_m1];
+
+		if (!red_black_hfind(bucket_root,
+				     hkey)) {
+			/* hkey unique to map2 found, append node to list */
+			node = rbhnfb_allocate(factory_buffer_ptr,
+					       jump_buffer);
+
+			*end_ptr   = node;
+			end_ptr    = &node->left;
+			node->hkey = *hkey;
+
+			++count_entries;
+		}
+	}
+
 }
 
 
