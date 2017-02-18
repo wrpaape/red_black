@@ -993,32 +993,125 @@ red_black_tree_union(RedBlackTree *const restrict union_tree,
 		     const RedBlackTree *const restrict tree1,
 		     const RedBlackTree *const restrict tree2)
 {
-	return rb_tree_union(union_tree,
-			     tree1,
-			     tree2,
-			     red_black_count(tree1->root));
-}
+	struct RedBlackNodeFactory *restrict union_factory_ptr;
+	struct RedBlackNodeFactoryBuffer *restrict factory_buffer_ptr;
+	struct RedBlackNode *restrict node;
+	struct RedBlackNode *restrict head;
+	struct RedBlackNode *restrict *restrict end_ptr;
+	RedBlackComparator comparator;
+	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackItor itor1;
+	struct RedBlackItor itor2;
+	struct RedBlackItor *restrict lesser_itor_ptr;
+	struct RedBlackItor *restrict greater_itor_ptr;
+	struct RedBlackItor *restrict tmp_itor_ptr;
+	struct RedBlackItor *restrict rem_itor_ptr;
+	void *rem_key;
+	void *lesser_key;
+	void *greater_key;
+	int compare;
+	int count;
 
-int
-rb_tree_union(RedBlackTree *const restrict union_tree,
-	      const RedBlackTree *const restrict tree1,
-	      const RedBlackTree *const restrict tree2,
-	      const unsigned int count1)
-{
-	if (rb_tree_clone(union_tree,
-			  tree1,
-			  count1)) {
-		const int count_inserted = red_black_tree_insert_all(union_tree,
-								     tree2);
+	/* 1. build up list of all keys (no duplicates) in ascending order
+	 * 2. treeify list */
 
-		if (count_inserted >= 0)
-			return count1 + count_inserted;
+	lesser_itor_ptr = &itor1;
+	red_black_asc_itor_init(lesser_itor_ptr,
+				tree1->root);
 
-		rbnf_destroy(&union_tree->factory);
+	greater_itor_ptr = &itor2;
+	red_black_asc_itor_init(greater_itor_ptr,
+				tree2->root);
+
+	comparator = tree2->comparator;
+
+	union_tree->comparator = comparator;
+
+	union_factory_ptr = &union_tree->factory;
+
+	rbnf_init(union_factory_ptr);
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
+		rbnf_destroy(union_factory_ptr);
+		return -1; /* RED_BLACK_MALLOC failure */
 	}
 
-	return -1; /* RED_BLACK_MALLOC failure */
+	factory_buffer_ptr = &union_factory_ptr->buffer;
+
+	end_ptr = &head;
+	count   = 0;
+
+	while (1) {
+		/* set greater key */
+		if (!red_black_itor_next(greater_itor_ptr,
+					 &greater_key)) {
+			rem_itor_ptr = lesser_itor_ptr;
+			break;
+		}
+
+		while (1) {
+			/* fetch next key from lesser itor */
+			if (!red_black_itor_next(lesser_itor_ptr,
+						 &lesser_key)) {
+				rem_itor_ptr = greater_itor_ptr;
+				rem_key	     = greater_key;
+				/* greater_key is unique, ensure it is added */
+				goto DO_LISTIFY_REMAINDER;
+			}
+
+			compare = comparator(lesser_key,
+					     greater_key);
+
+			node = rbnfb_allocate(factory_buffer_ptr,
+					      jump_buffer);
+
+			/* append node to list and update count */
+			*end_ptr = node;
+			end_ptr  = &node->left;
+
+			++count;
+
+			if (compare < 0) {
+				/* continue fetching from lesser itor */
+				node->key = lesser_key;
+
+			} else {
+				node->key = greater_key;
+
+				if (compare == 0)
+					break; /* advance both itors */
+
+				/* itors out of order, need to swap */
+				greater_key = lesser_key;
+
+				tmp_itor_ptr	 = greater_itor_ptr;
+				greater_itor_ptr = lesser_itor_ptr;
+				lesser_itor_ptr  = tmp_itor_ptr;
+			}
+		}
+	}
+
+	while (red_black_itor_next(rem_itor_ptr,
+				   &rem_key)) {
+DO_LISTIFY_REMAINDER:
+		node = rbnfb_allocate(factory_buffer_ptr,
+				      jump_buffer);
+
+		*end_ptr   = node;
+		end_ptr    = &node->left;
+		node->key  = rem_key;
+
+		++count;
+	}
+
+	/* treeify list (no need to NULL terminate) */
+	union_tree->root = red_black_treeify(head,
+					     count,
+					     false); /* BLACK */
+
+	return count;
 }
+
 
 int
 red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,

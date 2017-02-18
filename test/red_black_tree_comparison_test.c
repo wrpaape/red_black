@@ -97,14 +97,19 @@ test_red_black_tree_compare(void)
 	RedBlackTree *restrict tree_ptr;
 	RedBlackTree positive_tree;
 
+	/* compare ASC tree to DESC tree */
 	status = red_black_tree_similar(&asc_tree,
-					&desc_tree);
+					&desc_tree)
+	      && red_black_tree_similar(&desc_tree,
+					&asc_tree);
 
 	TEST_ASSERT_TRUE_MESSAGE(status,
 				 "ASC/DESC TREES NOT SIMILAR");
 
 	status = red_black_tree_congruent(&asc_tree,
-					  &desc_tree);
+					  &desc_tree)
+	      || red_black_tree_congruent(&desc_tree,
+					  &asc_tree);
 
 	TEST_ASSERT_FALSE_MESSAGE(status,
 				  "ASC/DESC TREES UNEXPECTEDLY CONGRUENT");

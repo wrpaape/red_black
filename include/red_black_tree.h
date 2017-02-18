@@ -212,12 +212,6 @@ red_black_tree_union(RedBlackTree *const restrict union_tree,
 		     const RedBlackTree *const restrict tree2);
 
 int
-rb_tree_union(RedBlackTree *const restrict union_tree,
-	      const RedBlackTree *const restrict tree1,
-	      const RedBlackTree *const restrict tree2,
-	      const unsigned int count1);
-
-int
 red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 			    const RedBlackTree *const restrict tree1,
 			    const RedBlackTree *const restrict tree2);
