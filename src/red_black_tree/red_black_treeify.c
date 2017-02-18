@@ -1,6 +1,19 @@
 #include "red_black_tree/red_black_treeify.h" /* RedBlackNode */
 #include <stddef.h>			      /* NULL */
 
+struct RedBlackNode *restrict
+red_black_treeify(struct RedBlackNode *const restrict head,
+		  const int length,
+		  const bool is_red)
+{
+	int rem_nodes;
+	struct RedBlackNode *restrict node;
+
+	if (length == 0)
+		return NULL;
+
+	node = head;
+}
 
 struct RedBlackNode *restrict
 red_black_treeify(struct RedBlackNode *const restrict head,
@@ -15,18 +28,24 @@ red_black_treeify(struct RedBlackNode *const restrict head,
 
 	node = head;
 
-	/* split list in two */
-	const int length_left  = length / 2;
+	/* split list in two, toggle between two methods of determining
+	 * 'length_left' to avoid imbalances when 'length' is even:
+	 * method 1:
+	 *	length_left  = length / 2
+	 * method 2:
+	 *	length_left  = (length - 1) / 2
+	 *
+	 * then set 'length_right':
+	 *	length_right = length - length_left - 1 */
+
+	const int length_left  = (length - ((int) is_red)) / 2;
 	const int length_right = length - length_left - 1;
 
 	/* find root */
-	rem_nodes = length_left;
-
-	while (--rem_nodes >= 0)
+	for (rem_nodes = length_left; rem_nodes > 0; --rem_nodes)
 		node = node->left;
 
-
-	const bool next_is_red = !is_red;
+	const bool next_is_red = !is_red; /* alternate between RED/BLACK */
 
 	node->is_red = is_red;
 
