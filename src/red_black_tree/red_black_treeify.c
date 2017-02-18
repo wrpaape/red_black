@@ -1,63 +1,88 @@
 #include "red_black_tree/red_black_treeify.h" /* RedBlackNode */
 #include <stddef.h>			      /* NULL */
 
+#include <stdio.h>
+#define DEBUG(...) printf(__VA_ARGS__), fflush(stdout)
+
 struct RedBlackNode *restrict
-red_black_treeify(struct RedBlackNode *const restrict head,
-		  const int length,
-		  const bool is_red)
+rb_treeify(struct RedBlackNode *const restrict head,
+	   const int length,
+	   const int bias)
 {
 	int rem_nodes;
 	struct RedBlackNode *restrict node;
 
-	if (length == 0)
-		return NULL;
+	DEBUG("bias: %d, length: %d\n", bias, length);
 
-	node = head;
+	/* base case -- 1 or 2 nodes left */
+	if (length < 3) {
+		DEBUG("DOIN IT\n");
+		head->is_red = false; /* BLACK */
+
+		if (length & 1) { /* length == 1 */
+			head->left  = NULL;
+			head->right = NULL;
+		} else {          /* length == 2 */
+			node = head->right;
+
+			node->is_red = true; /* make RED leaf */
+			node->left   = NULL;
+			node->right  = NULL;
+		}
+		DEBUG("DONE\n");
+
+		return head;
+	}
+
+	/* split list in two, toggle between two methods of determining
+	 * 'left_length' to achieve better balance:
+	 * method 1:
+	 *	left_length = length / 2
+	 * method 2:
+	 *	left_length = (length - 1) / 2
+	 *
+	 * then set 'right_length':
+	 *	right_length = length - left_length - 1 */
+
+	const int left_length  = (length - bias) / 2; /* bias = 1 or 0 */
+	const int right_length = length - left_length - 1;
+
+	/* find root */
+	rem_nodes = left_length;
+	node      = head;
+
+	DEBUG("left_length: %d, right_length: %d\n", left_length, right_length);
+
+	do {
+		DEBUG("rem_nodes: %d\n", rem_nodes);
+		node = node->right;
+		--rem_nodes;
+	} while (rem_nodes > 0);
+
+	const int next_bias = !bias;
+
+	node->is_red = false; /* make black node */
+
+	/* struct RedBlackNode *const restrict next_head = node->right; */
+
+	node->left  = rb_treeify(head,
+				 left_length,
+				 next_bias);
+
+	node->right = rb_treeify(node->right,
+				 right_length,
+				 next_bias);
+
+	return node;
 }
 
 struct RedBlackNode *restrict
 red_black_treeify(struct RedBlackNode *const restrict head,
-		  const int length,
-		  const bool is_red)
+		  const int length)
 {
-	int rem_nodes;
-	struct RedBlackNode *restrict node;
-
-	if (length == 0)
-		return NULL;
-
-	node = head;
-
-	/* split list in two, toggle between two methods of determining
-	 * 'length_left' to avoid imbalances when 'length' is even:
-	 * method 1:
-	 *	length_left  = length / 2
-	 * method 2:
-	 *	length_left  = (length - 1) / 2
-	 *
-	 * then set 'length_right':
-	 *	length_right = length - length_left - 1 */
-
-	const int length_left  = (length - ((int) is_red)) / 2;
-	const int length_right = length - length_left - 1;
-
-	/* find root */
-	for (rem_nodes = length_left; rem_nodes > 0; --rem_nodes)
-		node = node->left;
-
-	const bool next_is_red = !is_red; /* alternate between RED/BLACK */
-
-	node->is_red = is_red;
-
-	struct RedBlackNode *const restrict next_head = node->left;
-
-	node->left  = red_black_treeify(head,
-					length_left,
-					next_is_red);
-
-	node->right = red_black_treeify(next_head,
-					length_right,
-					next_is_red);
-
-	return node;
+	return (length > 0)
+	     ? rb_treeify(head,
+			  length,
+			  0)
+	     : NULL;
 }

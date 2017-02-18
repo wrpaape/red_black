@@ -1067,7 +1067,7 @@ red_black_tree_union(RedBlackTree *const restrict union_tree,
 
 			/* append node to list and update count */
 			*end_ptr = node;
-			end_ptr  = &node->left;
+			end_ptr  = &node->right;
 
 			++count;
 
@@ -1098,7 +1098,7 @@ DO_LISTIFY_REMAINDER:
 				      jump_buffer);
 
 		*end_ptr   = node;
-		end_ptr    = &node->left;
+		end_ptr    = &node->right;
 		node->key  = rem_key;
 
 		++count;
@@ -1106,8 +1106,7 @@ DO_LISTIFY_REMAINDER:
 
 	/* treeify list (no need to NULL terminate) */
 	union_tree->root = red_black_treeify(head,
-					     count,
-					     false); /* BLACK */
+					     count);
 
 	return count;
 }
@@ -1194,7 +1193,7 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 				      jump_buffer);
 
 		*end_ptr  = node;
-		end_ptr   = &node->left;
+		end_ptr   = &node->right;
 		node->key = key1;
 
 		++count;
@@ -1202,8 +1201,7 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 
 TREEIFY:
 	intersection_tree->root = red_black_treeify(head,
-						    count,
-						    false); /* BLACK */
+						    count);
 
 	return count;
 }
@@ -1275,7 +1273,7 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 					      jump_buffer);
 
 			*end_ptr  = node;
-			end_ptr   = &node->left;
+			end_ptr   = &node->right;
 			node->key = key1;
 
 			++count;
@@ -1289,7 +1287,7 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 				      jump_buffer);
 
 		*end_ptr  = node;
-		end_ptr   = &node->left;
+		end_ptr   = &node->right;
 		node->key = key1;
 
 		++count;
@@ -1297,8 +1295,7 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 
 TREEIFY:
 	difference_tree->root = red_black_treeify(head,
-						  count,
-						  false); /* BLACK */
+						  count);
 
 	return count;
 }
@@ -1386,7 +1383,7 @@ red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
 
 			/* append node to list and update count */
 			*end_ptr = node;
-			end_ptr  = &node->left;
+			end_ptr  = &node->right;
 
 			++count;
 
@@ -1413,7 +1410,7 @@ DO_LISTIFY_REMAINDER:
 				      jump_buffer);
 
 		*end_ptr   = node;
-		end_ptr    = &node->left;
+		end_ptr    = &node->right;
 		node->key  = rem_key;
 
 		++count;
@@ -1421,8 +1418,7 @@ DO_LISTIFY_REMAINDER:
 
 	/* treeify list (no need to NULL terminate) */
 	sym_difference_tree->root = red_black_treeify(head,
-						      count,
-						      false); /* BLACK */
+						      count);
 
 	return count;
 }

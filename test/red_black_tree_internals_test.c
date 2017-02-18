@@ -65,8 +65,8 @@ test_red_black_treeify(void)
 	head = NULL;
 
 	for (int i = KEYS_COUNT - 1; i >= 0; --i) {
-		node->key  = (void *) (intptr_t) i;
-		node->left = head;
+		node->key   = (void *) (intptr_t) i;
+		node->right = head;
 
 		head = node;
 
@@ -74,8 +74,7 @@ test_red_black_treeify(void)
 	}
 
 	node = red_black_treeify(head,
-				 KEYS_COUNT,
-				 false); /* BLACK */
+				 KEYS_COUNT);
 
 	status = (RED_BLACK_SET_JUMP(jump_buffer) == 0)
 	      && red_black_verify(node,
