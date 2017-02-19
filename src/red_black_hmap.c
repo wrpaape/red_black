@@ -1301,9 +1301,9 @@ red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
 	struct RedBlackHNode *const restrict *restrict last_src_bucket;
 	const struct RedBlackHKey *restrict src_hkey;
 	unsigned int dst_cnt_buckets_m1;
-	volatile int count;
+	volatile unsigned int count;
 	int status;
-	int count_deleted;
+	unsigned int count_deleted;
 
 	dst_buckets	   = dst_map->buckets;
 	dst_cnt_buckets_m1 = dst_map->count.buckets_m1;
@@ -1338,7 +1338,7 @@ red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
 
 				dst_map->count.entries -= count_deleted;
 
-				return count_deleted;
+				return (int) count_deleted;
 			}
 
 			++src_bucket;
@@ -1481,7 +1481,7 @@ rbhm_from_list(RedBlackHMap *const restrict map,
 	map->count.max_capacity = count_max_capacity;
 	map->expand_factor	= RBHM_INIT_EXPAND_FACTOR;
 
-	return count_entries;
+	return (int) count_entries;
 }
 
 

@@ -10,7 +10,7 @@
  * ────────────────────────────────────────────────────────────────────────── */
 struct RedBlackNode *restrict
 red_black_treeify(struct RedBlackNode *const restrict head,
-		  const int length);
+		  const unsigned int length);
 
 /* takes a list of ascending nodes (head->right->right ...) with length 'length'
  * and returns a proper red black tree

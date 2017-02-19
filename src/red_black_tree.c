@@ -783,7 +783,7 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackItor itor;
-	volatile int count;
+	volatile unsigned int count;
 	int status;
 	void *key;
 
@@ -812,7 +812,7 @@ red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
 					  jump_buffer,
 					  key); /* 1, 0 */
 
-	return count;
+	return (int) count;
 }
 
 
@@ -825,7 +825,7 @@ red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackItor itor;
-	volatile int count;
+	volatile unsigned int count;
 	int status;
 	void *key;
 
@@ -854,7 +854,7 @@ red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
 				       jump_buffer,
 				       key); /* 1, 0 */
 
-	return count;
+	return (int) count;
 }
 
 
@@ -928,7 +928,7 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackItor itor;
-	volatile int count;
+	volatile unsigned int count;
 	int status;
 	void *key;
 
@@ -954,7 +954,7 @@ red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
 					  jump_buffer,
 					  key); /* 1, 0 */
 
-	return count;
+	return (int) count;
 }
 
 
@@ -1010,7 +1010,7 @@ red_black_tree_union(RedBlackTree *const restrict union_tree,
 	void *lesser_key;
 	void *greater_key;
 	int compare;
-	int count;
+	unsigned int count;
 
 	/* 1. build up list of all keys (no duplicates) in ascending order
 	 * 2. treeify list */
@@ -1108,7 +1108,7 @@ DO_LISTIFY_REMAINDER:
 	union_tree->root = red_black_treeify(head,
 					     count);
 
-	return count;
+	return (int) count;
 }
 
 
@@ -1129,7 +1129,7 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 	void *key1;
 	void *key2;
 	int compare;
-	int count;
+	unsigned int count;
 
 	/* 1. build up list of overlapping keys in ascending order
 	 * 2. treeify list */
@@ -1203,7 +1203,7 @@ TREEIFY:
 	intersection_tree->root = red_black_treeify(head,
 						    count);
 
-	return count;
+	return (int) count;
 }
 
 
@@ -1225,7 +1225,7 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 	void *key1;
 	void *key2;
 	int compare;
-	int count;
+	unsigned int count;
 
 	/* 1. build up list of keys unique to tree1 in ascending order
 	 * 2. treeify list */
@@ -1297,7 +1297,7 @@ TREEIFY:
 	difference_tree->root = red_black_treeify(head,
 						  count);
 
-	return count;
+	return (int) count;
 }
 
 
@@ -1319,7 +1319,7 @@ red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
 	struct RedBlackItor *restrict greater_itor_ptr;
 	struct RedBlackItor *restrict tmp_itor_ptr;
 	struct RedBlackItor *restrict rem_itor_ptr;
-	int count;
+	unsigned int count;
 	void *rem_key;
 	void *lesser_key;
 	void *greater_key;
@@ -1420,7 +1420,7 @@ DO_LISTIFY_REMAINDER:
 	sym_difference_tree->root = red_black_treeify(head,
 						      count);
 
-	return count;
+	return (int) count;
 }
 
 

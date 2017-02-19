@@ -1777,7 +1777,6 @@ TREE_INTERNALS_TEST_OBJ_PREQS	:= $(TREE_INTERNALS_TEST_SRC)		\
 			   	   $(TREE_INTERNALS_HDR)		\
 			   	   $(TREEIFY_HDR)			\
 			   	   $(VERIFY_HDR)			\
-				   $(PRINT_HDR)				\
 			   	   $(INT_KEY_HDR)			\
 			   	   $(TEST_HDR)				\
 			   	   $(UNITY_HDR)
@@ -1789,7 +1788,6 @@ TREE_INTERNALS_TEST_BIN_PREQS	:= $(TREE_INTERNALS_TRNR_OBJ)		\
 			   	   $(INT_KEY_OBJ_GROUP)			\
 				   $(TREEIFY_OBJ_GROUP)			\
 				   $(VERIFY_OBJ_GROUP)			\
-				   $(PRINT_OBJ_GROUP)			\
 				   $(UNITY_OBJ)
 # ─────────────── targets ──────────────────────────────────────────────────────
 TEST_BINARIES			+= $(TREE_INTERNALS_TEST_BIN)
