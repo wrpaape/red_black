@@ -8,7 +8,7 @@ rb_treeify(struct RedBlackNode *const restrict head,
 	   const unsigned int length,
 	   unsigned int *const restrict black_height)
 {
-	int rem_nodes;
+	unsigned int rem_nodes;
 	struct RedBlackNode *restrict root;
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
