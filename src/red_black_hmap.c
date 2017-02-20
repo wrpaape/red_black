@@ -22,6 +22,8 @@
 #include <limits.h>				 /* CHAR_BIT */
 
 
+/* #include <stdio.h> */
+/* #define DEBUG(...) printf(__VA_ARGS__), fflush(stdout) */
 
 
 /* macro constants
@@ -58,8 +60,7 @@ rbhm_reset_buckets(struct RedBlackHNode *restrict *const restrict buckets,
 {
 	RedBlackHash hash;
 	struct RedBlackHNode *restrict node;
-	struct RedBlackHNode *volatile restrict next;
-	struct RedBlackHNode *restrict head;
+	struct RedBlackHNode *volatile restrict head;
 	struct RedBlackHNode *restrict *restrict end_ptr;
 	struct RedBlackHNode *restrict *restrict bucket;
 	struct RedBlackHNode *restrict *restrict last_old_bucket;
@@ -70,7 +71,8 @@ rbhm_reset_buckets(struct RedBlackHNode *restrict *const restrict buckets,
 	last_new_bucket = buckets + new_count_m1;
 	bucket          = buckets;
 
-	end_ptr = &head; /* concat 1st list with itself, set head */
+	/* concat 1st list with itself, set head */
+	end_ptr = (struct RedBlackHNode *restrict *restrict) &head;
 
 	/* traverse old buckets in old portion */
 	do {
@@ -90,15 +92,19 @@ rbhm_reset_buckets(struct RedBlackHNode *restrict *const restrict buckets,
 	} while (bucket <= last_new_bucket);
 
 	/* dump node list into empty hash table */
-	if (RED_BLACK_SET_JUMP(jump_buffer) != 0)
-		goto NEXT_NODE;
+	(void) RED_BLACK_SET_JUMP(jump_buffer);
 
 	while (1) {
-		/* fetch hash key hash */
-		hash = head->hkey.hash;
+		node = head;
 
-		/* must fetch next before NULLed in add */
-		next = head->left;
+		if (node == NULL)
+			return;
+
+		/* fetch hash key hash */
+		hash = node->hkey.hash;
+
+		/* must fetch next head before NULLed in add */
+		head = node->left;
 
 		/* fetch new bucket */
 		bucket = &buckets[hash & new_count_m1];
@@ -106,13 +112,7 @@ rbhm_reset_buckets(struct RedBlackHNode *restrict *const restrict buckets,
 		/* add to bucket tree, may jump */
 		red_black_hadd(bucket,
 			       jump_buffer,
-			       head);
-
-NEXT_NODE:
-		if (next == NULL)
-			return;
-
-		head = next;
+			       node);
 	}
 }
 
