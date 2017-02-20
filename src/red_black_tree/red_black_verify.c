@@ -1,8 +1,7 @@
 #include "red_black_tree/red_black_verify.h" /* Node, Comparator, JUMP API */
 #include <stddef.h>			     /* NULL */
 
-#include <stdio.h>
-#define DEBUG(...) printf(__VA_ARGS__), fflush(stdout)
+
 
 unsigned int
 rb_verify(const struct RedBlackNode *const restrict node,
@@ -22,13 +21,13 @@ rb_verify(const struct RedBlackNode *const restrict node,
 			   min_key) < 0)
 	    || (comparator(node_key,
 			   max_key) > 0))
-		DEBUG("KEYS OUT OF ORDER\n"), RED_BLACK_JUMP_1(jump_buffer); /* keys out of order */
+		RED_BLACK_JUMP_1(jump_buffer); /* keys out of order */
 
 	const bool node_is_red = node->is_red;
 
 	if (node_is_red) {
 		if (parent_is_red)
-			DEBUG("CONSECUTIVE REDS\n"), RED_BLACK_JUMP_1(jump_buffer); /* consecutive red */
+			RED_BLACK_JUMP_1(jump_buffer); /* consecutive red */
 
 	} else {
 		++black_height;
@@ -52,8 +51,7 @@ rb_verify(const struct RedBlackNode *const restrict node,
 							  jump_buffer);
 
 	if (left_black_height != right_black_height)
-		DEBUG("TREE IMBALANCE (left: %u, right: %u)\n",
-		      left_black_height, right_black_height), RED_BLACK_JUMP_1(jump_buffer); /* tree imbalanced */
+		RED_BLACK_JUMP_1(jump_buffer); /* tree imbalanced */
 
 	return left_black_height;
 }

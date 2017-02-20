@@ -2,7 +2,7 @@
 /* #include "red_black_tree.h"		      /1* Tree *1/ */
 #include "red_black_tree/red_black_treeify.h" /* red_black_treeify, Node */
 #include "red_black_tree/red_black_verify.h"  /* red_black_verify, JumpBuffer */
-#include "red_black_tree/red_black_print.h"   /* red_black_print */
+/* #include "red_black_tree/red_black_print.h"   /1* red_black_print *1/ */
 #include "int_key.h"                          /* int_key_comparator */
 #include "red_black_test.h"		      /* KEY_COUNT */
 #include <stdint.h>			      /* intptr_t */

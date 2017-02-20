@@ -3,39 +3,48 @@
 
 
 
-unsigned int
-rb_treeify(struct RedBlackNode *restrict *const restrict tree,
-	   struct RedBlackNode *const restrict head,
-	   const unsigned int length)
+static struct RedBlackNode *restrict
+rb_treeify(struct RedBlackNode *const restrict head,
+	   const unsigned int length,
+	   unsigned int *const restrict black_height)
 {
 	int rem_nodes;
 	struct RedBlackNode *restrict root;
 	struct RedBlackNode *restrict lchild;
 	struct RedBlackNode *restrict rchild;
+	struct RedBlackNode *restrict next_head;
+	struct RedBlackNode *restrict *restrict rchild_ptr;
+	unsigned int left_black_height;
+	unsigned int right_black_height;
 
 	/* base case -- 1 or 2 nodes left, head is root */
 	if (length < 3) {
-		/* don't color, returning stack frame will color black */
-		head->left = NULL;
+		/* always color BLACK, won't be retouched unless RIGHT subtree
+		 * in that case it will never be changed to RED since '1' is the
+		 * minimum returnable black height */
+		head->is_red = false;
+		head->left   = NULL;
+		rchild_ptr   = &head->right;
 
 		if (length & 1) { /* length == 1 */
-			head->right = NULL;
+			*rchild_ptr = NULL;
 
-		} else {
-			rchild	       = head->right;
+		} else {          /* length == 2 */
+			rchild	       = *rchild_ptr;
 			rchild->is_red = true; /* RED leaf */
 			rchild->left   = NULL;
 			rchild->right  = NULL;
 		}
 
-		*tree = head;
+		*black_height = 1; /* (non-NULL) black height */
 
-		return 1; /* black height (root still not colored) */
+		return head;
 	}
 
-	/* always bias split to left (SEE BELOW) */
-	const unsigned int left_length  = length / 2;
-	const unsigned int right_length = length - left_length - 1;
+	/* always bias split to right to make better use of cache (SEE BELOW) */
+	const unsigned int rem_length   = length - 1;
+	const unsigned int left_length  = rem_length / 2;
+	const unsigned int right_length = rem_length - left_length;
 
 	/* find root */
 	rem_nodes = left_length;
@@ -47,39 +56,43 @@ rb_treeify(struct RedBlackNode *restrict *const restrict tree,
 	} while (rem_nodes > 0);
 
 
-	const unsigned int left_black_height  = rb_treeify(&lchild,
-							   head,
-							   left_length);
+	rchild_ptr = &root->right;
+	next_head  = *rchild_ptr; /* right subtree list */
 
-	const unsigned int right_black_height = rb_treeify(&rchild,
-							   root->right,
-							   right_length);
+	lchild = rb_treeify(head,
+			    left_length,
+			    &left_black_height);
 
-	*tree = root;
+	rchild = rb_treeify(next_head,
+			    right_length,
+			    &right_black_height);
 
-	root->left     = lchild;
-	lchild->is_red = (left_black_height > right_black_height);
+	/* black height imbalance can only occur in RIGHT subtree and can have
+	 * no more than 1 extra black height
+	 *
+	 * right_length will only be greater than left_length if length is EVEN,
+	 * and in that case it will only be by 1 node */
+	rchild->is_red = (right_black_height > left_black_height);
 
-	root->right    = rchild;
-	rchild->is_red = false;
+	/* always color BLACK, won't be retouched unless is a RIGHT subtree */
+	root->is_red = false;
+	root->left   = lchild;
+	*rchild_ptr  = rchild;
 
-	return right_black_height + 1; /* always add 1 to right black height */
+	*black_height = left_black_height + 1; /* increment black height */
+
+	return root;
 }
 
 struct RedBlackNode *restrict
 red_black_treeify(struct RedBlackNode *const restrict head,
 		  const unsigned int length)
 {
-	struct RedBlackNode *restrict root;
+	unsigned int black_height; /* unused */
 
-	if (length == 0)
-		return NULL;
-
-	(void) rb_treeify(&root,
-			  head,
-			  length);
-
-	root->is_red = false; /* root will always be BLACK */
-
-	return root;
+	return (length == 0)
+	     ? NULL
+	     : rb_treeify(head,
+			  length,
+			  &black_height);
 }
