@@ -22,8 +22,6 @@
 #include <limits.h>				 /* CHAR_BIT */
 
 
-/* #include <stdio.h> */
-/* #define DEBUG(...) printf(__VA_ARGS__), fflush(stdout) */
 
 
 /* macro constants
@@ -868,11 +866,10 @@ rbhm_similar_find(struct RedBlackHNode *const restrict *restrict buckets1,
 	struct RedBlackHNode *const restrict *restrict last_walk_bucket;
 	struct RedBlackHNode *const restrict *restrict find_buckets;
 	const struct RedBlackHNode *restrict find_bucket_root;
-	unsigned int count_find_buckets_m1;
 	const struct RedBlackHKey *restrict hkey;
+	unsigned int count_find_buckets_m1;
 
-	/* ensure buckets being traversed are more densly packed than those
-	 * being searched */
+	/* walk over more-densly-packed map, search in less-densly-packed map */
 	if (count_buckets1_m1 < count_buckets2_m1) {
 		walk_bucket	 = buckets1;
 		last_walk_bucket = walk_bucket + count_buckets1_m1;
@@ -956,6 +953,132 @@ red_black_hmap_similar(const RedBlackHMap *const map1,
 
 	return status;
 }
+
+
+bool
+red_black_hmap_intersect(const RedBlackHMap *const map1,
+			 const RedBlackHMap *const map2)
+{
+	struct RedBlackHItor walk_bucket_itor;
+	struct RedBlackHNode *const restrict *restrict walk_bucket;
+	struct RedBlackHNode *const restrict *restrict last_walk_bucket;
+	struct RedBlackHNode *const restrict *restrict find_buckets;
+	const struct RedBlackHNode *restrict find_bucket_root;
+	const struct RedBlackHKey *restrict hkey;
+	unsigned int count_find_buckets_m1;
+	struct RedBlackHNode *const restrict *restrict buckets1;
+	struct RedBlackHNode *const restrict *restrict buckets2;
+	unsigned int count_buckets1_m1;
+	unsigned int count_buckets2_m1;
+
+	if (map1 == map2)
+		return true; /* all maps intersect with themselves */
+
+	buckets1	  = map1->buckets;
+	count_buckets1_m1 = map1->count.buckets_m1;
+
+	buckets2	  = map2->buckets;
+	count_buckets2_m1 = map2->count.buckets_m1;
+
+	/* walk over smaller map, search in larger map */
+	if (map1->count.entries < map2->count.entries) {
+		walk_bucket	 = buckets1;
+		last_walk_bucket = walk_bucket + count_buckets1_m1;
+
+		find_buckets          = buckets2;
+		count_find_buckets_m1 = count_buckets2_m1;
+
+	} else {
+		walk_bucket	 = buckets2;
+		last_walk_bucket = walk_bucket + count_buckets2_m1;
+
+		find_buckets          = buckets1;
+		count_find_buckets_m1 = count_buckets1_m1;
+	}
+
+	red_black_hitor_init(&walk_bucket_itor,
+			     *walk_bucket);
+
+	do {
+		/* fetch next hkey */
+		while (1) {
+			hkey = red_black_hitor_next_hkey(&walk_bucket_itor);
+
+			if (hkey != NULL)
+				break;
+
+			if (walk_bucket == last_walk_bucket)
+				return false; /* no intersection found */
+
+			++walk_bucket;
+
+			red_black_hitor_reset(&walk_bucket_itor,
+					      *walk_bucket);
+		}
+
+		/* fetch bucket root */
+		find_bucket_root
+		= find_buckets[hkey->hash & count_find_buckets_m1];
+
+	} while (!red_black_hfind(find_bucket_root,
+				  hkey));
+
+	return true; /* found an intersection */
+}
+
+bool
+red_black_hmap_subset(const RedBlackHMap *const map1,
+		      const RedBlackHMap *const map2)
+{
+	struct RedBlackHItor bucket_itor2;
+	struct RedBlackHNode *const restrict *restrict buckets1;
+	struct RedBlackHNode *const restrict *restrict bucket2;
+	struct RedBlackHNode *const restrict *restrict last_bucket2;
+	const struct RedBlackHNode *restrict bucket1_root;
+	const struct RedBlackHKey *restrict hkey;
+	unsigned int count_buckets1_m1;
+
+	if (map1 == map2)
+		return true; /* all maps are subsets of themselves */
+
+	if (map2->count.entries > map1->count.entries)
+		return false; /* larger maps never subsets of smaller maps */
+
+	buckets1	  = map1->buckets;
+	count_buckets1_m1 = map1->count.buckets_m1;
+
+	bucket2		  = map2->buckets;
+	last_bucket2      = bucket2 + map2->count.buckets_m1;
+
+	red_black_hitor_init(&bucket_itor2,
+			     *bucket2);
+
+	do {
+		/* fetch next hkey */
+		while (1) {
+			hkey = red_black_hitor_next_hkey(&bucket_itor2);
+
+			if (hkey != NULL)
+				break;
+
+			if (bucket2 == last_bucket2)
+				return true; /* all hkeys of map2 in map1 */
+
+			++bucket2;
+
+			red_black_hitor_reset(&bucket_itor2,
+					      *bucket2);
+		}
+
+		/* fetch bucket root */
+		bucket1_root = buckets1[hkey->hash & count_buckets1_m1];
+
+	} while (red_black_hfind(bucket1_root,
+				 hkey));
+
+	return false; /* map1 does not contain map2's 'hkey' */
+}
+
 
 
 static inline int

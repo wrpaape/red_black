@@ -141,9 +141,12 @@ red_black_hmap_similar(const RedBlackHMap *const map1,
 		       const RedBlackHMap *const map2);
 
 bool
-rb_hmap_similar(const RedBlackHMap *const restrict map1,
-		const RedBlackHMap *const restrict map2,
-		const unsigned int count_entries);
+red_black_hmap_intersect(const RedBlackHMap *const map1,
+			 const RedBlackHMap *const map2);
+
+bool
+red_black_hmap_subset(const RedBlackHMap *const map1,
+		      const RedBlackHMap *const map2);
 
 int
 red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,

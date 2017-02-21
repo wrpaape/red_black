@@ -248,7 +248,8 @@ TEST_FILES_GLOB		:= $(call BINARY_FILE_PATH,$(BINARY_DIR),*_test)
 RUN_TESTS		:= FORFILES /M $(TEST_FILES_GLOB) /C "cmd /c @file"
 
 else
-RUN_TESTS		 = for test in $^; do "./$$test"; done
+RUN_TESTS_BORDER	:= \n================================================================================
+RUN_TESTS		 = for test in $^; do echo "\n$(RUN_TESTS_BORDER)\nRUNNING TEST: $$test$(RUN_TESTS_BORDER)" && ./$$test; done
 endif
 # ─────────────── target prequisites ───────────────────────────────────────────
 UNITY_OBJ_PREQS		:= $(UNITY_SRC)					\
