@@ -82,18 +82,152 @@ void
 test_red_black_hmap_compare(void)
 {
 	bool status;
+	int *restrict key;
+	RedBlackHMap *restrict hmap_ptr;
+	RedBlackHMap positive_hmap;
 
+	/* compare ASC hmap to DESC hmap */
 	status = red_black_hmap_similar(&asc_hmap,
-					&desc_hmap);
+					&desc_hmap)
+	      && red_black_hmap_similar(&desc_hmap,
+					&asc_hmap);
 
 	TEST_ASSERT_TRUE_MESSAGE(status,
-				 "ASC/DESC HASH MAPS NOT SIMILAR");
+				 "ASC/DESC HMAPS NOT SIMILAR");
 
 	status = red_black_hmap_congruent(&asc_hmap,
-					  &desc_hmap);
+					  &desc_hmap)
+	      || red_black_hmap_congruent(&desc_hmap,
+					  &asc_hmap);
 
 	TEST_ASSERT_FALSE_MESSAGE(status,
-				  "ASC/DESC HASH MAPS UNEXPECTEDLY CONGRUENT");
+				  "ASC/DESC HMAPS UNEXPECTEDLY CONGRUENT");
+
+	init_hmap(&positive_hmap);
+
+	/* delete ODD  keys from asc_hmap
+	 * delete EVEN keys from desc_hmap
+	 * add    ALL  keys to   positive_hmap */
+
+	for (key = &keys[0]; key < keys_until; ++key) {
+		status = red_black_hmap_add(&positive_hmap,
+					    (void *) key,
+					    sizeof(*key));
+
+		TEST_ASSERT_TRUE_MESSAGE(status,
+					 "OUT OF MEMORY")
+		hmap_ptr = (*key & 1)
+			 ? &asc_hmap
+			 : &desc_hmap;
+
+		red_black_hmap_drop(hmap_ptr,
+				    (void *) key,
+				    sizeof(*key));
+
+	}
+
+	/* asc_hmap	 contains only EVEN keys
+	 * desc_hmap	 contains only ODD  keys
+	 * positive_hmap contains ALL       keys */
+
+	/* compare EVEN hmap to POSITIVE hmap */
+	status = red_black_hmap_intersect(&positive_hmap,
+					  &asc_hmap)
+	      && red_black_hmap_intersect(&asc_hmap,
+					  &positive_hmap);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "EVEN HMAP DOES NOT INTERSECT WITH "
+				 "POSITIVE HMAP");
+
+	status = red_black_hmap_subset(&positive_hmap,
+				       &asc_hmap);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "EVEN HMAP IS NOT A SUBSET OF POSITIVE HMAP");
+
+	status = red_black_hmap_subset(&asc_hmap,
+				       &positive_hmap);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "POSITIVE HMAP IS A SUBSET OF EVEN HMAP");
+
+	const int negative_two = -2;
+
+	status = red_black_hmap_add(&asc_hmap,
+				    (void *) &negative_two,
+				    sizeof(negative_two));
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "OUT OF MEMORY");
+
+	status = red_black_hmap_subset(&positive_hmap,
+				       &asc_hmap);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "EVEN HMAP WITH NEGATIVE KEY IS A SUBSET OF "
+				  "POSITIVE HMAP");
+
+	/* compare ODD hmap to POSITIVE hmap */
+	status = red_black_hmap_intersect(&positive_hmap,
+					  &desc_hmap)
+	      && red_black_hmap_intersect(&desc_hmap,
+					  &positive_hmap);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "ODD HMAP DOES NOT INTERSECT WITH "
+				 "POSITIVE HMAP");
+
+	status = red_black_hmap_subset(&positive_hmap,
+				       &desc_hmap);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "ODD HMAP IS NOT A SUBSET OF POSITIVE HMAP");
+
+	status = red_black_hmap_subset(&desc_hmap,
+				       &positive_hmap);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "POSITIVE HMAP IS A SUBSET OF ODD HMAP");
+
+	const int negative_one = -1;
+
+	status = red_black_hmap_add(&desc_hmap,
+				    (void *) &negative_one,
+				    sizeof(negative_one));
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "OUT OF MEMORY");
+
+	status = red_black_hmap_subset(&positive_hmap,
+				       &desc_hmap);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "ODD HMAP WITH NEGATIVE KEY IS A SUBSET OF "
+				  "POSITIVE HMAP");
+
+	red_black_hmap_destroy(&positive_hmap); /* done with positive hmap */
+
+	/* compare EVEN hmap to ODD hmap */
+	status = red_black_hmap_intersect(&asc_hmap,
+					  &desc_hmap)
+	      || red_black_hmap_intersect(&desc_hmap,
+					  &asc_hmap);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "EVEN HMAP INTERSECTS WITH ODD HMAP");
+
+	status = red_black_hmap_subset(&asc_hmap,
+				       &desc_hmap);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "EVEN HMAP IS A SUBSET OF ODD HMAP");
+
+	status = red_black_hmap_subset(&asc_hmap,
+				       &desc_hmap);
+
+	TEST_ASSERT_FALSE_MESSAGE(status,
+				  "ODD HMAP IS A SUBSET OF EVEN HMAP");
 }
 
 

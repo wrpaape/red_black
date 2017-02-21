@@ -10,8 +10,11 @@ static RedBlackTree desc_tree;
 
 
 static inline void
-verify_empty_tree(RedBlackTree *const restrict tree)
+init_tree(RedBlackTree *const restrict tree)
 {
+	red_black_tree_init(tree,
+			    &int_key_comparator);
+
 	TEST_ASSERT_TRUE_MESSAGE(red_black_tree_verify(tree),
 				 "INVALID TREE");
 
@@ -43,10 +46,7 @@ setUp(void)
 	int key;
 	bool status;
 
-	red_black_tree_init(&asc_tree,
-			    &int_key_comparator);
-
-	verify_empty_tree(&asc_tree);
+	init_tree(&asc_tree);
 
 	shuffle_keys();
 
@@ -62,10 +62,7 @@ setUp(void)
 
 	verify_full_tree(&asc_tree);
 
-	red_black_tree_init(&desc_tree,
-			    &int_key_comparator);
-
-	verify_empty_tree(&desc_tree);
+	init_tree(&desc_tree);
 
 	while (--i >= 0) {
 		key = keys[i];
@@ -114,10 +111,7 @@ test_red_black_tree_compare(void)
 	TEST_ASSERT_FALSE_MESSAGE(status,
 				  "ASC/DESC TREES UNEXPECTEDLY CONGRUENT");
 
-	red_black_tree_init(&positive_tree,
-			    &int_key_comparator);
-
-	verify_empty_tree(&positive_tree);
+	init_tree(&positive_tree);
 
 	/* delete ODD  keys from asc_tree
 	 * delete EVEN keys from desc_tree
