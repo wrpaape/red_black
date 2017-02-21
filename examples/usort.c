@@ -1,3 +1,5 @@
+/* external dependencies
+ * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_tree.h" /* RedBlackTree|Itor */
 #include "str_key.h"        /* str_key_comparator */
 #include <stdio.h>          /* puts, fprintf, EOF */

@@ -18,7 +18,7 @@
 #include "red_black_hmap/red_black_hverify.h"    /* red_black_hverify */
 #include "red_black_hmap/red_black_hcopy.h"      /* red_black_hcopy */
 #include "red_black_hmap/red_black_hconcat.h"    /* red_black_hconcat */
-#include "red_black_common/red_black_malloc.h"   /* MALLOC|REALLOC|FREE */
+#include "red_black_common/red_black_malloc.h"   /* C|REALLOC|FREE */
 #include <limits.h>				 /* CHAR_BIT */
 
 
@@ -1026,6 +1026,7 @@ red_black_hmap_intersect(const RedBlackHMap *const map1,
 	return true; /* found an intersection */
 }
 
+
 bool
 red_black_hmap_subset(const RedBlackHMap *const map1,
 		      const RedBlackHMap *const map2)
@@ -1039,7 +1040,7 @@ red_black_hmap_subset(const RedBlackHMap *const map1,
 	unsigned int count_buckets1_m1;
 
 	if (map1 == map2)
-		return true; /* all maps are subsets of themselves */
+		return true; /* all maps subsets of themselves */
 
 	if (map2->count.entries > map1->count.entries)
 		return false; /* larger maps never subsets of smaller maps */
@@ -1078,7 +1079,6 @@ red_black_hmap_subset(const RedBlackHMap *const map1,
 
 	return false; /* map1 does not contain map2's 'hkey' */
 }
-
 
 
 static inline int
@@ -1679,6 +1679,7 @@ rbhm_from_list(RedBlackHMap *const restrict map,
 }
 
 
+#if 1
 int
 red_black_hmap_union(RedBlackHMap *const restrict union_map,
 		     const RedBlackHMap *const restrict map1,
@@ -1705,6 +1706,15 @@ red_black_hmap_union(RedBlackHMap *const restrict union_map,
 	     ? union_map->count.entries
 	     : -1; /* RED_BLACK_MALLOC failure */
 }
+#else
+int
+red_black_hmap_union(RedBlackHMap *const restrict union_map,
+		     const RedBlackHMap *const restrict map1,
+		     const RedBlackHMap *const restrict map2)
+{
+	return 1;
+}
+#endif
 
 
 int
