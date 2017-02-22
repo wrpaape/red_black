@@ -397,6 +397,75 @@ FAIL0:	free(rules_file_buffer);
 }
 
 
+static inline bool
+copy_remainder(const char *restrict copy_from,
+	       const size_t copy_length,
+	       const char *restrict *const restrict failure)
+{
+	const bool success = (fwrite(copy_from,
+				     sizeof(*copy_from),
+				     copy_length,
+				     stdout) == copy_length);
+
+	if (!success)
+		*failure = "fwrite failure";
+
+	return success;
+}
+
+static inline bool
+copy_through_token(const char *restrict copy_from,
+		   const char *restrict token,
+		   const char *restrict cursor
+		   const char *restrict *const restrict failure)
+{
+	bool success;
+	size_t copy_length;
+	size_t token_length;
+	const struct Rule *restrict rule;
+	void *fetched;
+
+	token_length = cursor - token;
+
+	if (   (token_length <= MAX_LENGTH)
+	    && red_black_hmap_fetch(&rules_map,
+				    token,
+				    token_length,
+				    &fetched)) {
+		/* copy until token start */
+		copy_length = token - copy_from;
+
+		if (fwrite(copy_from,
+			   sizeof(*copy_from),
+			   copy_length,
+			   stdout) != copy_length) {
+			*failure = "fwrite failure";
+			return false;
+		}
+
+		rule = (const struct Rule *) fetched;
+
+		/* copy replacement */
+		copy_from = &rule->replacement[0];
+
+		copy_length = strlen(copy_from);
+
+	} else {
+		/* no rule for token, copy as is */
+		copy_length = cursor - copy_from;
+	}
+
+	success = (fwrite(copy_from,
+			  sizeof(*copy_from),
+			  copy_length,
+			  stdout) == copy_length);
+
+	if (!success)
+		*failure = "fwrite failure";
+
+	return success;
+}
+
 
 
 static inline bool
@@ -405,11 +474,58 @@ process_line(const char *restrict cursor,
 	     const char *restrict *const restrict failure)
 {
 	const char *restrict token;
+	const char *restrict copy_from;
 	const char *restrict cursor_until;
-	size_t copy_length;
-	size_t token_length;
-	void *fetched;
-	const struct Rule *restrict rule;
+	unsigned int next_char;
+
+
+	copy_from    = cursor;
+	cursor_until = cursor + length_line;
+
+	while (1) {
+		next_char = (unsigned int) *cursor;
+
+		/* find start of next token (can't start with digit) */
+		while (   !token_char[next_char]
+		       || IS_DIGIT(next_char)) {
+			++cursor;
+			if (cursor == cursor_until)
+				return copy_remainder(copy_from,
+						      cursor - copy_from,
+						      failure);
+
+			next_char = (unsigned int) *cursor;
+		}
+
+		token = cursor;
+
+		/* traverse token */
+		do {
+			++cursor;
+			if (cursor == cursor_until)
+				return copy_through_token(copy_from,
+							  token,
+							  cursor,
+							  failure);
+
+			next_char = (unsigned int) *cursor;
+		} while (token_char[next_char]);
+
+		if (!copy_through_token(copy_from,
+					token,
+					cursor,
+					failure))
+			return false;
+
+		copy_from = cursor;
+
+		/* skip non-token character */
+		++cursor;
+		if (cursor == cursor_until)
+			return copy_remainder(copy_from,
+					      1,
+					      failure);
+	}
 }
 
 
