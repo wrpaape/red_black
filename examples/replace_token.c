@@ -1,10 +1,11 @@
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
-#include "red_black_hmap.h"	/* RedBlackHMap API */
+#include "red_black_hmap.h"	/* RedBlackHMap API, bool */
 #include "examples_io.h"	/* low level file open/read/write/close */
 #include <stdio.h>		/* high level file IO */
 #include <stdlib.h>		/* exit, malloc, free */
-#include <stdbool.h>		/* bool */
+#include <string.h>		/* strlen, strerror, memset */
+#include <errno.h>		/* errno */
 #include <limits.h>		/* UCHAR_MAX */
 
 
@@ -12,15 +13,21 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #define STR(X)	#X
 #define XSTR(X) STR(X)
+#define IS_DIGIT(CHAR) (((CHAR) <= '9') && ((CHAR) >= '0'))
 
 
 /* macro constants
  * ────────────────────────────────────────────────────────────────────────── */
 /* maximum length for token or replacement */
-#define MAX_LENGTH	128
+#define MAX_LENGTH 127
+#define MAX_LENGTH_STR XSTR(MAX_LENGTH)
 
 /* default path to rules file */
-#define DEFAULT_RULES_PATH	"rules.csv"
+#define DEFAULT_RULES_PATH "rules.csv"
+
+/* rule delimiter */
+#define RULES_DELIM ';'
+
 /* usage */
 #define USAGE								\
 "usage:\n"								\
@@ -30,8 +37,8 @@
 "\n"									\
 "\tRULES_FILE := .csv table with rows of \"<TOKEN>,<REPLACEMENT>\\n\n"	\
 "\t              where TOKEN and REPLACEMENT may be no longer than \n"	\
-"\t              " XSTR(MAX_LENGTH) " characters, defaults to "		\
-"\t              \"" DEFAULT_RULES_PATH "\" if not provided\n"	\
+"\t              " MAX_LENGTH_STR " characters, defaults to "		\
+"\t              \"" DEFAULT_RULES_PATH "\" if not provided\n"		\
 "\tIN_FILE    := target file\n"						\
 "\tOUT_FILE   := output file\n"
 
@@ -39,8 +46,8 @@
 /* typedefs, struct declaractions
  * ────────────────────────────────────────────────────────────────────────── */
 struct Rule {
-	unsigned char token[MAX_LENGTH];
-	unsigned char replacement[MAX_LENGTH];
+	char token[MAX_LENGTH + 1];
+	char replacement[MAX_LENGTH + 1];
 };
 
 
@@ -55,55 +62,474 @@ static const bool token_char[UCHAR_MAX + 1] = {
 };
 
 static RedBlackHMap rules_map;
+static struct Rule *restrict rules_buffer;
+static char *restrict rules_file_buffer;
 
-static struct Rule *rules_buffer;
 
-
-static inline void
-build_rules_map(const char *const restrict rules_path)
+/* reads rules file into 'rules_file_buffer' */
+static inline size_t
+read_rules_file(const char *const restrict rules_path)
 {
-	int rules_file
+	int rules_file;
 	struct StatBuffer stat_buffer;
-	unsigned char *restrict rules_file_buffer;
-	unsigned char *restrict rules_cursor;
-	const unsigned char *restrict rules_cursor_until;
-	size_t rule_file_size;
+	size_t rules_file_size;
 	const char *restrict failure;
 
 	rules_file = OPEN(rules_path,
 			  O_RDONLY);
 
 	if (rules_file < 0)
-		failure = "open failure", goto FAIL0;
+		failure = "open", goto FAIL0;
 
 	if (FSTAT(rules_file,
 		  &stat_buffer) != 0)
-		failure = "fstat failure", goto FAIL1;
+		failure = "fstat", goto FAIL1;
 
 	rules_file_size = stat_buffer.st_size;
 
 	rules_file_buffer = malloc(rules_file_size);
 
 	if (rules_file_buffer == NULL)
-		failure = "malloc failure", goto FAIL1;
+		failure = "malloc", goto FAIL1;
 
 	if (READ(rules_file,
 		 rules_file_buffer,
 		 rules_file_size) != rules_file_size)
-		failure = "read failure", goto FAIL2;
+		failure = "read", goto FAIL2;
 
 	if (CLOSE(rules_file) != 0)
-		failure = "close failure", goto FAIL2;
+		failure = "close", goto FAIL2;
 
+	return rules_file_size;
 
 FAIL2:	free(rules_file_buffer);
 FAIL1:	(void) close(rules_file);
-FAIL0:	perror(failure);
+FAIL0:	(void) fprintf(stderr,
+		       "%s failure (%s) while attempting to read from rules "
+		       "file \"%s\"\n",
+		       failure,
+		       strerror(errno),
+		       rules_path);
 	exit(EXIT_FAILURE);
 }
 
 
 
+
+/* counts number of valid rules, clears out invalid rules and prints a warning
+ * to STDERR */
+static inline size_t
+scan_rules_file(char *restrict cursor,
+		const char *const restrict cursor_until)
+{
+	unsigned int line_num;
+	size_t rule_count;
+	char *restrict rule_start;
+	char *restrict replacement_start;
+	unsigned int next_char;
+
+#define WARN_BAD_RULE(FORMAT)						\
+(void) fprintf(stderr,							\
+	       FORMAT " on line %u, ignoring\n",			\
+	       line_num)
+#define CLEAR_UNTIL_CURSOR()						\
+(void) memset(rule_start,						\
+	      '\0',							\
+	      cursor - rule_start)
+
+	rule_count = 0;
+
+	for (line_num = 1; ; ++line_num) {
+		/* get start of next rule */
+		while (1) {
+			if (cursor == cursor_until)
+				return rule_count;
+
+			next_char = (unsigned int) *cursor;
+
+			if (IS_DIGIT(next_char))
+				WARN_BAD_RULE("token starts with digit");
+			else if (!token_char[next_char])
+				WARN_BAD_RULE("leading non-token character");
+			else
+				break; /* found good start of token */
+
+			/* clear out bad rule, including newline separator */
+			while (1) {
+				*cursor++ = '\0';
+
+				if (next_char == '\n')
+					break;
+
+				if (cursor == cursor_until)
+					return rule_count; /* done */
+
+				next_char = (unsigned int) *cursor;
+			}
+		}
+
+		rule_start = cursor;
+
+		/* traverse token */
+		do {
+			++cursor;
+			if (cursor == cursor_until) {
+				WARN_BAD_RULE("partial token");
+				CLEAR_UNTIL_CURSOR();
+				return rule_count; /* done */
+			}
+
+			next_char = (unsigned int) *cursor;
+		} while (token_char[next_char]);
+
+
+		if (next_char != RULES_DELIM) {
+			WARN_BAD_RULE("bad token");
+			goto CLEAR_RULE_BAD_TOKEN;
+		}
+
+		if ((cursor - rule_start) > MAX_LENGTH) {
+			WARN_BAD_RULE("token length exceeds " MAX_LENGTH_STR);
+CLEAR_RULE_BAD_TOKEN:	CLEAR_UNTIL_CURSOR();
+
+			while (1) {
+				*cursor++ = '\0';
+
+				if (next_char == '\n')
+					break;
+
+				if (cursor == cursor_until)
+					return rule_count; /* done */
+
+				next_char = *cursor;
+			}
+
+			continue; /* do not increment rule_count */
+		}
+
+		++cursor; /* skip delimiter */
+
+		replacement_start = cursor;
+
+		while (1) {
+			if (cursor == cursor_until) {
+				if ((cursor - replacement_start) > MAX_LENGTH) {
+					WARN_BAD_RULE("replacement length "
+						      "exceeds "
+						      MAX_LENGTH_STR);
+					CLEAR_UNTIL_CURSOR();
+
+				} else {
+					++rule_count;
+				}
+
+				return rule_count; /* done */
+			}
+
+			if (*cursor == '\n') /* end of line */
+				break;
+
+			++cursor;
+		}
+
+		if ((cursor - replacement_start) > MAX_LENGTH) {
+			WARN_BAD_RULE("replacement length exceeds "
+				      MAX_LENGTH_STR);
+			CLEAR_UNTIL_CURSOR();
+			*cursor = '\0';
+
+		} else {
+			++rule_count;
+		}
+
+		++cursor;
+	}
+#undef WARN_BAD_RULE
+#undef CLEAR_UNTIL_CURSOR
+}
+
+
+
+
+static inline bool
+update_rules_map(const struct Rule *const restrict rule,
+		 const size_t length_token,
+		 const char *restrict *const restrict failure)
+{
+	int status;
+	const struct Rule *restrict old_rule;
+	void *restrict old_ptr;
+
+	status = red_black_hmap_update(&rules_map,
+				       (void *) rule,
+				       length_token,
+				       (void **) &old_ptr);
+
+	if (status == 1)
+		return true;
+
+	if (status < 0) {
+		*failure = "red_black_hmap_update failure";
+		return false;
+	}
+
+	/* token collision, warn of overwrite */
+
+	old_rule = (const struct Rule *) old_ptr;
+
+	(void) fprintf(stderr,
+		       "overwriting old rule:\n"
+		       "\t%s -> %s\n"
+		       "with new rule:\n"
+		       "\t%s -> %s\n",
+		       &old_rule->token[0],
+		       &old_rule->replacement[0],
+		       &rule->token[0],
+		       &rule->replacement[0]);
+
+	return true;
+}
+
+
+static inline void
+build_rules_map(const char *const restrict rules_path)
+{
+	size_t rules_file_size;
+	size_t rule_count;
+	const char *restrict rules_file_end;
+	const char *restrict failure;
+	const char *restrict cursor;
+	const char *restrict token_start;
+	const char *restrict rule_cursor;
+	struct Rule *restrict rule;
+	size_t length_token;
+	int next_char;
+
+	rules_file_size = read_rules_file(rules_path);
+	rules_file_end  = rules_file_buffer + rules_file_size;
+	rule_count      = scan_rules_file(rules_file_buffer,
+					  rules_file_end);
+
+	if (rule_count == 0)
+		failure = "parsed no valid rules", goto FAIL0;
+
+	rules_buffer = calloc(rule_count,
+			      sizeof(*rules_buffer));
+
+	if (rules_buffer == NULL)
+		failure = "calloc failure", goto FAIL0;
+
+	if (!red_black_hmap_init(&rules_map))
+		failure = "red_black_hmap_init failure", goto FAIL1;
+
+	cursor = rules_file_buffer;
+	rule   = rules_buffer;
+
+	while (1) {
+		/* skip bad rules */
+		while (1) {
+			next_char = (int) *cursor;
+
+			if (next_char != '\0')
+				break;
+
+			++cursor;
+		}
+
+		token_start = cursor;
+		rule_cursor = &rule->token[0];
+
+		/* copy token (non-zero length) */
+		while (1) {
+			*rule_cursor = next_char;
+
+			++cursor;
+			next_char = (int) *cursor;
+
+			if (next_char == RULES_DELIM)
+				break;
+
+			++rule_cursor;
+		}
+
+		length_token = cursor - token_start;
+		rule_cursor  = &rule->replacement[0];
+
+		/* copy replacement (may be empty) */
+		while (1) {
+			++cursor;
+			if (cursor == rules_file_end) {
+				if (!update_rules_map(rule,
+						      length_token,
+						      &failure))
+					goto FAIL2;
+
+				free(rules_file_buffer); /* done with file */
+				return; /* map is built */
+			}
+
+			next_char = (int) *cursor;
+
+			if (next_char == RULES_DELIM)
+				break;
+
+			*rule_cusor++ = next_char;
+		}
+
+		/* insert next rule */
+		if (!update_rules_map(rule,
+				      length_token,
+				      &failure))
+			break;
+
+		++rule;
+	}
+
+/* should only leave main loop on failure */
+FAIL2:	red_black_hmap_destroy(&rules_map);
+FAIL1:	free(rules_buffer);
+FAIL0:	free(rules_file_buffer);
+	(void) fprintf(stderr,
+		       "failed to build rules map from file \"%s\": %s\n",
+		       rules_path,
+		       failure);
+	exit(EXIT_FAILURE);
+}
+
+
+
+
+static inline size_t
+next_scan_step(const char *restrict *const restrict next_cursor_ptr,
+	       const char *restrict *const restrict token_ptr,
+	       size_t *const restrict token_length_ptr,
+	       const char *restrict cursor,
+	       const char *restrict cursor_until)
+{
+	unsigned int next_char;
+	size_t token_length;
+
+	/* find start of next token */
+	while (1) {
+		next_char = (unsigned int) *cursor;
+
+		if (   token_char[next_char]
+		    && !IS_DIGIT(next_char))
+			break;
+
+		++cursor;
+
+
+
+	}
+}
+
+
+static inline int
+replace_tokens(void)
+{
+	size_t line_capacity;
+	ssize_t line_length;
+	const char *restrict token;
+	size_t copy_length;
+	size_t token_length;
+	const struct Rule *restrict rule;
+	const char *restrict cursor;
+	const char *restrict next_cursor;
+	const char *restrict cursor_until;
+	void *fetched;
+
+	line_buffer   = NULL;
+	line_capacity = 0;
+
+	while (1) {
+		/* read in next line from STDIN */
+		line_length = getline(&line_buffer,
+				      &line_capacity,
+				      stdin);
+
+		if (line_length <= 0) {
+			free(line_buffer);
+
+			if (line_length < 0)
+				goto FAIL0;
+
+			return EXIT_SUCCESS;
+		}
+
+		cursor_until = line_buffer + line_length;
+		cursor	     = line_buffer;
+
+		/* scan line, replace tokens if a rule is found in 'rule_map' */
+		while (1) {
+			copy_length = next_scan_step(&next_cursor,
+						     &token,
+						     &token_length,
+						     cursor,
+						     cursor_until);
+
+			if (copy_length > 0) {
+				/* copy line up to token */
+				if (fwrite(cursor,
+					   sizeof(*cursor),
+					   copy_length,
+					   stdout) != line_length)
+					goto FAIL1;
+
+			}
+
+			if (token_length > 0) {
+				/* check 'rule_map' for 'token' */
+				if (red_black_hmap_fetch(&rules_map,
+							 (void *) token,
+							 token_length,
+							 &fetched)) {
+					/* rule exists for token */
+					rule = (const struct Rule *) fetched;
+
+					/* replace token with replacement */
+					token = &rule->replacement[0];
+
+					token_length = strlen(token);
+				}
+
+				/* copy token */
+				if (fwrite(token,
+					   sizeof(*token),
+					   token_length,
+					   stdout) != line_length)
+					goto FAIL1;
+
+			}
+
+			if (next_cursor == cursor_until)
+				break;
+
+			cursor = next_cursor;
+		}
+	}
+
+
+FAIL1:	free(line_buffer);
+FAIL0:	fprintf(stderr,
+		"%s failure (%s) while attempting replace tokens\n"
+		failure,
+		strerror(errno));
+	return EXIT_FAILURE;
+}
+
+
+
+static inline void
+destroy_rules_map(void)
+{
+	red_black_hmap_destroy(&rules_map);
+	free(rules_buffer);
+}
+
+
+/* program entry
+ * ────────────────────────────────────────────────────────────────────────── */
 int
 main(int argc,
      char *argv[])
@@ -117,5 +543,9 @@ main(int argc,
 
 	build_rules_map((argc < 2) ? DEFAULT_RULES_PATH : argv[1]);
 
-	return EXIT_SUCCESS;
+	const int exit_status = replace_tokens();
+
+	destroy_rules_map();
+
+	return exit_status;
 }
