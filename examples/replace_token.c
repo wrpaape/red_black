@@ -399,29 +399,17 @@ FAIL0:	free(rules_file_buffer);
 
 
 
-static inline size_t
-next_scan_step(const char *restrict *const restrict next_cursor_ptr,
-	       const char *restrict *const restrict token_ptr,
-	       size_t *const restrict token_length_ptr,
-	       const char *restrict cursor,
-	       const char *restrict cursor_until)
+static inline bool
+process_line(const char *restrict cursor,
+	     const size_t length_line,
+	     const char *restrict *const restrict failure)
 {
-	unsigned int next_char;
+	const char *restrict token;
+	const char *restrict cursor_until;
+	size_t copy_length;
 	size_t token_length;
-
-	/* find start of next token */
-	while (1) {
-		next_char = (unsigned int) *cursor;
-
-		if (   token_char[next_char]
-		    && !IS_DIGIT(next_char))
-			break;
-
-		++cursor;
-
-
-
-	}
+	void *fetched;
+	const struct Rule *restrict rule;
 }
 
 
@@ -430,88 +418,36 @@ replace_tokens(void)
 {
 	size_t line_capacity;
 	ssize_t line_length;
-	const char *restrict token;
-	size_t copy_length;
-	size_t token_length;
-	const struct Rule *restrict rule;
+	const char *restrict failure;
 	const char *restrict cursor;
 	const char *restrict next_cursor;
-	const char *restrict cursor_until;
-	void *fetched;
 
 	line_buffer   = NULL;
 	line_capacity = 0;
 
-	while (1) {
+	do {
 		/* read in next line from STDIN */
 		line_length = getline(&line_buffer,
 				      &line_capacity,
 				      stdin);
 
 		if (line_length <= 0) {
+			if (line_length < 0) {
+				failure = "getline";
+				break;
+			}
+
 			free(line_buffer);
-
-			if (line_length < 0)
-				goto FAIL0;
-
 			return EXIT_SUCCESS;
 		}
 
-		cursor_until = line_buffer + line_length;
-		cursor	     = line_buffer;
-
-		/* scan line, replace tokens if a rule is found in 'rule_map' */
-		while (1) {
-			copy_length = next_scan_step(&next_cursor,
-						     &token,
-						     &token_length,
-						     cursor,
-						     cursor_until);
-
-			if (copy_length > 0) {
-				/* copy line up to token */
-				if (fwrite(cursor,
-					   sizeof(*cursor),
-					   copy_length,
-					   stdout) != line_length)
-					goto FAIL1;
-
-			}
-
-			if (token_length > 0) {
-				/* check 'rule_map' for 'token' */
-				if (red_black_hmap_fetch(&rules_map,
-							 (void *) token,
-							 token_length,
-							 &fetched)) {
-					/* rule exists for token */
-					rule = (const struct Rule *) fetched;
-
-					/* replace token with replacement */
-					token = &rule->replacement[0];
-
-					token_length = strlen(token);
-				}
-
-				/* copy token */
-				if (fwrite(token,
-					   sizeof(*token),
-					   token_length,
-					   stdout) != line_length)
-					goto FAIL1;
-
-			}
-
-			if (next_cursor == cursor_until)
-				break;
-
-			cursor = next_cursor;
-		}
-	}
+	} while (process_line(line_buffer,
+			      (size_t) line_length,
+			      &failure));
 
 
-FAIL1:	free(line_buffer);
-FAIL0:	fprintf(stderr,
+	free(line_buffer);
+	fprintf(stderr,
 		"%s failure (%s) while attempting replace tokens\n"
 		failure,
 		strerror(errno));
@@ -541,7 +477,11 @@ main(int argc,
 		return EXIT_FAILURE;
 	}
 
-	build_rules_map((argc < 2) ? DEFAULT_RULES_PATH : argv[1]);
+	const char *const restrict rules_path = (argc < 2)
+					      ? DEFAULT_RULES_PATH
+					      : argv[1];
+
+	build_rules_map(rules_path);
 
 	const int exit_status = replace_tokens();
 
