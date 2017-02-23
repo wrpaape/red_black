@@ -1354,13 +1354,13 @@ red_black_hmap_put_all(RedBlackHMap *const restrict dst_map,
 }
 
 
-static inline void
-rbhm_add_all_dump(struct RedBlackHNode *restrict *const restrict dst_buckets,
-		  const unsigned int dst_cnt_buckets_m1,
-		  const RedBlackHMap *const restrict src_map,
-		  struct RedBlackHNode *volatile restrict buffer)
+bool
+red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
+		       const RedBlackHMap *const restrict src_map)
 {
 	RedBlackJumpBuffer jump_buffer;
+	struct RedBlackHNode *restrict buffer;
+	struct RedBlackHNode *volatile restrict cursor;
 	struct RedBlackHItor src_bucket_itor;
 	struct RedBlackHNode *const restrict *volatile restrict src_bucket;
 	struct RedBlackHNode *const restrict *restrict src_buckets;
@@ -1368,52 +1368,6 @@ rbhm_add_all_dump(struct RedBlackHNode *restrict *const restrict dst_buckets,
 	const struct RedBlackHKey *restrict src_hkey;
 	struct RedBlackHNode *restrict *restrict dst_bucket;
 	struct RedBlackHNode *restrict dst_node;
-
-	src_buckets     = src_map->buckets;
-	last_src_bucket = src_buckets + src_map->count.buckets_m1;
-	src_bucket      = src_buckets;
-
-	red_black_hitor_init(&src_bucket_itor,
-			     *src_buckets);
-
-	(void) RED_BLACK_SET_JUMP(jump_buffer);
-
-	while (1) {
-		/* fetch next hkey */
-		while (1) {
-			src_hkey = red_black_hitor_next_hkey(&src_bucket_itor);
-
-			if (src_hkey != NULL)
-				break;
-
-			if (src_bucket == last_src_bucket)
-				return; /* added all hkeys */
-
-			++src_bucket;
-
-			red_black_hitor_reset(&src_bucket_itor,
-					      *src_bucket);
-		}
-
-		/* fetch destination bucket */
-		dst_bucket = &dst_buckets[src_hkey->hash & dst_cnt_buckets_m1];
-
-		dst_node = buffer++; /* pop node from buffer */
-
-		dst_node->hkey = *src_hkey; /* set hkey */
-
-		/* add node to bucket */
-		red_black_hadd(dst_bucket,
-			       jump_buffer,
-			       dst_node);
-	}
-}
-
-bool
-red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
-		       const RedBlackHMap *const restrict src_map)
-{
-	struct RedBlackHNode *restrict buffer;
 	struct RedBlackHNode *restrict *restrict dst_buckets;
 	unsigned int src_count_entries;
 	unsigned int dst_count_entries;
@@ -1421,7 +1375,6 @@ red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
 	unsigned int dst_count_max_capacity;
 	unsigned int dst_count_buckets;
 	unsigned int old_dst_count_buckets_m1;
-
 
 	src_count_entries = src_map->count.entries;
 
@@ -1471,12 +1424,48 @@ red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
 
 	dst_map->count.entries = dst_count_entries;
 
-	/* add all the new entries */
-	rbhm_add_all_dump(dst_buckets,
-			  dst_count_buckets_m1,
-			  src_map,
-			  buffer);
-	return true;
+	cursor = buffer;
+
+	src_buckets     = src_map->buckets;
+	last_src_bucket = src_buckets + src_map->count.buckets_m1;
+	src_bucket      = src_buckets;
+
+	red_black_hitor_init(&src_bucket_itor,
+			     *src_buckets);
+
+	/* dump src nodes into dst_map */
+	(void) RED_BLACK_SET_JUMP(jump_buffer);
+
+	while (1) {
+		/* fetch next hkey */
+		while (1) {
+			src_hkey = red_black_hitor_next_hkey(&src_bucket_itor);
+
+			if (src_hkey != NULL)
+				break;
+
+			if (src_bucket == last_src_bucket)
+				return true; /* added all hkeys */
+
+			++src_bucket;
+
+			red_black_hitor_reset(&src_bucket_itor,
+					      *src_bucket);
+		}
+
+		/* fetch destination bucket */
+		dst_bucket
+		= &dst_buckets[src_hkey->hash & dst_count_buckets_m1];
+
+		dst_node = cursor++; /* pop node from buffer */
+
+		dst_node->hkey = *src_hkey; /* set hkey */
+
+		/* add node to bucket */
+		red_black_hadd(dst_bucket,
+			       jump_buffer,
+			       dst_node);
+	}
 }
 
 
@@ -1493,14 +1482,14 @@ red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
 	struct RedBlackHNode *const restrict *restrict src_buckets;
 	struct RedBlackHNode *const restrict *restrict last_src_bucket;
 	const struct RedBlackHKey *restrict src_hkey;
-	unsigned int dst_cnt_buckets_m1;
+	unsigned int dst_count_buckets_m1;
 	volatile unsigned int count;
 	int status;
 	unsigned int count_deleted;
 
-	dst_buckets	   = dst_map->buckets;
-	dst_cnt_buckets_m1 = dst_map->count.buckets_m1;
-	dst_factory_ptr    = &dst_map->factory;
+	dst_buckets	     = dst_map->buckets;
+	dst_count_buckets_m1 = dst_map->count.buckets_m1;
+	dst_factory_ptr      = &dst_map->factory;
 
 	src_buckets     = src_map->buckets;
 	last_src_bucket = src_buckets + src_map->count.buckets_m1;
@@ -1541,7 +1530,8 @@ red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
 		}
 
 		/* fetch destination bucket */
-		dst_bucket = &dst_buckets[src_hkey->hash & dst_cnt_buckets_m1];
+		dst_bucket
+		= &dst_buckets[src_hkey->hash & dst_count_buckets_m1];
 
 		/* delete hkey from bucket */
 		count += red_black_hdelete(dst_bucket,
@@ -1565,7 +1555,7 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 	struct RedBlackHNode *const restrict *restrict src_buckets;
 	struct RedBlackHNode *const restrict *restrict last_src_bucket;
 	const struct RedBlackHKey *restrict src_hkey;
-	unsigned int dst_cnt_buckets_m1;
+	unsigned int dst_count_buckets_m1;
 
 	src_buckets     = src_map->buckets;
 	last_src_bucket = src_buckets + src_map->count.buckets_m1;
@@ -1575,7 +1565,7 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 			     *src_buckets);
 
 	dst_buckets		= dst_map->buckets;
-	dst_cnt_buckets_m1	= dst_map->count.buckets_m1;
+	dst_count_buckets_m1	= dst_map->count.buckets_m1;
 	dst_map->count.entries -= src_map->count.entries;
 	dst_factory_ptr		= &dst_map->factory;
 
@@ -1600,7 +1590,8 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 		}
 
 		/* fetch destination bucket */
-		dst_bucket = &dst_buckets[src_hkey->hash & dst_cnt_buckets_m1];
+		dst_bucket
+		= &dst_buckets[src_hkey->hash & dst_count_buckets_m1];
 
 		/* drop node from bucket */
 		red_black_hdrop(dst_bucket,
