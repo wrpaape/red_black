@@ -107,6 +107,7 @@ setUp(void)
 	other_count       = red_black_hmap_count(&other);
 }
 
+
 void
 tearDown(void)
 {

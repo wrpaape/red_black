@@ -1681,7 +1681,7 @@ rbhm_from_list(RedBlackHMap *const restrict map,
 }
 
 
-#if 0
+#if 1
 int
 red_black_hmap_union(RedBlackHMap *const restrict union_map,
 		     const RedBlackHMap *const map1,
@@ -1988,7 +1988,7 @@ red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
 	unsigned int count_entries;
 
 	if (map1 == map2) /* 0 if success, -1 if failure */
-		return 0 - ((int) !red_black_hmap_init(difference_map));
+		return -((int) !red_black_hmap_init(difference_map));
 
 	/* init difference factory
 	 * nodes will be allocated from here, joined into a list, and finally
@@ -2086,7 +2086,7 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
 	unsigned int count_entries;
 
 	if (map1 == map2) /* 0 if success, -1 if failure */
-		return 0 - ((int) !red_black_hmap_init(sym_difference_map));
+		return  -((int) !red_black_hmap_init(sym_difference_map));
 
 	/* init sym_difference factory
 	 * nodes will be allocated from here, joined into a list, and finally
@@ -2197,7 +2197,6 @@ TRAVERSE_MAP2:
 			++count_entries;
 		}
 	}
-
 }
 
 
