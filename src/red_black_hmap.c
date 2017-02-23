@@ -959,6 +959,8 @@ bool
 red_black_hmap_intersect(const RedBlackHMap *const map1,
 			 const RedBlackHMap *const map2)
 {
+	const RedBlackHMap *restrict walk_map;
+	const RedBlackHMap *restrict find_map;
 	struct RedBlackHItor walk_bucket_itor;
 	struct RedBlackHNode *const restrict *restrict walk_bucket;
 	struct RedBlackHNode *const restrict *restrict last_walk_bucket;
@@ -982,19 +984,19 @@ red_black_hmap_intersect(const RedBlackHMap *const map1,
 
 	/* walk over smaller map, search in larger map */
 	if (map1->count.entries < map2->count.entries) {
-		walk_bucket	 = buckets1;
-		last_walk_bucket = walk_bucket + count_buckets1_m1;
-
-		find_buckets          = buckets2;
-		count_find_buckets_m1 = count_buckets2_m1;
+		walk_map = map1;
+		find_map = map2;
 
 	} else {
-		walk_bucket	 = buckets2;
-		last_walk_bucket = walk_bucket + count_buckets2_m1;
-
-		find_buckets          = buckets1;
-		count_find_buckets_m1 = count_buckets1_m1;
+		walk_map = map2;
+		find_map = map1;
 	}
+
+	walk_bucket	 = walk_map->buckets;
+	last_walk_bucket = walk_bucket + walk_map->count.buckets_m1;
+
+	find_buckets	      = find_map->buckets;
+	count_find_buckets_m1 = find_map->count.buckets_m1;
 
 	red_black_hitor_init(&walk_bucket_itor,
 			     *walk_bucket);
@@ -1679,7 +1681,7 @@ rbhm_from_list(RedBlackHMap *const restrict map,
 }
 
 
-#if 1
+#if 0
 int
 red_black_hmap_union(RedBlackHMap *const restrict union_map,
 		     const RedBlackHMap *const map1,
@@ -1718,7 +1720,139 @@ red_black_hmap_union(RedBlackHMap *const restrict union_map,
 		     const RedBlackHMap *const map1,
 		     const RedBlackHMap *const map2)
 {
-	return 1;
+	RedBlackJumpBuffer jump_buffer;
+	const RedBlackHMap *restrict copy_map;
+	const RedBlackHMap *restrict walk_map;
+	struct RedBlackHNodeFactory *restrict union_factory_ptr;
+	struct RedBlackHNodeFactoryBuffer *restrict factory_buffer_ptr;
+	struct RedBlackHItor bucket_itor;
+	struct RedBlackHNode *restrict copy_bucket_root;
+	struct RedBlackHNode *const restrict *restrict copy_bucket;
+	struct RedBlackHNode *const restrict *restrict last_copy_bucket;
+	struct RedBlackHNode *const restrict *restrict copy_buckets;
+	struct RedBlackHNode *const restrict *restrict walk_bucket;
+	struct RedBlackHNode *const restrict *restrict last_walk_bucket;
+	struct RedBlackHNode *restrict node;
+	struct RedBlackHNode *restrict head;
+	struct RedBlackHNode *restrict *restrict end_ptr;
+	const struct RedBlackHKey *restrict hkey;
+	unsigned int count_copy_buckets_m1;
+	unsigned int count_entries;
+
+	if (map1 == map2)
+		return red_black_hmap_clone(union_map,
+					    map1)
+		     ? (int) union_map->count.entries
+		     : -1; /* RED_BLACK_MALLOC failure */
+
+
+	union_factory_ptr = &union_map->factory;
+
+	rbhnf_init(union_factory_ptr);
+
+	if (RED_BLACK_SET_JUMP(jump_buffer) != 0) {
+		rbhnf_destroy(union_factory_ptr);
+		return -1; /* RED_BLACK_MALLOC failure */
+	}
+
+	factory_buffer_ptr = &union_factory_ptr->buffer;
+
+	/* copy entries from and search in larger map */
+	if (map1->count.entries < map2->count.entries) {
+		walk_map = map1;
+		copy_map = map2;
+
+	} else {
+		walk_map = map2;
+		copy_map = map1;
+	}
+
+	walk_bucket	 = walk_map->buckets;
+	last_walk_bucket = walk_bucket + walk_map->count.buckets_m1;
+
+	copy_buckets	      = copy_map->buckets;
+	count_copy_buckets_m1 = copy_map->count.buckets_m1;
+	last_copy_bucket      = copy_buckets + count_copy_buckets_m1;
+	copy_bucket	      = copy_buckets;
+
+	red_black_hitor_init(&bucket_itor,
+			     *copy_bucket);
+
+	end_ptr       = &head; /* first entry will set 'head' */
+	count_entries = 0;
+
+	/* make list of all entries from 'copy_map' */
+	while (1) {
+		/* fetch next hkey */
+		while (1) {
+			hkey = red_black_hitor_next_hkey(&bucket_itor);
+
+			if (hkey != NULL)
+				break;
+
+			if (copy_bucket == last_copy_bucket)
+				goto TRAVERSE_WALK_MAP; /* done copying */
+
+			++copy_bucket;
+
+			red_black_hitor_reset(&bucket_itor,
+					      *copy_bucket);
+		}
+
+		/* copy all entres from copy_map */
+		node = rbhnfb_allocate(factory_buffer_ptr,
+				       jump_buffer);
+
+		*end_ptr   = node;
+		end_ptr    = &node->left;
+		node->hkey = *hkey;
+
+		++count_entries;
+	}
+
+	/* append unique entries of 'walk_map' */
+	while (1) {
+		/* fetch next hkey */
+		while (1) {
+			hkey = red_black_hitor_next_hkey(&bucket_itor);
+
+			if (hkey != NULL)
+				break;
+
+			if (walk_bucket == last_walk_bucket) {
+				/* terminate list and dump into union_map */
+				*end_ptr = NULL;
+
+				return rbhm_from_list(union_map,
+						      head,
+						      count_entries,
+						      union_factory_ptr);
+			}
+
+			++walk_bucket;
+
+TRAVERSE_WALK_MAP:
+			red_black_hitor_reset(&bucket_itor,
+					      *walk_bucket);
+		}
+
+		copy_bucket_root
+		= copy_buckets[hkey->hash & count_copy_buckets_m1];
+
+		if (!red_black_hfind(copy_bucket_root,
+				     hkey)) {
+			/* unique entry found, append node to list */
+			node = rbhnfb_allocate(factory_buffer_ptr,
+					       jump_buffer);
+
+			*end_ptr   = node;
+			end_ptr    = &node->left;
+			node->hkey = *hkey;
+
+			++count_entries;
+		}
+	}
+
 }
 #endif
 
@@ -1728,6 +1862,8 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 			    const RedBlackHMap *const map1,
 			    const RedBlackHMap *const map2)
 {
+	const RedBlackHMap *restrict walk_map;
+	const RedBlackHMap *restrict find_map;
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHItor walk_bucket_itor;
 	struct RedBlackHNode *const restrict *restrict walk_bucket;
@@ -1766,19 +1902,19 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 
 	/* ensure buckets being traversed have fewer entries */
 	if (map1->count.entries < map2->count.entries) {
-		find_buckets	      = map2->buckets;
-		count_find_buckets_m1 = map2->count.buckets_m1;
-
-		walk_bucket	 = map1->buckets;
-		last_walk_bucket = walk_bucket + map1->count.buckets_m1;
+		walk_map = map1;
+		find_map = map2;
 
 	} else {
-		find_buckets	      = map1->buckets;
-		count_find_buckets_m1 = map1->count.buckets_m1;
-
-		walk_bucket	 = map2->buckets;
-		last_walk_bucket = walk_bucket + map2->count.buckets_m1;
+		walk_map = map2;
+		find_map = map1;
 	}
+
+	find_buckets	      = find_map->buckets;
+	count_find_buckets_m1 = find_map->count.buckets_m1;
+
+	walk_bucket	 = walk_map->buckets;
+	last_walk_bucket = walk_bucket + walk_map->count.buckets_m1;
 
 	red_black_hitor_init(&walk_bucket_itor,
 			     *walk_bucket);
@@ -1932,8 +2068,10 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHItor bucket_itor;
-	struct RedBlackHNode *const restrict *restrict bucket;
-	struct RedBlackHNode *const restrict *restrict last_bucket;
+	struct RedBlackHNode *const restrict *restrict bucket1;
+	struct RedBlackHNode *const restrict *restrict last_bucket1;
+	struct RedBlackHNode *const restrict *restrict bucket2;
+	struct RedBlackHNode *const restrict *restrict last_bucket2;
 	struct RedBlackHNode *const restrict *restrict buckets1;
 	struct RedBlackHNode *const restrict *restrict buckets2;
 	struct RedBlackHNode *restrict bucket_root;
@@ -1968,16 +2106,17 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
 
 	buckets2	  = map2->buckets;
 	count_buckets2_m1 = map2->count.buckets_m1;
+	last_bucket2      = buckets2 + count_buckets2_m1;
+	bucket2		  = buckets2;
 
 	buckets1	  = map1->buckets;
 	count_buckets1_m1 = map1->count.buckets_m1;
+	last_bucket1	  = buckets1 + count_buckets1_m1;
+	bucket1		  = buckets1;
 
 	/* traverse map1 */
-	last_bucket = buckets1 + count_buckets1_m1;
-	bucket	    = buckets1;
-
 	red_black_hitor_init(&bucket_itor,
-			     *bucket);
+			     *bucket1);
 
 	end_ptr       = &head; /* first entry will set 'head' */
 	count_entries = 0;
@@ -1990,13 +2129,13 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
 			if (hkey != NULL)
 				break;
 
-			if (bucket == last_bucket) /* done traversing map1 */
+			if (bucket1 == last_bucket1) /* done traversing map1 */
 				goto TRAVERSE_MAP2;
 
-			++bucket;
+			++bucket1;
 
 			red_black_hitor_reset(&bucket_itor,
-					      *bucket);
+					      *bucket1);
 		}
 
 		/* fetch bucket */
@@ -2016,13 +2155,7 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
 		}
 	}
 
-TRAVERSE_MAP2:
-	last_bucket = buckets2 + count_buckets1_m1;
-	bucket	    = buckets2;
-
-	red_black_hitor_init(&bucket_itor,
-			     *bucket);
-
+	/* traverse map2 */
 	while (1) {
 		/* fetch next hkey */
 		while (1) {
@@ -2031,7 +2164,7 @@ TRAVERSE_MAP2:
 			if (hkey != NULL)
 				break;
 
-			if (bucket == last_bucket) {
+			if (bucket2 == last_bucket2) {
 				/* done, terminate list and dump into
 				 * sym_difference_map */
 				*end_ptr = NULL;
@@ -2042,10 +2175,10 @@ TRAVERSE_MAP2:
 						      sym_diff_factory_ptr);
 			}
 
-			++bucket;
-
+			++bucket2;
+TRAVERSE_MAP2:
 			red_black_hitor_reset(&bucket_itor,
-					      *bucket);
+					      *bucket2);
 		}
 
 		/* fetch bucket */
