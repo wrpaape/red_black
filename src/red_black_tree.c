@@ -990,13 +990,14 @@ red_black_tree_drop_all(RedBlackTree *const restrict dst_tree,
 
 int
 red_black_tree_union(RedBlackTree *const restrict union_tree,
-		     const RedBlackTree *const restrict tree1,
-		     const RedBlackTree *const restrict tree2)
+		     const RedBlackTree *const tree1,
+		     const RedBlackTree *const tree2)
 {
 	struct RedBlackNodeFactory *restrict union_factory_ptr;
 	struct RedBlackNodeFactoryBuffer *restrict factory_buffer_ptr;
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict head;
+	struct RedBlackNode *restrict root1;
 	struct RedBlackNode *restrict *restrict end_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
@@ -1012,12 +1013,23 @@ red_black_tree_union(RedBlackTree *const restrict union_tree,
 	int compare;
 	unsigned int count;
 
+	root1 = tree1->root;
+
+	if (tree1 == tree2) {
+		count = red_black_count(root1);
+		return rb_tree_clone(union_tree,
+				     tree1,
+				     count)
+		     ? (int) count
+		     : -1; /* RED_BLACK_MALLOC failure */
+	}
+
 	/* 1. build up list of all keys (no duplicates) in ascending order
 	 * 2. treeify list */
 
 	lesser_itor_ptr = &itor1;
 	red_black_asc_itor_init(lesser_itor_ptr,
-				tree1->root);
+				root1);
 
 	greater_itor_ptr = &itor2;
 	red_black_asc_itor_init(greater_itor_ptr,
@@ -1114,13 +1126,14 @@ DO_LISTIFY_REMAINDER:
 
 int
 red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
-			    const RedBlackTree *const restrict tree1,
-			    const RedBlackTree *const restrict tree2)
+			    const RedBlackTree *const tree1,
+			    const RedBlackTree *const tree2)
 {
 	struct RedBlackNodeFactory *restrict intersection_factory_ptr;
 	struct RedBlackNodeFactoryBuffer *restrict factory_buffer_ptr;
 	struct RedBlackNode *restrict node;
 	struct RedBlackNode *restrict head;
+	struct RedBlackNode *restrict root1;
 	struct RedBlackNode *restrict *restrict end_ptr;
 	RedBlackComparator comparator;
 	RedBlackJumpBuffer jump_buffer;
@@ -1131,11 +1144,22 @@ red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
 	int compare;
 	unsigned int count;
 
+	root1 = tree1->root;
+
+	if (tree1 == tree2) {
+		count = red_black_count(root1);
+		return rb_tree_clone(intersection_tree,
+				     tree1,
+				     count)
+		     ? (int) count
+		     : -1; /* RED_BLACK_MALLOC failure */
+	}
+
 	/* 1. build up list of overlapping keys in ascending order
 	 * 2. treeify list */
 
 	red_black_asc_itor_init(&itor1,
-				tree1->root);
+				root1);
 
 	red_black_asc_itor_init(&itor2,
 				tree2->root);
@@ -1209,8 +1233,8 @@ TREEIFY:
 
 int
 red_black_tree_difference(RedBlackTree *const restrict difference_tree,
-			  const RedBlackTree *const restrict tree1,
-			  const RedBlackTree *const restrict tree2)
+			  const RedBlackTree *const tree1,
+			  const RedBlackTree *const tree2)
 {
 	struct RedBlackNodeFactory *restrict difference_factory_ptr;
 	struct RedBlackNodeFactoryBuffer *restrict factory_buffer_ptr;
@@ -1226,6 +1250,12 @@ red_black_tree_difference(RedBlackTree *const restrict difference_tree,
 	void *key2;
 	int compare;
 	unsigned int count;
+
+	if (tree1 == tree2) {
+		red_black_tree_init(difference_tree,
+				    tree1->comparator);
+		return 0;
+	}
 
 	/* 1. build up list of keys unique to tree1 in ascending order
 	 * 2. treeify list */
@@ -1303,8 +1333,8 @@ TREEIFY:
 
 int
 red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
-			      const RedBlackTree *const restrict tree1,
-			      const RedBlackTree *const restrict tree2)
+			      const RedBlackTree *const tree1,
+			      const RedBlackTree *const tree2)
 {
 	struct RedBlackNodeFactory *restrict sym_difference_factory_ptr;
 	struct RedBlackNodeFactoryBuffer *restrict factory_buffer_ptr;
@@ -1324,6 +1354,12 @@ red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
 	void *lesser_key;
 	void *greater_key;
 	int compare;
+
+	if (tree1 == tree2) {
+		red_black_tree_init(sym_difference_tree,
+				    tree1->comparator);
+		return 0;
+	}
 
 	/* 1. build up list of non-overlapping keys in ascending order
 	 * 2. treeify list */

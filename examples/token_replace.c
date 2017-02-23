@@ -4,7 +4,7 @@
 #include "examples_io.h"	/* low level file open/read/write/fstat/close */
 #include <stdio.h>		/* high level file IO */
 #include <stdlib.h>		/* exit, malloc, free */
-#include <string.h>		/* strlen, strerror, memset */
+#include <string.h>		/* strerror, memset */
 #include <errno.h>		/* errno */
 #include <limits.h>		/* UCHAR_MAX */
 
@@ -20,28 +20,37 @@
 
 /* macro constants
  * ────────────────────────────────────────────────────────────────────────── */
+/* default path to rules file */
+#ifndef DEFAULT_RULES_PATH
+#	define DEFAULT_RULES_PATH "token_replace_rules.csv"
+#endif /* ifndef DEFAULT_RULES_PATH */
+
 /* maximum length for token or replacement */
 #define MAX_LENGTH 127
 #define MAX_LENGTH_STR XSTR(MAX_LENGTH)
 
-/* default path to rules file */
-#define DEFAULT_RULES_PATH "token_replace_rules.csv"
-
 /* rule delimiter */
-#define RULES_DELIM ';'
+#define RULES_DELIM	','
+#define RULES_DELIM_STR ","
 
 /* usage */
 #define USAGE								\
+"\n"									\
+"Mass replace tokens of the form [_a-zA-Z][_a-zA-Z0-9]* according to\n"	\
+"the provided mapping.\n"						\
+"\n"									\
+"\n"									\
 "usage:\n"								\
 "\n"									\
 "token_replace [RULES_FILE] [< <IN_FILE>] [> <OUT_FILE>]\n"		\
 "\n"									\
 "where\n"								\
-"\n"									\
-"\tRULES_FILE := .csv table with rows of \"<TOKEN>,<REPLACEMENT>\\n\n"	\
-"\t              where TOKEN and REPLACEMENT may be no longer than \n"	\
-"\t              " MAX_LENGTH_STR " characters, defaults to "		\
-"\t              \"" DEFAULT_RULES_PATH "\" if not provided\n"		\
+"\tRULES_FILE := .csv table having rows of \"<TOKEN>" RULES_DELIM_STR	\
+"<REPLACEMENT>\\n\"\n"							\
+"\t              where TOKEN and REPLACEMENT may be no longer than\n"	\
+"\t              " MAX_LENGTH_STR " characters, if not provided "	\
+		 "defaults to\n"					\
+"\t              " DEFAULT_RULES_PATH "\n"				\
 "\tIN_FILE    := target file\n"						\
 "\tOUT_FILE   := output file\n"
 
@@ -51,6 +60,7 @@
 struct Rule {
 	unsigned char token[MAX_LENGTH + 1];
 	unsigned char replacement[MAX_LENGTH + 1];
+	size_t replacement_length;
 };
 
 
@@ -271,12 +281,12 @@ update_rules_map(const struct Rule *const restrict rule,
 {
 	int status;
 	const struct Rule *restrict old_rule;
-	void *restrict old_ptr;
+	void *old_ptr;
 
 	status = red_black_hmap_update(&rules_map,
-				       (void *) rule,
+				       rule,
 				       length_token,
-				       (void **) &old_ptr);
+				       &old_ptr);
 
 	if (status == 1)
 		return true;
@@ -310,6 +320,7 @@ build_rules_map(const char *const restrict rules_path)
 	const unsigned char *restrict rules_file_end;
 	const unsigned char *restrict cursor;
 	const unsigned char *restrict token_start;
+	const unsigned char *restrict replacement_start;
 	unsigned char *restrict rule_cursor;
 	const char *restrict failure;
 	struct Rule *restrict rule;
@@ -326,6 +337,7 @@ build_rules_map(const char *const restrict rules_path)
 		goto FAIL0;
 	}
 
+	/* calloc so no need to terminate tokens/replacements */
 	rules_buffer = calloc(rule_count,
 			      sizeof(*rules_buffer));
 
@@ -373,13 +385,16 @@ build_rules_map(const char *const restrict rules_path)
 			++rule_cursor;
 		}
 
-		length_token = cursor - token_start;
-		rule_cursor  = &rule->replacement[0];
+		length_token      = cursor - token_start;
+		rule_cursor       = &rule->replacement[0];
+		replacement_start = rule_cursor;
 
 		/* copy replacement (may be empty) */
 		while (1) {
 			++cursor;
 			if (cursor == rules_file_end) {
+				rule->replacement_length = rule_cursor
+							 - replacement_start;
 				if (!update_rules_map(rule,
 						      length_token,
 						      &failure))
@@ -396,6 +411,8 @@ build_rules_map(const char *const restrict rules_path)
 
 			*rule_cursor++ = next_char;
 		}
+
+		rule->replacement_length = rule_cursor - replacement_start;
 
 		/* insert next rule */
 		if (!update_rules_map(rule,
@@ -444,6 +461,7 @@ static inline bool
 copy_through_token(const unsigned char *restrict copy_from,
 		   const unsigned char *restrict token,
 		   const unsigned char *restrict cursor,
+		   unsigned int *const restrict count_replacements,
 		   const char *restrict *const restrict failure)
 {
 	bool success;
@@ -454,11 +472,10 @@ copy_through_token(const unsigned char *restrict copy_from,
 
 	token_length = cursor - token;
 
-	if (   (token_length <= MAX_LENGTH)
-	    && red_black_hmap_fetch(&rules_map,
-				    token,
-				    token_length,
-				    &fetched)) {
+	if ((token_length <= MAX_LENGTH) && red_black_hmap_fetch(&rules_map,
+								 token,
+								 token_length,
+								 &fetched)) {
 		/* copy until token start */
 		copy_length = token - copy_from;
 
@@ -470,12 +487,13 @@ copy_through_token(const unsigned char *restrict copy_from,
 			return false;
 		}
 
+		++(*count_replacements); /* increment count_replacements */
+
 		rule = (const struct Rule *) fetched;
 
 		/* copy replacement */
-		copy_from = &rule->replacement[0];
-
-		copy_length = strlen((char *) copy_from);
+		copy_from   = &rule->replacement[0];
+		copy_length = rule->replacement_length;
 
 	} else {
 		/* no rule for token, copy as is */
@@ -498,6 +516,7 @@ copy_through_token(const unsigned char *restrict copy_from,
 static inline bool
 process_line(const unsigned char *restrict cursor,
 	     const size_t length_line,
+	     unsigned int *const restrict count_replacements,
 	     const char *restrict *const restrict failure)
 {
 	const unsigned char *restrict token;
@@ -513,8 +532,7 @@ process_line(const unsigned char *restrict cursor,
 		next_char = (unsigned int) *cursor;
 
 		/* find start of next token (can't start with digit) */
-		while (   !token_char[next_char]
-		       || IS_DIGIT(next_char)) {
+		while (!token_char[next_char] || IS_DIGIT(next_char)) {
 			++cursor;
 			if (cursor == cursor_until)
 				return copy_remainder(copy_from,
@@ -533,6 +551,7 @@ process_line(const unsigned char *restrict cursor,
 				return copy_through_token(copy_from,
 							  token,
 							  cursor,
+							  count_replacements,
 							  failure);
 
 			next_char = (unsigned int) *cursor;
@@ -541,6 +560,7 @@ process_line(const unsigned char *restrict cursor,
 		if (!copy_through_token(copy_from,
 					token,
 					cursor,
+					count_replacements,
 					failure))
 			return false;
 
@@ -556,16 +576,18 @@ process_line(const unsigned char *restrict cursor,
 }
 
 
-static inline int
-replace_tokens(void)
+static inline unsigned int
+replace_tokens(int *const restrict exit_status)
 {
 	size_t line_capacity;
 	ssize_t line_length;
 	char *line_buffer;
 	const char *restrict failure;
+	unsigned int count_replacements;
 
-	line_buffer   = NULL;
-	line_capacity = 0;
+	line_buffer	   = NULL;
+	line_capacity	   = 0;
+	count_replacements = 0;
 
 	do {
 		/* read in next line from STDIN */
@@ -573,28 +595,31 @@ replace_tokens(void)
 				      &line_capacity,
 				      stdin);
 
-		if (line_length <= 0) {
-			if (   (line_length < 0)
-			    && ferror(stdin)) {
+		if (line_length < 0) {
+			if (ferror(stdin)) {
 				failure = "getline";
 				break;
 			}
 
 			free(line_buffer);
-			return EXIT_SUCCESS;
+			*exit_status = EXIT_SUCCESS;
+			return count_replacements;
 		}
 
+		/* line_length will always be >= 1 */
 	} while (process_line((const unsigned char *) line_buffer,
 			      (size_t) line_length,
+			      &count_replacements,
 			      &failure));
 
 
 	free(line_buffer);
-	fprintf(stderr,
-		"%s failure (%s) while attempting replace tokens\n",
-		failure,
-		strerror(errno));
-	return EXIT_FAILURE;
+	(void) fprintf(stderr,
+		       "%s failure (%s) while attempting replace tokens\n",
+		       failure,
+		       strerror(errno));
+	*exit_status = EXIT_FAILURE;
+	return count_replacements;
 }
 
 
@@ -615,6 +640,7 @@ main(int argc,
 {
 	const char *restrict rules_path;
 	int exit_status;
+	unsigned int count_replacements;
 
 	if (argc > 2) {
 		(void) WRITE(STDERR_FILENO,
@@ -629,7 +655,11 @@ main(int argc,
 
 	build_rules_map(rules_path);
 
-	exit_status = replace_tokens();
+	count_replacements = replace_tokens(&exit_status);
+
+	(void) fprintf(stderr,
+		       "\n--- made %u replacements ---\n",
+		       count_replacements);
 
 	destroy_rules_map();
 

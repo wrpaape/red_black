@@ -208,23 +208,23 @@ red_black_tree_drop_all(RedBlackTree *const restrict dst_tree,
 
 int
 red_black_tree_union(RedBlackTree *const restrict union_tree,
-		     const RedBlackTree *const restrict tree1,
-		     const RedBlackTree *const restrict tree2);
+		     const RedBlackTree *const tree1,
+		     const RedBlackTree *const tree2);
 
 int
 red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
-			    const RedBlackTree *const restrict tree1,
-			    const RedBlackTree *const restrict tree2);
+			    const RedBlackTree *const tree1,
+			    const RedBlackTree *const tree2);
 
 int
 red_black_tree_difference(RedBlackTree *const restrict difference_tree,
-			  const RedBlackTree *const restrict tree1,
-			  const RedBlackTree *const restrict tree2);
+			  const RedBlackTree *const tree1,
+			  const RedBlackTree *const tree2);
 
 int
 red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
-			      const RedBlackTree *const restrict tree1,
-			      const RedBlackTree *const restrict tree2);
+			      const RedBlackTree *const tree1,
+			      const RedBlackTree *const tree2);
 
 bool
 red_black_tree_print(const RedBlackTree *const restrict tree,

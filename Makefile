@@ -2044,6 +2044,8 @@ TARGETS			+= $(USORT_OBJ)					\
 TOKEN_REPLACE_SRC	:= $(call EXAMPLES_SOURCE_PATH,token_replace)
 TOKEN_REPLACE_OBJ	:= $(call OBJECT_PATH,token_replace)
 TOKEN_REPLACE_BIN	:= $(call BINARY_PATH,token_replace)
+TOKEN_REPLACE_RULES	:= $(call PATH_JOIN,$(EXAMPLES_DIR),token_replace_rules.csv)
+DEFAULT_RULES_PATH	:= $(call TRIM,"\"$(realpath $(TOKEN_REPLACE_RULES))\"")
 # ─────────────── target prequisites ───────────────────────────────────────────
 TOKEN_REPLACE_OBJ_PREQS	:= $(TOKEN_REPLACE_SRC)				\
 			   $(HMAP_HDR)					\
@@ -2523,4 +2525,4 @@ $(USORT_OBJ): $(USORT_OBJ_PREQS)
 $(TOKEN_REPLACE_BIN): $(TOKEN_REPLACE_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
 $(TOKEN_REPLACE_OBJ): $(TOKEN_REPLACE_OBJ_PREQS)
-	$(CC) $(CC_FLAGS) $< -o $@
+	$(CC) $(CC_FLAGS) -DDEFAULT_RULES_PATH=$(DEFAULT_RULES_PATH) $< -o $@

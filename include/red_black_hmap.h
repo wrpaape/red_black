@@ -170,23 +170,23 @@ red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
 
 int
 red_black_hmap_union(RedBlackHMap *const restrict union_map,
-		     const RedBlackHMap *const restrict map1,
-		     const RedBlackHMap *const restrict map2);
+		     const RedBlackHMap *const map1,
+		     const RedBlackHMap *const map2);
 
 int
 red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
-			    const RedBlackHMap *const restrict map1,
-			    const RedBlackHMap *const restrict map2);
+			    const RedBlackHMap *const map1,
+			    const RedBlackHMap *const map2);
 
 int
 red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
-			  const RedBlackHMap *const restrict map1,
-			  const RedBlackHMap *const restrict map2);
+			  const RedBlackHMap *const map1,
+			  const RedBlackHMap *const map2);
 
 int
 red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
-			      const RedBlackHMap *const restrict map1,
-			      const RedBlackHMap *const restrict map2);
+			      const RedBlackHMap *const map1,
+			      const RedBlackHMap *const map2);
 
 void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,

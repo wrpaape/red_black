@@ -1682,12 +1682,18 @@ rbhm_from_list(RedBlackHMap *const restrict map,
 #if 1
 int
 red_black_hmap_union(RedBlackHMap *const restrict union_map,
-		     const RedBlackHMap *const restrict map1,
-		     const RedBlackHMap *const restrict map2)
+		     const RedBlackHMap *const map1,
+		     const RedBlackHMap *const map2)
 {
 
 	const RedBlackHMap *restrict clone_map;
 	const RedBlackHMap *restrict insert_map;
+
+	if (map1 == map2)
+		return red_black_hmap_clone(union_map,
+					    map1)
+		     ? (int) union_map->count.entries
+		     : -1; /* RED_BLACK_MALLOC failure */
 
 	/* ensure larger of the two maps gets cloned first */
 	if (map1->count.entries < map2->count.entries) {
@@ -1703,14 +1709,14 @@ red_black_hmap_union(RedBlackHMap *const restrict union_map,
 					clone_map)
 		&& (red_black_hmap_insert_all(union_map,
 					      insert_map) >= 0))
-	     ? union_map->count.entries
+	     ? (int) union_map->count.entries
 	     : -1; /* RED_BLACK_MALLOC failure */
 }
 #else
 int
 red_black_hmap_union(RedBlackHMap *const restrict union_map,
-		     const RedBlackHMap *const restrict map1,
-		     const RedBlackHMap *const restrict map2)
+		     const RedBlackHMap *const map1,
+		     const RedBlackHMap *const map2)
 {
 	return 1;
 }
@@ -1719,8 +1725,8 @@ red_black_hmap_union(RedBlackHMap *const restrict union_map,
 
 int
 red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
-			    const RedBlackHMap *const restrict map1,
-			    const RedBlackHMap *const restrict map2)
+			    const RedBlackHMap *const map1,
+			    const RedBlackHMap *const map2)
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHItor walk_bucket_itor;
@@ -1736,6 +1742,12 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 	const struct RedBlackHKey *restrict hkey;
 	unsigned int count_find_buckets_m1;
 	unsigned int count_entries;
+
+	if (map1 == map2)
+		return red_black_hmap_clone(intersection_map,
+					    map1)
+		     ? (int) intersection_map->count.entries
+		     : -1; /* RED_BLACK_MALLOC failure */
 
 	/* init intersection factory
 	 * nodes will be allocated from here, joined into a list, and finally
@@ -1821,8 +1833,8 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 
 int
 red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
-			  const RedBlackHMap *const restrict map1,
-			  const RedBlackHMap *const restrict map2)
+			  const RedBlackHMap *const map1,
+			  const RedBlackHMap *const map2)
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHItor bucket_itor1;
@@ -1838,6 +1850,9 @@ red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
 	const struct RedBlackHKey *restrict hkey;
 	unsigned int count_buckets2_m1;
 	unsigned int count_entries;
+
+	if (map1 == map2) /* 0 if success, -1 if failure */
+		return 0 - ((int) !red_black_hmap_init(difference_map));
 
 	/* init difference factory
 	 * nodes will be allocated from here, joined into a list, and finally
@@ -1912,8 +1927,8 @@ red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
 
 int
 red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
-			      const RedBlackHMap *const restrict map1,
-			      const RedBlackHMap *const restrict map2)
+			      const RedBlackHMap *const map1,
+			      const RedBlackHMap *const map2)
 {
 	RedBlackJumpBuffer jump_buffer;
 	struct RedBlackHItor bucket_itor;
@@ -1931,6 +1946,9 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
 	unsigned int count_buckets1_m1;
 	unsigned int count_buckets2_m1;
 	unsigned int count_entries;
+
+	if (map1 == map2) /* 0 if success, -1 if failure */
+		return 0 - ((int) !red_black_hmap_init(sym_difference_map));
 
 	/* init sym_difference factory
 	 * nodes will be allocated from here, joined into a list, and finally

@@ -1,5 +1,8 @@
-if;while
-cursor;marker
-WRITE;READ
-READ;WRITE
-cursor_until;marker_until
+if,while
+while,if
+do,while (1)
+void,unsigned long long int
+break,return 0
+unsigned,static
+size_t,double
+sizeof,offsetof
