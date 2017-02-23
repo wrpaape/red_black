@@ -2039,22 +2039,20 @@ TARGETS			+= $(USORT_OBJ)					\
 			   $(USORT_BIN)
 
 
-# contacts
+# token_replace
 # ──────────────────────────────────────────────────────────────────────────────
-CONTACTS_SRC		:= $(call EXAMPLES_SOURCE_PATH,contacts)
-CONTACTS_OBJ		:= $(call OBJECT_PATH,contacts)
-CONTACTS_BIN		:= $(call BINARY_PATH,contacts)
+TOKEN_REPLACE_SRC	:= $(call EXAMPLES_SOURCE_PATH,token_replace)
+TOKEN_REPLACE_OBJ	:= $(call OBJECT_PATH,token_replace)
+TOKEN_REPLACE_BIN	:= $(call BINARY_PATH,token_replace)
 # ─────────────── target prequisites ───────────────────────────────────────────
-CONTACTS_OBJ_PREQS	:= $(CONTACTS_SRC)				\
-			   $(TREE_HDR)					\
-			   $(STR_KEY_HDR)				\
+TOKEN_REPLACE_OBJ_PREQS	:= $(TOKEN_REPLACE_SRC)				\
+			   $(HMAP_HDR)					\
 			   $(EXAMPLES_IO_HDR)
-CONTACTS_BIN_PREQS	:= $(CONTACTS_OBJ)				\
-			   $(STR_KEY_OBJ_GROUP)				\
-			   $(TREE_ST_LIB)
+TOKEN_REPLACE_BIN_PREQS	:= $(TOKEN_REPLACE_OBJ)				\
+			   $(HMAP_ST_LIB)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(CONTACTS_OBJ)				\
-			   $(CONTACTS_BIN)
+TARGETS			+= $(TOKEN_REPLACE_OBJ)				\
+			   $(TOKEN_REPLACE_BIN)
 
 
 
@@ -2522,7 +2520,7 @@ $(USORT_BIN): $(USORT_BIN_PREQS)
 $(USORT_OBJ): $(USORT_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
 
-$(CONTACTS_BIN): $(CONTACTS_BIN_PREQS)
+$(TOKEN_REPLACE_BIN): $(TOKEN_REPLACE_BIN_PREQS)
 	$(LD) $^ $(LD_LIBS) $(LD_FLAGS) $(LD_BIN_FLAGS) -o $@
-$(CONTACTS_OBJ): $(CONTACTS_OBJ_PREQS)
+$(TOKEN_REPLACE_OBJ): $(TOKEN_REPLACE_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@

@@ -1,7 +1,6 @@
 #ifndef RED_BLACK_EXAMPLES_IO_H_
 #define RED_BLACK_EXAMPLES_IO_H_
 
-
 /* external dependencies
  * ────────────────────────────────────────────────────────────────────────── */
 #include <sys/stat.h>		/* fstat */
@@ -90,3 +89,5 @@
 	fstat(FILE_DESCRIPTOR,						\
 	      BUFFER)
 #endif /* ifdef WIN32 */
+
+#endif /* ifndef RED_BLACK_EXAMPLES_IO_H_ */

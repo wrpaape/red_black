@@ -2,7 +2,8 @@
  * ────────────────────────────────────────────────────────────────────────── */
 #include "red_black_tree.h" /* RedBlackTree */
 #include "int_key.h"        /* int_key accessors */
-#include "examples_io.h"    /* WRITE/READ macros, stdlib (EXIT_ON_FAILURE) */
+#include "examples_io.h"    /* WRITE/READ macros */
+#include <stdlib.h>	    /* exit, EXIT_FAILURE|SUCCESS */
 #include <unistd.h>	    /* read, write, STDOUT|ERR_FILENO */
 #include <errno.h>	    /* errno */
 
@@ -19,6 +20,32 @@
 
 /* helpful macros
  * ────────────────────────────────────────────────────────────────────────── */
+#define EXIT_ON_FAILURE(LITERAL)					\
+do {									\
+	(void) WRITE(STDERR_FILENO,					\
+		     "\n" LITERAL "\n",					\
+		     sizeof(LITERAL) + 1);				\
+	exit(EXIT_FAILURE);						\
+} while (0)
+
+#define WRITE_STDOUT(BUFFER,						\
+		     SIZE)						\
+do {									\
+	if (WRITE(STDOUT_FILENO,					\
+		  BUFFER,						\
+		  (SIZE)) != (SIZE))					\
+		EXIT_ON_FAILURE("write failure");			\
+} while (0)
+
+#define WRITE_LITERAL(LITERAL)						\
+WRITE_STDOUT(LITERAL,							\
+	     sizeof(LITERAL) - 1)
+
+#define READ_INPUT(BUFFER)						\
+READ(STDIN_FILENO,							\
+     BUFFER,								\
+     sizeof(BUFFER) - 1)
+
 #define GET_CHAR(PROMPT,						\
 		 BUFFER)						\
 WRITE_LITERAL(PROMPT);							\
