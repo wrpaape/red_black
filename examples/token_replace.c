@@ -15,7 +15,8 @@
 #define XSTR(X) STR(X)
 #define IS_DIGIT(CHAR) (((CHAR) <= '9') && ((CHAR) >= '0'))
 
-#define DEBUG(...) (void) printf(__VA_ARGS__), (void) fflush(stdout)
+/* #define DEBUG(format, ...)						\ */
+/* (void) fprintf(stderr, "line %d -- " format, __LINE__, ##__VA_ARGS__), (void) fflush(stdout) */
 
 /* macro constants
  * ────────────────────────────────────────────────────────────────────────── */
@@ -48,8 +49,8 @@
 /* typedefs, struct declaractions
  * ────────────────────────────────────────────────────────────────────────── */
 struct Rule {
-	char token[MAX_LENGTH + 1];
-	char replacement[MAX_LENGTH + 1];
+	unsigned char token[MAX_LENGTH + 1];
+	unsigned char replacement[MAX_LENGTH + 1];
 };
 
 
@@ -65,7 +66,7 @@ static const bool token_char[UCHAR_MAX + 1] = {
 
 static RedBlackHMap rules_map;
 static struct Rule *restrict rules_buffer;
-static char *restrict rules_file_buffer;
+static unsigned char *restrict rules_file_buffer;
 
 
 /* reads rules file into 'rules_file_buffer' */
@@ -131,13 +132,13 @@ FAIL0:	(void) fprintf(stderr,
 /* counts number of valid rules, clears out invalid rules and prints a warning
  * to STDERR */
 static inline size_t
-scan_rules_file(char *restrict cursor,
-		const char *const restrict cursor_until)
+scan_rules_file(unsigned char *restrict cursor,
+		const unsigned char *const restrict cursor_until)
 {
 	unsigned int line_num;
 	size_t rule_count;
-	char *restrict rule_start;
-	char *restrict replacement_start;
+	unsigned char *restrict rule_start;
+	unsigned char *restrict replacement_start;
 	unsigned int next_char;
 
 #define WARN_BAD_RULE(FORMAT)						\
@@ -292,10 +293,10 @@ update_rules_map(const struct Rule *const restrict rule,
 	(void) fprintf(stderr,
 		       "overwriting old rule: %s -> %s\n"
 		       "with new rule:        %s -> %s\n",
-		       &old_rule->token[0],
-		       &old_rule->replacement[0],
-		       &rule->token[0],
-		       &rule->replacement[0]);
+		       (char *) &old_rule->token[0],
+		       (char *) &old_rule->replacement[0],
+		       (char *) &rule->token[0],
+		       (char *) &rule->replacement[0]);
 
 	return true;
 }
@@ -306,14 +307,14 @@ build_rules_map(const char *const restrict rules_path)
 {
 	size_t rules_file_size;
 	size_t rule_count;
-	const char *restrict rules_file_end;
+	const unsigned char *restrict rules_file_end;
+	const unsigned char *restrict cursor;
+	const unsigned char *restrict token_start;
+	unsigned char *restrict rule_cursor;
 	const char *restrict failure;
-	const char *restrict cursor;
-	const char *restrict token_start;
-	char *restrict rule_cursor;
 	struct Rule *restrict rule;
 	size_t length_token;
-	int next_char;
+	unsigned int next_char;
 
 	rules_file_size = read_rules_file(rules_path);
 	rules_file_end  = rules_file_buffer + rules_file_size;
@@ -344,7 +345,7 @@ build_rules_map(const char *const restrict rules_path)
 	while (1) {
 		/* skip bad rules */
 		while (1) {
-			next_char = (int) *cursor;
+			next_char = (unsigned int) *cursor;
 
 			if (next_char != '\0')
 				break;
@@ -364,7 +365,7 @@ build_rules_map(const char *const restrict rules_path)
 			*rule_cursor = next_char;
 
 			++cursor;
-			next_char = (int) *cursor;
+			next_char = (unsigned int) *cursor;
 
 			if (next_char == RULES_DELIM)
 				break;
@@ -388,7 +389,7 @@ build_rules_map(const char *const restrict rules_path)
 				return; /* map is built */
 			}
 
-			next_char = (int) *cursor;
+			next_char = (unsigned int) *cursor;
 
 			if (next_char == '\n')
 				break;
@@ -424,7 +425,7 @@ FAIL0:	free(rules_file_buffer);
 
 
 static inline bool
-copy_remainder(const char *restrict copy_from,
+copy_remainder(const unsigned char *restrict copy_from,
 	       const size_t copy_length,
 	       const char *restrict *const restrict failure)
 {
@@ -440,9 +441,9 @@ copy_remainder(const char *restrict copy_from,
 }
 
 static inline bool
-copy_through_token(const char *restrict copy_from,
-		   const char *restrict token,
-		   const char *restrict cursor,
+copy_through_token(const unsigned char *restrict copy_from,
+		   const unsigned char *restrict token,
+		   const unsigned char *restrict cursor,
 		   const char *restrict *const restrict failure)
 {
 	bool success;
@@ -474,7 +475,7 @@ copy_through_token(const char *restrict copy_from,
 		/* copy replacement */
 		copy_from = &rule->replacement[0];
 
-		copy_length = strlen(copy_from);
+		copy_length = strlen((char *) copy_from);
 
 	} else {
 		/* no rule for token, copy as is */
@@ -495,13 +496,13 @@ copy_through_token(const char *restrict copy_from,
 
 
 static inline bool
-process_line(const char *restrict cursor,
+process_line(const unsigned char *restrict cursor,
 	     const size_t length_line,
 	     const char *restrict *const restrict failure)
 {
-	const char *restrict token;
-	const char *restrict copy_from;
-	const char *restrict cursor_until;
+	const unsigned char *restrict token;
+	const unsigned char *restrict copy_from;
+	const unsigned char *restrict cursor_until;
 	unsigned int next_char;
 
 
@@ -573,7 +574,8 @@ replace_tokens(void)
 				      stdin);
 
 		if (line_length <= 0) {
-			if (line_length < 0) {
+			if (   (line_length < 0)
+			    && ferror(stdin)) {
 				failure = "getline";
 				break;
 			}
@@ -582,7 +584,7 @@ replace_tokens(void)
 			return EXIT_SUCCESS;
 		}
 
-	} while (process_line(line_buffer,
+	} while (process_line((const unsigned char *) line_buffer,
 			      (size_t) line_length,
 			      &failure));
 
