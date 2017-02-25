@@ -54,10 +54,16 @@ red_black_hmap_put(RedBlackHMap *const restrict map,
 		   const size_t length);
 
 int
-red_black_hmap_update(RedBlackHMap *const restrict map,
-		      const void *const key,
-		      const size_t length,
-		      void **const restrict old_ptr);
+red_black_hmap_update_set(RedBlackHMap *const restrict map,
+			  const void *const key,
+			  const size_t length,
+			  void **const restrict old_ptr);
+
+int
+red_black_hmap_update_get(RedBlackHMap *const restrict map,
+			  const void *const key,
+			  const size_t length,
+			  void **const restrict old_ptr);
 
 bool
 red_black_hmap_add(RedBlackHMap *const restrict map,

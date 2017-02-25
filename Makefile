@@ -386,28 +386,52 @@ TARGETS			+= $(PUT_OBJ)					\
 			   $(PUT_PIC_OBJ)
 
 
-# red_black_update
+# red_black_update_set
 # ──────────────────────────────────────────────────────────────────────────────
-UPDATE_SRC		:= $(call TREE_SOURCE_PATH,red_black_update)
-UPDATE_HDR		:= $(call TREE_HEADER_PATH,red_black_update)
-UPDATE_OBJ		:= $(call OBJECT_PATH,red_black_update)
-UPDATE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_update)
+UPDATE_SET_SRC			:= $(call TREE_SOURCE_PATH,red_black_update_set)
+UPDATE_SET_HDR			:= $(call TREE_HEADER_PATH,red_black_update_set)
+UPDATE_SET_OBJ			:= $(call OBJECT_PATH,red_black_update_set)
+UPDATE_SET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_update_set)
 # ─────────────── target prequisites ───────────────────────────────────────────
-UPDATE_OBJ_PREQS	:= $(UPDATE_SRC)				\
-			   $(UPDATE_HDR)				\
-			   $(COMPARATOR_HDR)				\
-			   $(NODE_FACTORY_HDR)				\
-			   $(CORRECT_HDR)
-UPDATE_OBJ_GROUP	:= $(UPDATE_OBJ)				\
-			   $(NODE_FACTORY_OBJ_GROUP)			\
-			   $(CORRECT_OBJ_GROUP)
-UPDATE_PIC_OBJ_PREQS	:= $(UPDATE_OBJ_PREQS)
-UPDATE_PIC_OBJ_GROUP	:= $(UPDATE_PIC_OBJ)				\
-			   $(NODE_FACTORY_PIC_OBJ_GROUP)		\
-			   $(CORRECT_PIC_OBJ_GROUP)
+UPDATE_SET_OBJ_PREQS		:= $(UPDATE_SET_SRC)			\
+			   	   $(UPDATE_SET_HDR)			\
+			   	   $(COMPARATOR_HDR)			\
+			   	   $(NODE_FACTORY_HDR)			\
+			   	   $(CORRECT_HDR)
+UPDATE_SET_OBJ_GROUP		:= $(UPDATE_SET_OBJ)			\
+			   	   $(NODE_FACTORY_OBJ_GROUP)		\
+			   	   $(CORRECT_OBJ_GROUP)
+UPDATE_SET_PIC_OBJ_PREQS	:= $(UPDATE_SET_OBJ_PREQS)
+UPDATE_SET_PIC_OBJ_GROUP	:= $(UPDATE_SET_PIC_OBJ)		\
+			   	   $(NODE_FACTORY_PIC_OBJ_GROUP)	\
+			   	   $(CORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(UPDATE_OBJ)				\
-			   $(UPDATE_PIC_OBJ)
+TARGETS				+= $(UPDATE_SET_OBJ)			\
+				   $(UPDATE_SET_PIC_OBJ)
+
+
+# red_black_update_get
+# ──────────────────────────────────────────────────────────────────────────────
+UPDATE_GET_SRC			:= $(call TREE_SOURCE_PATH,red_black_update_get)
+UPDATE_GET_HDR			:= $(call TREE_HEADER_PATH,red_black_update_get)
+UPDATE_GET_OBJ			:= $(call OBJECT_PATH,red_black_update_get)
+UPDATE_GET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_update_get)
+# ─────────────── target prequisites ───────────────────────────────────────────
+UPDATE_GET_OBJ_PREQS		:= $(UPDATE_GET_SRC)			\
+			   	   $(UPDATE_GET_HDR)			\
+			   	   $(COMPARATOR_HDR)			\
+			   	   $(NODE_FACTORY_HDR)			\
+			   	   $(CORRECT_HDR)
+UPDATE_GET_OBJ_GROUP		:= $(UPDATE_GET_OBJ)			\
+			   	   $(NODE_FACTORY_OBJ_GROUP)		\
+			   	   $(CORRECT_OBJ_GROUP)
+UPDATE_GET_PIC_OBJ_PREQS	:= $(UPDATE_GET_OBJ_PREQS)
+UPDATE_GET_PIC_OBJ_GROUP	:= $(UPDATE_GET_PIC_OBJ)		\
+			   	   $(NODE_FACTORY_PIC_OBJ_GROUP)	\
+			   	   $(CORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS				+= $(UPDATE_GET_OBJ)			\
+				   $(UPDATE_GET_PIC_OBJ)
 
 
 # red_black_add
@@ -820,7 +844,8 @@ TREE_OBJ_PREQS		:= $(TREE_SRC)					\
 		   	   $(PRINT_TYPES_HDR)				\
 		   	   $(INSERT_HDR)				\
 		   	   $(PUT_HDR)					\
-		   	   $(UPDATE_HDR)				\
+		   	   $(UPDATE_SET_HDR)				\
+		   	   $(UPDATE_GET_HDR)				\
 		   	   $(ADD_HDR)					\
 		   	   $(DELETE_HDR)				\
 		   	   $(REMOVE_HDR)				\
@@ -844,7 +869,8 @@ TREE_OBJ_GROUP		:= $(TREE_OBJ)					\
 			   $(ITOR_OBJ_GROUP)				\
 			   $(INSERT_OBJ_GROUP)				\
 			   $(PUT_OBJ_GROUP)				\
-			   $(UPDATE_OBJ_GROUP)				\
+			   $(UPDATE_SET_OBJ_GROUP)			\
+			   $(UPDATE_GET_OBJ_GROUP)			\
 			   $(ADD_OBJ_GROUP)				\
 			   $(DELETE_OBJ_GROUP)				\
 			   $(REMOVE_OBJ_GROUP)				\
@@ -869,7 +895,8 @@ TREE_PIC_OBJ_GROUP	:= $(TREE_PIC_OBJ)				\
 			   $(ITOR_PIC_OBJ_GROUP)			\
 			   $(INSERT_PIC_OBJ_GROUP)			\
 			   $(PUT_PIC_OBJ_GROUP)				\
-			   $(UPDATE_PIC_OBJ_GROUP)			\
+			   $(UPDATE_SET_PIC_OBJ_GROUP)			\
+			   $(UPDATE_GET_PIC_OBJ_GROUP)			\
 			   $(ADD_PIC_OBJ_GROUP)				\
 			   $(DELETE_PIC_OBJ_GROUP)			\
 			   $(REMOVE_PIC_OBJ_GROUP)			\
@@ -1031,29 +1058,54 @@ TARGETS			+= $(HPUT_OBJ)					\
 			   $(HPUT_PIC_OBJ)
 
 
-# red_black_hupdate
+# red_black_hupdate_set
 # ──────────────────────────────────────────────────────────────────────────────
-HUPDATE_SRC		:= $(call HMAP_SOURCE_PATH,red_black_hupdate)
-HUPDATE_HDR		:= $(call HMAP_HEADER_PATH,red_black_hupdate)
-HUPDATE_OBJ		:= $(call OBJECT_PATH,red_black_hupdate)
-HUPDATE_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hupdate)
+HUPDATE_SET_SRC			:= $(call HMAP_SOURCE_PATH,red_black_hupdate_set)
+HUPDATE_SET_HDR			:= $(call HMAP_HEADER_PATH,red_black_hupdate_set)
+HUPDATE_SET_OBJ			:= $(call OBJECT_PATH,red_black_hupdate_set)
+HUPDATE_SET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hupdate_set)
 # ─────────────── target prequisites ───────────────────────────────────────────
-HUPDATE_OBJ_PREQS	:= $(HUPDATE_SRC)				\
-			   $(HUPDATE_HDR)				\
-			   $(HNODE_FACTORY_HDR)				\
-			   $(HCORRECT_HDR)
-HUPDATE_OBJ_GROUP	:= $(HUPDATE_OBJ)				\
-			   $(HNODE_FACTORY_OBJ_GROUP)			\
-			   $(HKEY_OBJ_GROUP)				\
-			   $(HCORRECT_OBJ_GROUP)
-HUPDATE_PIC_OBJ_PREQS	:= $(HUPDATE_OBJ_PREQS)
-HUPDATE_PIC_OBJ_GROUP	:= $(HUPDATE_PIC_OBJ)				\
-			   $(HNODE_FACTORY_PIC_OBJ_GROUP)		\
-			   $(HKEY_PIC_OBJ_GROUP)			\
-			   $(HCORRECT_PIC_OBJ_GROUP)
+HUPDATE_SET_OBJ_PREQS		:= $(HUPDATE_SET_SRC)			\
+			   	   $(HUPDATE_SET_HDR)			\
+			   	   $(HNODE_FACTORY_HDR)			\
+			   	   $(HCORRECT_HDR)
+HUPDATE_SET_OBJ_GROUP		:= $(HUPDATE_SET_OBJ)			\
+			   	   $(HNODE_FACTORY_OBJ_GROUP)		\
+			   	   $(HKEY_OBJ_GROUP)			\
+			   	   $(HCORRECT_OBJ_GROUP)
+HUPDATE_SET_PIC_OBJ_PREQS	:= $(HUPDATE_SET_OBJ_PREQS)
+HUPDATE_SET_PIC_OBJ_GROUP	:= $(HUPDATE_SET_PIC_OBJ)		\
+			   	   $(HNODE_FACTORY_PIC_OBJ_GROUP)	\
+			   	   $(HKEY_PIC_OBJ_GROUP)		\
+			   	   $(HCORRECT_PIC_OBJ_GROUP)
 # ─────────────── targets ──────────────────────────────────────────────────────
-TARGETS			+= $(HUPDATE_OBJ)				\
-			   $(HUPDATE_PIC_OBJ)
+TARGETS				+= $(HUPDATE_SET_OBJ)			\
+				   $(HUPDATE_SET_PIC_OBJ)
+
+
+# red_black_hupdate_get
+# ──────────────────────────────────────────────────────────────────────────────
+HUPDATE_GET_SRC			:= $(call HMAP_SOURCE_PATH,red_black_hupdate_get)
+HUPDATE_GET_HDR			:= $(call HMAP_HEADER_PATH,red_black_hupdate_get)
+HUPDATE_GET_OBJ			:= $(call OBJECT_PATH,red_black_hupdate_get)
+HUPDATE_GET_PIC_OBJ		:= $(call PIC_OBJECT_PATH,red_black_hupdate_get)
+# ─────────────── target prequisites ───────────────────────────────────────────
+HUPDATE_GET_OBJ_PREQS		:= $(HUPDATE_GET_SRC)			\
+			   	   $(HUPDATE_GET_HDR)			\
+			   	   $(HNODE_FACTORY_HDR)			\
+			   	   $(HCORRECT_HDR)
+HUPDATE_GET_OBJ_GROUP		:= $(HUPDATE_GET_OBJ)			\
+			   	   $(HNODE_FACTORY_OBJ_GROUP)		\
+			   	   $(HKEY_OBJ_GROUP)			\
+			   	   $(HCORRECT_OBJ_GROUP)
+HUPDATE_GET_PIC_OBJ_PREQS	:= $(HUPDATE_GET_OBJ_PREQS)
+HUPDATE_GET_PIC_OBJ_GROUP	:= $(HUPDATE_GET_PIC_OBJ)		\
+			   	   $(HNODE_FACTORY_PIC_OBJ_GROUP)	\
+			   	   $(HKEY_PIC_OBJ_GROUP)		\
+			   	   $(HCORRECT_PIC_OBJ_GROUP)
+# ─────────────── targets ──────────────────────────────────────────────────────
+TARGETS				+= $(HUPDATE_GET_OBJ)			\
+				   $(HUPDATE_GET_PIC_OBJ)
 
 
 # red_black_hadd
@@ -1465,7 +1517,8 @@ HMAP_OBJ_PREQS		:= $(HMAP_SRC)					\
 		   	   $(HITOR_HDR)					\
 		   	   $(HINSERT_HDR)				\
 		   	   $(HPUT_HDR)					\
-		   	   $(HUPDATE_HDR)				\
+		   	   $(HUPDATE_SET_HDR)				\
+		   	   $(HUPDATE_GET_HDR)				\
 		   	   $(HADD_HDR)					\
 		   	   $(HDELETE_HDR)				\
 		   	   $(HREMOVE_HDR)				\
@@ -1488,7 +1541,8 @@ HMAP_OBJ_GROUP		:= $(HMAP_OBJ)					\
 			   $(HITOR_OBJ_GROUP)				\
 			   $(HINSERT_OBJ_GROUP)				\
 			   $(HPUT_OBJ_GROUP)				\
-			   $(HUPDATE_OBJ_GROUP)				\
+			   $(HUPDATE_SET_OBJ_GROUP)			\
+			   $(HUPDATE_GET_OBJ_GROUP)			\
 			   $(HADD_OBJ_GROUP)				\
 			   $(HDELETE_OBJ_GROUP)				\
 			   $(HREMOVE_OBJ_GROUP)				\
@@ -1511,7 +1565,8 @@ HMAP_PIC_OBJ_GROUP	:= $(HMAP_PIC_OBJ)				\
 			   $(HITOR_PIC_OBJ_GROUP)			\
 			   $(HINSERT_PIC_OBJ_GROUP)			\
 			   $(HPUT_PIC_OBJ_GROUP)			\
-			   $(HUPDATE_PIC_OBJ_GROUP)			\
+			   $(HUPDATE_SET_PIC_OBJ_GROUP)			\
+			   $(HUPDATE_GET_PIC_OBJ_GROUP)			\
 			   $(HADD_PIC_OBJ_GROUP)			\
 			   $(HDELETE_PIC_OBJ_GROUP)			\
 			   $(HREMOVE_PIC_OBJ_GROUP)			\
@@ -2108,9 +2163,14 @@ $(PUT_OBJ): $(PUT_OBJ_PREQS)
 $(PUT_PIC_OBJ): $(PUT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(UPDATE_OBJ): $(UPDATE_OBJ_PREQS)
+$(UPDATE_SET_OBJ): $(UPDATE_SET_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(UPDATE_PIC_OBJ): $(UPDATE_PIC_OBJ_PREQS)
+$(UPDATE_SET_PIC_OBJ): $(UPDATE_SET_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(UPDATE_GET_OBJ): $(UPDATE_GET_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(UPDATE_GET_PIC_OBJ): $(UPDATE_GET_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(ADD_OBJ): $(ADD_OBJ_PREQS)
@@ -2248,9 +2308,14 @@ $(HPUT_OBJ): $(HPUT_OBJ_PREQS)
 $(HPUT_PIC_OBJ): $(HPUT_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
-$(HUPDATE_OBJ): $(HUPDATE_OBJ_PREQS)
+$(HUPDATE_SET_OBJ): $(HUPDATE_SET_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $< -o $@
-$(HUPDATE_PIC_OBJ): $(HUPDATE_PIC_OBJ_PREQS)
+$(HUPDATE_SET_PIC_OBJ): $(HUPDATE_SET_PIC_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
+
+$(HUPDATE_GET_OBJ): $(HUPDATE_GET_OBJ_PREQS)
+	$(CC) $(CC_FLAGS) $< -o $@
+$(HUPDATE_GET_PIC_OBJ): $(HUPDATE_GET_PIC_OBJ_PREQS)
 	$(CC) $(CC_FLAGS) $(CC_PIC_FLAGS) $< -o $@
 
 $(HADD_OBJ): $(HADD_OBJ_PREQS)

@@ -1,25 +1,26 @@
-#include "red_black_tree.h"			/* Tree, TreeItor */
-#include "red_black_tree/red_black_insert.h"	/* red_black_insert */
-#include "red_black_tree/red_black_put.h"	/* red_black_put */
-#include "red_black_tree/red_black_update.h"	/* red_black_update */
-#include "red_black_tree/red_black_add.h"	/* red_black_add */
-#include "red_black_tree/red_black_delete.h"	/* red_black_delete */
-#include "red_black_tree/red_black_remove.h"	/* red_black_remove */
-#include "red_black_tree/red_black_drop.h"	/* red_black_drop */
-#include "red_black_tree/red_black_pluck.h"	/* red_black_pluck */
-#include "red_black_tree/red_black_find.h"	/* red_black_find */
-#include "red_black_tree/red_black_fetch.h"	/* red_black_fetch */
-#include "red_black_tree/red_black_replace.h"	/* red_black_replace */
-#include "red_black_tree/red_black_exchange.h"	/* red_black_exchange */
-#include "red_black_tree/red_black_get.h"	/* red_black_get */
-#include "red_black_tree/red_black_set.h"	/* red_black_set */
-#include "red_black_tree/red_black_swap.h"	/* red_black_swap */
-#include "red_black_tree/red_black_count.h"	/* red_black_count */
-#include "red_black_tree/red_black_copy.h"	/* red_black_copy */
-#include "red_black_tree/red_black_congruent.h" /* red_black_congruent */
-#include "red_black_tree/red_black_print.h"	/* red_black_print */
-#include "red_black_tree/red_black_verify.h"	/* red_black_verify */
-#include "red_black_tree/red_black_treeify.h"	/* red_black_treeify */
+#include "red_black_tree.h"			 /* Tree, TreeItor */
+#include "red_black_tree/red_black_insert.h"	 /* red_black_insert */
+#include "red_black_tree/red_black_put.h"	 /* red_black_put */
+#include "red_black_tree/red_black_update_set.h" /* red_black_update_set */
+#include "red_black_tree/red_black_update_get.h" /* red_black_update_get */
+#include "red_black_tree/red_black_add.h"	 /* red_black_add */
+#include "red_black_tree/red_black_delete.h"	 /* red_black_delete */
+#include "red_black_tree/red_black_remove.h"	 /* red_black_remove */
+#include "red_black_tree/red_black_drop.h"	 /* red_black_drop */
+#include "red_black_tree/red_black_pluck.h"	 /* red_black_pluck */
+#include "red_black_tree/red_black_find.h"	 /* red_black_find */
+#include "red_black_tree/red_black_fetch.h"	 /* red_black_fetch */
+#include "red_black_tree/red_black_replace.h"	 /* red_black_replace */
+#include "red_black_tree/red_black_exchange.h"	 /* red_black_exchange */
+#include "red_black_tree/red_black_get.h"	 /* red_black_get */
+#include "red_black_tree/red_black_set.h"	 /* red_black_set */
+#include "red_black_tree/red_black_swap.h"	 /* red_black_swap */
+#include "red_black_tree/red_black_count.h"	 /* red_black_count */
+#include "red_black_tree/red_black_copy.h"	 /* red_black_copy */
+#include "red_black_tree/red_black_congruent.h"  /* red_black_congruent */
+#include "red_black_tree/red_black_print.h"	 /* red_black_print */
+#include "red_black_tree/red_black_verify.h"	 /* red_black_verify */
+#include "red_black_tree/red_black_treeify.h"	 /* red_black_treeify */
 
 
 void
@@ -123,9 +124,9 @@ red_black_tree_put(RedBlackTree *const restrict tree,
 }
 
 int
-red_black_tree_update(RedBlackTree *const restrict tree,
-		      const void *const key,
-		      void **const restrict old_ptr)
+red_black_tree_update_set(RedBlackTree *const restrict tree,
+			  const void *const key,
+			  void **const restrict old_ptr)
 {
 	RedBlackJumpBuffer jump_buffer;
 	int status;
@@ -133,12 +134,32 @@ red_black_tree_update(RedBlackTree *const restrict tree,
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 
 	return (status == 0)
-	     ? red_black_update(&tree->root,
-				tree->comparator,
-				&tree->factory,
-				jump_buffer,
-				key,
-				old_ptr) /* 1, 0 */
+	     ? red_black_update_set(&tree->root,
+				    tree->comparator,
+				    &tree->factory,
+				    jump_buffer,
+				    key,
+				    old_ptr) /* 1, 0 */
+	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
+}
+
+int
+red_black_tree_update_get(RedBlackTree *const restrict tree,
+			  const void *const key,
+			  void **const restrict old_ptr)
+{
+	RedBlackJumpBuffer jump_buffer;
+	int status;
+
+	status = RED_BLACK_SET_JUMP(jump_buffer);
+
+	return (status == 0)
+	     ? red_black_update_get(&tree->root,
+				    tree->comparator,
+				    &tree->factory,
+				    jump_buffer,
+				    key,
+				    old_ptr) /* 1, 0 */
 	     : RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
 }
 

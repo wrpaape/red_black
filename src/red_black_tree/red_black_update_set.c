@@ -1,11 +1,11 @@
-#include "red_black_tree/red_black_update_get.h"  /* types, JUMP API */
+#include "red_black_tree/red_black_update_set.h"  /* types, JUMP API */
 #include "red_black_tree/red_black_correct.h"	  /* insertion correction */
 
 
 /* typedefs
  * ────────────────────────────────────────────────────────────────────────── */
 typedef bool
-(*RedBlackUpdateGetNode)(struct RedBlackNode *restrict *const restrict tree,
+(*RedBlackUpdateSetNode)(struct RedBlackNode *restrict *const restrict tree,
 			 struct RedBlackNode *const restrict grandparent,
 			 struct RedBlackNode *const restrict parent,
 			 const RedBlackComparator comparator,
@@ -19,7 +19,7 @@ typedef bool
  *
  * JUMPS
  *	RED_BLACK_JUMP_VALUE_3_TRUE	OK, successful insertion, old_ptr unset
- * 	RED_BLACK_JUMP_VALUE_3_FALSE	OK, no key swap, old_ptr is set
+ * 	RED_BLACK_JUMP_VALUE_3_FALSE	OK, successful key swap, old_ptr is set
  *	RED_BLACK_JUMP_VALUE_3_ERROR	OUT OF MEMORY, tree NOT updated
  *
  * RETURNS
@@ -27,7 +27,7 @@ typedef bool
  *	false	need to recolor parent in THIS frame, correct in PREV frame
  * ────────────────────────────────────────────────────────────────────────── */
 static bool
-rb_update_get_ll(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_ll(struct RedBlackNode *restrict *const restrict tree,
 		 struct RedBlackNode *const restrict grandparent,
 		 struct RedBlackNode *const restrict parent,
 		 const RedBlackComparator comparator,
@@ -36,7 +36,7 @@ rb_update_get_ll(struct RedBlackNode *restrict *const restrict tree,
 		 const void *const key,
 		 void **const restrict old_ptr);
 static bool
-rb_update_get_lr(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_lr(struct RedBlackNode *restrict *const restrict tree,
 		 struct RedBlackNode *const restrict grandparent,
 		 struct RedBlackNode *const restrict parent,
 		 const RedBlackComparator comparator,
@@ -45,7 +45,7 @@ rb_update_get_lr(struct RedBlackNode *restrict *const restrict tree,
 		 const void *const key,
 		 void **const restrict old_ptr);
 static bool
-rb_update_get_rr(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_rr(struct RedBlackNode *restrict *const restrict tree,
 		 struct RedBlackNode *const restrict grandparent,
 		 struct RedBlackNode *const restrict parent,
 		 const RedBlackComparator comparator,
@@ -54,7 +54,7 @@ rb_update_get_rr(struct RedBlackNode *restrict *const restrict tree,
 		 const void *const key,
 		 void **const restrict old_ptr);
 static bool
-rb_update_get_rl(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_rl(struct RedBlackNode *restrict *const restrict tree,
 		 struct RedBlackNode *const restrict grandparent,
 		 struct RedBlackNode *const restrict parent,
 		 const RedBlackComparator comparator,
@@ -65,7 +65,7 @@ rb_update_get_rl(struct RedBlackNode *restrict *const restrict tree,
 
 
 int
-red_black_update_get(struct RedBlackNode *restrict *const restrict tree,
+red_black_update_set(struct RedBlackNode *restrict *const restrict tree,
 		 const RedBlackComparator comparator,
 		 struct RedBlackNodeFactory *const restrict factory,
 		 RedBlackJumpBuffer jump_buffer,
@@ -74,7 +74,7 @@ red_black_update_get(struct RedBlackNode *restrict *const restrict tree,
 {
 	struct RedBlackNode *restrict parent;
 	const void *other_key;
-	RedBlackUpdateGetNode next_update_get;
+	RedBlackUpdateSetNode next_update_set;
 	int compare;
 	int status;
 
@@ -114,11 +114,11 @@ red_black_update_get(struct RedBlackNode *restrict *const restrict tree,
 				status = (compare != 0); /* 1, 0 */
 
 				if (status) {
-					next_update_get = (compare < 0)
-							? &rb_update_get_ll
-							: &rb_update_get_lr;
+					next_update_set = (compare < 0)
+							? &rb_update_set_ll
+							: &rb_update_set_lr;
 
-					(void) next_update_get(tree,
+					(void) next_update_set(tree,
 							       grandparent,
 							       parent,
 							       comparator,
@@ -129,7 +129,8 @@ red_black_update_get(struct RedBlackNode *restrict *const restrict tree,
 					/* if return, tree must have updated */
 
 				} else {
-					*old_ptr = (void *) other_key;
+					parent->key = key;
+					*old_ptr    = (void *) other_key;
 				}
 			}
 
@@ -151,11 +152,11 @@ red_black_update_get(struct RedBlackNode *restrict *const restrict tree,
 				status = (compare != 0); /* 1, 0 */
 
 				if (status) {
-					next_update_get = (compare < 0)
-							? &rb_update_get_rl
-							: &rb_update_get_rr;
+					next_update_set = (compare < 0)
+							? &rb_update_set_rl
+							: &rb_update_set_rr;
 
-					(void) next_update_get(tree,
+					(void) next_update_set(tree,
 							       grandparent,
 							       parent,
 							       comparator,
@@ -166,13 +167,15 @@ red_black_update_get(struct RedBlackNode *restrict *const restrict tree,
 					/* if return, tree must have updated */
 
 				} else {
-					*old_ptr = (void *) other_key;
+					parent->key = key;
+					*old_ptr    = (void *) other_key;
 				}
 			}
 		}
 
 	} else {
-		*old_ptr = (void *) other_key;
+		grandparent->key = key;
+		*old_ptr         = (void *) other_key;
 	}
 
 	return status;
@@ -181,7 +184,7 @@ red_black_update_get(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_update_get_ll(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_ll(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -193,7 +196,7 @@ rb_update_get_ll(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	const void *other_key;
-	RedBlackUpdateGetNode next_update_get;
+	RedBlackUpdateSetNode next_update_set;
 	struct RedBlackNode *restrict node;
 
 	node = parent->left;
@@ -219,16 +222,17 @@ rb_update_get_ll(struct RedBlackNode *restrict *const restrict tree,
 				     other_key);
 
 		if (compare == 0) {
-			*old_ptr = (void *) other_key;
+			node->key = key;
+			*old_ptr  = (void *) other_key;
 
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
 
-		next_update_get = (compare < 0)
-				? &rb_update_get_ll
-				: &rb_update_get_lr;
+		next_update_set = (compare < 0)
+				? &rb_update_set_ll
+				: &rb_update_set_lr;
 
-		status = next_update_get(&grandparent->left,
+		status = next_update_set(&grandparent->left,
 					 parent,
 					 node,
 					 comparator,
@@ -253,7 +257,7 @@ rb_update_get_ll(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_update_get_lr(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_lr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -265,7 +269,7 @@ rb_update_get_lr(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	const void *other_key;
-	RedBlackUpdateGetNode next_update_get;
+	RedBlackUpdateSetNode next_update_set;
 	struct RedBlackNode *restrict node;
 
 	node = parent->right;
@@ -294,16 +298,17 @@ rb_update_get_lr(struct RedBlackNode *restrict *const restrict tree,
 				     other_key);
 
 		if (compare == 0) {
-			*old_ptr = (void *) other_key;
+			node->key = key;
+			*old_ptr  = (void *) other_key;
 
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
 
-		next_update_get = (compare < 0)
-				? &rb_update_get_rl
-				: &rb_update_get_rr;
+		next_update_set = (compare < 0)
+				? &rb_update_set_rl
+				: &rb_update_set_rr;
 
-		status = next_update_get(&grandparent->left,
+		status = next_update_set(&grandparent->left,
 					 parent,
 					 node,
 					 comparator,
@@ -329,7 +334,7 @@ rb_update_get_lr(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_update_get_rr(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_rr(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -341,7 +346,7 @@ rb_update_get_rr(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	const void *other_key;
-	RedBlackUpdateGetNode next_update_get;
+	RedBlackUpdateSetNode next_update_set;
 	struct RedBlackNode *restrict node;
 
 	node = parent->right;
@@ -367,16 +372,17 @@ rb_update_get_rr(struct RedBlackNode *restrict *const restrict tree,
 				     other_key);
 
 		if (compare == 0) {
-			*old_ptr = (void *) other_key;
+			node->key = key;
+			*old_ptr  = (void *) other_key;
 
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
 
-		next_update_get = (compare < 0)
-				? &rb_update_get_rl
-				: &rb_update_get_rr;
+		next_update_set = (compare < 0)
+				? &rb_update_set_rl
+				: &rb_update_set_rr;
 
-		status = next_update_get(&grandparent->right,
+		status = next_update_set(&grandparent->right,
 					 parent,
 					 node,
 					 comparator,
@@ -401,7 +407,7 @@ rb_update_get_rr(struct RedBlackNode *restrict *const restrict tree,
 
 
 static bool
-rb_update_get_rl(struct RedBlackNode *restrict *const restrict tree,
+rb_update_set_rl(struct RedBlackNode *restrict *const restrict tree,
 	     struct RedBlackNode *const restrict grandparent,
 	     struct RedBlackNode *const restrict parent,
 	     const RedBlackComparator comparator,
@@ -413,7 +419,7 @@ rb_update_get_rl(struct RedBlackNode *restrict *const restrict tree,
 	bool status;
 	int compare;
 	const void *other_key;
-	RedBlackUpdateGetNode next_update_get;
+	RedBlackUpdateSetNode next_update_set;
 	struct RedBlackNode *restrict node;
 
 	node = parent->left;
@@ -442,16 +448,17 @@ rb_update_get_rl(struct RedBlackNode *restrict *const restrict tree,
 				     other_key);
 
 		if (compare == 0) {
-			*old_ptr = (void *) other_key;
+			node->key = key;
+			*old_ptr  = (void *) other_key;
 
 			RED_BLACK_JUMP_3_FALSE(jump_buffer); /* all done */
 		}
 
-		next_update_get = (compare < 0)
-				? &rb_update_get_ll
-				: &rb_update_get_lr;
+		next_update_set = (compare < 0)
+				? &rb_update_set_ll
+				: &rb_update_set_lr;
 
-		status = next_update_get(&grandparent->right,
+		status = next_update_set(&grandparent->right,
 					 parent,
 					 node,
 					 comparator,

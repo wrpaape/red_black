@@ -283,16 +283,16 @@ update_rules_map(const struct Rule *const restrict rule,
 	const struct Rule *restrict old_rule;
 	void *old_ptr;
 
-	status = red_black_hmap_update(&rules_map,
-				       rule,
-				       length_token,
-				       &old_ptr);
+	status = red_black_hmap_update_set(&rules_map,
+					   rule,
+					   length_token,
+					   &old_ptr);
 
 	if (status == 1)
 		return true;
 
 	if (status < 0) {
-		*failure = "red_black_hmap_update failure";
+		*failure = "red_black_hmap_update_set failure";
 		return false;
 	}
 

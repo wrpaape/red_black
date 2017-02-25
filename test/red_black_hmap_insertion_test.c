@@ -111,7 +111,7 @@ test_red_black_hmap_put(void)
 
 
 void
-test_red_black_hmap_update(void)
+test_red_black_hmap_update_set(void)
 {
 	int status;
 	int *restrict key;
@@ -121,10 +121,10 @@ test_red_black_hmap_update(void)
 	for (key = &keys[0]; key < keys_until; ++key) {
 		old_key_initial = old_key;
 
-		status = red_black_hmap_update(&hmap,
-					       (void *) key,
-					       sizeof(*key),
-					       &old_key);
+		status = red_black_hmap_update_set(&hmap,
+						   (void *) key,
+						   sizeof(*key),
+						   &old_key);
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
 					      status,
@@ -139,10 +139,56 @@ test_red_black_hmap_update(void)
 	verify_full_hmap();
 
 	for (key = &keys[0]; key < keys_until; ++key) {
-		status = red_black_hmap_update(&hmap,
-					       (void *) key,
-					       sizeof(*key),
-					       &old_key);
+		status = red_black_hmap_update_set(&hmap,
+						   (void *) key,
+						   sizeof(*key),
+						   &old_key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+					      status,
+					      "RE-INSERTED USED KEY (1)"
+					      " OR OUT OF MEMORY (-1)");
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(*key,
+					      *((int *) old_key),
+					      "OLD KEY DOES NOT MATCH");
+	}
+}
+
+
+void
+test_red_black_hmap_update_get(void)
+{
+	int status;
+	int *restrict key;
+	void *old_key = NULL;
+	void *old_key_initial;
+
+	for (key = &keys[0]; key < keys_until; ++key) {
+		old_key_initial = old_key;
+
+		status = red_black_hmap_update_get(&hmap,
+						   (void *) key,
+						   sizeof(*key),
+						   &old_key);
+
+		TEST_ASSERT_EQUAL_INT_MESSAGE(1,
+					      status,
+					      "INSERTED USED KEY (0)"
+					      " OR OUT OF MEMORY (-1)");
+
+		TEST_ASSERT_EQUAL_PTR_MESSAGE(old_key_initial,
+					      old_key,
+					      "VALUE OF OLD KEY CHANGED");
+	}
+
+	verify_full_hmap();
+
+	for (key = &keys[0]; key < keys_until; ++key) {
+		status = red_black_hmap_update_get(&hmap,
+						   (void *) key,
+						   sizeof(*key),
+						   &old_key);
 
 		TEST_ASSERT_EQUAL_INT_MESSAGE(0,
 					      status,

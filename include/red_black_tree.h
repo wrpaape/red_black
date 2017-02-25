@@ -47,9 +47,14 @@ red_black_tree_put(RedBlackTree *const restrict tree,
 		   const void *const key);
 
 int
-red_black_tree_update(RedBlackTree *const restrict tree,
-		      const void *const key,
-		      void **const restrict old_ptr);
+red_black_tree_update_set(RedBlackTree *const restrict tree,
+			  const void *const key,
+			  void **const restrict old_ptr);
+
+int
+red_black_tree_update_get(RedBlackTree *const restrict tree,
+			  const void *const key,
+			  void **const restrict old_ptr);
 
 bool
 red_black_tree_add(RedBlackTree *const restrict tree,
