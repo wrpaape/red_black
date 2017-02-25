@@ -117,7 +117,8 @@ rbhm_reset_buckets(struct RedBlackHNode *restrict *const restrict buckets,
 
 
 static inline int
-rbhm_expand(RedBlackHMap *const restrict map)
+rbhm_expand(RedBlackHMap *const restrict map,
+	    const int failure_status)
 {
 	const unsigned int old_count_m1      = map->count.buckets_m1;
 	const unsigned int old_expand_factor = map->expand_factor;
@@ -130,7 +131,7 @@ rbhm_expand(RedBlackHMap *const restrict map)
 			    sizeof(*new_buckets) * new_count);
 
 	if (new_buckets == NULL)
-		return -1; /* OUT OF MEMORY, old buckets still valid */
+		return failure_status; /* old buckets still valid */
 
 	const unsigned int new_count_m1 = new_count - 1;
 
@@ -282,7 +283,8 @@ red_black_hmap_insert(RedBlackHMap *const restrict map,
 
 	/* expand if too many collisions */
 	if (map->count.entries > map->count.max_capacity)
-		status = rbhm_expand(map); /* 1, -1 */
+		status = rbhm_expand(map,
+				     -1); /* 1, -1 */
 
 	return status; /* 1, 0, -1 */
 }
@@ -324,7 +326,8 @@ red_black_hmap_put(RedBlackHMap *const restrict map,
 
 	/* expand if too many collisions */
 	if (map->count.entries > map->count.max_capacity)
-		status = rbhm_expand(map); /* 1, -1 */
+		status = rbhm_expand(map,
+				     -1); /* 1, -1 */
 
 	return status; /* 1, 0, -1 */
 }
@@ -368,7 +371,8 @@ red_black_hmap_update_set(RedBlackHMap *const restrict map,
 
 	/* expand if too many collisions */
 	if (map->count.entries > map->count.max_capacity)
-		status = rbhm_expand(map); /* 1, -1 */
+		status = rbhm_expand(map,
+				     -1); /* 1, -1 */
 
 	return status;
 }
@@ -412,7 +416,8 @@ red_black_hmap_update_get(RedBlackHMap *const restrict map,
 
 	/* expand if too many collisions */
 	if (map->count.entries > map->count.max_capacity)
-		status = rbhm_expand(map); /* 1, -1 */
+		status = rbhm_expand(map,
+				     -1); /* 1, -1 */
 
 	return status;
 }
@@ -462,7 +467,10 @@ red_black_hmap_add(RedBlackHMap *const restrict map,
 	/* if returned, successful addition */
 	++(map->count.entries);
 
-	return true;
+	return (map->count.entries <= map->count.max_capacity)
+	    || ((bool) rbhm_expand(map,
+				   0));
+
 }
 
 
