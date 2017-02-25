@@ -175,6 +175,66 @@ test_red_black_tree_insert_all(void)
 
 
 void
+test_red_black_tree_put_all(void)
+{
+	bool status;
+	int count_inserted;
+	RedBlackTree tree;
+
+	init_tree(&tree);
+
+	count_inserted = red_black_tree_put_all(&tree,
+						&fizz);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(fizz_count,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	status = red_black_tree_similar(&tree,
+					&fizz);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "TREE NOT SIMILAR TO 'FIZZ' TREE");
+
+	count_inserted = red_black_tree_put_all(&tree,
+						&buzz);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(buzz_count - fizz_buzz_i_count,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	count_inserted = red_black_tree_put_all(&tree,
+						&fizz_buzz_i);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	count_inserted = red_black_tree_put_all(&tree,
+						&other);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(other_count,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	count_inserted = red_black_tree_put_all(&tree,
+						&all);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	status = red_black_tree_similar(&tree,
+					&all);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "TREE NOT SIMILAR TO 'ALL' TREE");
+
+	red_black_tree_destroy(&tree);
+}
+
+
+void
 test_red_black_tree_add_all(void)
 {
 	bool status;
