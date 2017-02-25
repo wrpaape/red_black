@@ -1725,40 +1725,6 @@ rbhm_from_list(RedBlackHMap *const restrict map,
 }
 
 
-#if 1
-int
-red_black_hmap_union(RedBlackHMap *const restrict union_map,
-		     const RedBlackHMap *const map1,
-		     const RedBlackHMap *const map2)
-{
-
-	const RedBlackHMap *restrict clone_map;
-	const RedBlackHMap *restrict insert_map;
-
-	if (map1 == map2)
-		return red_black_hmap_clone(union_map,
-					    map1)
-		     ? (int) union_map->count.entries
-		     : -1; /* RED_BLACK_MALLOC failure */
-
-	/* ensure larger of the two maps gets cloned first */
-	if (map1->count.entries < map2->count.entries) {
-		clone_map  = map2;
-		insert_map = map1;
-
-	} else {
-		clone_map  = map1;
-		insert_map = map2;
-	}
-
-	return (   red_black_hmap_clone(union_map,
-					clone_map)
-		&& (red_black_hmap_insert_all(union_map,
-					      insert_map) >= 0))
-	     ? (int) union_map->count.entries
-	     : -1; /* RED_BLACK_MALLOC failure */
-}
-#else
 int
 red_black_hmap_union(RedBlackHMap *const restrict union_map,
 		     const RedBlackHMap *const map1,
@@ -1898,7 +1864,6 @@ TRAVERSE_WALK_MAP:
 	}
 
 }
-#endif
 
 
 int
