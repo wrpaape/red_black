@@ -184,6 +184,66 @@ test_red_black_hmap_insert_all(void)
 
 
 void
+test_red_black_hmap_put_all(void)
+{
+	bool status;
+	int count_inserted;
+	RedBlackHMap hmap;
+
+	init_hmap(&hmap);
+
+	count_inserted = red_black_hmap_put_all(&hmap,
+						&fizz);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(fizz_count,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	status = red_black_hmap_similar(&hmap,
+					&fizz);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "HMAP NOT SIMILAR TO 'FIZZ' HMAP");
+
+	count_inserted = red_black_hmap_put_all(&hmap,
+						&buzz);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(buzz_count - fizz_buzz_i_count,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	count_inserted = red_black_hmap_put_all(&hmap,
+						&fizz_buzz_i);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	count_inserted = red_black_hmap_put_all(&hmap,
+						&other);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(other_count,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	count_inserted = red_black_hmap_put_all(&hmap,
+						&all);
+
+	TEST_ASSERT_EQUAL_INT_MESSAGE(0,
+				      count_inserted,
+				      "UNEXPECTED COUNT OR OUT OF MEMORY (-1)");
+
+	status = red_black_hmap_similar(&hmap,
+					&all);
+
+	TEST_ASSERT_TRUE_MESSAGE(status,
+				 "HMAP NOT SIMILAR TO 'ALL' HMAP");
+
+	red_black_hmap_destroy(&hmap);
+}
+
+
+void
 test_red_black_hmap_add_all(void)
 {
 	bool status;
