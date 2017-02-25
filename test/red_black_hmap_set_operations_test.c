@@ -443,6 +443,8 @@ test_red_black_hmap_intersection(void)
 
 	TEST_ASSERT_TRUE_MESSAGE(status,
 				 "HMAP NOT EMPTY");
+
+	red_black_hmap_destroy(&intersection_hmap);
 }
 
 
