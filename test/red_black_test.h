@@ -35,7 +35,7 @@
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 /* defines length of array of unique integer keys (must be >= 1) */
-#define KEYS_COUNT 10000000
+#define KEYS_COUNT 100000
 
 extern int keys[KEYS_COUNT];
 extern const int *const restrict keys_until;
