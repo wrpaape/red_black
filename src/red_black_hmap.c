@@ -1040,14 +1040,10 @@ red_black_hmap_intersect(const RedBlackHMap *const map1,
 	count_buckets2_m1 = map2->count.buckets_m1;
 
 	/* walk over smaller map, search in larger map */
-	if (map1->count.entries < map2->count.entries) {
-		walk_map = map1;
-		find_map = map2;
-
-	} else {
-		walk_map = map2;
-		find_map = map1;
-	}
+	if (map1->count.entries < map2->count.entries)
+		walk_map = map1, find_map = map2;
+	else
+		walk_map = map2, find_map = map1;
 
 	walk_bucket	 = walk_map->buckets;
 	last_walk_bucket = walk_bucket + walk_map->count.buckets_m1;
@@ -1175,11 +1171,10 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 
 	src_buckets	= src_map->buckets;
 	last_src_bucket	= src_buckets + src_map->count.buckets_m1;
+	src_bucket	= src_buckets;
 
 	red_black_hitor_init(&src_bucket_itor,
 			     *src_buckets);
-
-	src_bucket = src_buckets;
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 	status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
@@ -1302,11 +1297,10 @@ red_black_hmap_put_all(RedBlackHMap *const restrict dst_map,
 
 	src_buckets	= src_map->buckets;
 	last_src_bucket	= src_buckets + src_map->count.buckets_m1;
+	src_bucket	= src_buckets;
 
 	red_black_hitor_init(&src_bucket_itor,
 			     *src_buckets);
-
-	src_bucket = src_buckets;
 
 	status = RED_BLACK_SET_JUMP(jump_buffer);
 	status = RED_BLACK_JUMP_3_STATUS(status); /* 1, 0, -1 */
@@ -1317,9 +1311,9 @@ red_black_hmap_put_all(RedBlackHMap *const restrict dst_map,
 	while (1) {
 		dst_count_entries += status; /* 1, 0 */
 
+		/* check if need to expand */
 		if (dst_count_entries > dst_count_max_capacity) {
-			/* need to expand
-			 * load volatile state into registers */
+			/* load volatile state into registers */
 			old_dst_count_buckets_m1 = dst_count_buckets_m1;
 			old_dst_expand_factor    = dst_expand_factor;
 
@@ -1728,14 +1722,10 @@ red_black_hmap_union(RedBlackHMap *const restrict union_map,
 		     : -1; /* RED_BLACK_MALLOC failure */
 
 	/* ensure larger of the two maps gets cloned first */
-	if (map1->count.entries < map2->count.entries) {
-		clone_map  = map2;
-		insert_map = map1;
-
-	} else {
-		clone_map  = map1;
-		insert_map = map2;
-	}
+	if (map1->count.entries < map2->count.entries)
+		clone_map = map2, insert_map = map1;
+	else
+		clone_map = map1, insert_map = map2;
 
 	return (   red_black_hmap_clone(union_map,
 					clone_map)
@@ -1756,18 +1746,28 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 	RedBlackJumpBuffer allocate_jump_buffer;
 	RedBlackJumpBuffer add_jump_buffer;
 	struct RedBlackHItor walk_bucket_itor;
-	struct RedBlackHNode *const restrict *restrict walk_bucket;
+	struct RedBlackHNode *const restrict *restrict walk_buckets;
 	struct RedBlackHNode *const restrict *restrict last_walk_bucket;
+	struct RedBlackHNode *const restrict *volatile restrict walk_bucket;
 	struct RedBlackHNode *const restrict *restrict find_buckets;
+	unsigned int count_find_buckets_m1;
 	struct RedBlackHNode *restrict find_bucket_root;
-	struct RedBlackHNode *restrict node;
-	struct RedBlackHNode *restrict head;
-	struct RedBlackHNode *restrict *restrict end_ptr;
-	struct RedBlackHNodeFactory *restrict intersection_factory_ptr;
+	struct RedBlackHNodeFactory *restrict factory_ptr;
 	struct RedBlackHNodeFactoryBuffer *restrict factory_buffer_ptr;
 	const struct RedBlackHKey *restrict hkey;
-	unsigned int count_find_buckets_m1;
-	unsigned int count_entries;
+	RedBlackHash hash;
+	struct RedBlackHNode *restrict node;
+	struct RedBlackHNode *restrict *restrict bucket;
+	struct RedBlackHNode *restrict *restrict new_buckets;
+	struct RedBlackHNode *restrict *volatile restrict buckets;
+	volatile unsigned int count_buckets_m1;
+	volatile unsigned int count_entries;
+	volatile unsigned int count_max_capacity;
+	volatile unsigned int expand_factor;
+	unsigned int old_expand_factor;
+	unsigned int old_count_buckets_m1;
+	unsigned int new_count_buckets;
+	unsigned int new_count_buckets_m1;
 
 	if (map1 == map2)
 		return red_black_hmap_clone(intersection_map,
@@ -1775,42 +1775,51 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 		     ? (int) intersection_map->count.entries
 		     : -1; /* RED_BLACK_MALLOC failure */
 
-	/* init intersection factory
-	 * nodes will be allocated from here, joined into a list, and finally
-	 * dumped all at once into intersection_map to avoid intermediate
-	 * expansions */
-	intersection_factory_ptr = &intersection_map->factory;
+	/* allocate buckets */
+	new_buckets = RED_BLACK_CALLOC(RBHM_INIT_BUCKET_COUNT,
+				       sizeof(*new_buckets));
 
-	rbhnf_init(intersection_factory_ptr);
+	if (new_buckets == NULL)
+		return -1;
+
+	/* initialize volatile state */
+	buckets		   = new_buckets;
+	count_buckets_m1   = RBHM_INIT_BUCKET_COUNT - 1;
+	count_entries      = 0;
+	count_max_capacity = RBHM_INIT_MAX_CAPACITY;
+	expand_factor      = RBHM_INIT_EXPAND_FACTOR;
+
+	factory_ptr = &intersection_map->factory;
+
+	rbhnf_init(factory_ptr);
 
 	if (RED_BLACK_SET_JUMP(allocate_jump_buffer) != 0) {
-		rbhnf_destroy(intersection_factory_ptr);
-		return -1; /* RED_BLACK_MALLOC failure */
+		/* RED_BLACK_MALLOC failure */
+OUT_OF_MEMORY:	rbhnf_destroy(factory_ptr);
+		RED_BLACK_FREE((void *) buckets);
+		return -1;
 	}
 
-	factory_buffer_ptr = &intersection_factory_ptr->buffer;
+	factory_buffer_ptr = &factory_ptr->buffer;
 
 	/* ensure buckets being traversed have fewer entries */
-	if (map1->count.entries < map2->count.entries) {
-		walk_map = map1;
-		find_map = map2;
+	if (map1->count.entries < map2->count.entries)
+		walk_map = map1, find_map = map2;
+	else
+		walk_map = map2, find_map = map1;
 
-	} else {
-		walk_map = map2;
-		find_map = map1;
-	}
 
 	find_buckets	      = find_map->buckets;
 	count_find_buckets_m1 = find_map->count.buckets_m1;
 
-	walk_bucket	 = walk_map->buckets;
-	last_walk_bucket = walk_bucket + walk_map->count.buckets_m1;
+	walk_buckets	 = walk_map->buckets;
+	last_walk_bucket = walk_buckets + walk_map->count.buckets_m1;
+	walk_bucket      = walk_buckets;
 
 	red_black_hitor_init(&walk_bucket_itor,
-			     *walk_bucket);
+			     *walk_buckets);
 
-	end_ptr       = &head; /* first entry will set 'head' */
-	count_entries = 0;
+	(void) RED_BLACK_SET_JUMP(add_jump_buffer);
 
 	while (1) {
 		/* fetch next hkey */
@@ -1820,16 +1829,8 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 			if (hkey != NULL)
 				break;
 
-			if (walk_bucket == last_walk_bucket) {
-				/* done, terminate list and dump into
-				 * intersection_map */
-				*end_ptr = NULL;
-
-				return rbhm_from_list(intersection_map,
-						      head,
-						      count_entries,
-						      intersection_factory_ptr);
-			}
+			if (walk_bucket == last_walk_bucket)
+				goto DONE_SUCCESS; /* done, init rest of map */
 
 			++walk_bucket;
 
@@ -1838,22 +1839,72 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
 		}
 
 		/* fetch bucket */
-		find_bucket_root
-		= find_buckets[hkey->hash & count_find_buckets_m1];
+		hash = hkey->hash;
 
-		if (red_black_hfind(find_bucket_root,
-				    hkey)) {
-			/* intersection found, append node to list */
-			node = rbhnfb_allocate(factory_buffer_ptr,
-					       jump_buffer);
+		find_bucket_root = find_buckets[hash & count_find_buckets_m1];
 
-			*end_ptr   = node;
-			end_ptr    = &node->left;
-			node->hkey = *hkey;
+		if (!red_black_hfind(find_bucket_root,
+				     hkey))
+			continue; /* no intersection */
 
-			++count_entries;
+		/* intersection found */
+		++count_entries;
+
+		/* check if need to expand */
+		if (count_entries > count_max_capacity) {
+			/* load volatile state into registers */
+			old_count_buckets_m1 = count_buckets_m1;
+			old_expand_factor    = expand_factor;
+
+			/* calculate new count buckets */
+			new_count_buckets  = (old_count_buckets_m1 + 1)
+					  << old_expand_factor;
+
+			/* reallocate buckets buffer */
+			new_buckets = RED_BLACK_REALLOC((void *) buckets,
+							  sizeof(*new_buckets)
+							* new_count_buckets);
+
+			if (new_buckets == NULL)
+				goto OUT_OF_MEMORY; /* free everything */
+
+			new_count_buckets_m1 = new_count_buckets - 1;
+
+			rbhm_reset_buckets(new_buckets,
+					   old_count_buckets_m1,
+					   new_count_buckets_m1);
+
+			/* update volatile state */
+			buckets		     = new_buckets;
+			count_buckets_m1     = new_count_buckets_m1;
+			count_max_capacity <<= old_expand_factor;
+			expand_factor        = old_expand_factor
+					     + RBHM_EXPAND_FACTOR_INC;
 		}
+
+		node = rbhnfb_allocate(factory_buffer_ptr,
+				       allocate_jump_buffer);
+
+		node->hkey = *hkey; /* copy hkey */
+
+		/* fetch intersection_map bucket */
+		bucket = &buckets[hash & count_buckets_m1];
+
+		/* add to bucket tree, may jump */
+		red_black_hadd(bucket,
+			       add_jump_buffer,
+			       node);
 	}
+
+DONE_SUCCESS:
+	/* copy volatile state into intersection_map */
+	intersection_map->buckets	     = buckets;
+	intersection_map->count.buckets_m1   = count_buckets_m1;
+	intersection_map->count.entries	     = count_entries;
+	intersection_map->count.max_capacity = count_max_capacity;
+	intersection_map->expand_factor      = expand_factor;
+
+	return (int) count_entries;
 }
 
 
