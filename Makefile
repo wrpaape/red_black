@@ -178,10 +178,11 @@ SHARED_LIBRARY_PATH  	= $(call SHARED_LIBRARY_FILE_PATH,$(SHARED_LIBRARY_DIR),$1
 # Compiler
 # ──────────────────────────────────────────────────────────────────────────────
 CC		:= gcc
-CC_BASE_FLAGS	:= -std=gnu99 -march=native -Wall -Wno-unused-result
+CC_BASE_FLAGS	:= -std=c99 -march=native -Wall -Wno-unused-result
 CC_ENV_FLAGS	:= -D__USE_FIXED_PROTOTYPES__ $(SYS_ENV_FLAGS)
 CC_INC_FLAGS	:= -I$(HEADER_DIR) -I$(KEY_ACC_DIR)
-CC_FLAGS	:= $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS) -O2 -funroll-loops -c
+CC_OPT_FLAGS	:= -O2 -funroll-loops
+CC_FLAGS	:= $(CC_BASE_FLAGS) $(CC_ENV_FLAGS) $(CC_INC_FLAGS) $(CC_OPT_FLAGS) -c
 CC_PIC_FLAGS	:= -fpic
 
 # Archiver
@@ -215,10 +216,10 @@ endif
 # ──────────────────────────────────────────────────────────────────────────────
 ifeq (T,$(SYSTEM_WINDOWS))
 # 'clean' command may exceed 8192 character limit for windows
-        RM		:= cmd \/C del
-        RM_FLAGS	:= /F /Q
-        #RM		:= rm
-        #RM_FLAGS	:= -rf
+        # RM		:= cmd \/C del
+        # RM_FLAGS	:= /F /Q
+        RM		:= rm
+        RM_FLAGS	:= -rf
 else
         RM		:= rm
         RM_FLAGS	:= -rf
