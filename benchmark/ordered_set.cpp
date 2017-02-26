@@ -8,9 +8,7 @@ main(void)
 	int i;
 	int *key;
 
-	std::set<
-		int
-	> set;
+	std::set<int> set;
 
 	key = &keys[0];
 	i   = 0;

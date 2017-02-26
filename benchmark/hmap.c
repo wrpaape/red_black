@@ -1,4 +1,5 @@
 #include "red_black_hmap.h"
+#include <stdio.h>
 
 static int keys[KEYS_COUNT];
 
@@ -17,12 +18,15 @@ main(void)
 	do {
 		*key = i;
 
-		(void) red_black_hmap_add(&map,
-					  key,
-					  sizeof(*key));
+		(void) red_black_hmap_insert(&map,
+					     key,
+					     sizeof(*key));
+
 		++key;
 		++i;
 	} while (i < KEYS_COUNT);
+
+	red_black_hmap_destroy(&map);
 
 	return 0;
 }

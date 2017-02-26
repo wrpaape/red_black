@@ -8,9 +8,7 @@ main(void)
 	int i;
 	int *key;
 
-	std::unordered_set<
-		int
-	> set;
+	std::unordered_set<int> set;
 
 	key = &keys[0];
 	i   = 0;

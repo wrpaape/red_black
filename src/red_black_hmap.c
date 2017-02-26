@@ -30,7 +30,7 @@
 /* initial bucket count, MUST be power of 2 (and at LEAST 2) */
 #define RBHM_INIT_BUCKET_COUNT	8
 /* maximum average collision count per bucket without requiring expansion */
-#define RBHM_MAX_AVG_COLLISIONS 8
+#define RBHM_MAX_AVG_COLLISIONS 1
 /* initial (minimum) maximum capacity of entries before expansion is needed */
 #define RBHM_INIT_MAX_CAPACITY	(  RBHM_INIT_BUCKET_COUNT		\
 				 * RBHM_MAX_AVG_COLLISIONS)
@@ -1021,19 +1021,9 @@ red_black_hmap_intersect(const RedBlackHMap *const map1,
 	const struct RedBlackHNode *restrict find_bucket_root;
 	const struct RedBlackHKey *restrict hkey;
 	unsigned int count_find_buckets_m1;
-	struct RedBlackHNode *const restrict *restrict buckets1;
-	struct RedBlackHNode *const restrict *restrict buckets2;
-	unsigned int count_buckets1_m1;
-	unsigned int count_buckets2_m1;
 
 	if (map1 == map2)
 		return true; /* all maps intersect with themselves */
-
-	buckets1	  = map1->buckets;
-	count_buckets1_m1 = map1->count.buckets_m1;
-
-	buckets2	  = map2->buckets;
-	count_buckets2_m1 = map2->count.buckets_m1;
 
 	/* walk over smaller map, search in larger map */
 	if (map1->count.entries < map2->count.entries)

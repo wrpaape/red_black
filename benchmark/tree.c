@@ -13,11 +13,9 @@ compare_ints(const void *key1,
 	if (int1 < int2)
 		return -1;
 
-	if (int1 > int2)
-		return 1;
-
-	return 0;
+	return (int1 > int2);
 }
+
 
 int
 main(void)
@@ -35,11 +33,14 @@ main(void)
 	do {
 		*key = i;
 
-		(void) red_black_tree_add(&tree,
-					  (void *) (intptr_t) i);
+		(void) red_black_tree_insert(&tree,
+					     (void *) (intptr_t) i);
+
 		++key;
 		++i;
 	} while (i < KEYS_COUNT);
+
+	red_black_tree_destroy(&tree);
 
 	return 0;
 }

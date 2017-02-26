@@ -13,10 +13,7 @@ int_key_comparator(const void *key1,
 	if (int_key1 < int_key2)
 		return -1;
 
-	if (int_key1 > int_key2)
-		return  1;
-
-	return 0;
+	return (int_key1 > int_key2); /* 1, 0 */
 }
 
 static inline size_t

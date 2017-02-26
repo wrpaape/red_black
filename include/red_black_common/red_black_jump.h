@@ -11,9 +11,15 @@
 typedef jmp_buf RedBlackJumpBuffer;
 
 /* must return 0 on 1st entry, nonzero on jump */
-#define RED_BLACK_SET_JUMP(BUFFER)		setjmp(BUFFER)
-#define RED_BLACK_LONG_JUMP(BUFFER, STATUS)	longjmp(BUFFER, STATUS)
+#ifdef OSX
+	/* don't bother saving the signal mask */
+#	define RED_BLACK_SET_JUMP(BUFFER)		_setjmp(BUFFER)
+#	define RED_BLACK_LONG_JUMP(BUFFER, STATUS)	_longjmp(BUFFER, STATUS)
 
+#else
+#	define RED_BLACK_SET_JUMP(BUFFER)		setjmp(BUFFER)
+#	define RED_BLACK_LONG_JUMP(BUFFER, STATUS)	longjmp(BUFFER, STATUS)
+#endif /* ifdef OSX */
 
 /* status macros
  * map nonzero setjmp return values unconditionally to a domain including zero
