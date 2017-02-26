@@ -98,6 +98,7 @@ default:								\
 }									\
 BUFFER[SIZE_READ] = '\0'
 
+
 /* global variables
  * ────────────────────────────────────────────────────────────────────────── */
 static RedBlackTree tree;
@@ -160,7 +161,7 @@ do_find(const void *key)
 
 	ptr = &buffer[0];
 
-	*ptr = '\n'; ++ptr;
+	*ptr++ = '\n';
 
 	if (red_black_tree_find(&tree,
 				key)) {

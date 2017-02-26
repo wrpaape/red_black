@@ -191,7 +191,6 @@ red_black_hkey_init(struct RedBlackHKey *const restrict hkey,
 {
 	hkey->hash   = red_black_hkey_hash((const unsigned char *) key,
 					   length);
-
 	hkey->key    = (const unsigned char *) key;
 	hkey->length = length;
 }
