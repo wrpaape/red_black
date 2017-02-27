@@ -22,12 +22,11 @@ With proper preservation of these properties, the `RedBlackTree` and `RedBlackHM
 interfaces are able to provide the following operations:
 
 - insert
-- search
+- access
 - delete
-- (ordered) traversal  
-- shallow copy (clone)
-- set comparison
-- set construction
+- (ordered) traverse  
+- shallow copy
+- various set operations
 
 with competitive [worst-case performance guarantees](https://en.wikipedia.org/wiki/Worst-case_complexity).
 The red-black system of balance was chosen to provide greater
@@ -38,6 +37,7 @@ methods like (treap priority)[https://en.wikipedia.org/wiki/Treap#Description] o
 (splaying)[https://en.wikipedia.org/wiki/Splay_tree#Splaying].  
 `red_black` distinguishes itself from many other balanced tree/hash table-balanced tree hybrid implementations
 by preferring [finer casewise granularity](#implementation) over heavier abstraction throughout container accesses.
+
 
 
 
@@ -80,14 +80,15 @@ will delete all generated files.
 
 ##Usage
 1. [Build](#build) the `red_black` libraries
-2. If key order is required or memory is constrained, use a `RedBlackTree`.
-If key order is not required and memory can be spared for extra speed, use a `RedBlackHMap`.
+2. If key order is required or memory is constrained,
+use a [`RedBlackTree`](#redblacktree-usage).  
+If key order is not required and memory can be spared for extra speed,
+use a [`RedBlackHMap`](#redblackhmap-usage).
 
 
 ###RedBlackTree Usage
 1. Add `#include "red_black_tree.h"` to the top of your source file.  
-It's important that the file be included with no path prefix since it will be including
-other module headers by paths relative to the `include` directory.  
+The file must be included with no path prefix since it will be including other module headers by paths relative to the `include` directory.  
 2. Implement an ordered set or associative array with the provided [interface](#interface).  
 Keys are completely opaque to the `RedBlackTree` implementation.  
 Accordingly, a [`RedBlackComparator`](#redblackcomparator) must be provided at initialization
@@ -156,9 +157,222 @@ either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
 (i.e. `CPATH=path/to/include:$CPATH`).
 
 
+
 ###RedBlackHMap Usage
+1. Add `#include "red_black_hmap.h"` to the top of your source file.  
+The file must be included with no path prefix since it will be including other module headers by paths relative to the `include` directory.  
+2. Implement an unordered set or associative array with the provided [interface](#interface).  
+The `RedBlackHMap` aims to improve upon the "flatness" of the balanced `RedBlackTree` by scattering its keys into a large array of mini-trees.
+can be thought of as a [hash table](https://en.wikipedia.org/wiki/Hash_table) of red-black
 
 
+
+
+
+
+
+##Interface
+
+###Creation
+```
+void
+red_black_tree_init(RedBlackTree *const restrict tree,
+                    const RedBlackComparator comparator);
+
+bool
+red_black_hmap_init(RedBlackHMap *const restrict map);
+```
+
+###Destruction
+```
+void
+red_black_tree_destroy(RedBlackTree *const restrict tree);
+
+void
+red_black_hmap_destroy(RedBlackHMap *const restrict map);
+```
+
+###Insertion
+
+**insert**
+```
+int
+red_black_tree_insert(RedBlackTree *const restrict tree,
+                      const void *const key);
+
+int
+red_black_hmap_insert(RedBlackHMap *const restrict map,
+                      const void *const key,
+                      const size_t length);
+```
+
+**put**
+
+```
+int
+red_black_tree_put(RedBlackTree *const restrict tree,
+                   const void *const key);
+
+int
+red_black_hmap_put(RedBlackHMap *const restrict map,
+                   const void *const key,
+                   const size_t length);
+```
+
+**update**
+```
+int
+red_black_tree_update_set(RedBlackTree *const restrict tree,
+                          const void *const key,
+                          void **const restrict old_ptr);
+int
+red_black_tree_update_get(RedBlackTree *const restrict tree,
+                          const void *const key,
+                          void **const restrict old_ptr);
+
+int
+red_black_hmap_update_set(RedBlackHMap *const restrict map,
+                          const void *const key,
+                          const size_t length,
+                          void **const restrict old_ptr);
+int
+red_black_hmap_update_get(RedBlackHMap *const restrict map,
+                          const void *const key,
+                          const size_t length,
+                          void **const restrict old_ptr);
+```
+
+**add**
+```
+bool
+red_black_tree_add(RedBlackTree *const restrict tree,
+                   const void *const key);
+
+bool
+red_black_hmap_add(RedBlackHMap *const restrict map,
+                   const void *const key,
+                   const size_t length);
+```
+
+
+###Deletion
+**delete**
+```
+int
+red_black_tree_delete(RedBlackTree *const restrict tree,
+                      const void *const key);
+int
+red_black_tree_delete_min(RedBlackTree *const restrict tree);
+int
+red_black_tree_delete_max(RedBlackTree *const restrict tree);
+
+int
+red_black_hmap_delete(RedBlackHMap *const restrict map,
+                      const void *const key,
+                      const size_t length);
+```
+
+**drop**
+```
+void
+red_black_tree_drop(RedBlackTree *const restrict tree,
+                    const void *const key);
+void
+red_black_tree_drop_min(RedBlackTree *const restrict tree);
+void
+red_black_tree_drop_max(RedBlackTree *const restrict tree);
+
+void
+red_black_hmap_drop(RedBlackHMap *const restrict map,
+                    const void *const key,
+                    const size_t length);
+```
+
+**remove**
+```
+int
+red_black_tree_remove(RedBlackTree *const restrict tree,
+                      const void *const key,
+                      void **const restrict remove_ptr);
+int
+red_black_tree_remove_min(RedBlackTree *const restrict tree,
+                          void **const restrict remove_ptr);
+int
+red_black_tree_remove_max(RedBlackTree *const restrict tree,
+                          void **const restrict remove_ptr);
+
+int
+red_black_hmap_remove(RedBlackHMap *const restrict map,
+                      const void *const key,
+                      const size_t length,
+                      void **const restrict remove_ptr);
+```
+
+**pluck**
+```
+void *
+red_black_tree_pluck(RedBlackTree *const restrict tree,
+                     const void *const key);
+void *
+red_black_tree_pluck_min(RedBlackTree *const restrict tree);
+void *
+red_black_tree_pluck_max(RedBlackTree *const restrict tree);
+
+void *
+red_black_hmap_pluck(RedBlackHMap *const restrict map,
+                     const void *const key,
+                     const size_t length);
+```
+
+
+###Traversal
+
+**init**
+```
+void
+red_black_tree_asc_itor_init(RedBlackTreeItor *const restrict itor,
+                             const RedBlackTree *const restrict tree);
+void
+red_black_tree_desc_itor_init(RedBlackTreeItor *const restrict itor,
+                              const RedBlackTree *const restrict tree);
+
+void
+red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
+                         const RedBlackHMap *const restrict map);
+```
+
+**next**
+```
+bool
+red_black_tree_itor_next(RedBlackTreeItor *const restrict itor,
+                         void **const restrict key_ptr);
+
+bool
+red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
+                         void **const restrict key_ptr,
+                         size_t *const restrict length_ptr);
+```
+
+**reset**
+```
+void
+red_black_tree_itor_reset(RedBlackTreeItor *const restrict itor,
+                          const RedBlackTree *const restrict tree);
+
+void
+red_black_hmap_itor_reset(RedBlackHMapItor *const restrict itor,
+                          const RedBlackHMap *const restrict map);
+```
+
+
+###Random Access
+**find**
+
+###Clone
+
+###Set Queries
+
+###Set Construction
 
 
 ##Interface
