@@ -112,8 +112,9 @@ like so:
             .counter = 0
     };
     ...
-    red_black_tree_insert(&tree,
-                          *((void **) &mapping));
+    int status = red_black_tree_insert(&tree,
+                                       *((void **) &mapping));
+    assert(status >= 0);
     ```
 and not have to worry about their memory management. However, if I wanted to
 update the `counter` of a certain member `index`, the following would have no effect
@@ -129,7 +130,7 @@ on the stored key:
                              (void **) &fetched)) {
             /* key with `index` of 9001 exists in `tree` */
 
-            ++(fetched.counter); /* tree mapping not updated!, operates on copy */
+            ++(fetched.counter); /* tree mapping NOT updated!, operates on copy */
     }
     ```
 In order to properly update `tree`, I would have to follow up with a `put` and clobber
@@ -143,11 +144,9 @@ the old value:
             ++(fetched.counter); /* increment counter */
 
             /* insert into tree, overwriting old value */
-            if (red_black_tree_put(&tree,
-                                   *((void **) &fetched)) < 0) {
-                    /* OUT OF MEMORY! */
-                    ...
-            }
+            int status = red_black_tree_put(&tree,
+                                            *((void **) &fetched));
+            assert(status >= 0);
     }
     ```
 3. Compile your source code and link to either `static/libred_black_tree.{a,lib}`
@@ -161,9 +160,82 @@ either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
 ###RedBlackHMap Usage
 1. Add `#include "red_black_hmap.h"` to the top of your source file.  
 The file must be included with no path prefix since it will be including other module headers by paths relative to the `include` directory.  
-2. Implement an unordered set or associative array with the provided [interface](#interface).  
+2. Implement an unordered set or associative array with the provided
+[interface](#interface).  
+`RedBlackHMap` can be thought of as a
+[hash table](https://en.wikipedia.org/wiki/Hash_table) of `RedBlackTree`s.  
+Accesses are made by hashing input keys of arbitrary `length` to a fixed word,
+which is then used to locate the bucket tree where it should reside. Bucket trees
+are ordered by this hash word, falling back on an unsigned memory comparison
+in case of equal (colliding) values. This method of key organization imposes three
+restrictions on the application developer:
+    1. Keys **must** be input by their address and `length`.
+    2. Key addresses **must** reference valid memory if `length` is nonzero.  
+    Keys of zero `length` will emit identical hash values and will not be compared
+    by memory. Accordingly, keys of all addresses are considered equivalent to
+    `RedBlackHMap` if their `length` is zero, and only one zero-`length` key may reside
+    in the container at any time.
+    3. Keys **must** be bytewise-distinguishable.  
+    Keys of all types are handled as byte strings by `RedBlackHMap`. As a result,
+    care must be taken with `struct` keys with fields having different alignments.
+    Such `struct`s must be [packed](http://www.catb.org/esr/structure-packing/),
+    be cleared before having their fields set, or be passed in such a way that
+    for `length` bytes from the input address no padding will be encountered.  
+    The following snippet:
+    ```
+    #define NAME_LENGTH_MAX 20
+    #define SPECIES_CAT 0
+    ...
+    struct Pet {
+            char name[NAME_LENGTH_MAX + 1];
+            int species;
+    };
+    ...
+    struct Pet *charley_ptr = malloc(sizeof(*charley_ptr));
+    assert(charley_ptr != NULL);
+
+    /* insert Charley into set of 'Pet's */
+    (void) strcpy(&charley_ptr->name[0],
+                  "Charley");
+    charley_ptr->species = SPECIES_CAT;
+
+    int status = red_black_hmap_insert(&my_pets,
+                                       (void *) charley_ptr,
+                                       sizeof(*charley_ptr));
+    assert(status >= 0);
+
+    /* check if Charley is a member of 'my_pets' */
+    struct Pet charly = {
+            .name    = "Charley",
+            .species = SPECIES_CAT
+    };
+
+    if (red_black_hmap_find(&my_pets,
+                            (void *) &charley,
+                            sizeof(charley))) {
+         /* found Charley */
+         ...
+    }
+    ```
+    may exhibit unexpected behavior. The `name` field will not
+    always be completely filled for each `Pet` entry, and even if
+    all my pets had 20-character (plus one for `'\0'` terminator) names,
+    unused padding will still be added after the `name` field to ensure
+    that `species` begins on an address aligned to `sizeof(int)`. As such,
+    the `find` routine above may fail to retrieve "Charley" the cat from `my_pets`.  
+    The simple solution is to pass the string-length of entry `name`s
+    as key `length` if there is no need to distinguish `Pet` entries by `species`.
+    But if I needed to track "Charley" the frog as well I would need to swap the order
+    of my `Pet` fields and pass `sizeof(pet.species) + strlen(pet.name)` as key
+    `length` to avoid padding bytes, or just `memset(&pet, 0, sizeof(pet))` before
+    setting fields and pass `sizeof(pet)` as key `length`.
+
+
+
+As such, it relies on hashing input keys 
+
 The `RedBlackHMap` aims to improve upon the "flatness" of the balanced `RedBlackTree` by scattering its keys into a large array of mini-trees.
-can be thought of as a [hash table](https://en.wikipedia.org/wiki/Hash_table) of red-black
+can be thought of as a  of red-black
 
 
 
@@ -207,7 +279,8 @@ and not by copy in order to adequately handle data of all sizes.
 Hence, a solution to maintaining persistent keys might be to allocate them
 on the heap as they are inserted. If an application loses reference to
 such keys, their memory will be leaked when their container is destroyed
-unless a final [traversal](#traversal) is made to free them beforehand.
+unless a final
+[traversal](#traversal) is made to free them beforehand.
 
 
 ###Insertion
