@@ -22,22 +22,23 @@ With proper preservation of these properties, the `RedBlackTree` and `RedBlackHM
 interfaces are able to provide the following operations:
 
 - insert
-- access
+- random access
 - delete
 - (ordered) traverse  
 - shallow copy
 - various set operations
 
-with competitive [worst-case performance guarantees](https://en.wikipedia.org/wiki/Worst-case_complexity).
+with competitive
+[worst-case performance guarantees](https://en.wikipedia.org/wiki/Worst-case_complexity).
 The red-black system of balance was chosen to provide greater
 responsiveness to mutations than more rigid constructs, such as
-(AVL balance factor)[https://en.wikipedia.org/wiki/AVL_tree#Balance_factor],
+[AVL balance factor](https://en.wikipedia.org/wiki/AVL_tree#Balance_factor),
 without compromising a *guaranteed* logarithmic height, as is often the case with simpler
-methods like (treap priority)[https://en.wikipedia.org/wiki/Treap#Description] or
-(splaying)[https://en.wikipedia.org/wiki/Splay_tree#Splaying].  
-`red_black` distinguishes itself from many other balanced tree/hash table-balanced tree hybrid implementations
-by preferring [finer casewise granularity](#implementation) over heavier abstraction throughout container accesses.
-
+methods like [treap priority](https://en.wikipedia.org/wiki/Treap#Description) or
+[splaying](https://en.wikipedia.org/wiki/Splay_tree#Splaying).  
+`red_black` distinguishes itself from many other balanced tree/hash table-balanced tree
+hybrid implementations by preferring [finer casewise granularity](#implementation)
+over heavier abstraction throughout container accesses.
 
 
 
@@ -89,7 +90,7 @@ use a [`RedBlackHMap`](#redblackhmap-usage).
 ###RedBlackTree Usage
 1. Add `#include "red_black_tree.h"` to the top of your source file.  
 The file must be included with no path prefix since it will be including other module headers by paths relative to the `include` directory.  
-2. Implement an ordered set or associative array with the provided [interface](#interface).  
+2. Implement an ordered set, associative array, or poor man's priority queue with the provided [interface](#interface).  
 Keys are completely opaque to the `RedBlackTree` implementation.  
 Accordingly, a [`RedBlackComparator`](#redblackcomparator) must be provided at initialization
 to determine ordering.  
@@ -223,8 +224,7 @@ restrictions on the application developer:
     unused padding will still be added after the `name` field to ensure
     that `species` begins on an address aligned to `sizeof(int)`. As such,
     the `find` routine above may fail to retrieve "Charley" the cat from `my_pets`.  
-    The simple solution is to pass the string-length of entry `name`s
-    as key `length` if there is no need to distinguish `Pet` entries by `species`.
+    If there is no need to distinguish `Pet` entries by `species`, the simple solution is to pass the string length of entry `name`s as their key `length`.
     But if I needed to track "Charley" the frog as well I would need to swap the order
     of my `Pet` fields and pass `sizeof(pet.species) + strlen(pet.name)` as key
     `length` to avoid padding bytes, or just `memset(&pet, 0, sizeof(pet))` before
@@ -244,6 +244,16 @@ can be thought of as a  of red-black
 
 
 ##Interface
+- [Creation](#creation)
+- [Destruction](#destruction)
+- [Insertion](#insertion)
+- [Deletion](#deletion)
+- [Traversal](#traversal)
+- [Random Access](#random-access)
+- [Inspection](#inspection)
+- [Set Comparison](#set-comparison)
+- [Set Building Operations](#set-building-operations)
+
 
 ###Creation
 **init**
@@ -284,7 +294,6 @@ unless a final
 
 
 ###Insertion
-
 **insert**
 ```
 int
@@ -417,7 +426,6 @@ red_black_hmap_pluck(RedBlackHMap *const restrict map,
 
 
 ###Traversal
-
 **init**
 ```
 void
@@ -542,6 +550,44 @@ red_black_hmap_set(const RedBlackHMap *const restrict map,
 ```
 
 **exchange**
+```
+bool
+red_black_tree_exchange(const RedBlackTree *const restrict tree,
+                        const void *const key,
+                        void **const restrict old_ptr);
+bool
+red_black_tree_exchange_min(const RedBlackTree *const restrict tree,
+                            const void *const key,
+                            void **const restrict old_ptr);
+bool
+red_black_tree_exchange_max(const RedBlackTree *const restrict tree,
+                            const void *const key,
+                            void **const restrict old_ptr);
+
+bool
+red_black_hmap_exchange(const RedBlackHMap *const restrict map,
+                        const void *const key,
+                        const size_t length,
+                        void **const restrict old_ptr);
+```
+
+**swap**
+```
+void *
+red_black_tree_swap(const RedBlackTree *const restrict tree,
+                    const void *const key);
+void *
+red_black_tree_swap_min(const RedBlackTree *const restrict tree,
+                        const void *const key);
+void *
+red_black_tree_swap_max(const RedBlackTree *const restrict tree,
+                        const void *const key);
+
+void *
+red_black_hmap_swap(const RedBlackHMap *const restrict map,
+                    const void *const key,
+                    const size_t length);
+```
 
 
 ###Clone
@@ -557,9 +603,188 @@ red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
 ```
 
 
-###Query
+###Inspection
+**empty**
+```
+bool
+red_black_tree_empty(const RedBlackTree *const restrict tree);
 
-###Set Construction
+bool
+red_black_hmap_empty(const RedBlackHMap *const restrict map);
+```
+
+**count**
+```
+unsigned int
+red_black_tree_count(const RedBlackTree *const restrict tree);
+
+unsigned int
+red_black_hmap_count(const RedBlackHMap *const restrict map);
+```
+
+**verify**
+```
+bool
+red_black_tree_verify(const RedBlackTree *const restrict tree);
+
+bool
+red_black_hmap_verify(const RedBlackHMap *const restrict map);
+```
+
+
+###Set Comparison
+**similar**
+```
+bool
+red_black_tree_similar(const RedBlackTree *const tree1,
+                       const RedBlackTree *const tree2);
+
+bool
+red_black_hmap_similar(const RedBlackHMap *const map1,
+                       const RedBlackHMap *const map2);
+```
+
+**congruent**
+```
+bool
+red_black_tree_congruent(const RedBlackTree *const tree1,
+                         const RedBlackTree *const tree2);
+
+bool
+red_black_hmap_congruent(const RedBlackHMap *const map1,
+                         const RedBlackHMap *const map2);
+```
+
+**intersect**
+```
+bool
+red_black_tree_intersect(const RedBlackTree *const tree1,
+                         const RedBlackTree *const tree2);
+
+bool
+red_black_hmap_intersect(const RedBlackHMap *const map1,
+                         const RedBlackHMap *const map2);
+```
+
+**subset**
+```
+bool
+red_black_tree_subset(const RedBlackTree *const tree1,
+                      const RedBlackTree *const tree2);
+
+bool
+red_black_hmap_subset(const RedBlackHMap *const map1,
+                      const RedBlackHMap *const map2);
+```
+
+
+###Set Building Operations
+**insert_all**
+```
+int
+red_black_tree_insert_all(RedBlackTree *const restrict dst_tree,
+                          const RedBlackTree *const restrict src_tree);
+
+int
+red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
+                          const RedBlackHMap *const restrict src_map);
+```
+
+**put_all**
+```
+int
+red_black_tree_put_all(RedBlackTree *const restrict dst_tree,
+                       const RedBlackTree *const restrict src_tree);
+
+int
+red_black_hmap_put_all(RedBlackHMap *const restrict dst_map,
+                       const RedBlackHMap *const restrict src_map);
+```
+
+**add_all**
+```
+bool
+red_black_tree_add_all(RedBlackTree *const restrict dst_tree,
+                       const RedBlackTree *const restrict src_tree);
+
+bool
+red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
+                       const RedBlackHMap *const restrict src_map);
+```
+
+**delete_all**
+```
+int
+red_black_tree_delete_all(RedBlackTree *const restrict dst_tree,
+                          const RedBlackTree *const restrict src_tree);
+
+int
+red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
+                          const RedBlackHMap *const restrict src_map);
+```
+
+**drop_all**
+```
+void
+red_black_tree_drop_all(RedBlackTree *const restrict dst_tree,
+                        const RedBlackTree *const restrict src_tree);
+
+void
+red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
+                        const RedBlackHMap *const restrict src_map);
+```
+
+**union**
+```
+int
+red_black_tree_union(RedBlackTree *const restrict union_tree,
+                     const RedBlackTree *const tree1,
+                     const RedBlackTree *const tree2);
+
+int
+red_black_hmap_union(RedBlackHMap *const restrict union_map,
+                     const RedBlackHMap *const map1,
+                     const RedBlackHMap *const map2);
+```
+
+**intersection**
+```
+int
+red_black_tree_intersection(RedBlackTree *const restrict intersection_tree,
+                            const RedBlackTree *const tree1,
+                            const RedBlackTree *const tree2);
+
+int
+red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
+                            const RedBlackHMap *const map1,
+                            const RedBlackHMap *const map2);
+```
+
+**difference**
+```
+int
+red_black_tree_difference(RedBlackTree *const restrict difference_tree,
+                          const RedBlackTree *const tree1,
+                          const RedBlackTree *const tree2);
+
+int
+red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
+                          const RedBlackHMap *const map1,
+                          const RedBlackHMap *const map2);
+```
+
+**sym_difference**
+```
+int
+red_black_tree_sym_difference(RedBlackTree *const restrict sym_difference_tree,
+                              const RedBlackTree *const tree1,
+                              const RedBlackTree *const tree2);
+
+int
+red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
+                              const RedBlackHMap *const map1,
+                              const RedBlackHMap *const map2);
+```
 
 
 ##Interface
