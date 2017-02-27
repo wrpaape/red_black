@@ -83,23 +83,80 @@ will delete all generated files.
 2. If key order is required or memory is constrained, use a `RedBlackTree`.
 If key order is not required and memory can be spared for extra speed, use a `RedBlackHMap`.
 
+
 ###RedBlackTree Usage
-1. Add
-```
-#include "red_black_tree.h"
-```
-to the top of your source file.  
+1. Add `#include "red_black_tree.h"` to the top of your source file.
 It's important that the file be included with no path prefix since it will be including
-other module headers by paths relative to the `include` directory.
-2. implement an ordered set or associative array with the provided [interface](#interface).
+other module headers by paths relative to the `include` directory.  
+2. Implement an ordered set or associative array with the provided [interface](#interface).
 Keys are completely opaque to the `RedBlackTree` implementation.  
 Accordingly, a [`RedBlackComparator`](#redblackcomparator) must be provided at initialization
 to determine ordering.  
 Internally keys are stored as `const void *`.  
 As a consequence, keys requiring more than `sizeof(void *)` bytes of storage must be
-accessable by pointer, and their memory must be managed externally.
+accessable by pointer, and their memory must be managed externally. The same goes for keys
+where a access via an `update` or `get` might be useful, as only a *copy* of the actual
+stored key will be provided.  
+For instance, if the `sizeof(int)` on my machine is 4 bytes, and the `sizeof(void *)` is
+at least 8 bytes, then I could store key-value pairs of `int`s directly in my `RedBlackTree`
+like so:
+```
+struct KeyValue {
+        int index;
+        int counter;
+};
+...
+struct KeyValue mapping = {
+        .index   = 9001,
+        .counter = 0
+};
+...
+red_black_tree_insert(&tree,
+                      *((void **) &mapping));
+```
+and not have to worry about their memory management. However, if I wanted to
+update the `counter` of a certain member `index`, the following would have no effect
+on the stored key:
+```
+struct KeyValue mapping;
+struct KeyValue fetched;
+...
+mapping.index = 9001;
+...
+if (red_black_tree_fetch(&tree,
+                         *((void **) &mapping),
+                         (void **) &fetched)) {
+        /* key with `index` of 9001 exists in `tree` */
 
-4. compile and link with either static or shared `red_black_tree` library
+        ++(fetched.counter); /* tree mapping not updated!, operates on copy */
+}
+```
+In order to properly update `tree`, I would have to follow up with a `put` and clobber
+the old value:
+```
+if (red_black_tree_fetch(&tree,
+                         *((void **) &mapping),
+                         (void **) &fetched)) {
+        /* key with `index` of 9001 exists in `tree` */
+
+        ++(fetched.counter); /* increment counter */
+
+        /* insert into tree, overwriting old value */
+        if (red_black_tree_put(&tree,
+                               *((void **) &fetched)) < 0) {
+                /* OUT OF MEMORY! */
+                ...
+        }
+}
+```
+3. Compile your source code and link to either `static/libred_black_tree.{a,lib}`
+or `shared/libred_black_tree.{so,dylib,dll}`.  
+Remember to add the `include` directory to your preprocessor's search path
+either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
+(i.e. `CPATH=path/to/include:$CPATH`).
+
+
+###RedBlackHMap Usage
 
 
 
