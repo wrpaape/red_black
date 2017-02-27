@@ -174,6 +174,7 @@ can be thought of as a [hash table](https://en.wikipedia.org/wiki/Hash_table) of
 ##Interface
 
 ###Creation
+**init**
 ```
 void
 red_black_tree_init(RedBlackTree *const restrict tree,
@@ -182,8 +183,17 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 bool
 red_black_hmap_init(RedBlackHMap *const restrict map);
 ```
+initialize an empty `red_black` container  
+`red_black_tree_init` requires a key comparator
+(see [`RedBlackComparator`](#redblackcomparator)) to determine ordering
+and performs no heap allocations, so it need not be [destroyed](#destruction) until
+the first successful [insertion](#insertion) is made. `red_black_hmap_init` will
+need to allocate an array of empty buckets, and so has an opportunity to fail --
+a return value of `true` indicates success, `false` indicates failure.
+
 
 ###Destruction
+**destroy**
 ```
 void
 red_black_tree_destroy(RedBlackTree *const restrict tree);
@@ -191,6 +201,14 @@ red_black_tree_destroy(RedBlackTree *const restrict tree);
 void
 red_black_hmap_destroy(RedBlackHMap *const restrict map);
 ```
+free all internal allocations  
+`RedBlackTree` can and `RedBlackHMap` must store its keys by address
+and not by copy in order to adequately handle data of all sizes.
+Hence, a solution to maintaining persistent keys might be to allocate them
+on the heap as they are inserted. If an application loses reference to
+such keys, their memory will be leaked when their container is destroyed
+unless a final [traversal](#traversal) is made to free them beforehand.
+
 
 ###Insertion
 
@@ -204,6 +222,18 @@ int
 red_black_hmap_insert(RedBlackHMap *const restrict map,
                       const void *const key,
                       const size_t length);
+```
+
+**add**
+```
+bool
+red_black_tree_add(RedBlackTree *const restrict tree,
+                   const void *const key);
+
+bool
+red_black_hmap_add(RedBlackHMap *const restrict map,
+                   const void *const key,
+                   const size_t length);
 ```
 
 **put**
@@ -240,18 +270,6 @@ red_black_hmap_update_get(RedBlackHMap *const restrict map,
                           const void *const key,
                           const size_t length,
                           void **const restrict old_ptr);
-```
-
-**add**
-```
-bool
-red_black_tree_add(RedBlackTree *const restrict tree,
-                   const void *const key);
-
-bool
-red_black_hmap_add(RedBlackHMap *const restrict map,
-                   const void *const key,
-                   const size_t length);
 ```
 
 
@@ -367,10 +385,106 @@ red_black_hmap_itor_reset(RedBlackHMapItor *const restrict itor,
 
 ###Random Access
 **find**
+```
+bool
+red_black_tree_find(const RedBlackTree *const restrict tree,
+                    const void *const key);
+
+bool
+red_black_hmap_find(const RedBlackHMap *const restrict map,
+                    const void *const key,
+                    const size_t length);
+```
+
+**fetch**
+```
+bool
+red_black_tree_fetch(const RedBlackTree *const restrict tree,
+                     const void *const key,
+                     void **const restrict fetch_ptr);
+bool
+red_black_tree_fetch_min(const RedBlackTree *const restrict tree,
+                         void **const restrict fetch_ptr);
+bool
+red_black_tree_fetch_max(const RedBlackTree *const restrict tree,
+                         void **const restrict fetch_ptr);
+
+bool
+red_black_hmap_fetch(const RedBlackHMap *const restrict map,
+                     const void *const key,
+                     const size_t length,
+                     void **const restrict fetch_ptr);
+```
+
+**get**
+```
+void *
+red_black_tree_get(const RedBlackTree *const restrict tree,
+                   const void *const key);
+void *
+red_black_tree_get_min(const RedBlackTree *const restrict tree);
+void *
+red_black_tree_get_max(const RedBlackTree *const restrict tree);
+
+void *
+red_black_hmap_get(const RedBlackHMap *const restrict map,
+                   const void *const key,
+                   const size_t length);
+```
+
+**replace**
+```
+bool
+red_black_tree_replace(const RedBlackTree *const restrict tree,
+                       const void *const key);
+bool
+red_black_tree_replace_min(const RedBlackTree *const restrict tree,
+                           const void *const key);
+bool
+red_black_tree_replace_max(const RedBlackTree *const restrict tree,
+                           const void *const key);
+
+bool
+red_black_hmap_replace(const RedBlackHMap *const restrict map,
+                       const void *const key,
+                       const size_t length);
+```
+
+**set**
+```
+void
+red_black_tree_set(const RedBlackTree *const restrict tree,
+                   const void *const key);
+void
+red_black_tree_set_min(const RedBlackTree *const restrict tree,
+                       const void *const key);
+void
+red_black_tree_set_max(const RedBlackTree *const restrict tree,
+                       const void *const key);
+
+void
+red_black_hmap_set(const RedBlackHMap *const restrict map,
+                   const void *const key,
+                   const size_t length);
+```
+
+**exchange**
+
 
 ###Clone
+**clone**
+```
+bool
+red_black_tree_clone(RedBlackTree *const restrict dst_tree,
+                     const RedBlackTree *const restrict src_tree);
 
-###Set Queries
+bool
+red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
+                     const RedBlackHMap *const restrict src_map);
+```
+
+
+###Query
 
 ###Set Construction
 
