@@ -230,13 +230,13 @@ restrictions on the application developer:
     of my `Pet` fields and pass `sizeof(pet.species) + strlen(pet.name)` as key
     `length` to avoid padding bytes, or just `memset(&pet, 0, sizeof(pet))` before
     setting fields and pass `sizeof(pet)` as key `length`.
+3. Compile your source code and link to either `static/libred_black_hmap.{a,lib}`
+or `shared/libred_black_hmap.{so,dylib,dll}`.  
+Remember to add the `include` directory to your preprocessor's search path
+either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
+(i.e. `CPATH=path/to/include:$CPATH`).
 
 
-
-As such, it relies on hashing input keys 
-
-The `RedBlackHMap` aims to improve upon the "flatness" of the balanced `RedBlackTree` by scattering its keys into a large array of mini-trees.
-can be thought of as a  of red-black
 
 
 

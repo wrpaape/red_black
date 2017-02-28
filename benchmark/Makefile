@@ -1,4 +1,4 @@
-KEYS_COUNT 	:= 10000000
+KEYS_COUNT 	:= 15000000
 CC	   	:= gcc
 CPP		:= g++
 CC_FLAGS	:= -std=c99
