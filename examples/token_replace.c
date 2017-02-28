@@ -288,7 +288,7 @@ update_rules_map(const struct Rule *const restrict rule,
 					   length_token,
 					   &old_ptr);
 
-	if (status == 1)
+	if (status > 0)
 		return true;
 
 	if (status < 0) {

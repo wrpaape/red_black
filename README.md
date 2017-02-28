@@ -24,7 +24,7 @@ interfaces are able to provide the following operations:
 - insert
 - random access
 - delete
-- (ordered) traverse  
+- (ordered) traverse
 - shallow copy
 - various set operations
 
@@ -39,6 +39,7 @@ methods like [treap priority](https://en.wikipedia.org/wiki/Treap#Description) o
 `red_black` distinguishes itself from many other balanced tree/hash table-balanced tree
 hybrid implementations by preferring [finer casewise granularity](#implementation)
 over heavier abstraction throughout container accesses.
+
 
 
 
@@ -305,6 +306,11 @@ red_black_hmap_insert(RedBlackHMap *const restrict map,
                       const void *const key,
                       const size_t length);
 ```
+insert `key` into the container  
+If `key` is not already present in the container, an insertion is attempted.
+If the insertion succeeds, `1` is returned.  
+If the key is already present, the container is untouched and `0` is returned.  
+If a memory allocation failure occurs, `-1` is returned.
 
 **add**
 ```
@@ -317,9 +323,14 @@ red_black_hmap_add(RedBlackHMap *const restrict map,
                    const void *const key,
                    const size_t length);
 ```
+insert **GUARANTEED UNIQUE** `key` into the container  
+Some assumptions can be made if `key` is unique that will slightly
+speed up insertion, useful for initial provisioning.  
+If the insertion succeeds, `true` is returned.  
+If a memory allocation failure occurs, `false` is returned.
+This call will segfault or worse if `key` is already present in the container.
 
 **put**
-
 ```
 int
 red_black_tree_put(RedBlackTree *const restrict tree,
@@ -330,6 +341,11 @@ red_black_hmap_put(RedBlackHMap *const restrict map,
                    const void *const key,
                    const size_t length);
 ```
+insert `key` into the container--if `key` is already present,
+overwrite the old value  
+If the insertion suceeds, `1` is returned.  
+If `key` overwrites a matching key, `0` is returned.  
+If a memory allocation failure occurs, `-1` is returned.
 
 **update**
 ```
@@ -353,6 +369,15 @@ red_black_hmap_update_get(RedBlackHMap *const restrict map,
                           const size_t length,
                           void **const restrict old_ptr);
 ```
+insert `key` into the container--if `key` is already present,
+set `old_ptr` to the member key's value  
+`update_set` will overwrite a matching key in the container with
+`key` (like a `put`) before setting `old_ptr`, whereas `update_get`
+will leave the container key untouched.  
+If the insertion suceeds, `1` is returned, and `old_ptr` is not set.  
+If a key matching `key` is present, `0` is returned, and `old_ptr` is set to its value.  
+If a memory allocation failure occurs, `-1` is returned.
+
 
 
 ###Deletion
@@ -371,6 +396,9 @@ red_black_hmap_delete(RedBlackHMap *const restrict map,
                       const void *const key,
                       const size_t length);
 ```
+delete `key` from the container  
+If `key` was present in the container, it will be removed and `1` is returned.  
+If `key` was not found, the container is untouched and `0` is returned.
 
 **drop**
 ```
@@ -387,6 +415,11 @@ red_black_hmap_drop(RedBlackHMap *const restrict map,
                     const void *const key,
                     const size_t length);
 ```
+delete **GUARANTEED PRESENT** `key` from the container  
+Some assumptions can be made if `key` a known member of the container
+that will slightly speed up deletion.  
+This call will segfault or worse is `key` is not present in the container.
+
 
 **remove**
 ```
@@ -407,6 +440,9 @@ red_black_hmap_remove(RedBlackHMap *const restrict map,
                       const size_t length,
                       void **const restrict remove_ptr);
 ```
+delete `key` from the container--if `key` was found, set `remove_ptr` to its value  
+If `key` was deleted from the container, `1` is returned and `remove_ptr` is set.  
+If `key` was not found, the container is untouched, `0` is returned, and `remove_ptr` is not set.
 
 **pluck**
 ```
@@ -423,6 +459,10 @@ red_black_hmap_pluck(RedBlackHMap *const restrict map,
                      const void *const key,
                      const size_t length);
 ```
+delete **GUARANTEED PRESENT** `key` from the container and return its value  
+Some assumptions can be made if `key` a known member of the container
+that will slightly speed up deletion.  
+This call will segfault or worse is `key` is not present in the container.
 
 
 ###Traversal
@@ -439,6 +479,12 @@ void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
                          const RedBlackHMap *const restrict map);
 ```
+initialize a traversal `Itor` object to vist all keys of a container  
+`RedBlackTreeItor`s may be initialized to traverse in ascending (`asc`, from "smallest" key to "largest") or descending (`desc`, from "largest" key to "smallest") fashion.  
+Container mutations are not allowed throughout the useful lifespan of the `Itor`
+(see `next`).  
+Neither `Itor` makes internal allocations, so no destructor function need be called
+when finished. 
 
 **next**
 ```
@@ -451,6 +497,8 @@ red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
                          void **const restrict key_ptr,
                          size_t *const restrict length_ptr);
 ```
+<!-- Since both `Itor`s maintain a stack of unvisted keys internally, container [insertions](#insertion) and [deletions](#deletion) must be avoided throughout the -->
+<!-- useful lifespan o -->
 
 **reset**
 ```
