@@ -30,7 +30,7 @@
 /* initial bucket count, MUST be power of 2 (and at LEAST 2) */
 #define RBHM_INIT_BUCKET_COUNT	8
 /* maximum average collision count per bucket without requiring expansion */
-#define RBHM_MAX_AVG_COLLISIONS 1
+#define RBHM_MAX_AVG_COLLISIONS 8
 /* initial (minimum) maximum capacity of entries before expansion is needed */
 #define RBHM_INIT_MAX_CAPACITY	(  RBHM_INIT_BUCKET_COUNT		\
 				 * RBHM_MAX_AVG_COLLISIONS)
