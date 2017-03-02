@@ -251,6 +251,7 @@ either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
 - [Deletion](#deletion)
 - [Traversal](#traversal)
 - [Random Access](#random-access)
+- [Clone](#clone)
 - [Inspection](#inspection)
 - [Set Comparison](#set-comparison)
 - [Set Building Operations](#set-building-operations)
@@ -497,8 +498,13 @@ red_black_hmap_itor_next(RedBlackHMapItor *const restrict itor,
                          void **const restrict key_ptr,
                          size_t *const restrict length_ptr);
 ```
-<!-- Since both `Itor`s maintain a stack of unvisted keys internally, container [insertions](#insertion) and [deletions](#deletion) must be avoided throughout the -->
-<!-- useful lifespan o -->
+visit the next key is the container if any remain  
+Following an `init` or `reset`, as long as keys remain, `next` will return `true` 
+and fetch the next key in the container by setting `key_ptr` (and `length_ptr`).
+`false` is returned without setting the input pointer(s) once all member keys
+have been traversed.  
+Since a stack of unvisted keys its maintained internally, container [insertions](#insertion) and [deletions](#deletion) must be avoided throughout the
+useful lifespan of an `Itor`.
 
 **reset**
 ```
