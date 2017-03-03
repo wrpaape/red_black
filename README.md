@@ -481,7 +481,8 @@ red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
                          const RedBlackHMap *const restrict map);
 ```
 initialize a traversal `Itor` object to vist all keys of a container  
-`RedBlackTreeItor`s may be initialized to traverse in ascending (`asc`, from "smallest" key to "largest") or descending (`desc`, from "largest" key to "smallest") fashion.  
+`RedBlackTreeItor`s may be initialized to traverse in ascending (`asc`, from "smallest" key to "largest")
+or descending (`desc`, from "largest" key to "smallest") fashion.  
 Container mutations are not allowed throughout the useful lifespan of the `Itor`
 (see `next`).  
 Neither `Itor` makes internal allocations, so no destructor function need be called
@@ -503,8 +504,8 @@ Following an `init` or `reset`, as long as keys remain, `next` will return `true
 and fetch the next key in the container by setting `key_ptr` (and `length_ptr`).
 `false` is returned without setting the input pointer(s) once all member keys
 have been traversed.  
-Since a stack of unvisted keys its maintained internally, container [insertions](#insertion) and [deletions](#deletion) must be avoided throughout the
-useful lifespan of an `Itor`.
+Since a stack of unvisted keys its maintained internally, container [insertions](#insertion) and [deletions](#deletion)
+must be avoided throughout the useful lifespan of an `Itor`.
 
 **reset**
 ```
@@ -516,6 +517,9 @@ void
 red_black_hmap_itor_reset(RedBlackHMapItor *const restrict itor,
                           const RedBlackHMap *const restrict map);
 ```
+begin iteration on a new container  
+`Itor` must be `init`ialized at least once prior to a `reset`. A `reset` does
+not change the direction of iteration for `RedBlackTreeItor`s.
 
 
 ###Random Access
@@ -530,6 +534,8 @@ red_black_hmap_find(const RedBlackHMap *const restrict map,
                     const void *const key,
                     const size_t length);
 ```
+check if `key` is a member of a container  
+`find` returns `true` if `key` was found, `false` if it was not.
 
 **fetch**
 ```
