@@ -556,7 +556,7 @@ red_black_hmap_fetch(const RedBlackHMap *const restrict map,
                      const size_t length,
                      void **const restrict fetch_ptr);
 ```
-attempt to retrieve member `key` from container  
+attempt to retrieve member `key` from a container  
 if `key` is found, store it in `fetch_ptr` and return `true`
 if `key` is not present, leave `fetch_ptr` unset and return `false`
 
@@ -575,6 +575,9 @@ red_black_hmap_get(const RedBlackHMap *const restrict map,
                    const void *const key,
                    const size_t length);
 ```
+retrieve **GUARANTEED** member `key` from a container  
+returns member key comparing equal to input `key` (and `length`)  
+This call will segfault or worse if `key` is not present in the container.
 
 **replace**
 ```
