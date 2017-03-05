@@ -556,6 +556,9 @@ red_black_hmap_fetch(const RedBlackHMap *const restrict map,
                      const size_t length,
                      void **const restrict fetch_ptr);
 ```
+attempt to retrieve member `key` from container  
+if `key` is found, store it in `fetch_ptr` and return `true`
+if `key` is not present, leave `fetch_ptr` unset and return `false`
 
 **get**
 ```
