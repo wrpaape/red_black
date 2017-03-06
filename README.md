@@ -480,7 +480,7 @@ void
 red_black_hmap_itor_init(RedBlackHMapItor *const restrict itor,
                          const RedBlackHMap *const restrict map);
 ```
-initialize a traversal `Itor` object to vist all keys of a container  
+initialize a traversal `Itor` object to vist all keys of the container  
 `RedBlackTreeItor`s may be initialized to traverse in ascending (`asc`, from "smallest" key to "largest")
 or descending (`desc`, from "largest" key to "smallest") fashion.  
 Container mutations are not allowed throughout the useful lifespan of the `Itor`
@@ -534,7 +534,7 @@ red_black_hmap_find(const RedBlackHMap *const restrict map,
                     const void *const key,
                     const size_t length);
 ```
-check if `key` is a member of a container  
+check if `key` is a member of the container  
 `find` returns `true` if `key` was found, `false` if it was not.
 
 **fetch**
@@ -556,9 +556,9 @@ red_black_hmap_fetch(const RedBlackHMap *const restrict map,
                      const size_t length,
                      void **const restrict fetch_ptr);
 ```
-attempt to retrieve member `key` from a container  
-if `key` is found, store it in `fetch_ptr` and return `true`
-if `key` is not present, leave `fetch_ptr` unset and return `false`
+attempt to retrieve member `key` from the container  
+If `key` is found, store it in `fetch_ptr` and return `true`.  
+If `key` is not present, leave `fetch_ptr` unset and return `false`.
 
 **get**
 ```
@@ -575,9 +575,12 @@ red_black_hmap_get(const RedBlackHMap *const restrict map,
                    const void *const key,
                    const size_t length);
 ```
-retrieve **GUARANTEED** member `key` from a container  
-returns member key comparing equal to input `key` (and `length`)  
-This call will segfault or worse if `key` is not present in the container.
+retrieve **GUARANTEED** member `key` from the container  
+`get` returns member key comparing equal to input `key` (and `length`).  
+`RedBlackTree` provides `get_min`/`get_max` to retrieve the
+smallest/largest key in the container without comparisons.  
+This call will segfault or worse if `key` is not present in the container
+or if `tree` is empty in the case of `get_min`/`get_max`.
 
 **replace**
 ```
@@ -596,6 +599,11 @@ red_black_hmap_replace(const RedBlackHMap *const restrict map,
                        const void *const key,
                        const size_t length);
 ```
+attempt to set member `key` in the container  
+If a key is found that matches input `key` (and `length`),
+it is replaced by `key` and `true` is returned.  
+If no matching key is found, the container is untouched
+and `false` is returned.
 
 **set**
 ```
