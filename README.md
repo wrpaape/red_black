@@ -559,6 +559,8 @@ red_black_hmap_fetch(const RedBlackHMap *const restrict map,
 attempt to retrieve member `key` from the container  
 If `key` is found, store it in `fetch_ptr` and return `true`.  
 If `key` is not present, leave `fetch_ptr` unset and return `false`.
+`RedBlackTree` provides `fetch_min`/`fetch_max` to retrieve the
+smallest/largest key in `tree` without comparisons.
 
 **get**
 ```
@@ -578,7 +580,7 @@ red_black_hmap_get(const RedBlackHMap *const restrict map,
 retrieve **GUARANTEED** member `key` from the container  
 `get` returns member key comparing equal to input `key` (and `length`).  
 `RedBlackTree` provides `get_min`/`get_max` to retrieve the
-smallest/largest key in the container without comparisons.  
+smallest/largest key in `tree` without comparisons.  
 This call will segfault or worse if `key` is not present in the container
 or if `tree` is empty in the case of `get_min`/`get_max`.
 
@@ -604,6 +606,8 @@ If a key is found that matches input `key` (and `length`),
 it is replaced by `key` and `true` is returned.  
 If no matching key is found, the container is untouched
 and `false` is returned.
+`RedBlackTree` provides `replace_min`/`replace_max` to set the
+smallest/largest key in `tree` without comparisons.
 
 **set**
 ```
@@ -622,6 +626,12 @@ red_black_hmap_set(const RedBlackHMap *const restrict map,
                    const void *const key,
                    const size_t length);
 ```
+set **GUARANTEED** member `key` from the container  
+The key matching input `key` (and `length`) is replaced by `key`.  
+`RedBlackTree` provides `set_min`/`set_max` to set the
+smallest/largest key in `tree` without comparisons.  
+This call will segfault or worse if `key` is not present in the container
+or if `tree` is empty in the case of `set_min`/`set_max`.
 
 **exchange**
 ```
