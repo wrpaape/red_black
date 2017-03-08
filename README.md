@@ -654,6 +654,14 @@ red_black_hmap_exchange(const RedBlackHMap *const restrict map,
                         const size_t length,
                         void **const restrict old_ptr);
 ```
+attempt to swap member `key` in the container  
+if a key is found that matches input `key` (and `length`),
+it is replaced by `key`, `old_ptr` is set to its old value,
+and `true` is returned.  
+If no matching key is found, the container is untouched,
+`old_ptr` is not set, and `false` is returned.  
+`RedBlackTree` provides `exchange_min`/`exchange_max` to swap the
+smallest/largest key in `tree` without comparisons.
 
 **swap**
 ```
