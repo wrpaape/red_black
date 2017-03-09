@@ -680,7 +680,12 @@ red_black_hmap_swap(const RedBlackHMap *const restrict map,
                     const void *const key,
                     const size_t length);
 ```
-
+swap **GUARANTEED** member `key` in the container
+`swap` will replace the key matching `key` (and `length`)
+with `key` and return the old value.  
+`RedBlackTree` provides `swap_min`/`swap_max` to swap the
+smallest/largest key in `tree` without comparisons.
+This call will segfault or worse if `key` is not present in the container.
 
 ###Clone
 **clone**
