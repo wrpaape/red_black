@@ -698,6 +698,12 @@ bool
 red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
                      const RedBlackHMap *const restrict src_map);
 ```
+allocate a shallow copy of `dst` container and store it in `src`  
+If adequate memory can be allocated, the call succeeds and returns `true`.
+If memory allocation fails, `false` is returned.  
+A successfully `clone`d container is guaranteed to compare `similar` and
+`congruent` (see [Set Comparison](set-comparison)) to the original copy.
+
 
 
 ###Inspection
