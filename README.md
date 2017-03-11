@@ -715,6 +715,10 @@ red_black_tree_empty(const RedBlackTree *const restrict tree);
 bool
 red_black_hmap_empty(const RedBlackHMap *const restrict map);
 ```
+check if a container is empty  
+If the input container contains no keys, `true` is returned.  
+If the input container contains at least one key, `false` is returned.
+
 
 **count**
 ```
