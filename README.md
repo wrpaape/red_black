@@ -719,7 +719,6 @@ check if a container is empty
 If the input container contains no keys, `true` is returned.  
 If the input container contains at least one key, `false` is returned.
 
-
 **count**
 ```
 unsigned int
@@ -728,6 +727,11 @@ red_black_tree_count(const RedBlackTree *const restrict tree);
 unsigned int
 red_black_hmap_count(const RedBlackHMap *const restrict map);
 ```
+query the count of all member keys in the container  
+`RedBlackHMap` must maintain its member count to properly manage
+its buckets, so `hmap_count` is an `O(1)` operation.  
+`RedBlackTree` does not keep track of its member count, so a
+full tree traversal is required for `tree_count` (an `O(n)` operation).
 
 **verify**
 ```
