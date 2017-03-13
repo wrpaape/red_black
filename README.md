@@ -741,6 +741,12 @@ red_black_tree_verify(const RedBlackTree *const restrict tree);
 bool
 red_black_hmap_verify(const RedBlackHMap *const restrict map);
 ```
+examine the validity of the container state  
+`verify` scans all member keys in `O(n)` operations, stopping if
+either a pair of keys is found out of (hashed) order or another
+one of the [red-black properties](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree#Properties) has been violated.  
+If the container is in a valid state, `true` is returned.  
+If the container is not safe to query/modify, `false` is returned.
 
 
 ###Set Comparison
