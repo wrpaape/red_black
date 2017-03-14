@@ -748,7 +748,6 @@ one of the [red-black properties](https://en.wikipedia.org/wiki/Red%E2%80%93blac
 If the container is in a valid state, `true` is returned.  
 If the container is not safe to query/modify, `false` is returned.
 
-
 ###Set Comparison
 **similar**
 ```
@@ -760,6 +759,9 @@ bool
 red_black_hmap_similar(const RedBlackHMap *const map1,
                        const RedBlackHMap *const map2);
 ```
+check if one container is equal to another  
+If both containers contain exactly the same keys, return `true`.  
+If the set of keys differ at all between the two containers, return `false`.
 
 **congruent**
 ```
