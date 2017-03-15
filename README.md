@@ -759,7 +759,7 @@ bool
 red_black_hmap_similar(const RedBlackHMap *const map1,
                        const RedBlackHMap *const map2);
 ```
-check if one container is equal to another  
+check if two containers are *equal*  
 If both containers contain exactly the same keys, return `true`.  
 If the set of keys differ at all between the two containers, return `false`.
 
@@ -773,6 +773,16 @@ bool
 red_black_hmap_congruent(const RedBlackHMap *const map1,
                          const RedBlackHMap *const map2);
 ```
+check if two containers are *identical*  
+The `congruent` query checks for container `similar`ity AND equivalent
+container shape. Two `congruent` containers will always be `similar`,
+but the converse is not necessarily true. For instance a container and
+its clone will always compare `similar` AND `congruent`, however,
+two `similar` containers may not be `congruent` if their sequence of
+key insertions/deletions are not perfectly aligned.  
+If both containers contain exactly the same keys and share the same
+underlying shape, return `true`.  
+If the containers are not `similar` or are shaped differently, return `false`.  
 
 **intersect**
 ```
