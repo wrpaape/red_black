@@ -1,8 +1,8 @@
-#red_black
+# red_black
 
 
 
-##Overview
+## Overview
 
 - [Prerequisites](#prerequisites)
 - [Build](#build)
@@ -50,7 +50,7 @@ over heavier abstraction throughout container accesses.
 
 
 
-##Prerequisites
+## Prerequisites
 
 - GNU Make
 - gcc >= 4.8.1 (C99 and C++11 support for benchmarking against `std` containers)
@@ -62,7 +62,7 @@ over heavier abstraction throughout container accesses.
 
 
 
-##Build
+## Build
 
 ```
 $ git clone https://github.com/wrpaape/red_black.git
@@ -83,7 +83,7 @@ will delete all generated files.
 
 
 
-##Usage
+## Usage
 
 1. [Build](#build) the `red_black` libraries
 2. If key order is required or memory is constrained,
@@ -92,7 +92,7 @@ If key order is not required and memory can be spared for extra speed,
 use a [`RedBlackHMap`](#redblackhmap-usage).
 
 
-###RedBlackTree Usage
+### RedBlackTree Usage
 
 1. Add `#include "red_black_tree.h"` to the top of your source file.  
 The file must be included with no path prefix since it will be including other module headers by paths relative to the `include` directory.  
@@ -164,7 +164,7 @@ either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
 
 
 
-###RedBlackHMap Usage
+### RedBlackHMap Usage
 
 1. Add `#include "red_black_hmap.h"` to the top of your source file.  
 The file must be included with no path prefix since it will be including other module headers by paths relative to the `include` directory.  
@@ -250,7 +250,7 @@ either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
 
 
 
-##Interface
+## Interface
 
 - [Creation](#creation)
 - [Destruction](#destruction)
@@ -264,7 +264,7 @@ either via compiler flag (i.e. `-Ipath/to/include`) or environment variable
 - [Set Building Operations](#set-building-operations)
 
 
-###Creation
+### Creation
 
 **init**
 ```
@@ -284,7 +284,7 @@ need to allocate an array of empty buckets, and so has an opportunity to fail --
 a return value of `true` indicates success, `false` indicates failure.
 
 
-###Destruction
+### Destruction
 
 **destroy**
 ```
@@ -304,7 +304,7 @@ unless a final
 [traversal](#traversal) is made to free them beforehand.
 
 
-###Insertion
+### Insertion
 
 **insert**
 ```
@@ -391,7 +391,7 @@ If a memory allocation failure occurs, `-1` is returned.
 
 
 
-###Deletion
+### Deletion
 
 **delete**
 ```
@@ -477,7 +477,7 @@ that will slightly speed up deletion.
 This call will segfault or worse is `key` is not present in the container.
 
 
-###Traversal
+### Traversal
 
 **init**
 ```
@@ -534,7 +534,7 @@ begin iteration on a new container
 not change the direction of iteration for `RedBlackTreeItor`s.
 
 
-###Random Access
+### Random Access
 
 **find**
 ```
@@ -700,7 +700,7 @@ with `key` and return the old value.
 smallest/largest key in `tree` without comparisons.
 This call will segfault or worse if `key` is not present in the container.
 
-###Clone
+### Clone
 
 **clone**
 ```
@@ -720,7 +720,7 @@ A successfully `clone`d container is guaranteed to compare `similar` and
 
 
 
-###Inspection
+### Inspection
 
 **empty**
 ```
@@ -763,7 +763,7 @@ one of the [red-black properties](https://en.wikipedia.org/wiki/Red%E2%80%93blac
 If the container is in a valid state, `true` is returned.  
 If the container is not safe to query/modify, `false` is returned.
 
-###Set Comparison
+### Set Comparison
 
 **similar**
 ```
@@ -823,7 +823,7 @@ red_black_hmap_subset(const RedBlackHMap *const map1,
 ```
 
 
-###Set Building Operations
+### Set Building Operations
 
 **insert_all**
 ```
@@ -933,9 +933,9 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
 ```
 
 
-##Types
+## Types
 
-###RedBlackComparator
+### RedBlackComparator
 
 **[declaration](include/red_black_tree/red_black_comparator.h#L10-L12)**
 ```
@@ -1012,8 +1012,8 @@ compare_string_keys(const void *key1,
 }
 ```
 
-##Implementation
+## Implementation
 
-###The "Parent" Pointer Compromise
+### The "Parent" Pointer Compromise
 
 TODO
