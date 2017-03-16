@@ -821,6 +821,9 @@ bool
 red_black_hmap_subset(const RedBlackHMap *const map1,
                       const RedBlackHMap *const map2);
 ```
+check if container2 is a subset of container1  
+If all of the keys of container2 are members of container1, return `true`.  
+If at least one key in container2 is not present in container1, return `false`.
 
 
 ### Set Building Operations
