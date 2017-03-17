@@ -810,6 +810,9 @@ bool
 red_black_hmap_intersect(const RedBlackHMap *const map1,
                          const RedBlackHMap *const map2);
 ```
+check if two containers have an overlap in their key set  
+If at least one key is found in both containers, return `true`.  
+If both containers have completely disjoint key sets, return `false`.
 
 **subset**
 ```
