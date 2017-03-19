@@ -856,6 +856,11 @@ int
 red_black_hmap_put_all(RedBlackHMap *const restrict dst_map,
                        const RedBlackHMap *const restrict src_map);
 ```
+insert all of the keys of `src` container into `dst` container -- matching
+keys will be overwritten with those from `src`  
+On success, `put_all` returns the count of additional keys inserted.  
+If memory allocation fails, `-1` is returned and `dst` is left in an
+indeterminate (but valid and destructible) state.
 
 **add_all**
 ```
