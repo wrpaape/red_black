@@ -338,7 +338,7 @@ insert **GUARANTEED UNIQUE** `key` into the container
 Some assumptions can be made if `key` is unique that will slightly
 speed up insertion, useful for initial provisioning.  
 If the insertion succeeds, `true` is returned.  
-If a memory allocation failure occurs, `false` is returned.
+If a memory allocation failure occurs, `false` is returned.  
 This call will segfault or worse if `key` is already present in the container.
 
 **put**
@@ -872,6 +872,12 @@ bool
 red_black_hmap_add_all(RedBlackHMap *const restrict dst_map,
                        const RedBlackHMap *const restrict src_map);
 ```
+insert all **GUARANTEED UNIQUE** keys of `src` container into `dst` container  
+Some assumptions can be made if all keys of `src` are known to be unique
+(i.e. `intersect(dst, src) == false`) that will slightly speed up insertion.  
+If `add_all` succeeds, `true` is returned.  
+If a memory allocation failure occurs, `false` is returned.  
+This call will segfault or worse if any `src` keys are present in `dst` container.
 
 **delete_all**
 ```
