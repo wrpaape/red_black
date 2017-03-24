@@ -136,7 +136,7 @@ on the stored key:
                              *((void **) &mapping),
                              (void **) &fetched)) {
             /* key with 'index' of 9001 exists in 'tree' */
-
+   
             ++(fetched.counter); /* tree mapping NOT updated!, operates on copy */
     }
     ```
@@ -147,9 +147,9 @@ the old value:
                              *((void **) &mapping),
                              (void **) &fetched)) {
             /* key with 'index' of 9001 exists in 'tree' */
-
+   
             ++(fetched.counter); /* increment counter */
-
+   
             /* insert into tree, overwriting old value */
             int status = red_black_tree_put(&tree,
                                             *((void **) &fetched));
@@ -211,13 +211,13 @@ restrictions on the application developer:
                                        (void *) charley_ptr,
                                        sizeof(*charley_ptr));
     assert(status >= 0);
-
+    
     /* check if Charley is a member of 'my_pets' */
     struct Pet charly = {
             .name    = "Charley",
             .species = SPECIES_CAT
     };
-
+    
     if (red_black_hmap_find(&my_pets,
                             (void *) &charley,
                             sizeof(charley))) {
