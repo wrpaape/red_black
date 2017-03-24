@@ -102,12 +102,13 @@ Accordingly, a [`RedBlackComparator`](#redblackcomparator) must be provided at i
 to determine ordering.  
 Internally keys are stored as `const void *`.  
 As a consequence, keys requiring more than `sizeof(void *)` bytes of storage must be
-accessable by pointer, and their memory must be managed externally. The same goes for keys
+accessible by pointer, and their memory must be managed externally. The same goes for keys
 where a access via an `update` or `get` might be useful, as only a *copy* of the actual
 stored key will be provided.  
 For instance, if the `sizeof(int)` on my machine is 4 bytes, and the `sizeof(void *)` is
 at least 8 bytes, then I could store key-value pairs of `int`s directly in my `RedBlackTree`
 like so:
+
     ```
     struct KeyValue {
             int index;
@@ -123,9 +124,11 @@ like so:
                                        *((void **) &mapping));
     assert(status >= 0);
     ```
+
 and not have to worry about their memory management. However, if I wanted to
 update the `counter` of a certain member `index`, the following would have no effect
 on the stored key:
+
     ```
     struct KeyValue mapping;
     struct KeyValue fetched;
@@ -136,26 +139,29 @@ on the stored key:
                              *((void **) &mapping),
                              (void **) &fetched)) {
             /* key with 'index' of 9001 exists in 'tree' */
-   
+
             ++(fetched.counter); /* tree mapping NOT updated!, operates on copy */
     }
     ```
+
 In order to properly update `tree`, I would have to follow up with a `put` and clobber
 the old value:
+
     ```
     if (red_black_tree_fetch(&tree,
                              *((void **) &mapping),
                              (void **) &fetched)) {
             /* key with 'index' of 9001 exists in 'tree' */
-   
+
             ++(fetched.counter); /* increment counter */
-   
+
             /* insert into tree, overwriting old value */
             int status = red_black_tree_put(&tree,
                                             *((void **) &fetched));
             assert(status >= 0);
     }
     ```
+
 3. Compile your source code and link to either `static/libred_black_tree.{a,lib}`
 or `shared/libred_black_tree.{so,dylib,dll}`.  
 Remember to add the `include` directory to your preprocessor's search path
@@ -190,6 +196,7 @@ restrictions on the application developer:
     be cleared before having their fields set, or be passed in such a way that
     for `length` bytes from the input address no padding will be encountered.  
     The following snippet:
+
     ```
     #define NAME_LENGTH_MAX 20
     #define SPECIES_CAT 0
@@ -211,13 +218,13 @@ restrictions on the application developer:
                                        (void *) charley_ptr,
                                        sizeof(*charley_ptr));
     assert(status >= 0);
-    
+
     /* check if Charley is a member of 'my_pets' */
     struct Pet charly = {
             .name    = "Charley",
             .species = SPECIES_CAT
     };
-    
+
     if (red_black_hmap_find(&my_pets,
                             (void *) &charley,
                             sizeof(charley))) {
@@ -225,6 +232,7 @@ restrictions on the application developer:
          ...
     }
     ```
+
     may exhibit unexpected behavior. The `name` field will not
     always be completely filled for each `Pet` entry, and even if
     all my pets had 20-character (plus one for `'\0'` terminator) names,
@@ -275,6 +283,7 @@ red_black_tree_init(RedBlackTree *const restrict tree,
 bool
 red_black_hmap_init(RedBlackHMap *const restrict map);
 ```
+
 initialize an empty `red_black` container  
 `red_black_tree_init` requires a key comparator
 (see [`RedBlackComparator`](#redblackcomparator)) to determine ordering
@@ -843,6 +852,7 @@ red_black_hmap_insert_all(RedBlackHMap *const restrict dst_map,
 ```
 insert all of the keys of `src` container into `dst` container  
 On success, `insert_all` returns the count of additional keys inserted.  
+
 If memory allocation fails, `-1` is returned and `dst` is left in an
 indeterminate (but valid and destructible) state.
 
