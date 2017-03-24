@@ -139,12 +139,12 @@ on the stored key:
                              *((void **) &mapping),
                              (void **) &fetched)) {
             /* key with 'index' of 9001 exists in 'tree' */
-     
+
             ++(fetched.counter); /* tree mapping NOT updated!, operates on copy */
     }
     ```
 
-In order to properly update `tree`, I would have to follow up with a `put` and clobber
+In order to properly update `tree`, I would have to follow up with a `set` and clobber
 the old value:
 
     ```
@@ -155,10 +155,9 @@ the old value:
 
             ++(fetched.counter); /* increment counter */
 
-            /* insert into tree, overwriting old value */
-            int status = red_black_tree_put(&tree,
-                                            *((void **) &fetched));
-            assert(status >= 0);
+            /* overwrite old value */
+            red_black_tree_set(&tree,
+                               *((void **) &fetched));
     }
     ```
 
@@ -329,7 +328,7 @@ red_black_hmap_insert(RedBlackHMap *const restrict map,
 insert `key` into the container  
 If `key` is not already present in the container, an insertion is attempted.
 If the insertion succeeds, `1` is returned.  
-If the key is already present, the container is untouched and `0` is returned.  
+If `key` is already present, the container is untouched and `0` is returned.  
 If a memory allocation failure occurs, `-1` is returned.
 
 **add**
@@ -993,7 +992,7 @@ without altering their values
 **examples**  
 ```
 /* for trees housing integer keys */
-#include <stdint.h>	/* intptr_t */
+#include <stdint.h> /* intptr_t */
 int
 compare_integer_keys(const void *key1,
                      const void *key2)
