@@ -135,7 +135,7 @@ on the stored key:
     if (red_black_tree_fetch(&tree,
                              *((void **) &mapping),
                              (void **) &fetched)) {
-            /* key with `index` of 9001 exists in `tree` */
+            /* key with 'index' of 9001 exists in 'tree' */
 
             ++(fetched.counter); /* tree mapping NOT updated!, operates on copy */
     }
@@ -146,7 +146,7 @@ the old value:
     if (red_black_tree_fetch(&tree,
                              *((void **) &mapping),
                              (void **) &fetched)) {
-            /* key with `index` of 9001 exists in `tree` */
+            /* key with 'index' of 9001 exists in 'tree' */
 
             ++(fetched.counter); /* increment counter */
 
@@ -889,6 +889,8 @@ int
 red_black_hmap_delete_all(RedBlackHMap *const restrict dst_map,
                           const RedBlackHMap *const restrict src_map);
 ```
+delete all of the keys of `src` container from `dst` container  
+`delete_all` returns the count of overlapping keys deleted.
 
 **drop_all**
 ```
