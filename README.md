@@ -139,7 +139,7 @@ on the stored key:
                              *((void **) &mapping),
                              (void **) &fetched)) {
             /* key with 'index' of 9001 exists in 'tree' */
-
+     
             ++(fetched.counter); /* tree mapping NOT updated!, operates on copy */
     }
     ```
