@@ -438,7 +438,7 @@ red_black_hmap_drop(RedBlackHMap *const restrict map,
 delete **GUARANTEED PRESENT** `key` from the container  
 Some assumptions can be made if `key` a known member of the container
 that will slightly speed up deletion.  
-This call will segfault or worse is `key` is not present in the container.
+This call will segfault or worse if `key` is not present in the container.
 
 
 **remove**
@@ -911,6 +911,10 @@ void
 red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
                         const RedBlackHMap *const restrict src_map);
 ```
+delete all **GUARANTEED UNIQUE** keys of `src` container from `dst` container  
+Some assumptions can be made if all keys of `src` are present in `dst`
+(i.e. `subset(dst, src) == true`) that will slightly speed up deletion.  
+This call will segfault or worse if `src` contains any keys that are not present in `dst`.
 
 **union**
 ```
