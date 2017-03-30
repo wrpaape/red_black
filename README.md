@@ -598,7 +598,7 @@ red_black_hmap_get(const RedBlackHMap *const restrict map,
                    const void *const key,
                    const size_t length);
 ```
-retrieve **GUARANTEED** member `key` from the container  
+retrieve **GUARANTEED PRESENT** `key` from the container  
 `get` returns member key comparing equal to input `key` (and `length`).  
 `RedBlackTree` provides `get_min`/`get_max` to retrieve the
 smallest/largest key in `tree` without comparisons.  
@@ -647,7 +647,7 @@ red_black_hmap_set(const RedBlackHMap *const restrict map,
                    const void *const key,
                    const size_t length);
 ```
-set **GUARANTEED** member `key` from the container  
+set **GUARANTEED PRESENT** `key` from the container  
 The key matching input `key` (and `length`) is replaced by `key`.  
 `RedBlackTree` provides `set_min`/`set_max` to set the
 smallest/largest key in `tree` without comparisons.  
@@ -701,7 +701,7 @@ red_black_hmap_swap(const RedBlackHMap *const restrict map,
                     const void *const key,
                     const size_t length);
 ```
-swap **GUARANTEED** member `key` in the container
+swap **GUARANTEED PRESENT** `key` in the container
 `swap` will replace the key matching `key` (and `length`)
 with `key` and return the old value.  
 `RedBlackTree` provides `swap_min`/`swap_max` to swap the
@@ -911,7 +911,7 @@ void
 red_black_hmap_drop_all(RedBlackHMap *const restrict dst_map,
                         const RedBlackHMap *const restrict src_map);
 ```
-delete all **GUARANTEED UNIQUE** keys of `src` container from `dst` container  
+delete all **GUARANTEED PRESENT** keys of `src` container from `dst` container  
 Some assumptions can be made if all keys of `src` are present in `dst`
 (i.e. `subset(dst, src) == true`) that will slightly speed up deletion.  
 This call will segfault or worse if `src` contains any keys that are not present in `dst`.
@@ -928,6 +928,17 @@ red_black_hmap_union(RedBlackHMap *const restrict union_map,
                      const RedBlackHMap *const map1,
                      const RedBlackHMap *const map2);
 ```
+Build the [union](https://en.wikipedia.org/wiki/Union_(set_theory))
+set of keys from containers `1` and `2`  
+`union` constructs a `union` container from the set of all unique keys between
+other two provided containers.  
+If `union` succeeds, a non-negative count of keys in `union` container is
+returned.  
+If memory allocation fails, `-1` is returned and `union` container is left in an
+indeterminate state.  
+`union` container must be provided free of internal allocations (uninitialized
+for `hmap` and no insertion history for `tree`) to avoid memory leaks.
+
 
 **intersection**
 ```
@@ -1011,10 +1022,7 @@ compare_integer_keys(const void *key1,
         if (int_key1 < int_key2)
                 return -1;
 
-        if (int_key1 > int_key2)
-                return  1;
-
-        return 0;
+        return (int_key1 > int_key2); /* 1, 0 */
 #endif
 }
 
