@@ -722,9 +722,12 @@ red_black_hmap_clone(RedBlackHMap *const restrict dst_map,
 ```
 allocate a shallow copy of `dst` container and store it in `src`  
 If adequate memory can be allocated, the call succeeds and returns `true`.
-If memory allocation fails, `false` is returned.  
+If memory allocation fails, `false` is returned and `dst` container is either left
+untouched or is destroyed if any intermediate allocations have been made.  
 A successfully `clone`d container is guaranteed to compare `similar` and
-`congruent` (see [Set Comparison](set-comparison)) to the original copy.
+`congruent` (see [Set Comparison](set-comparison)) to the original copy.  
+`dst` container must be provided free of internal allocations (uninitialized
+for `hmap` and no insertion history for `tree`) to avoid memory leaks.
 
 
 
@@ -934,8 +937,8 @@ set of keys from containers `1` and `2`
 other two provided containers.  
 If `union` succeeds, a non-negative count of keys in `union` container is
 returned.  
-If memory allocation fails, `-1` is returned and `union` container is left in an
-indeterminate state.  
+If memory allocation fails, `-1` is returned and `union` container is either left
+untouched or is destroyed if any intermediate allocations have been made.  
 `union` container must be provided free of internal allocations (uninitialized
 for `hmap` and no insertion history for `tree`) to avoid memory leaks.
 
@@ -952,6 +955,16 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
                             const RedBlackHMap *const map1,
                             const RedBlackHMap *const map2);
 ```
+Build the [union](https://en.wikipedia.org/wiki/Intersection_(set_theory))
+set of keys from containers `1` and `2`  
+`intersection` constructs a `intersection` container from the set of all unique keys between
+other two provided containers.  
+If `intersection` succeeds, a non-negative count of keys in `intersection` container is
+returned.  
+If memory allocation fails, `-1` is returned and `intersection` container is either left
+untouched or is destroyed if any intermediate allocations have been made.  
+`intersection` container must be provided free of internal allocations (uninitialized
+for `hmap` and no insertion history for `tree`) to avoid memory leaks.
 
 **difference**
 ```

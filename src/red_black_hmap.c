@@ -1711,12 +1711,16 @@ red_black_hmap_union(RedBlackHMap *const restrict union_map,
 		clone_map = map1, insert_map = map2;
 
 	/* clone one map, then add all unique keys from other map */
-	return (   red_black_hmap_clone(union_map,
-					clone_map)
-		&& (red_black_hmap_insert_all(union_map,
-					      insert_map) >= 0))
-	     ? (int) union_map->count.entries
-	     : -1; /* RED_BLACK_MALLOC failure */
+	if (red_black_hmap_clone(union_map,
+				 clone_map)) {
+		if (red_black_hmap_insert_all(union_map,
+					      insert_map) >= 0)
+			return (int) union_map->count.entries;
+
+		red_black_hmap_destroy(union_map); /* free internal memory */
+	}
+
+	return -1; /* RED_BLACK_MALLOC failure */
 }
 
 
