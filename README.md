@@ -955,7 +955,7 @@ red_black_hmap_intersection(RedBlackHMap *const restrict intersection_map,
                             const RedBlackHMap *const map1,
                             const RedBlackHMap *const map2);
 ```
-Build the [union](https://en.wikipedia.org/wiki/Intersection_(set_theory))
+Build the [intersection](https://en.wikipedia.org/wiki/Intersection_(set_theory))
 set of keys from containers `1` and `2`  
 `intersection` constructs a `intersection` container from the set of all unique keys between
 other two provided containers.  
@@ -978,6 +978,16 @@ red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
                           const RedBlackHMap *const map1,
                           const RedBlackHMap *const map2);
 ```
+Build the [difference](https://en.wikipedia.org/wiki/Complement_(set_theory)#Relative_complement)
+set of keys from containers `1` and `2`  
+`difference` constructs a `difference` container from the set of all keys in container `1` that
+are not present in container `2`
+If `difference` succeeds, a non-negative count of keys in `difference` container is
+returned.  
+If memory allocation fails, `-1` is returned and `difference` container is either left
+untouched or is destroyed if any intermediate allocations have been made.  
+`difference` container must be provided free of internal allocations (uninitialized
+for `hmap` and no insertion history for `tree`) to avoid memory leaks.
 
 **sym_difference**
 ```
