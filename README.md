@@ -981,7 +981,7 @@ red_black_hmap_difference(RedBlackHMap *const restrict difference_map,
 Build the [difference](https://en.wikipedia.org/wiki/Complement_(set_theory)#Relative_complement)
 set of keys from containers `1` and `2`  
 `difference` constructs a `difference` container from the set of all keys in container `1` that
-are not present in container `2`
+are not present in container `2`  
 If `difference` succeeds, a non-negative count of keys in `difference` container is
 returned.  
 If memory allocation fails, `-1` is returned and `difference` container is either left
@@ -1001,6 +1001,16 @@ red_black_hmap_sym_difference(RedBlackHMap *const restrict sym_difference_map,
                               const RedBlackHMap *const map1,
                               const RedBlackHMap *const map2);
 ```
+Build the [symmetric difference](https://en.wikipedia.org/wiki/Symmetric_difference)
+set of keys from containers `1` and `2`  
+`sym_difference` constructs a `sym_difference` container from the set of all
+non-overlapping keys among containers `1` and `2`  
+If `sym_difference` succeeds, a non-negative count of keys in `sym_difference` container is
+returned.  
+If memory allocation fails, `-1` is returned and `sym_difference` container is either left
+untouched or is destroyed if any intermediate allocations have been made.  
+`sym_difference` container must be provided free of internal allocations (uninitialized
+for `hmap` and no insertion history for `tree`) to avoid memory leaks.
 
 
 ## Types
